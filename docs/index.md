@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Creator First Platform
   text: Creators First. Fair Distribution. Open Governance.
-  tagline: クリエイターの権利と持続可能な創作活動を中心に据えた音楽配信基盤
+  tagline: 音楽クリエイターの権利と持続可能な創作活動を中心に据えた音楽配信プラットフォーム
   actions:
     - theme: brand
       text: ホワイトペーパー
@@ -15,9 +15,9 @@ hero:
 
 features:
   - title: Creator Rights
-    details: クリエイターの権利と利益をプラットフォーム設計の中心に置きます。
+    details: 音楽クリエイターの権利と利益を中心に設計したプラットフォームです
   - title: User Sovereignty
-    details: 利用者の選択、プライバシー、透明性を尊重します。
+    details: 利用者の主権、プライバシー、透明性を尊重します。
   - title: Fair Discovery
-    details: 人気だけに依存しない、公平な発見と支援の仕組みを設計します。
+    details: 人気だけに依存しない公平な楽曲の発見アルゴリズムで，ミュージシャンのデビューを支援します
 ---
