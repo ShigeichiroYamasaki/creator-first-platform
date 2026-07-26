@@ -19,5 +19,5 @@ features:
   - title: User Sovereignty
     details: 利用者の主権、プライバシー、透明性を尊重します。
   - title: Fair Discovery
-    details: 人気だけに依存しない公平な楽曲の発見アルゴリズムで，ミュージシャンのデビューを支援します
+    details: 人気だけに依存しない公平な楽曲の発見アルゴリズムでミュージシャンをデビューから支援します
 ---
