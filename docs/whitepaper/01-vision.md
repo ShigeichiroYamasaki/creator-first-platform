@@ -1,6 +1,6 @@
-1. ビジョン — Creator First Platform
+# 1. ビジョン — Creator First Platform
 
-1.1 はじめに
+## 1.1 はじめに
 
 音楽ストリーミングは、世界中の音楽へ瞬時にアクセスできる環境を実現し、音楽の流通と消費のあり方を大きく変えた。
 
@@ -10,80 +10,82 @@
 
 また、再生実績を中心とした評価は、すでに大きな認知を得ている作品やアーティストへ価値を集中させやすい。
 
-Creator First Platformは、この構造を所与のものとせず、問い直すことから出発する。
+Creator First Platform は、この構造を所与のものとせず、問い直すことから出発する。
 
-音楽配信プラットフォームそのものを、クリエイターと利用者のための共通基盤として再設計できないか。
+> **音楽配信プラットフォームそのものを、クリエイターと利用者のための共通基盤として再設計できないか。**
 
-これがCreator First Platformの出発点である。
+これが Creator First Platform の出発点である。
 
-⸻
+---
 
-1.2 Creator First
+## 1.2 Creator First
 
-Creator First Platformの中心理念は、その名称が示す通り Creator First である。
+Creator First Platform の中心理念は、その名称が示す通り **Creator First** である。
 
 これは単に「クリエイターへの分配率を高くする」という意味ではない。
 
 プラットフォームの設計、経済モデル、推薦、ガバナンス、技術、権利管理の判断において、クリエイターが持続的に創作できる環境を基本的な設計原則とすることを意味する。
 
-同時に、Creator Firstは利用者の利益と対立する概念であってはならない。
+同時に、Creator First は利用者の利益と対立する概念であってはならない。
 
 クリエイターが新しい作品を生み出し、それを利用者が発見し、楽しみ、支持する。その支持が再び創作活動を支える。
 
-Creator First Platformが目指すのは、この循環を持続可能なものにすることである。
+Creator First Platform が目指すのは、この循環を持続可能なものにすることである。
 
-Creator
-   │
-   │ 作品
-   ▼
-Platform
-   │
-   │ 発見
-   ▼
-Listener
-   │
-   │ 支持・利用・対価
-   ▼
-Creator
-   │
-   │ 新しい創作
-   └──────────→
+### Creator First の循環
 
-⸻
+1. クリエイターが作品を生み出す。
+2. プラットフォームが発見の機会を提供する。
+3. 利用者が作品を楽しみ、支持する。
+4. 支持と対価がクリエイターへ還元される。
+5. その還元が次の創作につながる。
 
-1.3 3つの憲章
+---
 
-Creator First Platformでは、プラットフォームの設計と運営が短期的な利益や一時的な多数決によって基本理念から逸脱することを防ぐため、ガバナンスの上位原則として3つの憲章を置く。
+## 1.3 3つの憲章
 
-Creator Rights
+Creator First Platform では、プラットフォームの設計と運営が短期的な利益や一時的な多数決によって基本理念から逸脱することを防ぐため、ガバナンスの上位原則として3つの憲章を置く。
+
+### Creator Rights
 
 クリエイターの権利、創作の自由、適正な対価を尊重する。
 
 プラットフォームの成長そのものを目的とするのではなく、その成長がクリエイターの持続可能な活動へ還元されることを求める。
 
-User Sovereignty
+### User Sovereignty
 
 利用者を単なる再生回数や広告価値の源泉として扱わない。
 
 利用者自身の選択、プライバシー、推薦に対する主体性を尊重する。
 
-Fair Discovery
+### Fair Discovery
 
 すでに人気のある作品だけがさらに露出を獲得する自己強化的な推薦構造を避け、多様な作品、新人、独立系クリエイターが発見される機会を確保する。
 
-これらは個別機能ではなく、Creator First Platformの制度、アルゴリズム、スマートコントラクトを評価するための基本原則である。
+これらは個別機能ではなく、Creator First Platform の制度、アルゴリズム、スマートコントラクトを評価するための基本原則である。
 
-⸻
+::: tip 3つの基本原則
+**Creator Rights**  
+クリエイターの権利と持続可能な創作活動を守る。
 
-1.4 「推し」を発見するプラットフォーム
+**User Sovereignty**  
+利用者の選択、プライバシー、主体性を尊重する。
+
+**Fair Discovery**  
+知名度だけに依存しない公平な発見機会を提供する。
+:::
+
+---
+
+## 1.4 「推し」を発見するプラットフォーム
 
 音楽サービスの価値は、既に知っている音楽を聴けることだけではない。
 
-まだ知られていない音楽を発見すること
+> **まだ知られていない音楽を発見すること**
 
 にもある。
 
-Creator First Platformでは、利用者を単なるコンテンツ消費者としてではなく、クリエイターの成長に参加する存在として捉える。
+Creator First Platform では、利用者を単なるコンテンツ消費者としてではなく、クリエイターの成長に参加する存在として捉える。
 
 新人アーティストを発見する。
 
@@ -101,45 +103,41 @@ Creator First Platformでは、利用者を単なるコンテンツ消費者と�
 
 ただし、利用者の影響力を単純な人気競争へ変えてしまえば、既存のランキング構造を再生産するだけである。
 
-そのためCreator First Platformでは、Creator Rights、User Sovereignty、Fair Discoveryの3原則を維持しながら、発見と支援の仕組みを設計する。
+そのため Creator First Platform では、Creator Rights、User Sovereignty、Fair Discovery の3原則を維持しながら、発見と支援の仕組みを設計する。
 
-⸻
+---
 
-1.5 コードによる透明な分配
+## 1.5 コードによる透明な分配
 
-Creator First Platformは、サブスクリプション型の音楽配信サービスを想定する。
+Creator First Platform は、サブスクリプション型の音楽配信サービスを想定する。
 
 特徴的なのは、収益分配などの重要なルールを可能な範囲でスマートコントラクトとして表現することである。
 
-Listener
-   │
-   │ Subscription
-   ▼
-Creator First Platform
-   │
-   ▼
-Distribution Rules
-   │
-   ├── Creator
-   ├── Rights Holder
-   ├── Growth / Discovery
-   └── Platform Operation
+概念的な流れは次のとおりである。
+
+**利用者のサブスクリプション**  
+↓  
+**Creator First Platform**  
+↓  
+**分配ルール**  
+↓  
+**Creator / Rights Holder / Growth & Discovery / Platform Operation**
 
 誰にどのような基準で価値を分配するのかを、可能な限り検証可能なルールとして表現する。
 
 これは、運営企業が内部ルールを一方的に変更する従来型プラットフォームとは異なる方向性を持つ。
 
-⸻
+---
 
-1.6 Code is Law とコードの統治
+## 1.6 Code is Law とコードの統治
 
-スマートコントラクトを利用するだけでは、Creator Firstは実現しない。
+スマートコントラクトを利用するだけでは、Creator First は実現しない。
 
 コードを書いた者がルールを決めるのであれば、従来のプラットフォーム運営者をソフトウェア開発者へ置き換えただけだからである。
 
-そこでCreator First Platformでは、
+そこで Creator First Platform では、
 
-コードを誰が決めるのか
+> **コードを誰が決めるのか。**
 
 を重要なガバナンス問題として扱う。
 
@@ -147,64 +145,53 @@ Distribution Rules
 
 したがって、
 
-Code is Law
+> **Code is Law**
 
 という考え方を採用するためには、
 
-Who governs the code?
+> **Who governs the code?**
 
 という問いに答えなければならない。
 
-Creator First Platformでは、クリエイターと利用者がコード統治へ参加する仕組みを構築する。
+Creator First Platform では、クリエイターと利用者がコード統治へ参加する仕組みを構築する。
 
-⸻
+::: warning Code is Law の意味
+Creator First Platform における **Code is Law** は、コードが国家法や契約法より上位にあることを意味しない。
 
-1.7 二院制ガバナンス
+ガバナンスによって承認されたプラットフォーム内のルールを、スマートコントラクトが恣意的な変更なしに実行する、という意味で用いる。
+:::
 
-Creator First Platformでは、クリエイターと利用者の双方をガバナンスの主体とする。
+---
 
-概念的には、
+## 1.7 二院制ガバナンス
 
-             Constitution
-                  │
-        ┌─────────┴─────────┐
-        │                   │
-Creator Chamber       Listener Chamber
-        │                   │
-        └─────────┬─────────┘
-                  │
-             Governance
-                  │
-                  ▼
-          Smart Contract
+Creator First Platform では、クリエイターと利用者の双方をガバナンスの主体とする。
 
-という二院制を想定する。
+概念的には、次の構造を想定する。
+
+**Constitution / 憲章**  
+↓  
+**Creator House + User House**  
+↓  
+**Governance**  
+↓  
+**Code Governance**  
+↓  
+**Smart Contracts**
 
 クリエイターだけでもなく、利用者だけでもなく、双方の合意をコード変更の正当性へ結び付ける。
 
-ただし、多数決そのものが3つの憲章を変更できるわけではない。
+ただし、多数決そのものが3つの憲章を自由に変更できるわけではない。
 
-              Three Charters
-                    │
-                    ▼
-          Constitutional Layer
-                    │
-          ┌─────────┴─────────┐
-          ▼                   ▼
- Creator Chamber       Listener Chamber
-          └─────────┬─────────┘
-                    ▼
-            Code Governance
-                    ▼
-            Smart Contracts
+憲章は通常のガバナンスより上位に位置する。
 
-ガバナンスの詳細、投票方式、Quadratic Voting等の採否については、ガバナンス章で検討する。
+ガバナンスの詳細、投票方式、Quadratic Voting 等の採否については、後のガバナンス章で検討する。
 
-⸻
+---
 
-1.8 株式会社とプロトコル
+## 1.8 株式会社とプロトコル
 
-Creator First Platformは、すべてをDAOだけで運営することを想定していない。
+Creator First Platform は、すべてを DAO だけで運営することを想定していない。
 
 音楽配信には、著作権・著作隣接権、クリエイターとの契約、利用者との契約、個人情報、税務、会計、雇用、各国の規制対応など、現実世界で責任主体を必要とする領域が存在する。
 
@@ -212,49 +199,43 @@ Creator First Platformは、すべてをDAOだけで運営することを想定�
 
 一方、収益分配などの重要なルールについては、スマートコントラクトとガバナンスによって透明性を高める。
 
-        Creator First Platform
-   ┌─────────────────────┐
-   │ Corporation         │
-   │                     │
-   │ Contracts           │
-   │ Copyright           │
-   │ Tax / Accounting    │
-   │ Employment          │
-   │ Legal Responsibility│
-   └──────────┬──────────┘
-              │
-              │ operates
-              ▼
-   ┌─────────────────────┐
-   │ Protocol            │
-   │                     │
-   │ Smart Contracts     │
-   │ Distribution        │
-   │ Governance          │
-   │ Verification        │
-   └─────────────────────┘
+### 株式会社が担う領域
 
-つまり、法人とDAOを二者択一として考えるのではなく、
+- 契約
+- 著作権処理
+- 税務・会計
+- 雇用
+- 法令遵守
+- 法的責任
 
-法人による責任
+### プロトコルが担う領域
+
+- スマートコントラクト
+- 分配ルール
+- ガバナンス
+- 検証可能性
+
+つまり、法人と DAO を二者択一として考えるのではなく、
+
+**法人による責任**
 
 と
 
-プロトコルによる透明性
+**プロトコルによる透明性**
 
 を組み合わせる。
 
-⸻
+---
 
-1.9 技術は目的ではない
+## 1.9 技術は目的ではない
 
-Creator First Platformでは、ブロックチェーン、スマートコントラクト、ゼロ知識証明、ステーブルコインなどの技術利用を検討する。
+Creator First Platform では、ブロックチェーン、スマートコントラクト、ゼロ知識証明、ステーブルコインなどの技術利用を検討する。
 
 しかし、これらの技術を使うこと自体を目的とはしない。
 
 技術を採用する基準は、
 
-その技術がCreator Firstという理念の実現に必要か
+> **その技術が Creator First という理念の実現に必要か。**
 
 である。
 
@@ -262,17 +243,17 @@ Creator First Platformでは、ブロックチェーン、スマートコント�
 
 分散技術によって透明性や検証可能性を高められる領域では、それを利用する。
 
-Creator First Platformは「分散化の最大化」ではなく、クリエイターと利用者のための制度を技術によって実装することを目的とする。
+Creator First Platform は「分散化の最大化」ではなく、**クリエイターと利用者のための制度を技術によって実装すること**を目的とする。
 
-⸻
+---
 
-1.10 目指すもの
+## 1.10 目指すもの
 
-Creator First Platformが目指すのは、もう一つの音楽ストリーミングサービスを作ることだけではない。
+Creator First Platform が目指すのは、もう一つの音楽ストリーミングサービスを作ることだけではない。
 
 目標は、
 
-デジタルプラットフォームにおいて、誰がルールを決め、誰が価値を生み、誰に価値が還元されるのかを再設計すること
+> **デジタルプラットフォームにおいて、誰がルールを決め、誰が価値を生み、誰に価値が還元されるのかを再設計すること。**
 
 である。
 
@@ -288,14 +269,14 @@ Creator First Platformが目指すのは、もう一つの音楽ストリーミ�
 
 法人が現実社会に対する責任を負う。
 
-この関係を統合することによって、Creator First Platformは、クリエイター、利用者、技術、企業の新しい関係を構築することを目指す。
+この関係を統合することによって、Creator First Platform は、クリエイター、利用者、技術、企業の新しい関係を構築することを目指す。
 
-⸻
+---
 
-Creator First Platform
+## Creator First Platform
 
-Creators create.
-Listeners discover.
-Communities govern.
-Code executes.
-Corporations take responsibility.
+> **Creators create.**  
+> **Listeners discover.**  
+> **Communities govern.**  
+> **Code executes.**  
+> **Corporations take responsibility.**
