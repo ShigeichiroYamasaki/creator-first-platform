@@ -1,1029 +1,1162 @@
 # 7. ガバナンス — Governance
 
-## 7.1 本章の目的
+## 7.1 ガバナンスの目的
 
-Creator First Platform では、スマートコントラクトによって収益分配などの重要なルールを実行する。
+Creator First PlatformのGovernanceは、Token保有者による単純な多数決ではない。
+
+Platformを実際に構成するCreatorとUserが、そのルールを共同形成するための制度である。
+
+基本構造は、
+
+> **Creator/User → 抽選議会 → 熟議 → Protocol Specification → Smart Contract → 自動執行**
+
+である。
+
+```mermaid
+flowchart LR
+    COMMUNITY[Creator / User]
+    SORT[Sortition]
+    HOUSE[Two Houses]
+    DELIB[Deliberation]
+    SPEC[Protocol Specification]
+    CODE[Smart Contract]
+    EXEC[Automatic Execution]
+
+    COMMUNITY --> SORT --> HOUSE --> DELIB --> SPEC --> CODE --> EXEC
+```
+
+---
+
+## 7.2 Governanceの正統性
+
+Smart Contractはルールを自動執行できる。
 
 しかし、
 
-> **コードがルールを実行するのであれば、そのコードを誰が決め、誰が変更できるのか**
+> 誰がそのルールを決めるのか
 
-という問題が生じる。
+という問題をコード自身は解決できない。
 
-Creator First Platform は「Code is Law」を、コードが法律より上位にあるという意味では採用しない。
+Creator First Platformでは、Protocol Codeの正統性を、
 
-本プロジェクトにおける「Code is Law」とは、
-
-> **合意されたプロトコルルールを、運営者の裁量ではなく、公開されたコードによって一貫して実行する**
-
-という原則を意味する。
-
-そのコード自体は、
-
-1. 3つの憲章
-2. クリエイターと利用者による二院制ガバナンス
-3. 株式会社による法的責任
-4. 公開された変更手続
-
-によって統治される。
-
-```mermaid
-flowchart TD
-    CONST[3つの憲章]
-    CH[Creator House<br/>クリエイター院]
-    UH[User House<br/>利用者院]
-    CORP[運営株式会社]
-    LAW[法令・契約]
-
-    CONST --> CH
-    CONST --> UH
-
-    CH --> GOV[Protocol Governance]
-    UH --> GOV
-
-    LAW --> CORP
-    CORP --> LEGAL[Legal / Compliance Review]
-
-    GOV --> LEGAL
-    LEGAL --> CODE[Protocol Code]
-    CODE --> SC[Smart Contracts]
+```text
+Creator / User
+      ↓
+正統な代表形成
+      ↓
+熟議
+      ↓
+Protocol Specification
+      ↓
+監査されたCode
 ```
+
+から導く。
+
+Code is Lawの前提は、**Lawを形成する正統なGovernance**である。
 
 ---
 
-## 7.2 なぜガバナンスが必要なのか
+## 7.3 Creator
 
-従来型プラットフォームでは、収益分配、推薦、手数料、利用条件などの重要ルールを、運営企業が変更できる。
+Creatorとは、Platform上で流通する作品の創作・制作に実質的に関与し、所定の登録・検証手続きを経た参加者をいう。
 
-これは迅速な経営判断には適している。
+Creatorには、
 
-しかし、プラットフォームが巨大化すると、その内部ルールはクリエイターの収入や利用者の音楽体験に大きな影響を与える。
+- 作詞者
+- 作曲者
+- 実演家
+- アーティスト
+- 音源制作者
+- プロデューサー
+
+等を含み得る。
+
+CreatorとRights Holderは区別する。
+
+Creator Houseの資格は、資本保有量ではなくCreatorとしての活動と検証に基づく。
+
+---
+
+## 7.4 User
+
+Userとは、Creator First Platformを利用してコンテンツを聴取、発見、評価、共有、支援等する者をいう。
+
+すべてのUserが常時Governance Memberになるわけではない。
 
 ```mermaid
 flowchart LR
-    COMPANY[Platform Company]
-    COMPANY --> RULE[Rules]
-    RULE --> CREATOR[Creators]
-    RULE --> USER[Users]
+    USER[User]
+    ACTIVE[Active / Verified User]
+    ELIGIBLE[Governance Eligible User]
+    MEMBER[Governance Member]
+
+    USER --> ACTIVE --> ELIGIBLE --> MEMBER
 ```
 
-Creator First Platform は、この構造を完全に廃止するのではなく、重要なプロトコルルールについて当事者参加を導入する。
+この区別によって、日常利用とGovernance責任を分離する。
+
+---
+
+## 7.5 Governance Eligible User
+
+Governance Memberの母集団となるUserをGovernance Eligible Userと呼ぶ。
+
+資格条件はProtocol Specificationで定める。
+
+原則として、
+
+- 一定期間の実利用
+- 本人性またはPersonhoodの適切な確認
+- Sybil耐性
+- 不正利用の不存在
+- プライバシー保護
+
+を考慮する。
+
+課金額や株式・Token保有量を主要な資格基準にはしない。
+
+---
+
+## 7.6 Governance Member
+
+Governance MemberはUserとは別の階級ではない。
+
+> **Eligible Userの集合から一定期間、熟議と意思決定を委ねられた代表User**
+
+である。
+
+原則として、
+
+- 任期制
+- Active User資格の維持
+- 利益相反開示
+- 連続任期制限
+- 辞退可能
+- 必要に応じた解任・交代
+
+を設ける。
 
 ```mermaid
 flowchart LR
-    CREATOR[Creators] --> GOV[Governance]
-    USER[Users] --> GOV
-    GOV --> RULE[Protocol Rules]
-    RULE --> CREATOR
-    RULE --> USER
+    USERS[Eligible Users]
+    SELECT[Sortition]
+    MEMBERS[Temporary Members]
+    TERM[Fixed Term]
+    RETURN[Return to Community]
+
+    USERS --> SELECT --> MEMBERS --> TERM --> RETURN
 ```
 
----
-
-## 7.3 3つの憲章を最上位原則とする
-
-日常的な投票によって、プラットフォームの根本理念まで容易に変更できる設計にはしない。
-
-3つの憲章は、通常のプロトコルルールより上位に位置する。
-
-```mermaid
-flowchart TD
-    CONST[3つの憲章]
-    CONST --> GOV[Governance]
-    GOV --> POLICY[Policies]
-    POLICY --> CODE[Protocol Code]
-    CODE --> EXEC[Execution]
-```
-
-憲章は個別のアルゴリズムや固定的な数値を規定するものではない。
-
-むしろ、
-
-> **ルール変更を評価するための原則**
-
-として機能する。
-
----
-
-## 7.4 憲章と利用者価値の緊張関係
-
-Creator First の理念を極端に適用すると、利用者の利便性や満足度と衝突する場合がある。
-
-例えば、新人への発見機会を増やすために、利用者が望まない作品を大量に推薦すれば、サービス体験を損なう。
-
-```mermaid
-flowchart LR
-    CREATOR[Creator Opportunity]
-    BALANCE[Constitutional Balance]
-    USER[User Satisfaction]
-
-    CREATOR --> BALANCE
-    USER --> BALANCE
-```
-
-そのため憲章は単純な優先順位ではなく、複数の価値を調整する枠組みとして扱う。
-
-実装上は、
-
-- 利用者が推薦モードを選べる
-- Growth Poolと通常分配を分離する
-- 推薦と資金分配を完全には同一化しない
-- 変更前に影響評価を行う
-
-などによって緊張関係を緩和する。
-
----
-
-## 7.5 二院制ガバナンス
-
-Creator First Platform のプロトコルガバナンスは、基本的に二院制とする。
-
-- **Creator House — クリエイター院**
-- **User House — 利用者院**
-
-```mermaid
-flowchart TD
-    PROPOSAL[Proposal]
-
-    PROPOSAL --> CH[Creator House]
-    PROPOSAL --> UH[User House]
-
-    CH --> CA{Approved?}
-    UH --> UA{Approved?}
-
-    CA --> JOINT[Joint Approval]
-    UA --> JOINT
-
-    JOINT --> IMPLEMENT[Implementation]
-```
-
-原則として、重要なプロトコル変更には両院の承認を要求する。
-
----
-
-## 7.6 なぜ二院制なのか
-
-クリエイターと利用者には共通利益もあるが、利害が一致しない場合もある。
-
-例えば、
-
-- クリエイターは高い分配率を望む
-- 利用者は低い利用料金を望む
-- 新人は発見機会を望む
-- 利用者は自分の好みに合う推薦を望む
-- 人気クリエイターは実績比例を重視する
-- 新人は成長支援を重視する
-
-といった緊張関係がある。
-
-```mermaid
-flowchart LR
-    CH[Creator House]
-    UH[User House]
-
-    CH --> BALANCE[Institutional Balance]
-    UH --> BALANCE
-
-    BALANCE --> RULE[Protocol Rule]
-```
-
-一つのトークン投票へすべての利害を集約するのではなく、異なる立場を制度的に分離する。
+代表を恒久的な政治階級にしない。
 
 ---
 
 ## 7.7 Creator House
 
-Creator House は、検証されたクリエイターを中心とする議会である。
+Creator HouseはCreator Communityを代表する。
 
-対象には、
+主な対象は、
 
-- アーティスト
-- 作詞家
-- 作曲家
-- 実演家
-- 独立系制作主体
-- その他、定義されたCreator資格を満たす者
+- Creator Rights
+- Distribution
+- Rights Registry
+- Creator Onboarding
+- Creator Support
+- Creator Economy
 
-などを想定する。
+である。
 
-```mermaid
-flowchart LR
-    VERIFIED[Verified Creators]
-    ELIGIBLE[Eligibility]
-    CH[Creator House]
-
-    VERIFIED --> ELIGIBLE
-    ELIGIBLE --> CH
-```
-
-単純に登録楽曲数や売上額だけで投票権を決定しない。
+Creator Houseの代表者も、Verified Creatorの母集団から抽選することを基本とする。
 
 ---
 
 ## 7.8 User House
 
-User House は、実際にサービスを利用する利用者を中心とする議会である。
+User HouseはUser Communityを代表する。
+
+主な対象は、
+
+- User Experience
+- Privacy
+- Subscription
+- Discovery
+- Recommendation
+- Community
+- User Rights
+
+である。
+
+User HouseのGovernance MemberはGovernance Eligible Userから抽選される。
 
 ```mermaid
 flowchart LR
-    USERS[Active Users]
-    ELIGIBLE[Eligibility / Sybil Resistance]
+    USERS[Governance Eligible Users]
+    RANDOM[Verifiable Sortition]
+    REPS[User Representatives]
     UH[User House]
 
-    USERS --> ELIGIBLE
-    ELIGIBLE --> UH
+    USERS --> RANDOM --> REPS --> UH
 ```
-
-大量の偽アカウント作成によって意思決定を操作できないよう、Sybil Resistanceを設計する。
-
-一方、利用者へ過剰な本人確認を要求しないことも重要である。
 
 ---
 
-## 7.9 「1トークン = 1票」を基本にしない
+## 7.9 なぜ抽選なのか
 
-Creator First Platform のガバナンスを、資金力で購入できる仕組みにはしない。
+選挙のみの代表制では、
+
+- 人気
+- 資金
+- 組織票
+- 発信力
+- 政治活動への時間
+
+が代表選出に影響しやすい。
+
+抽選は、
+
+> 普通に創作しているCreator、普通に音楽を利用しているUser
+
+がGovernanceへ参加する機会を確保する。
+
+Governanceの専門家だけがProtocolを支配することを防ぐ。
+
+---
+
+## 7.10 抽選は検証可能でなければならない
+
+抽選結果そのものもPlatform運営会社を信頼するだけでは不十分である。
+
+抽選アルゴリズムは、
+
+- 母集団
+- Eligibility
+- Randomness
+- Selection Algorithm
+- Result
+
+を検証可能にする。
 
 ```mermaid
 flowchart LR
-    MONEY[Capital]
-    TOKEN[Token Holdings]
-    POWER[Governance Power]
+    POOL[Eligible Pool]
+    RAND[Verifiable Randomness]
+    ALG[Open Selection Algorithm]
+    RESULT[Selected Members]
 
-    MONEY --> TOKEN
-    TOKEN -.->|直接比例させない| POWER
+    POOL --> ALG
+    RAND --> ALG
+    ALG --> RESULT
 ```
 
-独自トークンを導入する場合でも、トークン保有量をそのまま政治的権力へ変換することは避ける。
+抽選アルゴリズムとEligibility RuleはProtocol Specificationとして公開する。
 
 ---
 
-## 7.10 投票方式
+## 7.11 代表性の補正
 
-すべての議題に同じ投票方式を使う必要はない。
+完全な単純抽選だけでは、小さな議会で偶然の偏りが生じる可能性がある。
 
-議題に応じて、
+そのため必要に応じて層化抽選を検討する。
 
-- 1人1票
-- Delegation
-- Ranked Choice
-- Quadratic Voting
-- 委員会審査
-- Consensusに近い高い承認閾値
+User Houseでは例えば、
 
-などを組み合わせることができる。
+- 地域
+- 利用頻度
+- Subscription形態
+- 利用ジャンル
 
-```mermaid
-flowchart TD
-    ISSUE[Proposal Type]
+等について極端な偏りを防ぐ。
 
-    ISSUE --> SIMPLE[Routine]
-    ISSUE --> ECON[Economic]
-    ISSUE --> CONST[Constitutional]
-    ISSUE --> TECH[Technical]
+Creator Houseでは、
 
-    SIMPLE --> MAJ[Majority]
-    ECON --> QV[Weighted / Quadratic Mechanism]
-    CONST --> SUPER[Supermajority]
-    TECH --> REVIEW[Expert Review + Vote]
-```
+- Creatorの役割
+- 活動規模
+- ジャンル
+- 地域
+
+等を考慮できる。
+
+ただし属性区分そのものが差別や固定的身分を生まないよう慎重に設計する。
 
 ---
 
-## 7.11 Quadratic Voting
+## 7.12 熟議
 
-選択肢に対する支持の強さを表現する方法としてQuadratic Votingを検討できる。
+抽選はGovernanceの入口であり、意思決定そのものではない。
 
-投票者がある選択肢へ \(v\) 票を投じるために必要なクレジットを、
+Governance Memberは、
 
-$$
-c = v^2
-$$
+1. Proposalを受け取る
+2. Evidenceを確認する
+3. Stakeholderの意見を聞く
+4. 代替案を比較する
+5. 影響をSimulationする
+6. 両院で熟議する
+7. 投票する
 
-とする。
-
-これにより、強い関心を表現できる一方、一人が無制限に影響力を集中させるコストは急速に増加する。
-
-ただし、Quadratic Votingだけで公平性が保証されるわけではない。
-
-Sybil Resistanceや投票クレジットの配布方式が重要になる。
-
----
-
-## 7.12 委任投票
-
-すべての利用者やクリエイターが、すべての技術議題を理解して投票することは現実的ではない。
-
-そこで、投票権を信頼する参加者へ委任できる仕組みを検討する。
+というプロセスを経る。
 
 ```mermaid
 flowchart LR
-    VOTER[Voter]
-    DELEGATE[Delegate]
+    PROP[Proposal]
+    EVID[Evidence]
+    HEAR[Stakeholder Hearing]
+    SIM[Simulation]
+    DELIB[Deliberation]
     VOTE[Vote]
 
-    VOTER -->|Delegate| DELEGATE
-    DELEGATE --> VOTE
-    VOTER -->|Direct vote if desired| VOTE
+    PROP --> EVID --> HEAR --> SIM --> DELIB --> VOTE
 ```
 
-委任は撤回可能とし、恒久的な政治階級を作らない。
+Governanceを瞬間的な人気投票にしない。
 
 ---
 
-## 7.13 ガバナンス対象
+## 7.13 AIによる熟議支援
 
-ガバナンスで決定する対象と、株式会社の経営判断を分離する。
+AIはGovernance Memberに対して、
 
-### プロトコルガバナンスの対象例
+- Proposal要約
+- 賛否論点整理
+- 過去Decision検索
+- Economic Simulation
+- Security Risk分析
+- Minority Opinionの抽出
+- 法務論点の整理
 
-- Usage-based Pool の基本ルール
-- Growth Pool の基本ルール
-- 主要な分配パラメータ
-- Discovery原則
-- 不正利用に関するプロトコルルール
-- スマートコントラクト更新
-- ガバナンス制度自体
-- 憲章に関係するプロトコルポリシー
+を支援できる。
 
-### 原則として株式会社が担うもの
+ただしAIは投票権を持たない。
 
-- 雇用
-- 日常的なクラウド運用
-- 法務対応
-- 税務・会計
-- 権利者との契約実務
-- 顧客サポート
-- セキュリティ運用
-- 法令遵守
-- 通常の事業執行
-
-```mermaid
-flowchart LR
-    GOV[Protocol Governance]
-    CORP[Corporate Management]
-
-    GOV --> PROTOCOL[Protocol Rules]
-    CORP --> BUSINESS[Business Operations]
-
-    PROTOCOL --> PLATFORM[Platform]
-    BUSINESS --> PLATFORM
-```
+AIが提示する分析についても、根拠・前提・不確実性を可能な限り確認可能にする。
 
 ---
 
-## 7.14 法律とガバナンス
+## 7.14 二院制
 
-DAO投票によって法律や契約上の義務を無効化することはできない。
+重要なProtocol変更はCreator HouseとUser House双方の承認を原則とする。
 
 ```mermaid
 flowchart TD
-    LAW[Law / Contracts]
-    CONST[Constitution]
-    GOV[Governance Decision]
-    CODE[Protocol Code]
+    PROP[Protocol Proposal]
 
-    LAW --> CHECK[Validity Check]
-    CONST --> CHECK
-    GOV --> CHECK
-    CHECK --> CODE
+    PROP --> CH[Creator House]
+    PROP --> UH[User House]
+
+    CH --> CYES{Approved?}
+    UH --> UYES{Approved?}
+
+    CYES -->|Yes| JOINT[Joint Approval]
+    UYES -->|Yes| JOINT
+
+    CYES -->|No| REJECT[Rejected / Rework]
+    UYES -->|No| REJECT
 ```
 
-例えばガバナンスが、
-
-- 著作権使用料を支払わない
-- 税を支払わない
-- 違法コンテンツを配信する
-- 契約上の権利を無視する
-
-と決議しても、株式会社はそれを実行できない。
-
-この場合は、拒否理由を公開し、必要に応じて再提案へ戻す。
+これによりCreatorの利益だけでもUserの利益だけでもProtocolを一方的に変更できない。
 
 ---
 
-## 7.15 株式会社による拒否権を無制限にしない
+## 7.15 両院の非対称な専門性
 
-法令遵守を理由に運営株式会社がすべてのガバナンス決定を拒否できるなら、二院制は形式的なものになる。
+二院は完全に同じ議会ではない。
 
-そのため、株式会社が実施を拒否できる理由を限定する。
+Creator HouseはCreator EconomyとRightsに強い関心を持ち、User HouseはUX、Privacy、Discovery等に強い関心を持つ。
 
-例えば、
+しかし重要Protocolについては、専門領域を理由に一方の院を排除しない。
 
-- 法令違反
-- 契約違反
-- 明白なセキュリティ危機
-- 技術的に実行不能
-- 重大な財務継続性リスク
-
-などである。
-
-```mermaid
-flowchart LR
-    APPROVED[Approved Proposal]
-    CORP[Corporate Review]
-
-    APPROVED --> CORP
-    CORP -->|Executable| TIME[Timelock]
-    CORP -->|Cannot execute| REASON[Public Reason]
-    REASON --> REVISE[Revision / Appeal]
-```
-
-拒否理由は記録し、可能な範囲で公開する。
+専門性は審議の役割分担に使い、主権の独占には使わない。
 
 ---
 
-## 7.16 提案プロセス
+## 7.16 Proposal
 
-重要な変更を、投票画面に突然出して即日決定することは避ける。
-
-```mermaid
-flowchart LR
-    IDEA[Idea]
-    DISCUSS[Discussion]
-    DRAFT[Draft Proposal]
-    ANALYSIS[Impact Analysis]
-    FINAL[Formal Proposal]
-    VOTE[Two-House Vote]
-    TIME[Timelock]
-    EXEC[Execution]
-
-    IDEA --> DISCUSS --> DRAFT --> ANALYSIS --> FINAL --> VOTE --> TIME --> EXEC
-```
-
-提案には少なくとも、
+Proposalには最低限、
 
 - 目的
-- 現状
-- 変更内容
-- 影響範囲
-- メリット
-- リスク
-- 経済的影響
-- 利用者への影響
-- クリエイターへの影響
-- 技術仕様
-- ロールバック方針
+- 現行仕様
+- 変更仕様
+- Creatorへの影響
+- Userへの影響
+- Economic Impact
+- Security Impact
+- Privacy Impact
+- Legal Issues
+- Migration Plan
+- Rollback Plan
 
 を含める。
 
----
-
-## 7.17 シミュレーションと影響評価
-
-経済モデルや推薦ルールの変更では、投票前にシミュレーションを行う。
-
-```mermaid
-flowchart TD
-    CHANGE[Proposed Change]
-    DATA[Historical / Synthetic Data]
-
-    CHANGE --> SIM[Simulation]
-    DATA --> SIM
-
-    SIM --> CREATOR[Creator Impact]
-    SIM --> USER[User Impact]
-    SIM --> ECON[Economic Impact]
-    SIM --> FAIR[Fairness Impact]
-    SIM --> RISK[Risk]
-
-    CREATOR --> REPORT[Public Impact Report]
-    USER --> REPORT
-    ECON --> REPORT
-    FAIR --> REPORT
-    RISK --> REPORT
-```
-
-「良さそうだから投票する」だけではなく、変更が誰にどのような影響を与えるかを可視化する。
+コードだけのPull RequestをGovernance Proposalとはみなさない。
 
 ---
 
-## 7.18 Code Governance
+## 7.17 Protocol Specification
 
-承認されたルールをスマートコントラクトへ反映する場合、ガバナンス決定と実際のコード変更を結び付ける。
+Governanceが承認する対象は、原則としてSmart ContractのSource Codeそのものではなく、まず**Protocol Specification**である。
 
 ```mermaid
 flowchart LR
-    PROPOSAL[Approved Proposal]
+    DELIB[Deliberation]
+    DECISION[Governance Decision]
     SPEC[Protocol Specification]
-    CODE[Code Change]
-    TEST[Test / Audit]
-    HASH[Release Hash]
-    TIME[Timelock]
-    DEPLOY[Deployment]
+    IMPLEMENT[Implementation]
+    TEST[Test]
+    AUDIT[Audit]
+    CODE[Smart Contract]
 
-    PROPOSAL --> SPEC --> CODE --> TEST --> HASH --> TIME --> DEPLOY
+    DELIB --> DECISION --> SPEC --> IMPLEMENT --> TEST --> AUDIT --> CODE
 ```
 
-「投票で承認された内容」と「実際にデプロイされたコード」が一致していることを検証可能にする。
+これによって、
+
+> 民主的意思決定
+
+と
+
+> Software Engineering
+
+を適切に分離する。
 
 ---
 
-## 7.19 Timelock
+## 7.18 SpecificationとCodeの一致
 
-重要なスマートコントラクト変更は、承認直後に実行しない。
+実装されたCodeがGovernanceで承認されたSpecificationと一致していることを検証する。
+
+方法として、
+
+- Automated Tests
+- Formal Verification
+- Independent Review
+- Smart Contract Audit
+- Reproducible Build
+
+等を利用する。
+
+CodeがSpecificationを変更してはならない。
+
+---
+
+## 7.19 自動執行
+
+承認・実装・監査されたCodeは、原則としてSmart Contractによって自動執行する。
 
 ```mermaid
 flowchart LR
-    APPROVE[Approved]
+    SPEC[Approved Specification]
+    CODE[Verified Code]
     TIME[Timelock]
-    REVIEW[Public Verification]
     EXEC[Execution]
 
-    APPROVE --> TIME
-    TIME --> REVIEW
-    REVIEW --> EXEC
+    SPEC --> CODE --> TIME --> EXEC
 ```
 
-Timelock期間中に、
-
-- コード確認
-- 権利者への通知
-- 利用者への通知
-- セキュリティ確認
-- 法的問題の確認
-
-を行えるようにする。
+Platform運営者が個別案件ごとに恣意的に結果を変更する余地を減らす。
 
 ---
 
-## 7.20 緊急時ガバナンス
+## 7.20 3つの憲章
 
-脆弱性や攻撃が発生した場合、通常の長い投票プロセスを待てないことがある。
+Governanceは3つの憲章に従う。
 
-そのため限定的なEmergency Mechanismを設ける。
+- Creator Charter
+- User Charter
+- Ecosystem Charter
 
 ```mermaid
 flowchart TD
-    INCIDENT[Critical Incident]
-    EMERGENCY[Emergency Authority]
-    PAUSE[Limited Pause]
-    FIX[Fix / Investigation]
-    REVIEW[Post-incident Governance Review]
-    RESUME[Resume]
+    CHARTERS[Three Charters]
+    PROPOSAL[Proposal]
+    HOUSES[Two Houses]
+    SPEC[Specification]
 
-    INCIDENT --> EMERGENCY --> PAUSE --> FIX --> REVIEW --> RESUME
+    CHARTERS --> PROPOSAL --> HOUSES --> SPEC
 ```
 
-Emergency Authorityは、
-
-- 権限範囲を限定する
-- 期限を設ける
-- 監査ログを残す
-- 事後承認を要求する
-- 資金を自由に移動できない
-
-などの制約を設ける。
+通常の多数決によって憲章を実質的に無効化できないようにする。
 
 ---
 
-## 7.21 憲章違反審査
+## 7.21 憲章変更
 
-両院が承認した提案でも、3つの憲章に明白に反する可能性がある。
-
-そこで、重要提案にはConstitutional Reviewを設ける。
-
-```mermaid
-flowchart LR
-    VOTE[Two-House Approval]
-    REVIEW[Constitutional Review]
-    PASS[Proceed]
-    RETURN[Return for Revision]
-
-    VOTE --> REVIEW
-    REVIEW -->|Compatible| PASS
-    REVIEW -->|Conflict| RETURN
-```
-
-この審査機関自体が恒久的な最高権力にならないよう、権限を「憲章との整合性確認」に限定する。
-
----
-
-## 7.22 憲章そのものの変更
-
-憲章は絶対に変更不能とする必要はないが、通常のパラメータ変更と同じ手続では変更できないようにする。
+憲章変更は通常Protocol変更より高い成立要件を持つ。
 
 例えば、
 
-- 両院の特別多数
-- 長い公開議論期間
-- 複数回の投票
-- 法務確認
-- 長いTimelock
-
-などを要求する。
-
 ```mermaid
-flowchart LR
-    PROPOSE[Constitution Amendment]
-    DISCUSS[Extended Discussion]
-    CH[Creator Supermajority]
-    UH[User Supermajority]
-    REVIEW[Legal / Constitutional Review]
-    TIME[Extended Timelock]
-    AMEND[Amendment]
+flowchart TD
+    CHANGE[Charter Amendment]
+    CH[Creator House Supermajority]
+    UH[User House Supermajority]
+    CR[Creator Referendum]
+    UR[User Referendum]
 
-    PROPOSE --> DISCUSS
-    DISCUSS --> CH
-    DISCUSS --> UH
-    CH --> REVIEW
-    UH --> REVIEW
-    REVIEW --> TIME --> AMEND
+    CHANGE --> CH
+    CHANGE --> UH
+    CH --> CR
+    UH --> UR
+    CR --> FINAL[Constitutional Approval]
+    UR --> FINAL
 ```
+
+とする。
+
+具体的な特別多数率やQuorumはProtocol Specificationで定める。
 
 ---
 
-## 7.23 少数派保護
+## 7.22 主権の源泉
 
-多数決だけでは、小規模ジャンル、新人、障害のある利用者、少数言語コミュニティなどの利益が継続的に無視される可能性がある。
+Creator HouseやUser Houseそのものを主権者とは定義しない。
 
-そのため、
+> **Creator CommunityとUser Communityが主権の源泉である。**
 
-- 影響評価
-- 公開コメント
-- 異議申立て
-- 特定議題の高い承認閾値
-- 少数派意見の記録
+議会はその統治機能を一定期間委ねられた熟議機関である。
 
-などを制度化する。
+この原則によって、Governance Memberの固定的支配を防ぐ。
+
+---
+
+## 7.23 Referendum
+
+重大事項についてはCommunity全体のReferendumを利用する。
+
+候補として、
+
+- 憲章変更
+- Governance制度の根本変更
+- Creator/Userの基本権変更
+- Protocol Governanceの廃止
+- 大規模なTreasury構造変更
+
+等がある。
+
+日常的な技術変更まで全User投票にするとGovernance Fatigueを生むため、通常案件は抽選議会に委ねる。
+
+---
+
+## 7.24 Delegation
+
+抽選議員とは別に、Community Memberが意見形成やReferendum投票を他者へ委任できる仕組みを検討する。
+
+委任は、
+
+- 任意
+- 撤回可能
+- 期間限定
+- Policy Domain別
+
+とすることができる。
+
+ただしDelegation Concentrationを監視し、少数者への政治力集中を防ぐ。
+
+---
+
+## 7.25 Governanceと資本を分離する
+
+株式、STO、Governance Token等の資本保有量が、そのままCreator House/User Houseの議席や投票力にならないようにする。
 
 ```mermaid
 flowchart TD
-    MAJ[Majority Decision]
-    IMPACT[Minority Impact Review]
-    RIGHTS[Constitutional Principles]
+    CAPITAL[Capital]
+    CORP[Corporate Governance]
 
-    MAJ --> FINAL[Final Decision]
-    IMPACT --> FINAL
-    RIGHTS --> FINAL
+    CREATOR[Creator Community]
+    USER[User Community]
+
+    CAPITAL --> CORP
+    CREATOR --> CH[Creator House]
+    USER --> UH[User House]
+
+    CH --> PROTOCOL[Protocol Governance]
+    UH --> PROTOCOL
 ```
+
+これによりCapital Captureを防ぐ。
 
 ---
 
-## 7.24 人気クリエイターによる支配を防ぐ
+## 7.26 株式会社との関係
 
-Creator House が再生数や収益だけで投票力を決めると、一部の大規模アーティストが議会を支配する可能性がある。
+株式会社は、
+
+- 契約
+- 権利処理
+- 税務
+- 会計
+- 雇用
+- 規制対応
+- STO
+- 現実社会での責任
+
+を負う。
+
+Protocol Governanceは、
+
+- Distribution Rules
+- Discovery Rules
+- Governance Rules
+- Protocol Parameters
+- Smart Contract Upgrade
+
+等を決定する。
 
 ```mermaid
 flowchart LR
-    POPULAR[High Popularity]
-    MONEY[High Revenue]
-    POWER[Political Power]
+    CORP[Corporation]
+    LEGAL[Legal / Business Responsibility]
 
-    POPULAR --> MONEY
-    MONEY -.->|直接比例させない| POWER
-```
+    GOV[Creator + User Governance]
+    PROTOCOL[Protocol Rules]
 
-Creator House は経済的成功を否定する制度ではない。
+    CORP --> LEGAL
+    GOV --> PROTOCOL
 
-しかし、音楽市場での成功がそのままルール決定権の独占につながらないよう設計する。
-
----
-
-## 7.25 Sybil Resistance
-
-User HouseやQuadratic Votingでは、複数アカウントによる投票操作が大きな問題になる。
-
-```mermaid
-flowchart TD
-    HUMAN[One Participant]
-    HUMAN --> A1[Account 1]
-    HUMAN --> A2[Account 2]
-    HUMAN --> A3[Account 3]
-
-    A1 --> ATTACK[Sybil Attack]
-    A2 --> ATTACK
-    A3 --> ATTACK
-```
-
-対策として、
-
-- アカウント継続期間
-- 有料利用実績
-- Proof of Personhood的手法
-- Verifiable Credentials
-- 不正検出
-- Reputation
-- Rate Limit
-
-などを組み合わせる。
-
-プライバシーを損なわずに「一人が大量の政治的人格を作れない」ことを目指す。
-
----
-
-## 7.26 ガバナンス参加へのインセンティブ
-
-参加者に過度な金銭報酬を与えると、音楽コミュニティではなく報酬獲得目的の投票者を増やす可能性がある。
-
-そのため、
-
-- Reputation
-- Contributor Recognition
-- Delegate評価
-- コミュニティ上の役割
-- 必要な場合の限定的な実費・貢献報酬
-
-などを中心に検討する。
-
----
-
-## 7.27 投票率が低い場合
-
-ガバナンスの最大の問題の一つは、制度が存在しても誰も参加しないことである。
-
-そのため、
-
-```mermaid
-flowchart LR
-    USERS[Participants]
-    INFO[Simple Explanation]
-    DELEGATE[Delegation]
-    NOTIFY[Relevant Notifications]
-    VOTE[Governance Participation]
-
-    USERS --> INFO --> VOTE
-    USERS --> DELEGATE --> VOTE
-    USERS --> NOTIFY --> VOTE
-```
-
-とし、すべての議題への参加を要求しない。
-
-利用者が自分に関係する重要議題を理解しやすくする。
-
----
-
-## 7.28 AIによるガバナンス支援
-
-AIは、ガバナンスを支援するために利用できる。
-
-例えば、
-
-- 長い提案の要約
-- 賛否論点の整理
-- 過去提案との比較
-- 経済シミュレーションの説明
-- コード変更と提案内容の差分確認
-- 多言語翻訳
-
-などである。
-
-```mermaid
-flowchart LR
-    PROPOSAL[Proposal]
-    AI[AI Assistance]
-    HUMAN[Human Participants]
-    DECISION[Decision]
-
-    PROPOSAL --> AI
-    AI --> HUMAN
-    HUMAN --> DECISION
-```
-
-ただしAI自身に投票権を与えたり、AIの判定だけで提案を可決・拒否したりすることは想定しない。
-
----
-
-## 7.29 透明性
-
-ガバナンスの信頼性には、意思決定履歴の透明性が必要である。
-
-公開対象として、
-
-- 提案
-- 議論
-- 影響評価
-- 投票結果
-- 委任状況
-- 実装コード
-- 監査結果
-- Timelock
-- 実際のデプロイ
-
-などを想定する。
-
-```mermaid
-flowchart LR
-    PROPOSAL[Proposal]
-    VOTE[Vote]
-    CODE[Code]
-    DEPLOY[Deployment]
-
-    PROPOSAL --> HISTORY[Governance History]
-    VOTE --> HISTORY
-    CODE --> HISTORY
-    DEPLOY --> HISTORY
-```
-
----
-
-## 7.30 株主とDAOガバナンスの分離
-
-運営株式会社がSTO等で資金調達する場合、株主・投資家とCreator House / User Houseは異なる役割を持つ。
-
-```mermaid
-flowchart TD
-    COMPANY[Operating Corporation]
-
-    SHARE[Shareholders / Investors] --> COMPANY
-    BOARD[Board / Management] --> COMPANY
-
-    CH[Creator House] --> PROTOCOL[Protocol Governance]
-    UH[User House] --> PROTOCOL
-
-    COMPANY --> PLATFORM[Platform Operations]
+    LEGAL --> PLATFORM[Platform]
     PROTOCOL --> PLATFORM
 ```
 
-株主は株式会社法上・金融商品上の権利を持ち、Creator HouseとUser Houseはプロトコルルールを統治する。
-
-両者を同一の投票制度に統合しない。
-
 ---
 
-## 7.31 四層ガバナンスモデル
+## 7.27 Legal / Security Review
 
-Creator First Platform の統治構造は、最終的に次の四層として整理できる。
+両院の承認後、株式会社および独立した専門レビュー機能は、
+
+- 適法性
+- 契約上の履行可能性
+- Security
+- Technical Safety
+
+を確認する。
 
 ```mermaid
 flowchart TD
-    L1[Layer 1<br/>Constitution]
-    L2[Layer 2<br/>Creator House + User House]
-    L3[Layer 3<br/>Protocol / Smart Contracts]
-    L4[Layer 4<br/>Operating Corporation]
+    APPROVED[Two-House Approval]
+    REVIEW[Legal / Security Review]
 
-    L1 --> L2
-    L2 --> L3
-    L4 --> L3
-
-    LAW[Law / Contracts] --> L4
+    APPROVED --> REVIEW
+    REVIEW -->|Pass| IMPLEMENT[Implementation]
+    REVIEW -->|Cannot Execute| RETURN[Reasoned Return]
+    RETURN --> HOUSES[Re-deliberation]
 ```
 
-### Layer 1 — Constitution
+これは株式会社による政策拒否権ではない。
 
-変更困難な根本原則。
-
-### Layer 2 — Democratic Governance
-
-クリエイターと利用者による二院制。
-
-### Layer 3 — Code Governance
-
-承認されたルールをスマートコントラクトとして実行する。
-
-### Layer 4 — Corporate Responsibility
-
-株式会社が法務、契約、会計、運営上の責任を負う。
-
-この四層は競合するのではなく、相互に制約し合う。
+執行不能と判断する場合、理由を公開して議会へ差し戻す。
 
 ---
 
-## 7.32 ガバナンスの全体フロー
+## 7.28 Emergency Authority
 
-```mermaid
-sequenceDiagram
-    participant P as Proposer
-    participant C as Community
-    participant CH as Creator House
-    participant UH as User House
-    participant Corp as Corporation
-    participant Dev as Protocol Developers
-    participant SC as Smart Contract
-
-    P->>C: Draft proposal
-    C->>C: Discussion / Impact Review
-    C->>CH: Formal proposal
-    C->>UH: Formal proposal
-    CH->>CH: Deliberation / Vote
-    UH->>UH: Deliberation / Vote
-    CH-->>Corp: Approval
-    UH-->>Corp: Approval
-    Corp->>Corp: Legal / Contract Review
-    Corp->>Dev: Approved specification
-    Dev->>Dev: Code / Test / Audit
-    Dev->>C: Release candidate
-    C->>C: Timelock / Verification
-    Dev->>SC: Deploy / Execute
-```
-
----
-
-## 7.33 初期段階のガバナンス
-
-サービス開始時点から完全なDAOを運用することは現実的ではない。
-
-初期段階では、
-
-```mermaid
-flowchart LR
-    P1[Phase 1<br/>Advisory Governance]
-    P2[Phase 2<br/>Formal Houses]
-    P3[Phase 3<br/>On-chain Governance]
-    P4[Phase 4<br/>Mature Constitutional Governance]
-
-    P1 --> P2 --> P3 --> P4
-```
-
-と段階的に移行する。
-
-### Phase 1
-
-クリエイター・利用者コミュニティによる公開レビューと諮問。
-
-### Phase 2
-
-Creator House / User Houseを正式制度化。
-
-### Phase 3
-
-重要なプロトコル変更をオンチェーン承認と接続。
-
-### Phase 4
-
-憲章審査、委任、二院制、Timelock、コード実行を統合した成熟モデル。
-
----
-
-## 7.34 Progressive Decentralization
-
-分散化そのものを目的にしない。
-
-> **当事者が統治すべき領域を、技術とコミュニティの成熟に合わせて段階的に移譲する。**
-
-```mermaid
-flowchart LR
-    COMPANY[Company-led]
-    SHARED[Shared Governance]
-    PROTOCOL[Protocol Governance]
-
-    COMPANY --> SHARED --> PROTOCOL
-```
-
-権利処理や法的責任など、法人が担うべき領域まで無理にDAO化しない。
-
----
-
-## 7.35 ガバナンスの成功指標
-
-ガバナンスの成功を「投票数」だけで評価しない。
+攻撃や重大障害時には限定的なEmergency Authorityを認める。
 
 例えば、
 
-- 参加者の多様性
-- Creator Houseの集中度
-- User Houseの参加率
-- 委任の集中度
-- 提案から実装までの期間
-- 憲章違反による差戻し
-- 緊急権限の利用回数
-- ガバナンス決定と実装コードの一致
-- 少数派への影響
-- クリエイター・利用者双方の満足度
+- Smart Contract Pause
+- Distribution Pause
+- Compromised Key Disable
+- Critical API Shutdown
 
-などを継続的に評価する。
+等である。
+
+しかしEmergency Authorityは通常Governanceを迂回する恒久権限にしてはならない。
+
+```mermaid
+flowchart LR
+    INCIDENT[Critical Incident]
+    PAUSE[Limited Emergency Pause]
+    DISCLOSE[Public Disclosure]
+    REVIEW[Two-House Review]
+    RESUME[Resume / Upgrade]
+
+    INCIDENT --> PAUSE --> DISCLOSE --> REVIEW --> RESUME
+```
+
+権限者、条件、最大期間、再開条件をProtocol Specificationで定義する。
 
 ---
 
-## 7.36 本章のまとめ
+## 7.29 任期
 
-Creator First Platform のガバナンスは、
+Governance Memberには任期を設ける。
 
-> **DAOに会社を置き換える仕組みではない。**
+目的は、
 
-また、
+- 権力固定化防止
+- 新しい参加者の導入
+- Communityとの接続維持
 
-> **トークン保有者にプラットフォームを支配させる仕組みでもない。**
+である。
 
-目指すのは、クリエイター、利用者、コード、法人、法制度の役割を分離しながら、一つの統治構造として接続することである。
+任期、再任、連続任期上限は実証結果を基に決定する。
+
+---
+
+## 7.30 Compensation
+
+抽選されたUserやCreatorがGovernanceへ参加するには時間的コストがある。
+
+無償参加だけに依存すると、時間・経済的余裕のある人だけが参加できる。
+
+したがって合理的なGovernance Compensationを検討する。
+
+ただし報酬がGovernance Memberになること自体を目的化する水準にはしない。
+
+---
+
+## 7.31 利益相反
+
+Governance Memberは関連する利益相反を開示する。
+
+例えば、
+
+- Platform株式の大量保有
+- 特定Rights Holderとの契約
+- 競合サービスとの関係
+- Proposalから直接得る経済利益
+
+等である。
+
+重大な利益相反があるProposalでは、審議参加・投票の制限を検討する。
+
+---
+
+## 7.32 Sybil Resistance
+
+User Houseの正統性を守るには、
+
+> 1人が大量アカウントを作成して抽選母集団を支配する
+
+ことを防ぐ必要がある。
+
+ただしSybil Resistanceのために過剰な個人情報収集を行わない。
+
+```mermaid
+flowchart LR
+    USER[User]
+    PERSON[Personhood / Usage Proof]
+    PRIVACY[Privacy-preserving Eligibility]
+    POOL[Eligible Pool]
+
+    USER --> PERSON --> PRIVACY --> POOL
+```
+
+Zero-Knowledge Credential等も将来の候補となる。
+
+---
+
+## 7.33 Representation Audit
+
+User Houseが本当にUserを代表しているかを継続評価する。
+
+指標候補は、
+
+- Eligible User比率
+- Governance Participation
+- 地域的偏り
+- 利用形態の偏り
+- Delegation Concentration
+- Member Turnover
+- Proposal Participation
+- Referendum Participation
+
+である。
+
+Creator Houseについても同様に代表性を監査する。
+
+---
+
+## 7.34 Governance Health
+
+Governanceの成功をProposal数だけで測らない。
 
 ```mermaid
 flowchart TD
-    CONST[3つの憲章]
+    HEALTH[Governance Health]
 
-    CONST --> CH[Creator House]
-    CONST --> UH[User House]
-
-    CH --> GOV[Democratic Governance]
-    UH --> GOV
-
-    GOV --> CODE[Code Governance]
-    CODE --> SC[Smart Contracts]
-
-    CORP[Operating Corporation] --> RESPONSIBILITY[Legal / Corporate Responsibility]
-    RESPONSIBILITY --> SC
-
-    LAW[Law / Contracts] --> RESPONSIBILITY
+    HEALTH --> REP[Representation]
+    HEALTH --> DELIB[Deliberation Quality]
+    HEALTH --> PART[Participation]
+    HEALTH --> DIVERSITY[Diversity]
+    HEALTH --> SAFE[Execution Safety]
+    HEALTH --> TRUST[Community Trust]
 ```
 
-基本原則は、
+議案が多いことより、必要な議論が適切に行われることを重視する。
 
-> **憲章が方向を定め、クリエイターと利用者がルールを決め、コードがそのルールを実行し、株式会社が現実社会に対する責任を負う。**
+---
 
-という構造である。
+## 7.35 Governance Attack
 
-Creator First Platform における「Code is Law」は、コードへの無条件な服従を意味しない。
+想定する攻撃には、
 
-> **コードを法のように扱うからこそ、そのコードを民主的・透明・検証可能に統治する制度が必要である。**
+- Sybil Attack
+- Bribery
+- Collusion
+- Capital Capture
+- Delegation Capture
+- Governance Spam
+- Misinformation
+- Malicious Proposal
+- Emergency Authority Abuse
 
-これが本プラットフォームのガバナンス設計の中心思想である。
+がある。
+
+Security Chapterと連携して防御する。
+
+---
+
+## 7.36 Governance Transparency
+
+原則として、
+
+- Proposal
+- Evidence
+- Discussion
+- Vote
+- Conflict Disclosure
+- Specification
+- Implementation
+- Audit
+- Execution
+
+を追跡可能にする。
+
+```mermaid
+flowchart LR
+    PROP[Proposal]
+    DISC[Discussion]
+    VOTE[Vote]
+    SPEC[Specification]
+    PR[Implementation PR]
+    AUDIT[Audit]
+    DEPLOY[Deployment]
+
+    PROP --> DISC --> VOTE --> SPEC --> PR --> AUDIT --> DEPLOY
+```
+
+---
+
+## 7.37 GitHubとの接続
+
+Protocol GovernanceとSoftware DevelopmentをGitHub上で接続する。
+
+```text
+governance/
+├── proposals/
+├── decisions/
+├── charters/
+└── elections/
+
+protocol/
+├── specifications/
+└── versions/
+
+contracts/
+├── src/
+└── test/
+```
+
+Governance DecisionからSpecification、Code、Test、Releaseまで追跡できる構造を作る。
+
+---
+
+## 7.38 AI Agentとの接続
+
+AI AgentはGovernance Decisionを直接本番へDeployしない。
+
+```mermaid
+flowchart LR
+    GOV[Governance Decision]
+    SPEC[Specification]
+    AI[AI Agent]
+    PR[Pull Request]
+    TEST[Test / Verification]
+    AUDIT[Audit]
+    TIME[Timelock]
+    DEPLOY[Deployment]
+
+    GOV --> SPEC --> AI --> PR --> TEST --> AUDIT --> TIME --> DEPLOY
+```
+
+AIは実装を支援するが、正統性を生成する主体ではない。
+
+---
+
+## 7.39 Governanceの段階導入
+
+最初から完全な二院制Protocol Governanceを稼働させない。
+
+```mermaid
+flowchart LR
+    P1[Community Consultation]
+    P2[Advisory Sortition]
+    P3[Two-House Policy Governance]
+    P4[Economic Governance]
+    P5[Protocol Code Governance]
+
+    P1 --> P2 --> P3 --> P4 --> P5
+```
+
+利用実績と制度運用経験を積みながら権限を拡大する。
+
+---
+
+## 7.40 Advisory Sortition
+
+初期段階では、抽選議会を諮問機関として運用できる。
+
+これにより、
+
+- 抽選方法
+- Member Support
+- 熟議方法
+- Compensation
+- 代表性
+- Participation
+
+を実証できる。
+
+その後、実際のProtocol Decisionへ権限を移す。
+
+---
+
+## 7.41 Governance Memberを育成するのではなく支援する
+
+抽選制の目的は専門政治家を作ることではない。
+
+そのため、Memberには、
+
+- Orientation
+- Technical Explanation
+- Legal Explanation
+- Economic Simulation
+- Neutral Secretariat
+- AI Assistance
+
+を提供する。
+
+専門知識を参加資格にせず、**必要な知識へアクセスできる制度**を作る。
+
+---
+
+## 7.42 少数意見
+
+多数決で少数意見を消さない。
+
+重要Proposalでは、
+
+- Minority Report
+- Alternative Specification
+- Dissenting Opinion
+
+を記録できるようにする。
+
+将来のProtocol Reviewで参照可能にする。
+
+---
+
+## 7.43 Governance Decisionの時間軸
+
+すべてを同じ速度で決定しない。
+
+```mermaid
+flowchart LR
+    OPS[Operational]
+    POLICY[Policy]
+    PROTOCOL[Protocol]
+    CHARTER[Charter]
+
+    OPS --> FAST[Fast]
+    POLICY --> MED[Deliberative]
+    PROTOCOL --> SLOW[Review + Timelock]
+    CHARTER --> VERY[Supermajority + Referendum]
+```
+
+変更の不可逆性と影響が大きいほど、長い熟議を要求する。
+
+---
+
+## 7.44 Protocol Version
+
+Governanceで承認された変更はProtocol Versionとして記録する。
+
+例：
+
+```text
+Protocol v0.1
+Protocol v0.2
+Protocol v1.0
+```
+
+各Versionには、
+
+- Governance Decision
+- Specification
+- Source Commit
+- Tests
+- Audit
+- Deployment
+
+を関連付ける。
+
+---
+
+## 7.45 GovernanceとCode is Law
+
+Creator First PlatformにおけるCode is Lawは、
+
+```mermaid
+flowchart LR
+    COMMUNITY[Creator / User]
+    REPRESENT[Sortition Representation]
+    DELIB[Deliberation]
+    SPEC[Specification]
+    VERIFY[Implementation Verification]
+    CODE[Code]
+    EXEC[Execution]
+
+    COMMUNITY --> REPRESENT --> DELIB --> SPEC --> VERIFY --> CODE --> EXEC
+```
+
+という全体を意味する。
+
+CodeだけをLawと呼ぶのではない。
+
+> **Codeは、正統なGovernanceによって形成されたRuleの最終的な執行表現である。**
+
+---
+
+## 7.46 Governanceの社会契約
+
+Creatorは作品を提供するだけのSupplierではない。
+
+Userは料金を払うだけのCustomerではない。
+
+両者はPlatformを成立させる構成主体である。
+
+そのためCreator First PlatformのGovernanceは、
+
+> CreatorとUserが、自ら参加するデジタル空間のルールを共同形成する社会契約
+
+として位置付けられる。
+
+---
+
+## 7.47 全体モデル
+
+```mermaid
+flowchart TD
+    LAW[Applicable Law]
+    CONST[Three Charters]
+
+    LAW --> CONST
+
+    CREATOR[Verified Creators]
+    USER[Governance Eligible Users]
+
+    CREATOR --> CSORT[Verifiable Sortition]
+    USER --> USORT[Verifiable Sortition]
+
+    CSORT --> CH[Creator House]
+    USORT --> UH[User House]
+
+    CH --> DELIB[Joint Deliberation]
+    UH --> DELIB
+
+    CONST --> DELIB
+
+    DELIB --> DECISION[Joint Approval]
+    DECISION --> SPEC[Protocol Specification]
+    SPEC --> LEGAL[Legal / Security Review]
+    LEGAL --> IMPLEMENT[Implementation]
+    IMPLEMENT --> TEST[Test / Verification]
+    TEST --> TIME[Timelock]
+    TIME --> CODE[Smart Contract]
+    CODE --> EXEC[Automatic Execution]
+
+    CONST --> REFERENDUM[Constitutional Referendum]
+    CREATOR --> REFERENDUM
+    USER --> REFERENDUM
+```
+
+---
+
+## 7.48 ガバナンス原則
+
+Creator First PlatformのGovernanceは次の原則に従う。
+
+1. **Creator/User Sovereignty**  
+   Governanceの正統性はCreatorとUserから生じる。
+
+2. **Sortition**  
+   通常のCreator/Userが統治へ参加できるよう、抽選代表制を基本とする。
+
+3. **Deliberation**  
+   単純な瞬間投票ではなく、Evidenceと代替案を検討する。
+
+4. **Bicameralism**  
+   Creator HouseとUser Houseの双方が重要なProtocol変更へ参加する。
+
+5. **Constitutionalism**  
+   3つの憲章を通常多数決より上位に置く。
+
+6. **Capital Separation**  
+   資本保有量とProtocol支配を分離する。
+
+7. **Specification before Code**  
+   GovernanceはまずRuleをSpecificationとして承認する。
+
+8. **Verifiable Execution**  
+   Specification、Code、Deploymentの対応を検証可能にする。
+
+9. **Limited Corporate Intervention**  
+   株式会社は法務・安全上必要な場合を除き、Governance Decisionを恣意的に覆さない。
+
+10. **Reversibility and Accountability**  
+    Timelock、Audit、Emergency Procedure、公開記録によって変更に責任を持つ。
+
+---
+
+## 7.49 本章のまとめ
+
+Creator First Platformでは、Governance MemberをUserから切り離された専門統治者とは考えない。
+
+User Houseは、
+
+> **User → Governance Eligible User → 抽選代表 → 熟議**
+
+によって形成される。
+
+Creator Houseも同様に、
+
+> **Creator → Verified Creator → 抽選代表 → 熟議**
+
+によって形成される。
+
+両院が共同でProtocol Ruleを形成し、
+
+> **Creator/User → 抽選議会 → 熟議 → Protocol Specification → Smart Contract → 自動執行**
+
+というプロセスへ接続する。
+
+重大な憲章変更については代表議会だけでは完結させず、Creator/User Community全体によるReferendumを要求する。
+
+これによって、
+
+- 直接民主制
+- 抽選代表制
+- 熟議民主制
+- 二院制
+- 立憲主義
+- Code is Law
+
+を組み合わせたデジタルガバナンスを構築する。
+
+Creator First Platformにおいて、Smart ContractはGovernanceを置き換えるものではない。
+
+> **CreatorとUserが共同形成したルールを、透明かつ検証可能に実行するための制度的・技術的最終層**
+
+である。
