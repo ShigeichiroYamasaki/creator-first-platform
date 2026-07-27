@@ -12,8 +12,8 @@ hero:
       text: CFP 一覧を見る
       link: /proposals/
     - theme: alt
-      text: Governance を見る
-      link: /whitepaper/07-governance
+      text: 設計決定を見る
+      link: /adr/
 
 features:
   - title: Whitepaper
@@ -22,13 +22,16 @@ features:
   - title: Creator First Proposal
     details: Creator と User が Platform の制度や Protocol の変更・拡張を提案し、議論と熟議につなげる公開提案制度です。
     link: /proposals/
+  - title: 設計決定
+    details: ADR（Architecture Decision Record）として、重要な設計判断、その理由、代替案、影響を記録し、Protocol Specification と実装へ接続します。
+    link: /adr/
   - title: Governance
     details: Creator House と User House を抽選代表によって構成し、熟議を経て Protocol Specification を形成する統治モデルです。
     link: /whitepaper/07-governance
 ---
 
 <div class="homepage-symbol">
-  <img src="/creator-first-platform-symbol.png" alt="Creator First Platform — music, creators, users, fairness and value distribution" />
+  <img src="/creator-first-platform-symbol.png" alt="Creator First Platform symbol" />
 </div>
 
 <div class="document-meta">
@@ -88,31 +91,90 @@ Whitepaper は、Creator First Platform の現時点における基本設計を�
 
 **Creator First Proposal（CFP）** は、Creator First Platform の制度、経済モデル、技術、Governance、Protocol などについて、変更や新しい仕組みを提案するための公開提案制度です。
 
-Whitepaper が、
-
-> **現時点で合意されている Platform の基本設計**
-
-を表すのに対して、CFP は、
-
-> **その設計を変更・拡張するための提案**
-
-を表します。
-
 [CFP 一覧を見る →](/proposals/)
 
 ---
 
-## Platform の3つの入口
+# 設計決定 — Architecture Decision Records
+
+ADR（Architecture Decision Record）は、Creator First Platform における重要な技術・制度設計について、
+
+- どの設計を採用したか
+- なぜその設計を選んだか
+- どの代替案を検討したか
+- どのような影響や制約があるか
+
+を記録するための文書です。
+
+```mermaid
+flowchart LR
+    WP[Whitepaper]
+    CFP[CFP]
+    GOV[Governance Decision]
+    ADR[ADR]
+    SPEC[Protocol Specification]
+    ISSUE[GitHub Issue]
+    CODE[Implementation]
+
+    WP --> CFP --> GOV --> ADR --> SPEC --> ISSUE --> CODE
+```
+
+[設計決定を見る →](/adr/)
+
+---
+
+## Platform の4つの入口
 
 ```mermaid
 flowchart TD
     TOP[Creator First Platform]
+
     TOP --> WP[Whitepaper]
     TOP --> CFP[CFP]
+    TOP --> ADR[設計決定 / ADR]
     TOP --> GOV[Governance]
+
     WP --> CURRENT[現在の基本設計]
     CFP --> CHANGE[変更・拡張の提案]
+    ADR --> DESIGN[採用した設計と理由]
     GOV --> DECISION[正統な意思決定]
+```
+
+### Whitepaper
+
+**何を目指すか、Platform はどのような原則で設計されるか**を説明します。
+
+### CFP
+
+**何を変更・拡張したいか**を提案します。
+
+### Governance
+
+**どの提案を採用するか**を Creator / User の正統なプロセスで決定します。
+
+### ADR
+
+**なぜその設計を採用したのか**を記録し、Protocol Specification と実装へ接続します。
+
+---
+
+## Whitepaper から実装まで
+
+```mermaid
+flowchart LR
+    VISION[Vision]
+    WP[Whitepaper]
+    CFP[CFP]
+    GOV[Governance Decision]
+    ADR[ADR]
+    SPEC[Protocol Specification]
+    ISSUE[GitHub Issue]
+    AI[AI Agent]
+    CODE[Code + Tests]
+    PR[Pull Request]
+    RELEASE[Release]
+
+    VISION --> WP --> CFP --> GOV --> ADR --> SPEC --> ISSUE --> AI --> CODE --> PR --> RELEASE
 ```
 
 ---
