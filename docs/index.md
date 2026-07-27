@@ -3,7 +3,11 @@ layout: home
 
 hero:
   name: Creator First Platform
-  text: Creators First. Fair Distribution. Open Governance.
+  text: Creators First. 
+
+        Fair Distribution. 
+        
+        Open Governance.
   tagline: 音楽クリエイターの権利と持続可能な創作活動を中心に据えた音楽配信プラットフォーム
   actions:
     - theme: brand
