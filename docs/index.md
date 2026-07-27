@@ -5,8 +5,8 @@ hero:
   name: "Creator First Platform"
   text: "Creator と User が共同で統治する音楽プラットフォーム"
   tagline: "Creator/User → 抽選議会 → 熟議 → Protocol Specification → Smart Contract → 自動執行"
-  date: 2026-07-27
-  auther: 山崎重一郎
+  date: "2026-07-27"
+  author: "山崎重一郎"
   actions:
     - theme: brand
       text: Whitepaper を読む
