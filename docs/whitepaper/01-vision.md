@@ -32,13 +32,13 @@ Creator First Platform の中心理念は、その名称が示す通り **Creato
 
 Creator First Platform が目指すのは、この循環を持続可能なものにすることである。
 
-### Creator First の循環
-
-1. クリエイターが作品を生み出す。
-2. プラットフォームが発見の機会を提供する。
-3. 利用者が作品を楽しみ、支持する。
-4. 支持と対価がクリエイターへ還元される。
-5. その還元が次の創作につながる。
+```mermaid
+flowchart LR
+    C[Creator<br/>クリエイター] -->|作品| P[Creator First Platform]
+    P -->|発見| L[Listener<br/>利用者]
+    L -->|支持・利用・対価| C
+    C -->|次の創作| P
+```
 
 ---
 
@@ -62,7 +62,19 @@ Creator First Platform では、プラットフォームの設計と運営が短
 
 すでに人気のある作品だけがさらに露出を獲得する自己強化的な推薦構造を避け、多様な作品、新人、独立系クリエイターが発見される機会を確保する。
 
-これらは個別機能ではなく、Creator First Platform の制度、アルゴリズム、スマートコントラクトを評価するための基本原則である。
+```mermaid
+flowchart TD
+    CR[Creator Rights]
+    US[User Sovereignty]
+    FD[Fair Discovery]
+
+    CR --> CP[Creator First Constitution]
+    US --> CP
+    FD --> CP
+
+    CP --> GOV[Governance]
+    GOV --> CODE[Protocol Rules / Code]
+```
 
 ::: tip 3つの基本原則
 **Creator Rights**  
@@ -101,6 +113,14 @@ Creator First Platform では、利用者を単なるコンテンツ消費者と
 
 こうした体験は、日本で「推し活」と呼ばれる文化とも親和性が高い。
 
+```mermaid
+flowchart LR
+    D[Discovery<br/>発見] --> S[Support<br/>支持]
+    S --> G[Growth<br/>成長]
+    G --> N[New Creation<br/>新しい創作]
+    N --> D
+```
+
 ただし、利用者の影響力を単純な人気競争へ変えてしまえば、既存のランキング構造を再生産するだけである。
 
 そのため Creator First Platform では、Creator Rights、User Sovereignty、Fair Discovery の3原則を維持しながら、発見と支援の仕組みを設計する。
@@ -113,15 +133,16 @@ Creator First Platform は、サブスクリプション型の音楽配信サー
 
 特徴的なのは、収益分配などの重要なルールを可能な範囲でスマートコントラクトとして表現することである。
 
-概念的な流れは次のとおりである。
+```mermaid
+flowchart TD
+    L[Listener<br/>利用者] -->|Subscription| P[Creator First Platform]
+    P --> R[Distribution Rules<br/>分配ルール]
 
-**利用者のサブスクリプション**  
-↓  
-**Creator First Platform**  
-↓  
-**分配ルール**  
-↓  
-**Creator / Rights Holder / Growth & Discovery / Platform Operation**
+    R --> C[Creator]
+    R --> RH[Rights Holder]
+    R --> GP[Growth / Discovery]
+    R --> OP[Platform Operation]
+```
 
 誰にどのような基準で価値を分配するのかを、可能な限り検証可能なルールとして表現する。
 
@@ -153,6 +174,13 @@ Creator First Platform は、サブスクリプション型の音楽配信サー
 
 という問いに答えなければならない。
 
+```mermaid
+flowchart LR
+    RULES[Community-approved Rules] --> CODE[Smart Contract Code]
+    CODE --> EXEC[Automatic Execution]
+    EXEC --> AUDIT[Verifiable Result]
+```
+
 Creator First Platform では、クリエイターと利用者がコード統治へ参加する仕組みを構築する。
 
 ::: warning Code is Law の意味
@@ -167,23 +195,38 @@ Creator First Platform における **Code is Law** は、コードが国家法�
 
 Creator First Platform では、クリエイターと利用者の双方をガバナンスの主体とする。
 
-概念的には、次の構造を想定する。
+概念的には、Creator House と User House からなる二院制を想定する。
 
-**Constitution / 憲章**  
-↓  
-**Creator House + User House**  
-↓  
-**Governance**  
-↓  
-**Code Governance**  
-↓  
-**Smart Contracts**
+```mermaid
+flowchart TD
+    CONST[Constitution<br/>憲章]
+
+    CONST --> CH[Creator House<br/>クリエイター院]
+    CONST --> UH[User House<br/>利用者院]
+
+    CH --> GOV[Governance]
+    UH --> GOV
+
+    GOV --> CG[Code Governance]
+    CG --> SC[Smart Contracts]
+```
 
 クリエイターだけでもなく、利用者だけでもなく、双方の合意をコード変更の正当性へ結び付ける。
 
 ただし、多数決そのものが3つの憲章を自由に変更できるわけではない。
 
 憲章は通常のガバナンスより上位に位置する。
+
+```mermaid
+flowchart TD
+    P[Creator Rights<br/>User Sovereignty<br/>Fair Discovery]
+    P --> CL[Constitutional Layer]
+    CL --> CH[Creator House]
+    CL --> UH[User House]
+    CH --> CG[Code Governance]
+    UH --> CG
+    CG --> SC[Smart Contracts]
+```
 
 ガバナンスの詳細、投票方式、Quadratic Voting 等の採否については、後のガバナンス章で検討する。
 
@@ -199,21 +242,13 @@ Creator First Platform は、すべてを DAO だけで運営することを想�
 
 一方、収益分配などの重要なルールについては、スマートコントラクトとガバナンスによって透明性を高める。
 
-### 株式会社が担う領域
+```mermaid
+flowchart LR
+    CORP[株式会社<br/><br/>契約<br/>著作権処理<br/>税務・会計<br/>雇用<br/>法的責任]
+    PROTO[Protocol<br/><br/>Smart Contracts<br/>Distribution<br/>Governance<br/>Verification]
 
-- 契約
-- 著作権処理
-- 税務・会計
-- 雇用
-- 法令遵守
-- 法的責任
-
-### プロトコルが担う領域
-
-- スマートコントラクト
-- 分配ルール
-- ガバナンス
-- 検証可能性
+    CORP -->|運営・法的責任| PROTO
+```
 
 つまり、法人と DAO を二者択一として考えるのではなく、
 
@@ -243,6 +278,16 @@ Creator First Platform では、ブロックチェーン、スマートコント
 
 分散技術によって透明性や検証可能性を高められる領域では、それを利用する。
 
+```mermaid
+flowchart TD
+    GOAL[Creator Firstという目的]
+    GOAL --> Q{どの技術が最適か}
+    Q --> CEN[Centralized Technology]
+    Q --> DEC[Decentralized Technology]
+    CEN --> SYS[実装]
+    DEC --> SYS
+```
+
 Creator First Platform は「分散化の最大化」ではなく、**クリエイターと利用者のための制度を技術によって実装すること**を目的とする。
 
 ---
@@ -268,6 +313,16 @@ Creator First Platform が目指すのは、もう一つの音楽ストリーミ
 コードがそのルールを透明に実行する。
 
 法人が現実社会に対する責任を負う。
+
+```mermaid
+flowchart LR
+    C[Creators create] --> L[Listeners discover]
+    L --> F[Fans support]
+    F --> G[Communities govern]
+    G --> E[Code executes]
+    E --> R[Corporations take responsibility]
+    R --> C
+```
 
 この関係を統合することによって、Creator First Platform は、クリエイター、利用者、技術、企業の新しい関係を構築することを目指す。
 
