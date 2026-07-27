@@ -1,5 +1,18 @@
 /* Creator First Platform - custom VitePress styles */
 
+.homepage-symbol {
+  display: flex;
+  justify-content: center;
+  margin: 2rem auto 2.5rem;
+}
+
+.homepage-symbol img {
+  display: block;
+  width: min(100%, 720px);
+  height: auto;
+  border-radius: 18px;
+}
+
 .document-meta {
   margin: 2rem auto 3rem;
   padding: 1.25rem 1.5rem;
@@ -43,6 +56,14 @@
 }
 
 @media (max-width: 640px) {
+  .homepage-symbol {
+    margin: 1.25rem auto 2rem;
+  }
+
+  .homepage-symbol img {
+    border-radius: 12px;
+  }
+
   .document-meta {
     margin: 1.5rem 0 2.5rem;
     padding: 1rem 1.1rem;

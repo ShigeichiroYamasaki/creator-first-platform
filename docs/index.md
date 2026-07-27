@@ -4,7 +4,6 @@ layout: home
 hero:
   name: "Creator First Platform"
   text: "Creator と User が共同で統治する音楽プラットフォーム"
-  tagline: "Creator/User → 抽選議会 → 熟議 → Protocol Specification → Smart Contract → 自動執行"
   actions:
     - theme: brand
       text: Whitepaper を読む
@@ -27,6 +26,10 @@ features:
     details: Creator House と User House を抽選代表によって構成し、熟議を経て Protocol Specification を形成する統治モデルです。
     link: /whitepaper/07-governance
 ---
+
+<div class="homepage-symbol">
+  <img src="/creator-first-platform-symbol.png" alt="Creator First Platform — music, creators, users, fairness and value distribution" />
+</div>
 
 <div class="document-meta">
 
