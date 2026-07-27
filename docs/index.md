@@ -161,7 +161,7 @@ flowchart TD
 ## Whitepaper から実装まで
 
 ```mermaid
-flowchart LR
+flowchart TD
     VISION[Vision]
     WP[Whitepaper]
     CFP[CFP]
