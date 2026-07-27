@@ -10,7 +10,9 @@ export default withMermaid(
     base: '/creator-first-platform/',
 
     cleanUrls: true,
-
+    markdown: {
+      math: true
+    },
     themeConfig: {
       siteTitle: 'Creator First Platform',
 
