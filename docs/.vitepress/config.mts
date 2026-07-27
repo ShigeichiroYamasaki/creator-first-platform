@@ -20,7 +20,7 @@ export default withMermaid(
         { text: 'ホーム', link: '/' },
         { text: 'ホワイトペーパー', link: '/whitepaper/' },
         { text: 'CFP', link: '/proposals/' },
-        { text: '設計決定', link: '/decisions/' }
+        { text: '設計決定', link: '/adr/' }
       ],
 
       sidebar: {
@@ -55,8 +55,7 @@ export default withMermaid(
       ],
 
       footer: {
-        message: 'Creator First Platform',
-        copyright: 'Copyright © Creator First Platform'
+        message: 'Creator First Platform'
       },
 
       search: {
