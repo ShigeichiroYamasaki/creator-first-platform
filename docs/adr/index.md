@@ -26,7 +26,7 @@ flowchart TD
 | :--------------------------------------------- | :---------------------------- | :------- |
 | [ADR-0001](./ADR-0001-governance-model.md)     | Governance Model              | Proposed |
 | [ADR-0002](./ADR-0002-verifiable-sortition.md) | Verifiable Sortition          | Proposed |
-| ADR-0003                                       | Rights Registry               | Proposed |
+| [ADR-0003](./ADR-0003-rights-registry.md)      | Rights Registry               | Proposed |
 | ADR-0004                                       | Creator Distribution Model    | Proposed |
 | ADR-0005                                       | Usage Oracle                  | Proposed |
 | ADR-0006                                       | Zero-Knowledge Proof Strategy | Proposed |
