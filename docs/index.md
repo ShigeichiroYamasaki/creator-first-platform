@@ -12,22 +12,29 @@ hero:
       text: CFP 一覧を見る
       link: /proposals/
     - theme: alt
-      text: ADR 一覧を見る
+      text: ADR一覧を見る
       link: /adr/
 
 features:
   - title: Whitepaper
     details: Creator First Platform の理念、権利、経済、技術、ガバナンス、法務、セキュリティ、インフラ、ロードマップをまとめた基本文書です。
     link: /whitepaper/01-vision
+
   - title: Creator First Proposal
     details: Creator と User が Platform の制度や Protocol の変更・拡張を提案し、議論と熟議につなげる公開提案制度です。
     link: /proposals/
-  - title: 設計決定
-    details: ADR（Architecture Decision Record）として、重要な設計判断、その理由、代替案、影響を記録し、Protocol Specification と実装へ接続します。
-    link: /adr/
+
   - title: Governance
     details: Creator House と User House を抽選代表によって構成し、熟議を経て Protocol Specification を形成する統治モデルです。
     link: /whitepaper/07-governance
+
+  - title: ADR一覧
+    details: Architecture Decision Record として、重要な設計判断、その理由、代替案、影響を記録し、Protocol Specification と実装へ接続します。
+    link: /adr/
+
+  - title: Protocol Specification
+    details: ADRで決定された設計を、Codexや開発者が実装できる要件、不変条件、インターフェース、エラー条件、テスト条件へ落とし込んだ仕様です。
+    link: /protocol/
 ---
 
 <div class="homepage-symbol">
@@ -91,11 +98,21 @@ Whitepaper は、Creator First Platform の現時点における基本設計を�
 
 **Creator First Proposal（CFP）** は、Creator First Platform の制度、経済モデル、技術、Governance、Protocol などについて、変更や新しい仕組みを提案するための公開提案制度です。
 
+Whitepaper が、
+
+> **現時点で合意されている Platform の基本設計**
+
+を表すのに対して、CFP は、
+
+> **その設計を変更・拡張するための提案**
+
+を表します。
+
 [CFP 一覧を見る →](/proposals/)
 
 ---
 
-# ADR — Architecture Decision Records
+# ADR一覧 — Architecture Decision Records
 
 ADR（Architecture Decision Record）は、Creator First Platform における重要な技術・制度設計について、
 
@@ -105,6 +122,8 @@ ADR（Architecture Decision Record）は、Creator First Platform における�
 - どのような影響や制約があるか
 
 を記録するための文書です。
+
+ADR は、Whitepaper や CFP と実装コードの間をつなぐ **設計判断の履歴**として機能します。
 
 ```mermaid
 flowchart LR
@@ -119,11 +138,48 @@ flowchart LR
     WP --> CFP --> GOV --> ADR --> SPEC --> ISSUE --> CODE
 ```
 
-[ADR 一覧 →](/adr/)
+[ADR一覧を見る →](/adr/)
 
 ---
 
-## Platform の4つの入口
+# Protocol Specification
+
+Protocol Specification は、ADRで採用された設計を、**Codexや開発者がそのまま実装作業へつなげられる仕様**へ変換する文書です。
+
+Protocol では、例えば次の内容を定義します。
+
+- Actors
+- Inputs / Outputs
+- State
+- MUST / MUST NOT / SHOULD
+- Invariants
+- State Transitions
+- Interfaces
+- Error Conditions
+- Security Requirements
+- Privacy Requirements
+- Test Requirements
+- Acceptance Criteria
+
+```mermaid
+flowchart LR
+    ADR[ADR]
+    SPEC[Protocol Specification]
+    ISSUE[GitHub Issue]
+    AI[Codex]
+    CODE[Code + Tests]
+    PR[Pull Request]
+
+    ADR --> SPEC --> ISSUE --> AI --> CODE --> PR
+```
+
+Protocol Specification を、人間とAIエージェントの間の **実装契約**として利用します。
+
+[Protocol Specification を見る →](/protocol/)
+
+---
+
+## Platform の5つの入口
 
 ```mermaid
 flowchart TD
@@ -131,18 +187,20 @@ flowchart TD
 
     TOP --> WP[Whitepaper]
     TOP --> CFP[CFP]
-    TOP --> ADR[設計決定 / ADR]
     TOP --> GOV[Governance]
+    TOP --> ADR[ADR一覧]
+    TOP --> PROTOCOL[Protocol Specification]
 
     WP --> CURRENT[現在の基本設計]
     CFP --> CHANGE[変更・拡張の提案]
-    ADR --> DESIGN[採用した設計と理由]
     GOV --> DECISION[正統な意思決定]
+    ADR --> DESIGN[採用した設計と理由]
+    PROTOCOL --> IMPLEMENT[実装可能な仕様]
 ```
 
 ### Whitepaper
 
-**何を目指すか、Platform はどのような原則で設計されるか**を説明します。
+**何を目指すか、Platform をどのような原則で設計するか**を説明します。
 
 ### CFP
 
@@ -152,30 +210,51 @@ flowchart TD
 
 **どの提案を採用するか**を Creator / User の正統なプロセスで決定します。
 
-### ADR
+### ADR一覧
 
-**なぜその設計を採用したのか**を記録し、Protocol Specification と実装へ接続します。
+**なぜその設計を採用したのか**を記録します。
+
+### Protocol Specification
+
+**何を、どの条件で実装するか**を定義し、GitHub Issue と Codex に接続します。
 
 ---
 
-## Whitepaper から実装まで
+## Whitepaper から Codex 実装まで
 
 ```mermaid
-flowchart TD
+flowchart LR
     VISION[Vision]
     WP[Whitepaper]
     CFP[CFP]
-    GOV[Governance Decision]
+    GOV[Governance]
     ADR[ADR]
     SPEC[Protocol Specification]
     ISSUE[GitHub Issue]
-    AI[AI Agent]
+    AI[Codex]
     CODE[Code + Tests]
     PR[Pull Request]
+    REVIEW[Review]
     RELEASE[Release]
 
-    VISION --> WP --> CFP --> GOV --> ADR --> SPEC --> ISSUE --> AI --> CODE --> PR --> RELEASE
+    VISION --> WP --> CFP --> GOV --> ADR --> SPEC --> ISSUE --> AI --> CODE --> PR --> REVIEW --> RELEASE
 ```
+
+この構造によって、人間と Governance が、
+
+- 何を目指すか
+- 何を変更するか
+- どの設計を採用するか
+
+を決め、Codex が、
+
+- 仕様に沿った実装
+- テスト
+- CI対応
+- ドキュメント同期
+- Pull Request作成
+
+を支援できるようにします。
 
 ---
 
