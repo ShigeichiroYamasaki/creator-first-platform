@@ -12,7 +12,7 @@ hero:
       text: CFP 一覧を見る
       link: /proposals/
     - theme: alt
-      text: 設計決定を見る
+      text: ADR 一覧を見る
       link: /adr/
 
 features:
