@@ -10,7 +10,7 @@ Creator First Platformでは、次の流れで
 理念から実装までを追跡可能にします。
 
 ```mermaid
-flowchart LR
+flowchart TD
     WP[Whitepaper]
     CFP[CFP]
     GOV[Governance Decision]
@@ -22,15 +22,15 @@ flowchart LR
     WP --> CFP --> GOV --> ADR --> SPEC --> ISSUE --> CODE
 ```
 
-|ADR|Design Decision|Status|
-|:--|:--|:--|
-|[ADR-0001](./ADR-0001-governance-model.md) |Governance Model|Proposed|
-|ADR-0002|Verifiable Sortition|Proposed|
-|ADR-0003|Rights Registry|Proposed|
-|ADR-0004|Creator Distribution Model|Proposed|
-|ADR-0005|Usage Oracle|Proposed|
-|ADR-0006|Zero-Knowledge Proof Strategy|Proposed|
-|ADR-0007|Blockchain / L2 Strategy|Proposed|
-|ADR-0008|Protocol Upgrade Governance|Proposed|
+| ADR                                        | Design Decision               | Status   |
+| :----------------------------------------- | :---------------------------- | :------- |
+| [ADR-0001](./ADR-0001-governance-model.md) | Governance Model              | Proposed |
+| ADR-0002                                   | Verifiable Sortition          | Proposed |
+| ADR-0003                                   | Rights Registry               | Proposed |
+| ADR-0004                                   | Creator Distribution Model    | Proposed |
+| ADR-0005                                   | Usage Oracle                  | Proposed |
+| ADR-0006                                   | Zero-Knowledge Proof Strategy | Proposed |
+| ADR-0007                                   | Blockchain / L2 Strategy      | Proposed |
+| ADR-0008                                   | Protocol Upgrade Governance   | Proposed |
 
 
