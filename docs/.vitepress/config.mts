@@ -20,7 +20,7 @@ export default withMermaid(
         { text: 'ホーム', link: '/' },
         { text: 'ホワイトペーパー', link: '/whitepaper/' },
         { text: 'CFP', link: '/proposals/' },
-        { text: '設計決定', link: '/adr/' }
+        { text: 'ADR 一覧', link: '/adr/' }
       ],
 
       sidebar: {

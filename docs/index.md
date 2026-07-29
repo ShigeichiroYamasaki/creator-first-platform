@@ -95,7 +95,7 @@ Whitepaper は、Creator First Platform の現時点における基本設計を�
 
 ---
 
-# 設計決定 — Architecture Decision Records
+# ADR — Architecture Decision Records
 
 ADR（Architecture Decision Record）は、Creator First Platform における重要な技術・制度設計について、
 
@@ -119,7 +119,7 @@ flowchart LR
     WP --> CFP --> GOV --> ADR --> SPEC --> ISSUE --> CODE
 ```
 
-[設計決定を見る →](/adr/)
+[ADR 一覧 →](/adr/)
 
 ---
 

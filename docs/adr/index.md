@@ -30,7 +30,7 @@ flowchart LR
 | [ADR-0004](./ADR-0004-creator-distribution-model.md)    | Creator Distribution Model    | Proposed |
 | [ADR-0005](./ADR-0005-usage-oracle.md)                  | Usage Oracle                  | Proposed |
 | [ADR-0006](./ADR-0006-zero-knowledge-proof-strategy.md) | Zero-Knowledge Proof Strategy | Proposed |
-| ADR-0007                                                | Blockchain / L2 Strategy      | Proposed |
+| [ADR-0007](./ADR-0007-blockchain-l2-strategy.md)        | Blockchain / L2 Strategy      | Proposed |
 | ADR-0008                                                | Protocol Upgrade Governance   | Proposed |
 
 
