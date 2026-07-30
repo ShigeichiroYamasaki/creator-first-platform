@@ -1,72 +1,168 @@
 # Protocol Glossary
 
+## Participant
+
+A natural person or legal entity that interacts with Creator First Platform in one or more roles.
+
+## Person
+
+A natural person.
+
+A Person MUST NOT be identified solely by a Wallet Address.
+
+## Legal Entity
+
+An organization recognized as a legal or contractual entity under an applicable jurisdiction.
+
 ## Account
 
-A persistent application-level identity used to access
-Creator First Platform services.
+A persistent application-level identity used to access Creator First Platform services.
 
-An Account is not equivalent to a Wallet.
+An Account is not equivalent to a Wallet, Person or Legal Identity.
 
 ## Wallet
 
-A cryptographic account capable of signing messages
-and controlling blockchain assets.
+A cryptographic control interface capable of signing messages or authorizing blockchain asset operations.
+
+A Wallet may be implemented as an externally owned account, smart account or another approved mechanism.
 
 Wallet ≠ Person.
 
+## Legal Identity
+
+Identity information used when legal, contractual, tax or regulatory verification is required.
+
+Legal Identity MUST remain logically distinct from Account and Wallet.
+
+## Governance Identity
+
+The identity and eligibility context used for governance participation.
+
+Governance Identity MUST NOT be derived solely from Wallet ownership, token holdings or economic power.
+
+## Credential
+
+A verifiable assertion issued by an authorized issuer concerning an Account, Participant, role, qualification or eligibility condition.
+
+A Credential MUST have a defined issuer, type, version, status and lifecycle.
+
 ## User
 
-A person who uses Creator First Platform services.
+A Participant who uses Creator First Platform services.
 
 ## Governance Eligible User
 
-A User who satisfies the requirements for participation
-in User House sortition.
+A User who satisfies the requirements for participation in User House sortition.
+
+## Eligible Community
+
+The finalized set of Participants eligible for a specified governance selection process.
 
 ## Governance Member
 
-A temporary representative selected from an eligible community
-to participate in deliberative governance.
+A temporary representative selected from an Eligible Community to participate in deliberative governance.
+
+## Creator House
+
+The temporary deliberative governance body composed of representatives selected from the eligible Creator community.
+
+## User House
+
+The temporary deliberative governance body composed of representatives selected from the eligible User community.
 
 ## Creator
 
-A participant substantially involved in the creation
-or production of content distributed through the platform.
+A Participant substantially involved in the creation or production of Content distributed through the platform.
 
 ## Rights Holder
 
-A legal or contractual holder of rights associated with content.
+A Person or Legal Entity that legally or contractually holds rights associated with Content.
 
-Creator and Rights Holder are not necessarily the same entity.
+Creator and Rights Holder are not necessarily the same Participant.
 
-## Usage Event
+## Content
 
-A recorded event representing content usage observed
-by the platform.
+A generic protocol-level reference to material distributed or managed through the platform.
 
-## Verified Usage
+A domain specification MUST identify whether Content refers to a Work, Recording or another content type.
 
-Usage that has passed the applicable verification rules
-and may be used for distribution calculations.
+## Work
 
-## Usage Snapshot
+An underlying creative work, such as a musical composition.
 
-A finalized set or aggregate of Verified Usage for
-a defined distribution period.
+## Recording
+
+A particular recorded performance or production associated with a Work.
+
+Work and Recording are logically distinct rights objects.
 
 ## Rights Claim
 
-A claim that a participant owns or controls a specified right.
+A claim that a Participant owns or controls a specified right.
 
 ## Verified Rights
 
-Rights information that has passed the applicable
-verification process.
+Rights information that has passed the applicable verification process.
+
+## Rights Ownership
+
+A verified legal or contractual relationship between a Rights Holder and a specified right.
+
+Creator registration MUST NOT be treated as Rights Ownership.
+
+## Usage Event
+
+A recorded event representing Content usage observed by the platform.
+
+## Verified Usage
+
+Usage that has passed the applicable verification rules and may be used for distribution calculations.
+
+## Usage Snapshot
+
+A finalized set or aggregate of Verified Usage for a defined Distribution Period.
 
 ## Distribution Period
 
-A defined time period for which revenue, usage,
-rights state and distribution policy are evaluated.
+A defined time period for which revenue, Usage, Rights State and Distribution Policy are evaluated.
+
+## Distribution Pool
+
+A defined amount of revenue allocated for distribution under a specified Distribution Period and Distribution Policy.
+
+## Creator Distribution
+
+A reproducible allocation of a finalized Distribution Pool to eligible Creators or Rights Holders.
+
+## Distribution Policy
+
+A versioned set of rules used to calculate Creator Distribution.
+
+## Rights State
+
+The versioned state of applicable Verified Rights, claims, disputes and distribution instructions at a defined effective time.
+
+## Finalized State
+
+Protocol state that has completed the applicable verification, challenge and finalization process.
+
+## Approved Settlement Asset
+
+An asset authorized by the applicable Protocol Specification and governance process for settlement.
+
+## Commitment
+
+A cryptographic value binding an implementation to data or state without necessarily revealing that data or state.
+
+## Proof
+
+Cryptographic or procedural evidence that a defined statement or transition satisfies specified verification rules.
+
+## Nullifier
+
+A context-specific value used to prevent repeated use of the same eligible Credential or private input.
+
+A Nullifier MUST NOT be reused as a cross-context tracking identifier.
 
 ## Protocol Specification
 
@@ -77,4 +173,3 @@ A normative document defining implementation requirements.
 Architecture Decision Record.
 
 An ADR explains why an important design decision was made.
-
