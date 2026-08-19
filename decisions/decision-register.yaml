@@ -1,0 +1,40 @@
+schema_version: 0.1.0
+status: DRAFT
+
+# Open Questions remain normative in their owning Protocol Specification.
+# This register covers every question from the listed source specifications.
+source_specifications:
+  - id: SPEC-ACCOUNT-001
+    version: 0.1.0
+    path: protocol/account/subscription-settlement-spec.md
+  - id: SPEC-ACCOUNT-002
+    version: 0.1.0
+    path: protocol/account/wallet-linking-spec.md
+  - id: SPEC-ACCOUNT-003
+    version: 0.1.0
+    path: protocol/account/account-lifecycle-spec.md
+  - id: SPEC-BLOCKCHAIN-001
+    version: 0.1.0
+    path: protocol/blockchain/settlement-asset-registry-spec.md
+  - id: SPEC-RIGHTS-001
+    version: 0.1.0
+    path: protocol/rights/rights-registry-spec.md
+  - id: SPEC-STREAMING-001
+    version: 0.1.0
+    path: protocol/streaming/playback-authorization-spec.md
+  - id: SPEC-USAGE-001
+    version: 0.1.0
+    path: protocol/usage/playback-verification-spec.md
+  - id: SPEC-DISTRIBUTION-001
+    version: 0.1.0
+    path: protocol/distribution/creator-allocation-spec.md
+
+question_defaults:
+  assignment: UNASSIGNED
+  state: OPEN
+  implementation: BLOCKED
+  decision_record: null
+
+# Add an entry only when a public assignee, state or decision evidence differs
+# from the safe defaults. Unknown OQ IDs and incomplete decisions fail CI.
+overrides: {}

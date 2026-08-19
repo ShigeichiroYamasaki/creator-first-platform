@@ -1,0 +1,6 @@
+schema_version: 0.1.0
+status: DRAFT
+
+# Mock assumptions are explicit, bounded substitutes for unresolved decisions.
+# An empty list means no implementation value has been authorized yet.
+assumptions: []

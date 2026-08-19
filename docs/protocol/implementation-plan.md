@@ -63,6 +63,8 @@ flowchart TD
 
 **目的:** 実装開始に必要なOpen Questionと権限を、仮定と承認済み判断に分離する。
 
+**現在の基盤:** [Decision Baseline](/protocol/decision-baseline)は、8仕様をSourceとして全Open Questionへ安全な既定状態を適用し、個別DecisionとMock Assumptionの完全性をCIで検証する。追跡Work Packageは[GitHub Issue #9](https://github.com/ShigeichiroYamasaki/creator-first-platform/issues/9)。
+
 **成果物:**
 
 - MVPを停止している`OQ-...` IDの一覧と依存Work Package
