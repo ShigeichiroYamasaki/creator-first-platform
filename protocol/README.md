@@ -46,6 +46,7 @@ Planned domains include:
 - rights
 - distribution
 - usage
+- streaming
 - zk
 - blockchain
 - security
@@ -59,6 +60,7 @@ Planned domains include:
 | [SPEC-ACCOUNT-003 Account Lifecycle, Authentication and Recovery](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/account/account-lifecycle-spec.md) | account / identity | Draft | 0.1.0 |
 | [SPEC-BLOCKCHAIN-001 Approved Settlement Asset Registry](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/blockchain/settlement-asset-registry-spec.md) | blockchain / payment | Draft | 0.1.0 |
 | [SPEC-RIGHTS-001 Rights Registry and Versioned Rights State](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/rights/rights-registry-spec.md) | rights / content | Draft | 0.1.0 |
+| [SPEC-STREAMING-001 Streaming Authorization and Playback Session](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/streaming/playback-authorization-spec.md) | streaming / authorization | Draft | 0.1.0 |
 | [SPEC-USAGE-001 Playback Event Verification and Usage Snapshot](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/usage/playback-verification-spec.md) | usage / privacy | Draft | 0.1.0 |
 | [SPEC-DISTRIBUTION-001 Creator Distribution Calculation and Allocation](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/distribution/creator-allocation-spec.md) | distribution / accounting | Draft | 0.1.0 |
 

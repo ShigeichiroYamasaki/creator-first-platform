@@ -240,6 +240,10 @@ export default defineConfig({
                 link: '/protocol/specs/rights-registry'
               },
               {
+                text: 'Playback Authorization (Draft)',
+                link: '/protocol/specs/playback-authorization'
+              },
+              {
                 text: 'Playback Verification (Draft)',
                 link: '/protocol/specs/playback-verification'
               },
@@ -262,7 +266,8 @@ export default defineConfig({
               { text: '0005 Usage Oracle', link: '/adr/ADR-0005-usage-oracle' },
               { text: '0006 Zero-Knowledge Proof', link: '/adr/ADR-0006-zero-knowledge-proof-strategy' },
               { text: '0007 Blockchain / L2', link: '/adr/ADR-0007-blockchain-l2-strategy' },
-              { text: '0008 Account / Wallet / Identity', link: '/adr/ADR-0008-account-wallet-identity-strategy' }
+              { text: '0008 Account / Wallet / Identity', link: '/adr/ADR-0008-account-wallet-identity-strategy' },
+              { text: '0009 Navidrome / Streaming Gateway', link: '/adr/ADR-0009-navidrome-streaming-gateway' }
             ]
           }
         ],

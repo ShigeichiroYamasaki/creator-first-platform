@@ -1144,6 +1144,43 @@ flowchart TD
 
 規模の拡大に応じて、証明生成基盤を独立してスケールできるようにする。
 
+### 9.40.1 Streaming GatewayとNavidrome Adapter
+
+最初のStreaming Vertical Sliceでは、Creator First APIの一部としてStreaming Authorization Gatewayを配置し、NavidromeをPrivate Media Adapterとして接続する。
+
+```mermaid
+flowchart LR
+    CLIENT[Player]
+    GATEWAY[Streaming Authorization Gateway]
+    CACHE[Redis Policy Cache]
+    INDEXER[Blockchain Indexer]
+    NAVI[Navidrome Adapter]
+    EVENT[Playback Event Queue]
+
+    CLIENT --> GATEWAY
+    GATEWAY --> CACHE
+    INDEXER --> CACHE
+    GATEWAY --> NAVI
+    GATEWAY --> EVENT
+```
+
+GatewayはTypeScript / Node.js等で実装できるが、言語とFrameworkはADR採択後のImplementation Decisionとする。Protocol上必要なのは特定Frameworkではなく、次のInterfaceとInvariantである。
+
+- Public Track IDとNavidrome Media IDを分離する
+- Playback SessionをAccount、Track、Plan、Rights VersionおよびExpiryへBindingする
+- Range ResponseをBufferせずBackpressure付きで転送する
+- Client Disconnect時にUpstreamを中断する
+- Navidrome固有のCookie、PasswordおよびAuthorizationを外部へ出さない
+- SubscriptionまたはRights判定不能時の新規再生をFail Closedとする
+- 再生ごとの同期Blockchain RPCを避ける
+- Navidrome Play CountだけをValid Usageにしない
+
+Blockchain Indexerは確認済みEventからSubscription / Rights Read Modelを構築する。Read Modelはchain ID、block number、block hash、transaction hashおよびlog indexを保持し、Chain Reorganizationへ対応する。
+
+Gatewayの公開APIは専用のCatalog API、Playback Session APIおよびStream APIに限定し、任意のNavidrome Pathを中継する汎用Proxyにはしない。
+
+[ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway)はこの構成を`Proposed`として記録し、負荷、障害、SecurityおよびOSS License検証をAcceptedへのGateとする。
+
 ---
 
 ## 9.41 Prover Infrastructure

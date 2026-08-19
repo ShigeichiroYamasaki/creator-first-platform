@@ -36,4 +36,4 @@ flowchart LR
 | [ADR-0006](./ADR-0006-zero-knowledge-proof-strategy.md)    | Zero-Knowledge Proof Strategy        | Proposed |
 | [ADR-0007](./ADR-0007-blockchain-l2-strategy.md)           | Blockchain / L2 Strategy             | Proposed |
 | [ADR-0008](./ADR-0008-account-wallet-identity-strategy.md) | Account / Wallet / Identity Strategy | Proposed |
-
+| [ADR-0009](./ADR-0009-navidrome-streaming-gateway.md)      | Navidrome / Streaming Gateway        | Proposed |

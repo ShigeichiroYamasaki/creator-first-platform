@@ -15,12 +15,14 @@
 - Whitepaper: `docs/whitepaper/11-legal-sto-tax.md`
 - ADR: `docs/adr/ADR-0007-blockchain-l2-strategy.md`
 - ADR: `docs/adr/ADR-0008-account-wallet-identity-strategy.md`
+- ADR: `docs/adr/ADR-0009-navidrome-streaming-gateway.md`
 
 ### Related Specifications
 
 - `protocol/account/account-lifecycle-spec.md`
 - `protocol/account/wallet-linking-spec.md`
 - `protocol/blockchain/settlement-asset-registry-spec.md`
+- `protocol/streaming/playback-authorization-spec.md`
 - `protocol/conventions.md`
 - `protocol/glossary.md`
 - `protocol/invariants.md`

@@ -353,6 +353,41 @@ flowchart LR
 
 内部APIも「内部だから認証不要」としない。
 
+### 10.13.1 Streaming GatewayのTrust Boundary
+
+Navidromeを利用する構成では、NavidromeをPublic Internetへ直接公開しない。Caddy等のEdge、Streaming Authorization Gateway、Navidromeを異なるNetwork Boundaryへ配置する。
+
+```mermaid
+flowchart LR
+    INTERNET[Internet]
+    EDGE[Caddy :443]
+    GATEWAY[Streaming Gateway]
+    NAVI[Navidrome :4533]
+    MUSIC[Read-only Audio]
+
+    INTERNET --> EDGE --> GATEWAY --> NAVI --> MUSIC
+```
+
+GatewayはNavidrome Externalized Authentication用HeaderをClient入力から引き継がず、認証済みPlatform AccountからPseudonymous Usernameを生成して上書きする。
+
+最低限、次をSecurity Invariantとする。
+
+- Public NetworkからNavidrome Portへ到達できない
+- Gateway以外をNavidrome Trusted Sourceにしない
+- `Remote-User`等のIdentity HeaderをClientが指定できない
+- Public Share、Downloadおよび不要なSubsonic Endpointを公開しない
+- 任意URLまたは任意Navidrome PathをProxyできない
+- Upstream Hostを設定値へ固定してSSRFを防止する
+- Range、Response Size、Timeout、Concurrent StreamおよびTranscodeを制限する
+- Navidrome Cookie、Password、内部Error DetailをClientへ漏らさない
+- Playback URLを短時間SessionへBindingし、取消し可能にする
+
+外部認証のHeader TrustとNetwork Isolationは別々の防御ではなく、同時に成立させる一つのControlとして検証する。
+
+再生証跡についても、Client Heartbeat、Gateway Byte DeliveryおよびNavidrome Responseのいずれか一つを単独で金銭分配の根拠にしない。複数証拠の整合、重複排除、不正判定およびRights Version確認を経てValid Usageとする。
+
+詳細は[ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway)に記録する。
+
 ---
 
 ## 10.14 DDoS と可用性
