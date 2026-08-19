@@ -12,6 +12,8 @@
     "docs:preview": "vitepress preview docs",
     "community:test": "node --test scripts/validate-community-files.test.mjs",
     "community:validate": "node scripts/validate-community-files.mjs",
+    "decisions:test": "node --test scripts/validate-decisions.test.mjs",
+    "decisions:validate": "node scripts/validate-decisions.mjs",
     "deployment:test": "node --test scripts/verify-deployment.test.mjs",
     "deployment:verify": "node scripts/verify-deployment.mjs",
     "protocol:validate": "node scripts/validate-protocol.mjs",
@@ -22,7 +24,7 @@
     "site:test": "node --test scripts/validate-site-output.test.mjs",
     "workflow:validate": "node scripts/validate-workflows.mjs",
     "workflow:test": "node --test scripts/validate-workflows.test.mjs",
-    "validate": "npm run workflow:test && npm run workflow:validate && npm run community:test && npm run community:validate && npm run deployment:test && npm run protocol:test && npm run protocol:validate && npm run status:test && npm run status:validate && npm run docs:build && npm run site:test && npm run site:validate"
+    "validate": "npm run workflow:test && npm run workflow:validate && npm run community:test && npm run community:validate && npm run deployment:test && npm run protocol:test && npm run protocol:validate && npm run decisions:test && npm run decisions:validate && npm run status:test && npm run status:validate && npm run docs:build && npm run site:test && npm run site:validate"
   },
   "devDependencies": {
     "markdown-it-mathjax3": "^4.3.2",

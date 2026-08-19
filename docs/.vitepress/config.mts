@@ -209,6 +209,7 @@ export default defineConfig({
               { text: '概要・実装フロー', link: '/protocol/' },
               { text: 'End-to-End Vertical Slice', link: '/protocol/vertical-slice' },
               { text: 'Vertical Slice実装計画', link: '/protocol/implementation-plan' },
+              { text: 'Decision Baseline', link: '/protocol/decision-baseline' },
               { text: '決定待ち一覧', link: '/protocol/open-questions' },
               { text: 'Protocol README', link: '/protocol/foundation/overview' },
               { text: 'Conventions', link: '/protocol/foundation/conventions' },

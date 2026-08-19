@@ -75,6 +75,11 @@ Planned domains include:
 - Test Requirements coverage for every MUST and MUST NOT requirement;
 - stable Open Question identifiers, Decision owners and blocked gates.
 
+`npm run decisions:validate` additionally verifies that every specification is
+covered by the source-derived Decision Register, unresolved questions remain
+blocked, decided questions have public evidence, and every Mock assumption has
+a bounded scope, source question, expiry condition and prohibited uses.
+
 ## AI Agent Rule
 
 Before implementing a feature, read:
