@@ -1,3 +1,7 @@
+---
+description: CreatorとUserの代表者を検証可能かつ操作耐性のある方法で抽選するSortition Protocolの設計案。
+---
+
 # ADR-0002: Verifiable Sortition
 
 **Status:** Proposed  

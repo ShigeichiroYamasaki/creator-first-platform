@@ -1,0 +1,117 @@
+name: Implementation Work Package
+description: Vertical SliceのIMP Work Packageを、仕様・判断・検証証拠へ接続する実装Issue
+title: "[Implementation]: IMP-"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        このFormはVertical Slice Implementation PlanのMock／Testnet Work Package用です。
+        Issueの作成やMock完成は、本番利用、実資金、実在Rights、適法性、監査完了を意味しません。
+        秘密情報、個人情報、契約書、実在するRights・税務資料を記載しないでください。
+
+  - type: input
+    id: work-package-id
+    attributes:
+      label: Work Package ID
+      description: Implementation Planの安定IDを一つ入力してください。
+      placeholder: IMP-007
+    validations:
+      required: true
+
+  - type: textarea
+    id: specification-baseline
+    attributes:
+      label: Specification Baseline
+      description: 対象となるSPEC ID、Version、関連Requirement・Invariant IDを列挙してください。
+      placeholder: |
+        - SPEC-DISTRIBUTION-001 v0.1.0
+        - REQ-DISTRIBUTION-001–023
+        - SPEC-INV-DISTRIBUTION-001–006
+    validations:
+      required: true
+
+  - type: textarea
+    id: decision-baseline
+    attributes:
+      label: Decision and Mock Assumption Baseline
+      description: 採用済みDecision ID、未解決OQ ID、Mock専用仮定、実装を停止する判断を区別してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: このIssueで実装・検証する振る舞いを、レビュー可能な範囲で記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of Scope and Production Prohibitions
+      description: 実装しない範囲と、このIssue完了後も禁止される本番行為を明示してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: Deliverable Artifacts
+      description: Schema、interface、state machine、fixture、commitment、runbook等、生成するArtifactと保存場所を列挙してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and Interfaces
+      description: 前提IMP、外部依存、入力・出力Artifact、Version boundary、障害時の代替を記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: tests
+    attributes:
+      label: Tests and Fault Injection
+      description: 正常系、境界、replay、duplicate、delay、reorder、outage、correction等の試験と期待状態を記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: security-privacy
+    attributes:
+      label: Security, Privacy and Legal Boundaries
+      description: Trust boundary、権限、データ分類、redaction、retention、専門レビュー条件を記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: completion-evidence
+    attributes:
+      label: Objective Completion Evidence
+      description: Issueを完了できる客観的証拠、再現コマンド、期待Artifact、review recordを記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: rollback
+    attributes:
+      label: Migration and Rollback
+      description: Schema／State移行、互換性、切り戻し、既存Fixtureへの影響を記載してください。
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: implementation-confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: 未解決のOpen Questionをコードや設定値で暗黙に決定しません。
+          required: true
+        - label: Mock／Testnet成果を本番稼働、実資金対応、法務承認、監査完了として表示しません。
+          required: true
+        - label: 秘密情報、個人情報、秘密鍵、実在する契約・Rights・税務資料を含めません。
+          required: true
+        - label: 失敗、再試行、重複、監査、訂正、切り戻しを完了条件に含めます。
+          required: true

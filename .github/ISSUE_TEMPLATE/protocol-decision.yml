@@ -1,0 +1,124 @@
+name: Protocol Decision
+description: Open Questionを解決し、Protocol Specificationへ反映するための意思決定提案
+title: "[Protocol Decision]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        このFormはDraft Protocol SpecificationのOpen Questionを解決するための提案です。
+        Issueの作成は、法人機関、Protocol Governanceまたは専門家による承認を意味しません。
+        秘密情報、個人情報、契約書、未公開の法務・税務資料は記載しないでください。
+
+  - type: input
+    id: open-question-id
+    attributes:
+      label: Open Question ID
+      description: Protocol Decision Queueに記載された安定IDを入力してください。
+      placeholder: OQ-SUBSCRIPTION-002
+    validations:
+      required: true
+
+  - type: input
+    id: source-specification
+    attributes:
+      label: Source Specification
+      description: 対象仕様のリポジトリ相対パスまたは公開URLを入力してください。
+      placeholder: protocol/account/subscription-settlement-spec.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: decision-context
+    attributes:
+      label: Decision Context
+      description: なぜ今この判断が必要で、何を決めない限り先へ進めないかを説明してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: options
+    attributes:
+      label: Options Considered
+      description: 現状維持を含む選択肢、利点、欠点、棄却条件を比較してください。
+      placeholder: |
+        1. Option A — benefits, risks and rejection criteria
+        2. Option B — benefits, risks and rejection criteria
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and Primary Sources
+      description: 技術検証、利用者調査、法令・監督指針、発行者資料等の一次資料と確認日を記載してください。
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-parties
+    attributes:
+      label: Affected Parties
+      description: 判断によって直接影響を受ける主体をすべて選択してください。
+      multiple: true
+      options:
+        - Creator
+        - User
+        - Rights Holder
+        - Operating Company
+        - Protocol Governance
+        - Shareholder or STO Investor
+        - Payment or Financial Partner
+    validations:
+      required: true
+
+  - type: input
+    id: decision-owner
+    attributes:
+      label: Accountable Decision Owner
+      description: 役割案だけでなく、このIssueを決定へ進める実在の担当者または機関を記載してください。未確定なら未確定と理由を記載します。
+    validations:
+      required: true
+
+  - type: textarea
+    id: required-reviews
+    attributes:
+      label: Required Reviews and Approvals
+      description: 法務、税務、権利、プライバシー、セキュリティ、運用、Creator/User等、必要なレビューと承認条件を列挙してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact, Risk and Reversibility
+      description: Creator・Userの便益、権利、費用、セキュリティ、規制、移行、切り戻しへの影響を説明してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Evidence
+      description: Open Questionを解決済みとするために必要な、客観的に確認可能な証拠を記載してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: records-to-update
+    attributes:
+      label: Records to Update
+      description: CFP、Governance Decision、ADR、Protocol Version、要件、Invariant、Test Requirements、Status等の更新対象を列挙してください。
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: このIssueの作成だけでは、法務・専門家・法人機関・Protocol Governanceの承認にならないことを理解しています。
+          required: true
+        - label: 秘密情報、個人情報、秘密鍵、契約書、未公開の法務・税務資料を含めていません。
+          required: true
+        - label: 実装で暗黙に決定せず、決定記録とProtocol Specificationを先に更新します。
+          required: true

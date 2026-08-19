@@ -1,3 +1,7 @@
+---
+description: 再生イベントを検証・集計し、プライバシーを保ちながら分配可能な利用実績へ変換するUsage Oracleの設計案。
+---
+
 # ADR-0005: Usage Oracle
 
 **Status:** Proposed  

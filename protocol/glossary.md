@@ -28,6 +28,20 @@ A Wallet may be implemented as an externally owned account, smart account or ano
 
 Wallet ≠ Person.
 
+## Wallet Link
+
+A versioned relationship between an Account and a Wallet for explicitly approved purposes and chain contexts.
+
+A Wallet Link records Proof of Wallet Control for a specific operation. It does not establish Person, Legal Identity, Creator status, Rights Ownership or Governance eligibility.
+
+## Wallet Link Challenge
+
+A short-lived, single-use authorization request bound to an Account operation, Wallet, chain, relying-party domain, purpose, nonce and validity period.
+
+## Link Purpose
+
+An explicit permission category assigned to a Wallet Link, such as payment, distribution, governance or login. One Link Purpose MUST NOT silently authorize another.
+
 ## Legal Identity
 
 Identity information used when legal, contractual, tax or regulatory verification is required.
@@ -148,7 +162,21 @@ Protocol state that has completed the applicable verification, challenge and fin
 
 ## Approved Settlement Asset
 
-An asset authorized by the applicable Protocol Specification and governance process for settlement.
+An exact versioned asset deployment authorized by the applicable Protocol Specification and approval process for a defined scope and Activation Window.
+
+An Approved Settlement Asset MUST NOT be identified by symbol, display name or brand alone.
+
+## Asset Entry
+
+An immutable versioned record containing the technical identity, approval state, evidence references, scope and Activation Window of a settlement asset.
+
+## Activation Window
+
+The half-open UTC interval during which a versioned approval is effective for new operations.
+
+## Consumer Snapshot
+
+The exact registry and Asset Entry versions bound to a consuming operation so that the operation remains reproducible after later registry changes.
 
 ## Commitment
 

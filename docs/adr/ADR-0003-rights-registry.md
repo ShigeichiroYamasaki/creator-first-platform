@@ -1,3 +1,7 @@
+---
+description: 楽曲、権利者、権利種別、持分、許諾範囲、証憑を追跡可能に管理するRights Registryの設計案。
+---
+
 # ADR-0003: Rights Registry
 
 **Status:** Proposed  

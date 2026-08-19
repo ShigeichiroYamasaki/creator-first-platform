@@ -1,5 +1,93 @@
 /* Creator First Platform - custom VitePress styles */
 
+:root {
+  --vp-c-brand-1: #3451b2;
+  --vp-c-brand-2: #2745a5;
+  --vp-c-brand-3: #1f3a8a;
+  --vp-c-brand-soft: rgba(52, 81, 178, 0.14);
+}
+
+.dark {
+  --vp-c-brand-1: #9eb1ff;
+  --vp-c-brand-2: #849dff;
+  --vp-c-brand-3: #6b86f5;
+  --vp-c-brand-soft: rgba(132, 157, 255, 0.16);
+}
+
+.VPNavBarTitle .logo {
+  border-radius: 7px;
+}
+
+.VPHomeHero .name {
+  letter-spacing: -0.025em;
+}
+
+.VPFeature {
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.VPFeature:hover {
+  border-color: var(--vp-c-brand-1);
+  transform: translateY(-2px);
+}
+
+.mermaid-diagram {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+
+.mermaid-diagram__canvas {
+  overflow-x: auto;
+}
+
+.mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.mermaid-diagram__status,
+.mermaid-diagram--loading,
+.mermaid-diagram--error {
+  padding: 1rem;
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-2);
+}
+
+.mermaid-diagram--error {
+  color: var(--vp-c-danger-1);
+}
+
+.mermaid-diagram__source {
+  margin-top: 0.75rem;
+  text-align: left;
+  color: var(--vp-c-text-2);
+}
+
+.mermaid-diagram__source summary {
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.mermaid-diagram__source pre {
+  max-height: 18rem;
+  overflow: auto;
+  white-space: pre;
+}
+
+.vp-doc > div:has(> table) {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.vp-doc :focus-visible,
+.VPNav :focus-visible,
+.VPSidebar :focus-visible {
+  outline: 3px solid var(--vp-c-brand-1);
+  outline-offset: 3px;
+}
+
 .homepage-symbol {
   display: flex;
   justify-content: center;

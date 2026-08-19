@@ -1,3 +1,7 @@
+---
+description: 法的基盤、Music MVP、Creator Economy、検証可能性、DAO、STOへ進むStage-Gate方式の実装計画。
+---
+
 # 13. ロードマップ — Roadmap
 
 > [!NOTE]
@@ -113,7 +117,7 @@ Codeの正統性はCode自身ではなく、その上位にある正統なGovern
 
 ---
 
-# 13.5 Phase 0 — Foundation
+## 13.5 Phase 0 — Foundation
 
 Phase 0では、何を作るかだけでなく、**誰が責任を持ち、誰が将来統治するのか**を定義する。
 
@@ -256,7 +260,7 @@ Phase 1へ進む条件は、
 
 ---
 
-# 13.10 Phase 1 — Music MVP
+## 13.10 Phase 1 — Music MVP
 
 Phase 1では音楽サービスとしての価値を検証する。
 
@@ -366,7 +370,7 @@ Phase 2へ進む条件は、
 
 ---
 
-# 13.15 Phase 2 — Creator Economy
+## 13.15 Phase 2 — Creator Economy
 
 Phase 2ではCreatorへの経済的価値還元を実装する。
 
@@ -482,7 +486,7 @@ Phase 3へ進む条件は、
 
 ---
 
-# 13.20 Phase 3 — Verifiable Platform
+## 13.20 Phase 3 — Verifiable Platform
 
 Phase 3では、
 
@@ -579,7 +583,7 @@ Phase 4へ進む条件は、
 
 ---
 
-# 13.25 Phase 4 — Governance Pilot
+## 13.25 Phase 4 — Governance Pilot
 
 ここから抽選議会を実証する。
 
@@ -759,7 +763,7 @@ Creator Houseでは、
 
 ---
 
-# 13.33 Phase 5 — Protocol Governance
+## 13.33 Phase 5 — Protocol Governance
 
 Phase 5で抽選議会へ実際のProtocol Governance権限を段階的に移す。
 
@@ -946,7 +950,7 @@ STO & Scaleへ進む条件は、
 
 ---
 
-# 13.41 Phase 6 — STO & Scale
+## 13.41 Phase 6 — STO & Scale
 
 STOはPlatform Governanceを作るための前提ではない。
 
@@ -1052,7 +1056,7 @@ STO前に、
 
 ---
 
-# 13.46 Phase 7 — International Expansion
+## 13.46 Phase 7 — International Expansion
 
 国際展開では、
 
@@ -1103,7 +1107,7 @@ flowchart TD
 
 ---
 
-# 13.48 技術ロードマップ
+## 13.48 技術ロードマップ
 
 ```mermaid
 flowchart LR
@@ -1123,7 +1127,7 @@ flowchart LR
 
 ---
 
-# 13.49 Governanceロードマップ
+## 13.49 Governanceロードマップ
 
 ```mermaid
 flowchart LR
@@ -1145,7 +1149,7 @@ flowchart LR
 
 ---
 
-# 13.50 Creatorロードマップ
+## 13.50 Creatorロードマップ
 
 ```mermaid
 flowchart LR
@@ -1162,7 +1166,7 @@ flowchart LR
 
 ---
 
-# 13.51 Userロードマップ
+## 13.51 Userロードマップ
 
 ```mermaid
 flowchart LR
@@ -1181,7 +1185,7 @@ User Houseは架空アカウントや資本保有者の集合ではなく、実�
 
 ---
 
-# 13.52 法務ロードマップ
+## 13.52 法務ロードマップ
 
 ```mermaid
 flowchart LR
@@ -1200,7 +1204,7 @@ flowchart LR
 
 ---
 
-# 13.53 Securityロードマップ
+## 13.53 Securityロードマップ
 
 ```mermaid
 flowchart LR
@@ -1220,7 +1224,7 @@ GovernanceがProtocol権限を持つ段階では、Governance Attack自体がSec
 
 ---
 
-# 13.54 Infrastructureロードマップ
+## 13.54 Infrastructureロードマップ
 
 ```mermaid
 flowchart LR
@@ -1237,7 +1241,7 @@ flowchart LR
 
 ---
 
-# 13.55 AI共同開発ロードマップ
+## 13.55 AI共同開発ロードマップ
 
 AIは、
 
@@ -1268,7 +1272,7 @@ flowchart LR
 
 ---
 
-# 13.56 GitHubを制度とCodeの履歴にする
+## 13.56 GitHubを制度とCodeの履歴にする
 
 GitHubには、
 
@@ -1301,7 +1305,7 @@ flowchart TD
 
 ---
 
-# 13.57 推奨Repository構造
+## 13.57 推奨Repository構造
 
 ```text
 creator-first-platform/
@@ -1330,7 +1334,7 @@ creator-first-platform/
 
 ---
 
-# 13.58 Versioning
+## 13.58 Versioning
 
 Whitepaper、Charters、ProtocolをVersion管理する。
 
@@ -1364,7 +1368,7 @@ flowchart LR
 
 ---
 
-# 13.59 WhitepaperはLiving Document
+## 13.59 WhitepaperはLiving Document
 
 Whitepaperは完成後変更しない宣言文ではない。
 
@@ -1376,7 +1380,7 @@ Whitepaperは完成後変更しない宣言文ではない。
 
 ---
 
-# 13.60 Phase別KPI
+## 13.60 Phase別KPI
 
 | Phase | 主要KPI |
 | --- | --- |
@@ -1391,7 +1395,7 @@ Whitepaperは完成後変更しない宣言文ではない。
 
 ---
 
-# 13.61 Governance Health KPI
+## 13.61 Governance Health KPI
 
 特にGovernanceでは、
 
@@ -1411,7 +1415,7 @@ Whitepaperは完成後変更しない宣言文ではない。
 
 ---
 
-# 13.62 North Star
+## 13.62 North Star
 
 Creator First PlatformのNorth Starは、再生回数や企業価値だけではない。
 
@@ -1428,7 +1432,7 @@ flowchart TD
 
 ---
 
-# 13.63 Kill / Pivot Criteria
+## 13.63 Kill / Pivot Criteria
 
 各Phaseでは進む条件だけでなく、見直す条件を定める。
 
@@ -1460,7 +1464,7 @@ flowchart LR
 
 ---
 
-# 13.64 ロードマップ全体
+## 13.64 ロードマップ全体
 
 ```mermaid
 flowchart TD
@@ -1486,7 +1490,7 @@ flowchart TD
 
 ---
 
-# 13.65 最終アーキテクチャ
+## 13.65 最終アーキテクチャ
 
 ```mermaid
 flowchart TD
@@ -1532,7 +1536,7 @@ flowchart TD
 
 ---
 
-# 13.66 成功の定義
+## 13.66 成功の定義
 
 Creator First Platformの成功とは、
 
@@ -1552,7 +1556,7 @@ Creator First Platformの成功とは、
 
 ---
 
-# 13.67 本章のまとめ
+## 13.67 本章のまとめ
 
 Creator First Platformのロードマップは、
 

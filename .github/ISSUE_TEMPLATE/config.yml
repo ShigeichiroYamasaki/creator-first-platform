@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/ShigeichiroYamasaki/creator-first-platform/security/policy
+    about: 脆弱性や秘密情報の漏えいは公開Issueに記載せず、Security Policyを確認してください。

@@ -1,3 +1,7 @@
+---
+description: 決済、権利、利用証明、分配、ガバナンスを支えるBlockchainとL2の選定・抽象化方針案。
+---
+
 # ADR-0007: Blockchain / L2 Strategy
 
 **Status:** Proposed  

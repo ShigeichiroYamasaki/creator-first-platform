@@ -1,3 +1,7 @@
+---
+description: クリエイターの持続可能性と利用者の利便性を中心に据え、株式会社とDAOを接続するプラットフォームの理念。
+---
+
 # 1. ビジョン — Vision
 
 ## 1.1 Creator First Platform

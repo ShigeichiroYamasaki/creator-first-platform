@@ -1,3 +1,7 @@
+---
+description: CreatorとUserの抽選代表による二院制の熟議を、Protocol Specificationと自動執行へ接続するガバナンス設計案。
+---
+
 # ADR-0001: Governance Model
 
 **Status:** Proposed  
@@ -73,4 +77,3 @@ Community Referendumを必要とする。
 - Whitepaper: Vision
 - Whitepaper: Governance
 - Whitepaper: Roadmap
-
