@@ -65,6 +65,20 @@ A lower-level Protocol Specification or implementation MUST NOT override these i
 - **INV-USAGE-003**  
   Client-reported Usage MUST NOT be accepted as authoritative without the applicable verification process.
 
+## Media Delivery
+
+- **INV-DELIVERY-001**
+  A media delivery path MUST NOT bypass the applicable Subscription and Rights authorization boundary.
+
+- **INV-DELIVERY-002**
+  A Playback Session MUST bind the exact Account context, content version, Subscription scope, Rights State, policy version and expiry used to authorize it.
+
+- **INV-DELIVERY-003**
+  A Media Adapter identifier, file path or vendor-specific object identifier MUST NOT replace the Canonical Track identity used by Rights, Usage or Distribution.
+
+- **INV-DELIVERY-004**
+  Authorization, byte delivery, Media Adapter counters or client progress alone MUST NOT establish Verified Usage.
+
 ## Distribution
 
 - **INV-DISTRIBUTION-001**  

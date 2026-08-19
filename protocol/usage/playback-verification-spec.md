@@ -16,11 +16,13 @@
 - Whitepaper: `docs/whitepaper/10-security.md`
 - ADR: `docs/adr/ADR-0004-creator-distribution-model.md`
 - ADR: `docs/adr/ADR-0005-usage-oracle.md`
+- ADR: `docs/adr/ADR-0009-navidrome-streaming-gateway.md`
 
 ### Related Specifications
 
 - `protocol/account/account-lifecycle-spec.md`
 - `protocol/rights/rights-registry-spec.md`
+- `protocol/streaming/playback-authorization-spec.md`
 - `protocol/conventions.md`
 - `protocol/glossary.md`
 - `protocol/invariants.md`
@@ -192,6 +194,9 @@ OPEN → CLOSING → CHALLENGE_WINDOW → FINALIZED
 - **REQ-USAGE-028:** Public aggregates, commitments, proofs and Creator views MUST prevent access to another User's detailed listening history.
 - **REQ-USAGE-029:** User transparency evidence MUST reveal only the requesting User's authorized inclusion status and MUST NOT expose another User or protected fraud controls.
 - **REQ-USAGE-030:** Creator transparency evidence MUST be limited to approved content-level or higher aggregates and MUST NOT enable User re-identification through sparse groups.
+- **REQ-USAGE-048:** Delivery Evidence consumed from SPEC-STREAMING-001 MUST bind Playback Session ID, Authorization Decision ID, Canonical Track ID, content version, Rights Snapshot version, authenticated producer, evidence schema, bounded range or byte summary and trusted timestamps.
+- **REQ-USAGE-049:** Verification MUST reject or hold an event when its Playback Session, Authorization Decision, content identity, Rights version or Delivery Evidence bindings conflict or cannot be verified.
+- **REQ-USAGE-050:** Verification MUST distinguish authorization, delivery start, byte delivery, client progress and Verified Usage as separate states and evidence claims.
 
 ### MUST NOT
 
@@ -203,6 +208,7 @@ OPEN → CLOSING → CHALLENGE_WINDOW → FINALIZED
 - **REQ-USAGE-036:** Detailed User-level listening history, stable session identifiers or raw device evidence MUST NOT be written to a public blockchain.
 - **REQ-USAGE-037:** The Usage Oracle MUST NOT decide Rights Ownership, Rights shares, Distribution Policy or payout amount.
 - **REQ-USAGE-038:** AI, anomaly score or fraud model output alone MUST NOT cause irreversible forfeiture, Account closure or Rights determination without the approved review and appeal process.
+- **REQ-USAGE-051:** A Navidrome or other Media Adapter play count, scrobble, response, byte count or log entry MUST NOT be the sole authority for Verified Usage.
 
 ### SHOULD
 
@@ -228,6 +234,7 @@ OPEN → CLOSING → CHALLENGE_WINDOW → FINALIZED
 - `INV-USAGE-001`
 - `INV-USAGE-002`
 - `INV-USAGE-003`
+- `INV-DELIVERY-004`
 - `INV-EVOLUTION-001`
 - `INV-EVOLUTION-002`
 - `INV-EVOLUTION-003`
@@ -337,6 +344,8 @@ Audit records MUST be tamper-evident and access controlled, with public summarie
 | REQ-USAGE-015–023 | Period / property / authorization | Deterministic snapshots finalize once, bind exact inputs and use append-only correction |
 | REQ-USAGE-024–030 | Challenge / availability / privacy | Challenges are traceable; outages hold finalization; User and Creator views preserve privacy |
 | REQ-USAGE-031–038 | Negative / boundary | Client, Wallet, disputed data and AI never become unauthorized usage, Rights or disciplinary authority |
+| REQ-USAGE-048–050 | Streaming evidence integration | Delivery evidence binds the exact authorization and content context while remaining distinct from Verified Usage |
+| REQ-USAGE-051 | Negative / adapter authority | No Media Adapter counter, log or response becomes the sole authority for Verified Usage |
 | REQ-USAGE-039–044 | Conformance | Implemented SHOULD behavior is verified or deviation is documented under conventions |
 | REQ-USAGE-045–047 | Optional conformance | Commitments, proofs and offline evidence preserve every MUST, MUST NOT and invariant |
 
@@ -364,3 +373,4 @@ Property and adversarial tests MUST include duplicate retries, multi-source dupl
 - **OQ-USAGE-ORACLE-006:** **Decision owner:** Operating Company / Trust and Safety, Legal and Support; **Blocks:** fraud-review operations; **Question:** What evidence threshold, reviewer independence, notification and appeal process apply before disputed usage is excluded?
 - **OQ-USAGE-ORACLE-007:** **Decision owner:** Protocol Governance / Security and Distribution Engineering; **Blocks:** Usage Snapshot consumer interface; **Question:** Which canonical serialization, commitment and independent-verification method will the first Usage Snapshot use?
 - **OQ-USAGE-ORACLE-008:** **Decision owner:** Operating Company / Product, Privacy and Creator Relations; **Blocks:** transparency launch; **Question:** Which User inclusion evidence and minimum Creator aggregate size provide useful transparency without enabling re-identification?
+- **OQ-USAGE-ORACLE-009:** **Decision owner:** Operating Company / Platform, Privacy and Usage Engineering; **Blocks:** Streaming-to-Usage evidence adapter; **Question:** Which SPEC-STREAMING-001 Delivery Evidence fields and reconciliation rules are required for the first Usage Verification Policy?

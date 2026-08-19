@@ -211,6 +211,50 @@ flowchart LR
 
 など、音楽配信特有の要件があるためである。
 
+### 4.5.1 Navidromeを利用する初期Streaming Vertical Slice
+
+初期実装では、音源スキャン、検索、Playlist、HTTP RangeおよびTranscodingを早期に検証するため、NavidromeをMedia Server候補として利用する。
+
+ただし、NavidromeをSubscription、RightsまたはCreator DistributionのSource of Truthにはしない。
+
+```mermaid
+flowchart LR
+    PLAYER[Web / Mobile Player]
+    EDGE[Caddy / Edge]
+    GATEWAY[Creator First Streaming Gateway]
+    POLICY[Subscription / Rights Read Model]
+    NAVI[Navidrome]
+    MUSIC[Read-only Music Volume]
+    EVIDENCE[Playback Evidence]
+    CHAIN[Smart Contracts]
+
+    PLAYER --> EDGE --> GATEWAY
+    GATEWAY --> POLICY
+    POLICY --> CHAIN
+    GATEWAY --> NAVI --> MUSIC
+    GATEWAY --> EVIDENCE
+```
+
+Streaming Authorization Gatewayは、再生開始前に次を検証する。
+
+- Platform Session
+- AccountとWalletの関連状態
+- On-chain Subscriptionを反映したRead Model
+- Trackの公開状態
+- Rights Version
+- Plan、Territory、License Window
+- Concurrent StreamおよびRate Limit
+
+認可後に短時間のPlayback Sessionを発行し、Gatewayだけが非公開Network上のNavidromeへ接続する。ClientへNavidromeのCredential、Internal Media IDまたは任意API Proxyを公開しない。
+
+NavidromeのExternalized Authenticationを利用する場合、GatewayはClient supplied authentication headerを除去し、Gatewayが生成したPseudonymous User IDだけを内部Headerとして付与する。
+
+MVPではGatewayが音声ResponseをBufferせずに中継する。これはStreaming、Subscription、RightsおよびUsageをEnd-to-Endで検証するための段階的構成であり、本番Scaleの最終形を固定するものではない。
+
+負荷試験で定義するScale Triggerを超えた場合は、事前Transcode、Object Storage、CDNおよび短時間署名URLへAudio Byte Deliveryを移す。Creator First Track ID、Rights DecisionおよびPlayback Evidenceの境界を維持することで、Navidromeを将来置換可能にする。
+
+詳細な設計判断は[ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway)に記録する。
+
 ---
 
 ## 4.6 AWS等のクラウドとIPFSの役割分担

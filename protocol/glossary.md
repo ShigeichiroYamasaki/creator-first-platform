@@ -128,6 +128,32 @@ Creator registration MUST NOT be treated as Rights Ownership.
 
 A recorded event representing Content usage observed by the platform.
 
+## Canonical Track ID
+
+A stable Creator First content identifier used across Rights, Streaming, Usage and Distribution independently of a Media Adapter or storage path.
+
+## Media Adapter
+
+A replaceable private component that resolves or delivers media under a previously authorized Playback Session.
+
+A Media Adapter does not determine Subscription, Rights Ownership, Verified Usage or payout.
+
+## Authorization Decision
+
+An immutable allow or deny result bound to the exact Account, Subscription, Rights, content, policy and time inputs used for playback authorization.
+
+## Playback Session
+
+A short-lived and revocable authorization for one Account context to request one bounded content version under defined Plan, Rights, territory, time and delivery parameters.
+
+Playback Session authorization does not itself establish Verified Usage.
+
+## Delivery Evidence
+
+Authenticated server-side evidence that an authorized media response was attempted or delivered, including bounded range, byte, status and timing summaries as defined by policy.
+
+Delivery Evidence MUST be verified with other required evidence before it becomes Verified Usage.
+
 ## Verified Usage
 
 Usage that has passed the applicable verification rules and may be used for distribution calculations.

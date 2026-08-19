@@ -32,26 +32,29 @@ flowchart TD
     W3[IMP-003 Account and Wallet]
     W4[IMP-004 Asset and Payment Mock]
     W5[IMP-005 Rights Registry]
-    W6[IMP-006 Usage Pipeline]
-    W7[IMP-007 Distribution Engine]
-    W8[IMP-008 Settlement Stub]
-    W9[IMP-009 End-to-End Harness]
-    W10[IMP-010 Security and Operations]
+    W6[IMP-006 Streaming Gateway]
+    W7[IMP-007 Usage Pipeline]
+    W8[IMP-008 Distribution Engine]
+    W9[IMP-009 Settlement Stub]
+    W10[IMP-010 End-to-End Harness]
+    W11[IMP-011 Security and Operations]
 
     W1 --> W2
     W2 --> W3 --> W4
     W2 --> W5
     W3 --> W6
-    W5 --> W6
-    W4 --> W7
-    W5 --> W7
-    W6 --> W7 --> W8
-    W3 --> W9
-    W4 --> W9
-    W5 --> W9
-    W6 --> W9
-    W7 --> W9
-    W8 --> W9 --> W10
+    W4 --> W6
+    W5 --> W6 --> W7
+    W4 --> W8
+    W5 --> W8
+    W7 --> W8 --> W9
+    W3 --> W10
+    W4 --> W10
+    W5 --> W10
+    W6 --> W10
+    W7 --> W10
+    W8 --> W10
+    W9 --> W10 --> W11
 ```
 
 ## Work Packages
@@ -72,7 +75,7 @@ flowchart TD
 
 ### IMP-002 Canonical Contracts
 
-**目的:** 7仕様間で受け渡すArtifactを、実装言語やTransportから独立した契約として固定する。
+**目的:** 8仕様間で受け渡すArtifactを、実装言語やTransportから独立した契約として固定する。
 
 **成果物:**
 
@@ -132,7 +135,25 @@ flowchart TD
 
 **終了証拠:** Creator登録、Uploader、WalletまたはfingerprintだけではRightsが有効にならず、過去のRights Snapshotを再現できる。
 
-### IMP-006 Usage Pipeline Mock
+### IMP-006 Streaming Gateway Mock
+
+**目的:** Active SubscriptionとRights Snapshotから短時間Playback Sessionを作成し、非公開Media Adapter経由のRange配信とDelivery EvidenceをMockで検証する。
+
+**対象仕様:** [SPEC-STREAMING-001](/protocol/specs/playback-authorization)
+
+**成果物:**
+
+- Authorization Decision、reason code、Playback Session、Concurrency Lease
+- Account、Subscription、Rights、Plan、地域、期間を固定したPolicy evaluator
+- Canonical Track IDとMock Navidrome Media IDのversioned mapping
+- `Remote-User`等のClient supplied trusted header除去
+- Range、Seek、Reconnect、Cancellation、BackpressureのStreaming Adapter
+- idempotentなDelivery EvidenceとUsage handoff
+- Subscription取消し、Rights停止、stale Read Model、adapter outageのfailure fixture
+
+**終了証拠:** Public routeまたは偽造headerからMedia Adapterを迂回できず、Playback Sessionが別Account・Track・Rights・Planへ拡張されず、Adapter交換後もCanonical IDとEvidence semanticsが同一である。
+
+### IMP-007 Usage Pipeline Mock
 
 **目的:** Playback Eventを重複なく検証し、privacy-safeなUsage Snapshotを確定する。
 
@@ -148,7 +169,7 @@ flowchart TD
 
 **終了証拠:** 同一logical playbackの複数Source・Retryが一度だけ算入され、公開ArtifactからUserの詳細履歴を復元できない。
 
-### IMP-007 Distribution Engine
+### IMP-008 Distribution Engine
 
 **目的:** 確定したRevenue・Usage・Rights・Policyから、整数単位で完全に照合できるDistribution Resultを生成する。
 
@@ -165,7 +186,7 @@ flowchart TD
 
 **終了証拠:** 入力順序を変えても同じ結果となり、Revenueの全単位がDeduction、Pool、Recipient、Hold、CarryまたはResidualへ一致する。
 
-### IMP-008 Settlement Stub
+### IMP-009 Settlement Stub
 
 **目的:** Allocation finalityと支払finalityを混同せず、送金を行わないInstruction lifecycleを検証する。
 
@@ -183,7 +204,7 @@ flowchart TD
 このStubは実送金、custody、KYC、税務、制裁、Wallet変更、鍵管理またはSmart Contractを承認するものではありません。本番へ進む前に専用Specificationと専門家レビューが必要です。
 :::
 
-### IMP-009 End-to-End Harness
+### IMP-010 End-to-End Harness
 
 **目的:** すべてのMockを一つのPeriodと相関IDで接続し、正常系と障害系を自動再現する。
 
@@ -197,7 +218,7 @@ flowchart TD
 
 **終了証拠:** clean environmentで同一commitから同じArtifactとcommitmentを再生成し、失敗を注入したScenarioが期待したfail-closed状態になる。
 
-### IMP-010 Security, Privacy and Operations
+### IMP-011 Security, Privacy and Operations
 
 **目的:** 機能テストだけでなく、脅威、データフロー、権限、監視、回復をVertical Slice全体で検証する。
 
@@ -219,9 +240,9 @@ flowchart TD
 | G0 Decision Ready | IMP-001 | Blocking OQ、owner、Mock assumption、review条件 | 本番判断済みと表示すること |
 | G1 Contract Ready | IMP-002 | Schema、canonical fixture、compatibility test | API／DB／Chainを固定すること |
 | G2 Payment Slice | IMP-003–004 | Account・Wallet・Mock Paymentの障害試験 | 実Tokenや利用者資金を受けること |
-| G3 Creator Slice | IMP-005–007 | Rights・Usage・Distributionの完全照合 | 実在RightsやCreator報酬を扱うこと |
-| G4 End-to-End Mock | IMP-008–009 | 一括Scenario、fault injection、lineage | 本番Settlementを実行すること |
-| G5 Review Ready | IMP-010 | threat／privacy／operations evidence | 監査済み・適法・本番Readyと主張すること |
+| G3 Playback Slice | IMP-005–007 | Rights・Playback Authorization・Usage Evidenceの迂回防止と照合 | 実在Rightsや一般公開配信を扱うこと |
+| G4 Creator Slice | IMP-008–010 | Distribution・Settlement Stub・一括Scenarioの完全照合 | 実在Creator報酬や本番Settlementを扱うこと |
+| G5 Review Ready | IMP-011 | threat／privacy／operations evidence | 監査済み・適法・本番Readyと主張すること |
 
 ## End-to-End Test Matrix
 
@@ -230,6 +251,9 @@ flowchart TD
 | Happy path | すべてのMock evidenceが有効 | 一つのFinalized Resultと一つのInstruction effect |
 | Payment replay | 同じTransfer／Callbackを複数回送信 | Subscription有効化は一度だけ |
 | Usage duplication | 同一Playbackを複数Sourceから送信 | Usage算入は一度だけ |
+| Adapter bypass | Navidrome直通、偽造`Remote-User`、任意upstream URL | Gateway外の配信を拒否し、Credentialを漏らさない |
+| Playback scope replay | Sessionを別Account・Track・Rights Versionで再利用 | 拒否し、元Sessionのscopeを変更しない |
+| Read Model stale | SubscriptionまたはRights Cacheを期限超過にする | 新規Playback Sessionをfail closedで拒否 |
 | Asset suspension | Intent作成前／Finality前にAsset停止 | 新規Intent拒否または明示的例外状態 |
 | Rights dispute | 一部shareをPeriod中にDispute | 対象額だけHeld、他の照合は維持 |
 | Oracle outage | Period close時にEvidence欠落 | SnapshotとDistributionを未確定で保持 |

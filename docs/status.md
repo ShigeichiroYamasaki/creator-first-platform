@@ -19,9 +19,9 @@ Creator First Platformは現在、**構想、公開文書、設計判断、Proto
 | --- | --- | --- | --- |
 | Whitepaper | 公開・策定継続中 | 理念、権利、経済、技術、ガバナンス、法務、ロードマップ | 利害関係者レビューと継続改訂 |
 | CFP | Draft | 提案プロセス案とCFP-0001 | 採択主体・手続・記録方式の確定 |
-| ADR | Proposed | 8件の設計判断案 | レビュー、採否決定、Status更新 |
-| Protocol | Draft 0.1.0 | Account、Wallet、決済、決済資産台帳、Rights、Usage、Distributionの7仕様 | Open Questions解決、法務・セキュリティ・ガバナンス承認 |
-| アプリケーション | 未実装 | 公開文書、Vertical Slice実装計画、検証スクリプト | Blocking Decision確定、Mock実装、テスト、運用設計 |
+| ADR | Proposed | 9件の設計判断案 | レビュー、採否決定、Status更新 |
+| Protocol | Draft 0.1.0 | Account、Wallet、決済、決済資産台帳、Rights、Streaming、Usage、Distributionの8仕様 | Open Questions解決、法務・セキュリティ・ガバナンス承認 |
+| アプリケーション | 未実装 | 公開文書、Vertical Slice実装計画、Navidrome / Streaming Gateway構成案、検証スクリプト | Blocking Decision確定、Mock実装、テスト、運用設計 |
 | Smart Contract | 未実装 | 将来の要件・不変条件 | チェーン選定、脅威分析、実装、監査、段階的デプロイ |
 | ステーブルコイン決済 | 未提供 | 決済・資産審査のDraft仕様 | 対象商品・ネットワーク・取扱形態の法務／技術審査 |
 | DAOガバナンス | 未稼働 | 抽選議会と熟議の構想 | Community形成、適格性、抽選、異議申立て、実証 |
@@ -36,7 +36,7 @@ Creator First Platformは現在、**構想、公開文書、設計判断、Proto
 - [Protocol Specification](/protocol/)
 - GitHub上のProtocol検証、文書ビルド、公開前メタデータ検査
 
-Protocolの7仕様は公開して読める状態ですが、すべてDraftです。要件IDとテスト対応の自動検証は、仕様の完全性、安全性、法令適合性または本番承認を意味しません。
+Protocolの8仕様は公開して読める状態ですが、すべてDraftです。要件IDとテスト対応の自動検証は、仕様の完全性、安全性、法令適合性または本番承認を意味しません。
 
 ## 現在提供していないもの
 

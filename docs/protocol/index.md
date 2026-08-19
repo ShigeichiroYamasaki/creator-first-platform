@@ -8,7 +8,7 @@ Creator First Platform の Protocol Specification は、Whitepaper・CFP・Gover
 
 Protocol Specification は、人間向けの説明書であると同時に、AIエージェントが実装・テスト・レビューを行うための **実装契約**として利用します。
 
-7仕様をAccount・Payment・Rights・Usage・Distributionの一つの経路として読む場合は、[End-to-End Vertical Slice](/protocol/vertical-slice)を参照してください。Mock／Testnetでの作業分解とStage Gateは[Vertical Slice Implementation Plan](/protocol/implementation-plan)にまとめています。
+8仕様をAccount・Payment・Rights・Streaming・Usage・Distributionの一つの経路として読む場合は、[End-to-End Vertical Slice](/protocol/vertical-slice)を参照してください。Mock／Testnetでの作業分解とStage Gateは[Vertical Slice Implementation Plan](/protocol/implementation-plan)にまとめています。
 
 ::: warning 現在のStatus: Draft
 公開中のProtocol Specificationは設計・レビュー段階です。本番サービスや資金を扱う承認済み仕様ではありません。実装開始前にOpen Questionsを解決し、法務・セキュリティ・ガバナンスの承認とVersion更新が必要です。
@@ -23,6 +23,7 @@ Protocol Specification は、人間向けの説明書であると同時に、AI�
 | [SPEC-BLOCKCHAIN-001 Settlement Asset Registry](/protocol/specs/settlement-asset-registry) | Blockchain / Payment | 0.1.0 | JPYC等の審査、承認、停止、履歴管理 |
 | [SPEC-ACCOUNT-001 Subscription Settlement](/protocol/specs/subscription-settlement) | Account / Payment | 0.1.0 | Payment Intent、Finality、Subscription有効化 |
 | [SPEC-RIGHTS-001 Rights Registry](/protocol/specs/rights-registry) | Rights / Content | 0.1.0 | Work・Recording、権利主張、審査、紛争、Rights Snapshot |
+| [SPEC-STREAMING-001 Playback Authorization](/protocol/specs/playback-authorization) | Streaming / Authorization | 0.1.0 | Subscription・Rights認可、Playback Session、Media Adapter、Delivery Evidence |
 | [SPEC-USAGE-001 Playback Verification](/protocol/specs/playback-verification) | Usage / Privacy | 0.1.0 | Playback Event、重複防止、検証、Usage Snapshot、Challenge |
 | [SPEC-DISTRIBUTION-001 Creator Distribution](/protocol/specs/creator-distribution) | Distribution / Accounting | 0.1.0 | Revenue、User-Centric計算、Rights分割、保留、端数、Allocation |
 
@@ -126,6 +127,7 @@ flowchart TD
     PROTOCOL --> RIGHTS[Rights]
     PROTOCOL --> DIST[Distribution]
     PROTOCOL --> USAGE[Usage]
+    PROTOCOL --> STREAM[Streaming]
     PROTOCOL --> ZK[Zero-Knowledge]
     PROTOCOL --> CHAIN[Blockchain / L2]
     PROTOCOL --> SEC[Security]
@@ -264,6 +266,30 @@ protocol/usage/
 
 - ADR-0005 Usage Oracle
 - ADR-0006 Zero-Knowledge Proof Strategy
+- ADR-0009 Navidrome / Streaming Authorization Gateway
+
+---
+
+## Streaming Authorization
+
+Account Session、Subscription、Rights Stateを、短時間で失効可能なPlayback Sessionへ変換し、Media Adapterへの唯一の公開認可境界を定義します。
+
+現在のDraft:
+
+- [SPEC-STREAMING-001 Streaming Authorization and Playback Session](/protocol/specs/playback-authorization)
+
+```text
+protocol/streaming/
+└── playback-authorization-spec.md   # Draft v0.1.0
+```
+
+Navidromeは適合可能なMedia Adapter例ですが、Canonical Track ID、Subscription、Rights、Verified UsageまたはDistributionのSource of Truthにはしません。
+
+### 関連ADR
+
+- ADR-0009 Navidrome / Streaming Authorization Gateway
+- ADR-0008 Account / Wallet / Identity Strategy
+- ADR-0005 Usage Oracle
 
 ---
 
@@ -434,7 +460,7 @@ Issue: Add wallet unlinking flow
 
 ## 最初に実装する Protocol
 
-最初のCodex実装では、ADR-0008を基礎にAccount / Wallet / SubscriptionのVertical Sliceを作ります。
+最初のCodex実装では、ADR-0008とADR-0009を基礎にAccount / Wallet / Subscription / PlaybackのVertical Sliceを作ります。
 
 ```mermaid
 flowchart LR
@@ -443,9 +469,10 @@ flowchart LR
     AUTH[Signature Verification]
     JPYC[JPYC Payment]
     SUB[Subscription]
-    ACCESS[Service Access]
+    ACCESS[Playback Authorization]
+    MEDIA[Media Adapter]
 
-    ACCOUNT --> WALLET --> AUTH --> JPYC --> SUB --> ACCESS
+    ACCOUNT --> WALLET --> AUTH --> JPYC --> SUB --> ACCESS --> MEDIA
 ```
 
 最初に作成する仕様:
@@ -453,6 +480,7 @@ flowchart LR
 1. `account/account-lifecycle-spec.md` — Draft v0.1.0
 2. `account/wallet-linking-spec.md` — Draft v0.1.0
 3. `account/subscription-settlement-spec.md` — Draft v0.1.0
+4. `streaming/playback-authorization-spec.md` — Draft v0.1.0
 
 ---
 
@@ -468,6 +496,7 @@ flowchart TD
     ADR6[ADR-0006 ZKP]
     ADR7[ADR-0007 Blockchain / L2]
     ADR8[ADR-0008 Account / Wallet / Identity]
+    ADR9[ADR-0009 Navidrome / Streaming Gateway]
 
     ADR1 --> GOV[Governance Specs]
     ADR2 --> GOV
@@ -477,6 +506,7 @@ flowchart TD
     ADR6 --> ZK[ZK Specs]
     ADR7 --> CHAIN[Blockchain Specs]
     ADR8 --> ACCOUNT[Account Specs]
+    ADR9 --> STREAM[Streaming Specs]
 
     ADR3 --> DIST
     ADR5 --> DIST
@@ -485,6 +515,8 @@ flowchart TD
     ADR6 --> USAGE
     ADR7 --> DIST
     ADR7 --> ACCOUNT
+    ADR8 --> STREAM
+    ADR5 --> STREAM
 ```
 
 ---

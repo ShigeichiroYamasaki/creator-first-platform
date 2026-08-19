@@ -196,7 +196,7 @@ flowchart LR
 
 ## 12.7 音源配信
 
-音源ファイルをApplication Serverから直接配信しない。
+本番Scaleでは、音源ファイルを一般的なApplication API Processから直接配信しない。
 
 ```mermaid
 flowchart LR
@@ -218,6 +218,34 @@ Object Storage + CDNを基本構成とする。
 - 世界各地への遅延
 
 を抑える。
+
+ただし、最初のVertical Sliceでは、実際のHTTP Range、Seek、Transcoding、Subscription AuthorizationおよびPlayback Evidenceを小さな構成で検証するため、Streaming GatewayがNavidromeのResponseを逐次中継する。
+
+```mermaid
+flowchart LR
+    PLAYER[Player]
+    GATEWAY[Streaming Gateway]
+    NAVI[Navidrome]
+    VOLUME[Read-only Music Volume]
+
+    PLAYER --> GATEWAY --> NAVI --> VOLUME
+```
+
+このMVP構成では、音声全体をGateway MemoryへBufferせず、Backpressure、Range ResponseおよびClient Cancellationを維持する。
+
+Gateway Relayは帯域とConnectionを消費するため、少なくとも次をScale Triggerとして計測する。
+
+- 同時Stream数
+- Gateway egress帯域
+- Playback Start Time p95 / p99
+- Navidrome同時Transcode数
+- CPU、MemoryおよびTranscode Cache
+- Origin ErrorおよびClient Abort率
+- 1 Listening Hour当たりのRelay Cost
+
+定義した閾値を超えた場合、Audio Byte DeliveryをObject Storage + CDN + Short-lived Signed URLへ移す。Subscription、RightsおよびPlayback Sessionは引き続きGatewayが判定し、CDNへ渡す許可を短時間Tokenとして表現する。
+
+したがって、MVPのGateway Relayと本番のCDN Deliveryは矛盾する方式ではなく、同じAuthorization Boundaryを維持した段階的実装である。詳細は[ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway)を参照する。
 
 ---
 

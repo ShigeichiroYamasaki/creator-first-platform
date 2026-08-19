@@ -16,10 +16,12 @@
 - Whitepaper: `docs/whitepaper/11-legal-sto-tax.md`
 - ADR: `docs/adr/ADR-0003-rights-registry.md`
 - ADR: `docs/adr/ADR-0004-creator-distribution-model.md`
+- ADR: `docs/adr/ADR-0009-navidrome-streaming-gateway.md`
 
 ### Related Specifications
 
 - `protocol/account/account-lifecycle-spec.md`
+- `protocol/streaming/playback-authorization-spec.md`
 - `protocol/conventions.md`
 - `protocol/glossary.md`
 - `protocol/invariants.md`
