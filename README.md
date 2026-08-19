@@ -1,0 +1,58 @@
+# Creator First Platform
+
+Creator First Platform は、クリエイターの持続可能な活動と利用者の利便性を中心に据えた、音楽サブスクリプション基盤の公開設計プロジェクトです。
+
+- 公開サイト: <https://shigeichiroyamasaki.github.io/creator-first-platform/>
+- ホワイトペーパー: [`docs/whitepaper/`](docs/whitepaper/)
+- 設計判断（ADR）: [`docs/adr/`](docs/adr/)
+- 実装仕様: [`protocol/`](protocol/)
+
+現在はホワイトペーパー、ガバナンス、権利管理、JPYC等による決済、STOを含む資金調達、および将来のスマートコントラクト実装に向けた仕様を整備しています。法務・税務に関する記述は一般的な設計資料であり、個別案件では専門家による確認を前提とします。
+
+## ローカルで確認する
+
+Node.js 24 と npm を使用します。
+
+対応するバージョン管理ツールでは、リポジトリ直下の`.node-version`を利用できます。
+
+```sh
+npm ci
+npm run docs:dev
+```
+
+本番用サイトを検証する場合は次を実行します。
+
+```sh
+npm run validate
+npm run docs:preview
+```
+
+## 文書から実装まで
+
+設計と実装の追跡可能性を保つため、原則として次の順序で更新します。
+
+1. Whitepaper または CFP で目的・変更案を記述する
+2. Governance Decision と ADR で採用理由を記録する
+3. Protocol Specification に要件、不変条件、テスト条件を定義する
+4. GitHub Issue、実装、テスト、Pull Requestへ接続する
+
+詳細は[Protocol Specification](protocol/README.md)を参照してください。
+
+変更を提案する場合は[Contributing Guide](CONTRIBUTING.md)、公開運用は[Deployment Guide](DEPLOYMENT.md)、非公開で扱うべき脆弱性については[Security Policy](SECURITY.md)を参照してください。
+
+## 変更時の確認
+
+- 内部リンクとナビゲーションが正しいこと
+- Mermaid図と数式がビルドできること
+- 図、画像、操作要素に意味のあるラベルまたはテキスト代替があること
+- Protocolの必須メタデータ、Related Documents、要件ID、Global／仕様固有Invariant ID、テスト参照が整合していること
+- Protocol検証器の正常系・失敗系回帰テストが成功すること
+- `docs/status.md`の基準日、ADR件数・Status、Protocol件数・Status・Versionが各ソースと一致すること
+- canonical URL、OG URL、noindex、サイトマップが生成ページと一致すること
+- Mermaid等の重い依存関係が共通アプリへ再混入せず、検索索引がraw解析量とgzip転送量の両予算内であること
+- GitHub Actionsが完全なcommit SHAへ固定され、checkout認証情報を残さないこと
+- 法制度、サービス仕様、料金など変化し得る情報に基準日と一次資料があること
+- 秘密鍵、ウォレット情報、個人情報をコミットしないこと
+- `npm run validate` が成功すること
+
+`main` ブランチへの反映後、GitHub ActionsがGitHub Pagesへ自動公開します。Pull Requestではビルド検証が自動実行されます。公開前後の確認、失敗時の判断、切り戻しは[Deployment Guide](DEPLOYMENT.md)に従います。

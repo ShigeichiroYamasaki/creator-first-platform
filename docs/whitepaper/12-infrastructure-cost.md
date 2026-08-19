@@ -1,3 +1,7 @@
+---
+description: 音楽配信、検証可能な利用集計、分配処理を持続可能に運用するための性能・可用性・コストモデル。
+---
+
 # 12. インフラ・コスト — Infrastructure, Performance & Cost
 
 > [!NOTE]
@@ -43,7 +47,7 @@ flowchart TD
 
 ---
 
-# 12.2 インフラの基本方針
+## 12.2 インフラの基本方針
 
 Creator First Platform は、すべてをブロックチェーン上で実行するシステムではない。
 
@@ -77,7 +81,7 @@ flowchart LR
 
 ---
 
-# 12.3 User Experience を性能要件の起点にする
+## 12.3 User Experience を性能要件の起点にする
 
 性能目標はサーバー側の都合ではなく、利用者が感じる品質から逆算する。
 
@@ -107,7 +111,7 @@ flowchart LR
 
 ---
 
-# 12.4 Performance SLO
+## 12.4 Performance SLO
 
 初期のサービス目標として以下を設定する。
 
@@ -151,7 +155,7 @@ $$
 
 ---
 
-# 12.6 Playback Start Time
+## 12.6 Playback Start Time
 
 再生開始時間を、
 
@@ -190,7 +194,7 @@ flowchart LR
 
 ---
 
-# 12.7 音源配信
+## 12.7 音源配信
 
 音源ファイルをApplication Serverから直接配信しない。
 
@@ -217,7 +221,7 @@ Object Storage + CDNを基本構成とする。
 
 ---
 
-# 12.8 Adaptive Streaming
+## 12.8 Adaptive Streaming
 
 通信環境に応じて複数の品質を提供する。
 
@@ -246,7 +250,7 @@ flowchart TD
 
 ---
 
-# 12.9 1再生あたりのデータ量
+## 12.9 1再生あたりのデータ量
 
 平均ビットレートを $b$ bit/s、平均再生時間を $t$ 秒とすると、
 
@@ -284,7 +288,7 @@ $$
 
 ---
 
-# 12.10 CDN Cache Hit Ratio
+## 12.10 CDN Cache Hit Ratio
 
 CDNのCache Hit Ratioを、
 
@@ -308,7 +312,7 @@ $H$ を高くすることで、
 
 ---
 
-# 12.11 Long Tail とコスト
+## 12.11 Long Tail とコスト
 
 Creator First Platform は有名曲だけでなく、新人・小規模クリエイターの作品発見を重視する。
 
@@ -334,7 +338,7 @@ Long Tail比率を事業KPIと同時にインフラKPIとして監視する。
 
 ---
 
-# 12.12 API Architecture
+## 12.12 API Architecture
 
 初期段階では、必要以上にMicroservices化しない。
 
@@ -356,7 +360,7 @@ MVPではModular Monolithまたは少数サービスから開始し、負荷特�
 
 ---
 
-# 12.13 Database
+## 12.13 Database
 
 用途に応じてデータを分離する。
 
@@ -405,7 +409,7 @@ flowchart TD
 
 ---
 
-# 12.14 Playback Event Pipeline
+## 12.14 Playback Event Pipeline
 
 再生イベントを同期的にDBへ書き込んでから音楽を再生する設計にはしない。
 
@@ -425,7 +429,7 @@ flowchart LR
 
 ---
 
-# 12.15 Event Throughput
+## 12.15 Event Throughput
 
 同時利用者数を $U_c$、1ユーザーあたり平均イベント発生率を $r_e$ events/s とすると、
 
@@ -460,7 +464,7 @@ $$
 
 ---
 
-# 12.16 Usage Event をオンチェーンへ直接送らない
+## 12.16 Usage Event をオンチェーンへ直接送らない
 
 各再生イベントをブロックチェーンへ送る構造は採用しない。
 
@@ -489,7 +493,7 @@ flowchart LR
 
 ---
 
-# 12.17 Batch Processing
+## 12.17 Batch Processing
 
 期間 $t$ のイベント集合を、
 
@@ -511,7 +515,7 @@ Batch Sizeを大きくすると1イベントあたりのBlockchain Costは低下
 
 ---
 
-# 12.18 ZK/STARK Infrastructure
+## 12.18 ZK/STARK Infrastructure
 
 ZK Proof生成は、通常のWeb APIとは異なる計算負荷を持つ。
 
@@ -533,7 +537,7 @@ ProverはCPU、RAM、場合によってはGPUを多く使用するため、常�
 
 ---
 
-# 12.19 Proof Latency
+## 12.19 Proof Latency
 
 ZK Proofは再生開始に必要ない。
 
@@ -569,7 +573,7 @@ flowchart LR
 
 ---
 
-# 12.20 Progressive ZK Deployment
+## 12.20 Progressive ZK Deployment
 
 MVPから完全なSTARK基盤を構築する必要はない。
 
@@ -587,7 +591,7 @@ flowchart LR
 
 ---
 
-# 12.21 Blockchain / L2
+## 12.21 Blockchain / L2
 
 オンチェーン処理は、
 
@@ -614,7 +618,7 @@ Ethereum Mainnetへすべて直接書き込むのではなく、要件に応じ�
 
 ---
 
-# 12.22 Gas Cost Model
+## 12.22 Gas Cost Model
 
 期間あたりのオンチェーンコストを、
 
@@ -638,7 +642,7 @@ Batch化によって $N_{tx}$ を抑えることが重要である。
 
 ---
 
-# 12.23 Claim型分配
+## 12.23 Claim型分配
 
 多数のCreatorへPlatformが一括Push送金するより、
 
@@ -662,7 +666,7 @@ Creatorが必要な時にClaimする方式を検討する。
 
 ---
 
-# 12.24 Wallet UX
+## 12.24 Wallet UX
 
 一般の音楽クリエイターや利用者へ、
 
@@ -687,7 +691,7 @@ flowchart LR
 
 ---
 
-# 12.25 Gas Sponsorship
+## 12.25 Gas Sponsorship
 
 利用者のガバナンス投票やCreator Claimでは、必要に応じてPlatformがGasをスポンサーする。
 
@@ -707,7 +711,7 @@ $$
 
 ---
 
-# 12.26 可用性設計
+## 12.26 可用性設計
 
 すべてのコンポーネントを同じ可用性にしない。
 
@@ -728,7 +732,7 @@ Proof Jobが一時停止しても、音楽再生は継続できる設計にす�
 
 ---
 
-# 12.27 Availability と停止時間
+## 12.27 Availability と停止時間
 
 Availability $A$ を、
 
@@ -755,7 +759,7 @@ $$
 
 ---
 
-# 12.28 Multi-AZ
+## 12.28 Multi-AZ
 
 本番DB、API等は単一障害点を避ける。
 
@@ -776,7 +780,7 @@ MVPでは単一Region + Multi-AZを基本候補とし、国際展開に応じて
 
 ---
 
-# 12.29 Disaster Recovery
+## 12.29 Disaster Recovery
 
 RPOとRTOをサービス別に定義する。
 
@@ -793,7 +797,7 @@ RPOとRTOをサービス別に定義する。
 
 ---
 
-# 12.30 Observability
+## 12.30 Observability
 
 監視はCPU使用率だけでは不十分である。
 
@@ -825,7 +829,7 @@ flowchart TD
 
 ---
 
-# 12.31 Error Budget
+## 12.31 Error Budget
 
 SLOを99.95%とした場合、
 
@@ -843,7 +847,7 @@ Error Budgetを使い、
 
 ---
 
-# 12.32 Cost Architecture
+## 12.32 Cost Architecture
 
 月間インフラ費用を、
 
@@ -891,7 +895,7 @@ flowchart TD
 
 ---
 
-# 12.33 Fixed Cost と Variable Cost
+## 12.33 Fixed Cost と Variable Cost
 
 インフラ費用を、
 
@@ -927,7 +931,7 @@ $$
 
 ---
 
-# 12.34 1再生あたりコスト
+## 12.34 1再生あたりコスト
 
 月間再生数を $N_p$ とすると、
 
@@ -959,7 +963,7 @@ $$
 
 ---
 
-# 12.35 1ユーザーあたりインフラコスト
+## 12.35 1ユーザーあたりインフラコスト
 
 MAUを $U$ とすると、
 
@@ -983,7 +987,7 @@ $$
 
 ---
 
-# 12.36 Unit Economics
+## 12.36 Unit Economics
 
 月額料金を $P$、Creator等への分配率を $r_c$、決済費率を $r_p$、ユーザーあたりインフラコストを $C_u$ とすると、単純化したContribution Marginは、
 
@@ -1019,7 +1023,7 @@ Creator Firstである以上、Creator分配率を下げることで利益を作
 
 ---
 
-# 12.37 Cost per Listening Hour
+## 12.37 Cost per Listening Hour
 
 音楽サービスでは1再生より再生時間が適切な場合がある。
 
@@ -1037,7 +1041,7 @@ $$
 
 ---
 
-# 12.38 事業シナリオ
+## 12.38 事業シナリオ
 
 事業計画では少なくとも3つのシナリオを持つ。
 
@@ -1062,7 +1066,7 @@ flowchart LR
 
 ---
 
-# 12.39 コストモデル例
+## 12.39 コストモデル例
 
 例えば月間コストを次のように入力する。
 
@@ -1085,7 +1089,7 @@ flowchart LR
 
 ---
 
-# 12.40 Revenue Scenario
+## 12.40 Revenue Scenario
 
 月額料金を $P$、有料会員を $U_p$ とすると、
 
@@ -1124,7 +1128,7 @@ $$
 
 ---
 
-# 12.41 Infrastructure Ratio
+## 12.41 Infrastructure Ratio
 
 売上に対するインフラ費率を、
 
@@ -1142,7 +1146,7 @@ $$
 
 ---
 
-# 12.42 Creator First Cost Allocation
+## 12.42 Creator First Cost Allocation
 
 インフラコストをCreatorごとに単純転嫁しない。
 
@@ -1168,7 +1172,7 @@ flowchart TD
 
 ---
 
-# 12.43 FinOps
+## 12.43 FinOps
 
 クラウド費用を経理部門だけの問題にしない。
 
@@ -1196,7 +1200,7 @@ flowchart LR
 
 ---
 
-# 12.44 Cost Anomaly Detection
+## 12.44 Cost Anomaly Detection
 
 通常のアクセス増加と、攻撃・バグによる異常コストを区別する。
 
@@ -1218,7 +1222,7 @@ flowchart LR
 
 ---
 
-# 12.45 Autoscaling
+## 12.45 Autoscaling
 
 負荷に応じてComputeを増減させる。
 
@@ -1236,7 +1240,7 @@ flowchart LR
 
 ---
 
-# 12.46 Capacity Planning
+## 12.46 Capacity Planning
 
 必要容量を、
 
@@ -1264,7 +1268,7 @@ $$
 
 ---
 
-# 12.47 Load Test
+## 12.47 Load Test
 
 本番開始前に、
 
@@ -1290,7 +1294,7 @@ flowchart LR
 
 ---
 
-# 12.48 Performance Budget
+## 12.48 Performance Budget
 
 新機能ごとに性能Budgetを持つ。
 
@@ -1316,7 +1320,7 @@ $$
 
 ---
 
-# 12.49 Search と Discovery
+## 12.49 Search と Discovery
 
 第8章の発見機能はUX上重要である。
 
@@ -1345,7 +1349,7 @@ flowchart LR
 
 ---
 
-# 12.50 Recommendation Cost
+## 12.50 Recommendation Cost
 
 AI推薦はモデルサイズを大きくすれば必ず良くなるわけではない。
 
@@ -1372,7 +1376,7 @@ Creator Firstでは、クリック率だけでなく、
 
 ---
 
-# 12.51 Privacy とAnalytics Cost
+## 12.51 Privacy とAnalytics Cost
 
 すべての生ログを永久保存しない。
 
@@ -1393,7 +1397,7 @@ Retention PolicyはプライバシーだけでなくStorage Cost削減にも寄�
 
 ---
 
-# 12.52 Development / Staging / Production
+## 12.52 Development / Staging / Production
 
 環境を分離する。
 
@@ -1412,7 +1416,7 @@ flowchart LR
 
 ---
 
-# 12.53 Infrastructure as Code
+## 12.53 Infrastructure as Code
 
 インフラ設定を手作業だけで管理しない。
 
@@ -1439,7 +1443,7 @@ flowchart LR
 
 ---
 
-# 12.54 AI Agent とインフラ運用
+## 12.54 AI Agent とインフラ運用
 
 AI Agentは、
 
@@ -1469,7 +1473,7 @@ flowchart LR
 
 ---
 
-# 12.55 GitHub とインフラ
+## 12.55 GitHub とインフラ
 
 Whitepaper、Protocol Specification、Smart Contract、Infrastructure DefinitionをGitHubで関連付ける。
 
@@ -1490,7 +1494,7 @@ creator-first-platform/
 
 ---
 
-# 12.56 Infrastructure Governance
+## 12.56 Infrastructure Governance
 
 重要なインフラ変更をすべて二院制投票にかける必要はない。
 
@@ -1520,7 +1524,7 @@ flowchart TD
 
 ---
 
-# 12.57 Performance Governance
+## 12.57 Performance Governance
 
 ユーザー体験を憲章上の理念と接続する。
 
@@ -1540,7 +1544,7 @@ flowchart LR
 
 ---
 
-# 12.58 Business Dashboard
+## 12.58 Business Dashboard
 
 経営とEngineeringが共通して見るDashboardを用意する。
 
@@ -1563,7 +1567,7 @@ flowchart TD
 
 ---
 
-# 12.59 KPI
+## 12.59 KPI
 
 初期KPIとして、
 
@@ -1608,7 +1612,7 @@ flowchart TD
 
 ---
 
-# 12.60 Scale Trigger
+## 12.60 Scale Trigger
 
 「ユーザーが増えそうだから」インフラを複雑化するのではなく、Triggerを定義する。
 
@@ -1634,7 +1638,7 @@ flowchart LR
 
 ---
 
-# 12.61 MVP Infrastructure
+## 12.61 MVP Infrastructure
 
 MVPでは構成を意図的に小さくする。
 
@@ -1660,7 +1664,7 @@ Managed Serviceを優先し、少人数チームがKubernetes等の複雑な基�
 
 ---
 
-# 12.62 Growth Infrastructure
+## 12.62 Growth Infrastructure
 
 利用規模拡大後、
 
@@ -1689,7 +1693,7 @@ flowchart TD
 
 ---
 
-# 12.63 Global Infrastructure
+## 12.63 Global Infrastructure
 
 国際展開時には、
 
@@ -1720,7 +1724,7 @@ flowchart TD
 
 ---
 
-# 12.64 Build vs Buy
+## 12.64 Build vs Buy
 
 すべてを自作しない。
 
@@ -1754,7 +1758,7 @@ flowchart LR
 
 ---
 
-# 12.65 コスト最適化の原則
+## 12.65 コスト最適化の原則
 
 コスト削減は、
 
@@ -1782,7 +1786,7 @@ flowchart LR
 
 ---
 
-# 12.66 コスト削減の禁止領域
+## 12.66 コスト削減の禁止領域
 
 以下を安易なコスト削減対象にしない。
 
@@ -1798,7 +1802,7 @@ flowchart LR
 
 ---
 
-# 12.67 3つの憲章との関係
+## 12.67 3つの憲章との関係
 
 インフラは3つの憲章を技術的に支える。
 
@@ -1829,7 +1833,7 @@ flowchart TD
 
 ---
 
-# 12.68 全体構成
+## 12.68 全体構成
 
 ```mermaid
 flowchart TD
@@ -1870,7 +1874,7 @@ flowchart TD
 
 ---
 
-# 12.69 事業計画との接続
+## 12.69 事業計画との接続
 
 最終的に、インフラ計画は次の関係を継続的に測定する。
 
@@ -1906,7 +1910,7 @@ flowchart LR
 
 ---
 
-# 12.70 本章のまとめ
+## 12.70 本章のまとめ
 
 Creator First Platform のインフラは、
 

@@ -1,3 +1,7 @@
+---
+description: CreatorとUserの抽選議会、熟議、Protocol Specification、実行コードを接続する共同統治モデル。
+---
+
 # 7. ガバナンス — Governance
 
 ## 7.1 ガバナンスの目的

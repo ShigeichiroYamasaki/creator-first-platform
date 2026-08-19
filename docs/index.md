@@ -1,5 +1,6 @@
 ---
 layout: home
+description: CreatorとUserの共同統治、権利管理、検証可能な分配を設計するクリエイターファースト音楽プラットフォーム構想。
 
 hero:
   name: "Creator First Platform"
@@ -14,8 +15,15 @@ hero:
     - theme: alt
       text: ADR一覧を見る
       link: /adr/
+    - theme: alt
+      text: Protocolを見る
+      link: /protocol/
 
 features:
+  - title: 現在の状況
+    details: 公開文書、Draft仕様、未実装範囲、専門家確認が必要な事項を区別して示します。
+    link: /status
+
   - title: Whitepaper
     details: Creator First Platform の理念、権利、経済、技術、ガバナンス、法務、セキュリティ、インフラ、ロードマップをまとめた基本文書です。
     link: /whitepaper/01-vision
@@ -57,7 +65,11 @@ features:
 
 </div>
 
-# Creator First Platform
+::: warning 現在は設計・文書化段階です
+本サイトは、稼働中の音楽配信サービス、決済サービス、DAOまたはSTOの案内ではありません。Protocol SpecificationはDraftであり、スマートコントラクト、バックエンド、音楽プレーヤーは未実装です。法務・金融・税務上の記述は個別案件への専門的助言ではありません。詳しくは[現在の状況](/status)を確認してください。
+:::
+
+## Creator First Platform
 
 Creator First Platform は、音楽を中心とするデジタルコンテンツの流通において、  
 **Creator の権利と持続可能な活動、User の自由で豊かな利用体験、公正で検証可能なエコシステム**を中心に据えるプラットフォームです。
@@ -94,7 +106,7 @@ Whitepaper は、Creator First Platform の現時点における基本設計を�
 
 ---
 
-# Creator First Proposals
+## Creator First Proposals
 
 **Creator First Proposal（CFP）** は、Creator First Platform の制度、経済モデル、技術、Governance、Protocol などについて、変更や新しい仕組みを提案するための公開提案制度です。
 
@@ -112,7 +124,7 @@ Whitepaper が、
 
 ---
 
-# ADR一覧 — Architecture Decision Records
+## ADR一覧 — Architecture Decision Records
 
 ADR（Architecture Decision Record）は、Creator First Platform における重要な技術・制度設計について、
 
@@ -142,7 +154,7 @@ flowchart LR
 
 ---
 
-# Protocol Specification
+## Protocol Specification
 
 Protocol Specification は、ADRで採用された設計を、**Codexや開発者がそのまま実装作業へつなげられる仕様**へ変換する文書です。
 

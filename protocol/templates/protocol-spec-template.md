@@ -155,4 +155,6 @@ List objective conditions required for the specification to be considered implem
 
 ## Open Questions
 
-List unresolved questions that prevent or may change implementation.
+List unresolved questions that prevent or may change implementation. Give each question a stable ID, identify the accountable decision owner and name the implementation or release gate it blocks.
+
+- **OQ-DOMAIN-001:** **Decision owner:** ...; **Blocks:** ...; **Question:** ...

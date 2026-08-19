@@ -1,3 +1,7 @@
+---
+description: 制度、経済、技術、ガバナンス、Protocolの変更や拡張を提案・議論するCreator First Proposal制度。
+---
+
 # Creator First Proposals
 
 Creator First Proposal（CFP）は、Creator First Platform の制度、経済モデル、技術、Governance、Protocol などについて、変更や新しい仕組みを提案するための公開提案制度です。

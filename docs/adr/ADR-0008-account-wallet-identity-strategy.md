@@ -1,3 +1,7 @@
+---
+description: Web2アカウント、Wallet、本人確認、権限、Recoveryを分離して接続するIdentity Architectureの設計案。
+---
+
 # ADR-0008: Account / Wallet / Identity Strategy
 
 **Status:** Proposed  

@@ -1,3 +1,7 @@
+---
+description: Creator First Platformの重要な技術・制度設計について、採用判断、理由、代替案、影響を記録するADR一覧。
+---
+
 # Architecture Decision Records
 
 Architecture Decision Record（ADR）は、
@@ -32,5 +36,4 @@ flowchart LR
 | [ADR-0006](./ADR-0006-zero-knowledge-proof-strategy.md)    | Zero-Knowledge Proof Strategy        | Proposed |
 | [ADR-0007](./ADR-0007-blockchain-l2-strategy.md)           | Blockchain / L2 Strategy             | Proposed |
 | [ADR-0008](./ADR-0008-account-wallet-identity-strategy.md) | Account / Wallet / Identity Strategy | Proposed |
-
 

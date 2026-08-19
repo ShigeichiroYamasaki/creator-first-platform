@@ -1,3 +1,7 @@
+---
+description: 利用者中心の利用実績を基礎に、人気集中を抑えながらCreatorへ収益を分配する経済モデルの設計案。
+---
+
 # ADR-0004: Creator Distribution Model
 
 **Status:** Proposed  

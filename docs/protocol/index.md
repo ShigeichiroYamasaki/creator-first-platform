@@ -1,8 +1,32 @@
+---
+description: WhitepaperとADRの設計判断を、要件・不変条件・テスト条件へ変換するDraft Protocol Specificationの入口。
+---
+
 # Protocol Specification
 
 Creator First Platform の Protocol Specification は、Whitepaper・CFP・Governance Decision・ADR で確定した設計を、**Codexや開発者が実装可能な要件へ変換するための文書群**です。
 
 Protocol Specification は、人間向けの説明書であると同時に、AIエージェントが実装・テスト・レビューを行うための **実装契約**として利用します。
+
+7仕様をAccount・Payment・Rights・Usage・Distributionの一つの経路として読む場合は、[End-to-End Vertical Slice](/protocol/vertical-slice)を参照してください。Mock／Testnetでの作業分解とStage Gateは[Vertical Slice Implementation Plan](/protocol/implementation-plan)にまとめています。
+
+::: warning 現在のStatus: Draft
+公開中のProtocol Specificationは設計・レビュー段階です。本番サービスや資金を扱う承認済み仕様ではありません。実装開始前にOpen Questionsを解決し、法務・セキュリティ・ガバナンスの承認とVersion更新が必要です。
+:::
+
+## 現在のDraft
+
+| Specification | Domain | Version | 主な役割 |
+| --- | --- | --- | --- |
+| [SPEC-ACCOUNT-003 Account Lifecycle](/protocol/specs/account-lifecycle) | Account / Identity | 0.1.0 | 登録、認証、Session、Recovery、閉鎖 |
+| [SPEC-ACCOUNT-002 Wallet Linking](/protocol/specs/wallet-linking) | Account / Identity | 0.1.0 | Wallet関連付け、署名、解除、権限分離 |
+| [SPEC-BLOCKCHAIN-001 Settlement Asset Registry](/protocol/specs/settlement-asset-registry) | Blockchain / Payment | 0.1.0 | JPYC等の審査、承認、停止、履歴管理 |
+| [SPEC-ACCOUNT-001 Subscription Settlement](/protocol/specs/subscription-settlement) | Account / Payment | 0.1.0 | Payment Intent、Finality、Subscription有効化 |
+| [SPEC-RIGHTS-001 Rights Registry](/protocol/specs/rights-registry) | Rights / Content | 0.1.0 | Work・Recording、権利主張、審査、紛争、Rights Snapshot |
+| [SPEC-USAGE-001 Playback Verification](/protocol/specs/playback-verification) | Usage / Privacy | 0.1.0 | Playback Event、重複防止、検証、Usage Snapshot、Challenge |
+| [SPEC-DISTRIBUTION-001 Creator Distribution](/protocol/specs/creator-distribution) | Distribution / Accounting | 0.1.0 | Revenue、User-Centric計算、Rights分割、保留、端数、Allocation |
+
+すべてのDraftは、リポジトリ内の自動検証によって要件IDとInvariant IDの一意性、Global Invariant参照、Related Documentsの存在、MUST / MUST NOTとTest Requirementsの双方向対応、およびOpen Questionの安定ID・Decision owner・停止中ゲートを検査します。未決定事項は[Protocol Decision Queue](/protocol/open-questions)から確認できます。
 
 ---
 
@@ -63,49 +87,33 @@ Implementation
 
 Protocol全体で共通して参照する文書です。
 
-### README
+### [README](/protocol/foundation/overview)
 
 Protocol Specification全体の目的、文書階層、AIエージェント向けルールを定義します。
 
-予定ファイル:
+文書階層、開発フロー、仕様一覧、AIエージェント向けルールを公開しています。
 
-```text
-protocol/README.md
-```
-
-### Conventions
+### [Conventions](/protocol/foundation/conventions)
 
 MUST / MUST NOT / SHOULD / MAY、Identifier、Timestamp、Token Amount、Error Code、Version等の共通記法を定義します。
 
-予定ファイル:
+規範キーワード、識別子、時刻、金額、エラー、Versionの共通規則を公開しています。
 
-```text
-protocol/conventions.md
-```
-
-### Glossary
+### [Glossary](/protocol/foundation/glossary)
 
 User、Creator、Rights Holder、Wallet、Governance Member、Usage Event等の用語を統一します。
 
-予定ファイル:
+Participant、Account、Wallet、Rights、Payment等の共通語彙を公開しています。
 
-```text
-protocol/glossary.md
-```
-
-### Global Invariants
+### [Global Invariants](/protocol/foundation/invariants)
 
 Platform全体で破ってはいけない不変条件を定義します。
 
-予定ファイル:
-
-```text
-protocol/invariants.md
-```
+下位仕様や実装が上書きしてはならないPlatform全体の不変条件を公開しています。
 
 ---
 
-# Protocol Domains
+## Protocol Domains
 
 Protocol Specificationはドメイン単位に整理します。
 
@@ -129,17 +137,22 @@ flowchart TD
 
 ADR-0008を実装可能な仕様へ落とし込みます。
 
-主な予定仕様:
+主な仕様:
 
 ```text
 protocol/account/
-├── account-spec.md
-├── wallet-linking-spec.md
-├── authentication-spec.md
-├── credential-spec.md
-├── account-recovery-spec.md
-└── subscription-spec.md
+├── account-lifecycle-spec.md         # Draft v0.1.0
+├── wallet-linking-spec.md            # Draft v0.1.0
+└── subscription-settlement-spec.md   # Draft v0.1.0
 ```
+
+現在のDraftとして、[SPEC-ACCOUNT-001 Subscription Settlement and Activation](/protocol/specs/subscription-settlement) を定義しています。これは、承認済み決済資産、Payment Intent、Finality、二重有効化防止、Subscription State、監査要件を実装可能な要件へ変換したものです。
+
+AccountとWalletの関連付け・解除・回復時の安全要件は、[SPEC-ACCOUNT-002 Wallet Linking and Unlinking](/protocol/specs/wallet-linking) が定義します。
+
+Account登録、認証、Session、Recovery、停止・閉鎖の基盤は、[SPEC-ACCOUNT-003 Account Lifecycle, Authentication and Recovery](/protocol/specs/account-lifecycle) が定義します。
+
+決済資産の承認・停止・監視・履歴管理は、[SPEC-BLOCKCHAIN-001 Approved Settlement Asset Registry](/protocol/specs/settlement-asset-registry) が定義します。
 
 最初のVertical Sliceは、
 
@@ -281,6 +294,10 @@ protocol/zk/
 
 ## Blockchain / L2
 
+現在のDraft:
+
+- [SPEC-BLOCKCHAIN-001 Approved Settlement Asset Registry](/protocol/specs/settlement-asset-registry)
+
 Smart Contract、Stablecoin Settlement、L2 Integration、Upgrade、Chain State等を定義します。
 
 予定仕様:
@@ -322,7 +339,7 @@ protocol/security/
 
 ---
 
-# Specification Format
+## Specification Format
 
 各Protocol Specificationは共通テンプレートに従います。
 
@@ -367,7 +384,7 @@ Open Questions
 
 ---
 
-# AI / Codex Development Flow
+## AI / Codex Development Flow
 
 Protocol Specificationから直接mainブランチへ実装を反映しません。
 
@@ -415,7 +432,7 @@ Issue: Add wallet unlinking flow
 
 ---
 
-# 最初に実装する Protocol
+## 最初に実装する Protocol
 
 最初のCodex実装では、ADR-0008を基礎にAccount / Wallet / SubscriptionのVertical Sliceを作ります。
 
@@ -431,15 +448,15 @@ flowchart LR
     ACCOUNT --> WALLET --> AUTH --> JPYC --> SUB --> ACCESS
 ```
 
-最初に作成する仕様候補:
+最初に作成する仕様:
 
-1. `account/account-spec.md`
-2. `account/wallet-linking-spec.md`
-3. `account/subscription-spec.md`
+1. `account/account-lifecycle-spec.md` — Draft v0.1.0
+2. `account/wallet-linking-spec.md` — Draft v0.1.0
+3. `account/subscription-settlement-spec.md` — Draft v0.1.0
 
 ---
 
-# Protocol と ADR の関係
+## Protocol と ADR の関係
 
 ```mermaid
 flowchart TD
@@ -472,7 +489,7 @@ flowchart TD
 
 ---
 
-# 実装原則
+## 実装原則
 
 Protocol Specificationは単なる参考文書ではありません。
 
@@ -496,17 +513,21 @@ Implementation
 
 ---
 
-## 次の作業
+## 現在のVertical Slice
 
-Protocolの共通文書を整備した後、最初の実装仕様として、
+最初の実装仕様は次の順序で接続します。
 
 ```text
-protocol/account/account-spec.md
+Account Lifecycle
+↓
+Wallet Linking
+↓
+Approved Settlement Asset
+↓
+Subscription Settlement
 ```
 
-を作成します。
-
-そこから、
+これにより、
 
 ```text
 Account
@@ -516,4 +537,4 @@ Wallet Linking
 JPYC Subscription
 ```
 
-の順に、Creator First Platform最初のEnd-to-End実装へ進みます。
+のEnd-to-End実装へ進むためのDraft要件が揃います。

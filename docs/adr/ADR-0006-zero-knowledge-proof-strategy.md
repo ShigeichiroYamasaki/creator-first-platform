@@ -1,3 +1,7 @@
+---
+description: 利用履歴や個人情報を公開せず、抽選・権利・利用実績・分配の正しさを証明するZKP活用方針案。
+---
+
 # ADR-0006: Zero-Knowledge Proof Strategy
 
 **Status:** Proposed  
