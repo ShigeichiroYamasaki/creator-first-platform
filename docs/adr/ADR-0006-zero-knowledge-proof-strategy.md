@@ -6,6 +6,7 @@ description: 利用履歴や個人情報を公開せず、抽選・権利・利�
 
 **Status:** Proposed  
 **Date:** 2026-07-29
+**Last Updated:** 2026-08-20
 
 ## 1. Context
 

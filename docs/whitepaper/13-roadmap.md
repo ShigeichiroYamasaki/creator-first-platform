@@ -266,6 +266,22 @@ Phase 1では音楽サービスとしての価値を検証する。
 
 > BlockchainやGovernanceを実装することではなく、CreatorとUserが実際に利用したいサービスを成立させることが目的である。
 
+実装は、**Local Mock → 公開Testnetデモ → Review／Audit → 本番系**の順序で進める。本番系を先行実装したり、Testnet用の鍵、Contract、Token、Rights Fixture、運用権限をそのまま本番へ流用したりしない。
+
+```mermaid
+flowchart LR
+    MOCK[Local Mock]
+    TESTNET[Testnet Demo]
+    EVIDENCE[Failure / Security Evidence]
+    REVIEW[Legal / Rights / Privacy Review]
+    AUDIT[Independent Audit]
+    PROD[Production Implementation]
+
+    MOCK --> TESTNET --> EVIDENCE --> REVIEW --> AUDIT --> PROD
+```
+
+Testnetデモでは、金銭的価値を持たないAsset、合成Account、Mock Rights、公開可能な音源Fixtureを使用する。対象Network、Contract Address、Source Commit、既知の制約を公開し、利用者が本番サービスと誤認しない表示を行う。
+
 ```mermaid
 flowchart LR
     CREATOR[Creator]
@@ -367,6 +383,8 @@ Phase 2へ進む条件は、
 > **音楽サービスとして継続利用される兆候と、実際のCreator/User Communityが存在すること**
 
 である。
+
+加えて、本番系の実装へ進む前に、Testnetデモの再現可能なSource Commit、Network／Contract情報、失敗試験、Security Review、Rights／Legal／Privacy上の承認条件、鍵と権限の本番分離を確認する。
 
 ---
 

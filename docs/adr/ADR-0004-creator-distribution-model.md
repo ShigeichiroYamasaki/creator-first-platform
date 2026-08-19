@@ -6,6 +6,7 @@ description: 利用者中心の利用実績を基礎に、人気集中を抑え�
 
 **Status:** Proposed  
 **Date:** 2026-07-29
+**Last Updated:** 2026-08-20
 
 ## 1. Context
 

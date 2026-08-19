@@ -21,8 +21,9 @@ function statusPage({ adrCount = 2, adrStatus = 'Proposed', protocolCount = 2, p
   ].join('\n')
 }
 
-function adr({ status = 'Proposed', date = '2026-08-19' } = {}) {
-  return `# ADR\n\n**Status:** ${status}  \n**Date:** ${date}\n`
+function adr({ status = 'Proposed', date = '2026-08-19', lastUpdated = date } = {}) {
+  const updated = lastUpdated === null ? '' : `**Last Updated:** ${lastUpdated}\n`
+  return `# ADR\n\n**Status:** ${status}  \n**Date:** ${date}\n${updated}`
 }
 
 function specification({ status = 'Draft', version = '0.1.0', lastUpdated = '2026-08-19' } = {}) {
@@ -67,6 +68,20 @@ test('rejects an ADR status that differs from its sources', async () => {
   assert.match(result.stderr, /ADR status Accepted does not match source statuses Proposed/)
 })
 
+test('rejects an ADR without valid Last Updated metadata', async () => {
+  const result = await runValidator({ adrs: [adr({ lastUpdated: null }), adr()] })
+  assert.equal(result.status, 1)
+  assert.match(result.stderr, /missing or invalid Last Updated metadata/)
+})
+
+test('rejects an ADR update that predates its creation date', async () => {
+  const result = await runValidator({
+    adrs: [adr({ date: '2026-08-19', lastUpdated: '2026-08-18' }), adr()]
+  })
+  assert.equal(result.status, 1)
+  assert.match(result.stderr, /Last Updated 2026-08-18 predates Date 2026-08-19/)
+})
+
 test('rejects a stale protocol count', async () => {
   const result = await runValidator({ page: statusPage({ protocolCount: 3 }) })
   assert.equal(result.status, 1)
@@ -88,7 +103,7 @@ test('rejects an invalid basis date', async () => {
 test('rejects a basis date older than an ADR', async () => {
   const result = await runValidator({
     page: statusPage({ basisDate: '2026-08-18' }),
-    adrs: [adr({ date: '2026-08-19' }), adr({ date: '2026-08-18' })]
+    adrs: [adr({ date: '2026-08-18', lastUpdated: '2026-08-19' }), adr({ date: '2026-08-18' })]
   })
   assert.equal(result.status, 1)
   assert.match(result.stderr, /basis date 2026-08-18 predates 2026-08-19/)

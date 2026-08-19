@@ -7,6 +7,9 @@ hero:
   text: "Creator と User が共同で統治する音楽プラットフォーム"
   actions:
     - theme: brand
+      text: Testnetデモを開く
+      link: /demo/
+    - theme: alt
       text: Whitepaper を読む
       link: /whitepaper/01-vision
     - theme: alt
@@ -20,6 +23,10 @@ hero:
       link: /protocol/
 
 features:
+  - title: Testnetデモ
+    details: 本番実装の前に、金銭的価値を持たないTestnetと合成データで再生・決済・権利・利用証跡・分配のVertical Sliceを検証します。
+    link: /demo/
+
   - title: 現在の状況
     details: 公開文書、Draft仕様、未実装範囲、専門家確認が必要な事項を区別して示します。
     link: /status
@@ -66,7 +73,7 @@ features:
 </div>
 
 ::: warning 現在は設計・文書化段階です
-本サイトは、稼働中の音楽配信サービス、決済サービス、DAOまたはSTOの案内ではありません。Protocol SpecificationはDraftであり、スマートコントラクト、バックエンド、音楽プレーヤーは未実装です。法務・金融・税務上の記述は個別案件への専門的助言ではありません。詳しくは[現在の状況](/status)を確認してください。
+本サイトは、稼働中の本番音楽配信サービス、決済サービス、DAOまたはSTOの案内ではありません。Protocol SpecificationはDraftであり、Testnetデモも現在準備中です。法務・金融・税務上の記述は個別案件への専門的助言ではありません。詳しくは[現在の状況](/status)と[Testnetデモ](/demo/)を確認してください。
 :::
 
 ## Creator First Platform

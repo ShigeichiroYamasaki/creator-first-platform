@@ -173,6 +173,7 @@ export default defineConfig({
 
       nav: [
         { text: 'ホーム', link: '/' },
+        { text: 'Testnetデモ', link: '/demo/' },
         { text: '現在の状況', link: '/status' },
         { text: 'ホワイトペーパー', link: '/whitepaper/' },
         { text: 'Protocol', link: '/protocol/' },
