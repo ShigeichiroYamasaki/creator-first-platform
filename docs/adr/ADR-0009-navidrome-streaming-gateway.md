@@ -6,7 +6,7 @@ description: Navidromeを交換可能なメディアサーバーとして利用�
 
 **Status:** Proposed
 **Date:** 2026-08-19
-**Last Updated:** 2026-08-20
+**Last Updated:** 2026-08-21
 
 ## 1. Context
 
@@ -462,6 +462,7 @@ Track Range、Transcoding、Metadata Scan等の実装範囲が大きく、Subscr
 - ADR-0008はPlatform Account、Wallet、Sessionの分離を定義する
 - ADR-0009はこれらを実際のMedia Deliveryへ接続するApplication Boundaryを定義する
 - ADR-0010はEarly Supporter SBTをSubscriptionとRightsを置き換えない限定Privilegeへ接続する
+- ADR-0011はGateway専用PWA、Wallet操作、Supporter表示およびClient Storageの境界を定義する
 
 ## 19. Related Documents
 
@@ -475,6 +476,7 @@ Track Range、Transcoding、Metadata Scan等の実装範囲が大きく、Subscr
 - [Protocol: Early Supporter Credential](/protocol/specs/early-supporter-credential)
 - [Protocol: Rights Registry](/protocol/specs/rights-registry)
 - [Protocol: Playback Verification](/protocol/specs/playback-verification)
+- [Protocol: Player Client and Gateway Interaction](/protocol/specs/player-client)
 - [Navidrome Externalized Authentication](https://www.navidrome.org/docs/usage/integration/authentication/)
 - [Navidrome Security Considerations](https://www.navidrome.org/docs/usage/admin/security/)
 - [Google Cloud Free Tier](https://docs.cloud.google.com/free/docs/free-cloud-features)

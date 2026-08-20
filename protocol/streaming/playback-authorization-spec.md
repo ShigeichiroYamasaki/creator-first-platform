@@ -4,7 +4,7 @@
 **Version:** 0.1.0
 **Protocol Domain:** streaming / authorization
 **Specification ID:** SPEC-STREAMING-001
-**Last Updated:** 2026-08-19
+**Last Updated:** 2026-08-21
 
 ## Related Documents
 
@@ -21,6 +21,7 @@
 - `protocol/account/account-lifecycle-spec.md`
 - `protocol/account/subscription-settlement-spec.md`
 - `protocol/account/early-supporter-credential-spec.md`
+- `protocol/streaming/player-client-spec.md`
 - `protocol/rights/rights-registry-spec.md`
 - `protocol/usage/playback-verification-spec.md`
 - `protocol/conventions.md`

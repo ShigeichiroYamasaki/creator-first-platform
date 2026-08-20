@@ -8,7 +8,7 @@ Creator First Platform の Protocol Specification は、Whitepaper・CFP・Gover
 
 Protocol Specification は、人間向けの説明書であると同時に、AIエージェントが実装・テスト・レビューを行うための **実装契約**として利用します。
 
-9仕様をAccount・Payment・Credential・Rights・Streaming・Usage・Distributionの一つの経路として読む場合は、[End-to-End Vertical Slice](/protocol/vertical-slice)を参照してください。Mock／Testnetでの作業分解とStage Gateは[Vertical Slice Implementation Plan](/protocol/implementation-plan)にまとめています。
+10仕様をAccount・Payment・Credential・Rights・Streaming・Player・Usage・Distributionの一つの経路として読む場合は、[End-to-End Vertical Slice](/protocol/vertical-slice)を参照してください。Mock／Testnetでの作業分解とStage Gateは[Vertical Slice Implementation Plan](/protocol/implementation-plan)にまとめています。
 
 ::: warning 現在のStatus: Draft
 公開中のProtocol Specificationは設計・レビュー段階です。本番サービスや資金を扱う承認済み仕様ではありません。実装開始前にOpen Questionsを解決し、法務・セキュリティ・ガバナンスの承認とVersion更新が必要です。
@@ -25,6 +25,7 @@ Protocol Specification は、人間向けの説明書であると同時に、AI�
 | [SPEC-ACCOUNT-001 Subscription Settlement](/protocol/specs/subscription-settlement) | Account / Payment | 0.1.0 | Payment Intent、Finality、Subscription有効化 |
 | [SPEC-RIGHTS-001 Rights Registry](/protocol/specs/rights-registry) | Rights / Content | 0.1.0 | Work・Recording、権利主張、審査、紛争、Rights Snapshot |
 | [SPEC-STREAMING-001 Playback Authorization](/protocol/specs/playback-authorization) | Streaming / Authorization | 0.1.0 | Subscription・Credential特権・Rights認可、Playback Session、Media Adapter、Delivery Evidence |
+| [SPEC-STREAMING-002 Player Client](/protocol/specs/player-client) | Streaming / Client | 0.1.0 | Gateway専用PWA、Navidrome再生、Wallet・Supporter SBT・Community統合、Client Storage境界 |
 | [SPEC-USAGE-001 Playback Verification](/protocol/specs/playback-verification) | Usage / Privacy | 0.1.0 | Playback Event、重複防止、検証、Usage Snapshot、Challenge |
 | [SPEC-DISTRIBUTION-001 Creator Distribution](/protocol/specs/creator-distribution) | Distribution / Accounting | 0.1.0 | Revenue、User-Centric計算、Rights分割、保留、端数、Allocation |
 
@@ -281,17 +282,22 @@ Account Session、Subscription、Rights Stateを、短時間で失効可能なPl
 現在のDraft:
 
 - [SPEC-STREAMING-001 Streaming Authorization and Playback Session](/protocol/specs/playback-authorization)
+- [SPEC-STREAMING-002 Player Client and Gateway Interaction](/protocol/specs/player-client)
 
 ```text
 protocol/streaming/
-└── playback-authorization-spec.md   # Draft v0.1.0
+├── playback-authorization-spec.md   # Draft v0.1.0
+└── player-client-spec.md            # Draft v0.1.0
 ```
 
 Navidromeは適合可能なMedia Adapter例ですが、Canonical Track ID、Subscription、Rights、Verified UsageまたはDistributionのSource of Truthにはしません。
 
+Public PlayerはGateway専用APIだけを利用する軽量PWAとし、Wallet署名を通常再生のCritical Pathへ入れません。一般SupporterとEarly SupporterのCredential状態、Community CapabilityおよびClient Storageの安全境界はSPEC-STREAMING-002が定義します。
+
 ### 関連ADR
 
 - ADR-0009 Navidrome / Streaming Authorization Gateway
+- ADR-0011 Integrated Player Client
 - ADR-0008 Account / Wallet / Identity Strategy
 - ADR-0005 Usage Oracle
 
@@ -485,6 +491,7 @@ flowchart LR
 2. `account/wallet-linking-spec.md` — Draft v0.1.0
 3. `account/subscription-settlement-spec.md` — Draft v0.1.0
 4. `streaming/playback-authorization-spec.md` — Draft v0.1.0
+5. `streaming/player-client-spec.md` — Draft v0.1.0
 
 ---
 
@@ -501,6 +508,7 @@ flowchart TD
     ADR7[ADR-0007 Blockchain / L2]
     ADR8[ADR-0008 Account / Wallet / Identity]
     ADR9[ADR-0009 Navidrome / Streaming Gateway]
+    ADR11[ADR-0011 Integrated Player]
 
     ADR1 --> GOV[Governance Specs]
     ADR2 --> GOV
@@ -511,6 +519,7 @@ flowchart TD
     ADR7 --> CHAIN[Blockchain Specs]
     ADR8 --> ACCOUNT[Account Specs]
     ADR9 --> STREAM[Streaming Specs]
+    ADR11 --> STREAM
 
     ADR3 --> DIST
     ADR5 --> DIST

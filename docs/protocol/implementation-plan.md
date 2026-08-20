@@ -63,7 +63,7 @@ flowchart TD
 
 **目的:** 実装開始に必要なOpen Questionと権限を、仮定と承認済み判断に分離する。
 
-**現在の基盤:** [Decision Baseline](/protocol/decision-baseline)は、9仕様をSourceとして全Open Questionへ安全な既定状態を適用し、個別DecisionとMock Assumptionの完全性をCIで検証する。追跡Work Packageは[GitHub Issue #9](https://github.com/ShigeichiroYamasaki/creator-first-platform/issues/9)。
+**現在の基盤:** [Decision Baseline](/protocol/decision-baseline)は、10仕様をSourceとして全Open Questionへ安全な既定状態を適用し、個別DecisionとMock Assumptionの完全性をCIで検証する。追跡Work Packageは[GitHub Issue #9](https://github.com/ShigeichiroYamasaki/creator-first-platform/issues/9)。
 
 **成果物:**
 
@@ -77,7 +77,7 @@ flowchart TD
 
 ### IMP-002 Canonical Contracts
 
-**目的:** 9仕様間で受け渡すArtifactを、実装言語やTransportから独立した契約として固定する。
+**目的:** 10仕様間で受け渡すArtifactを、実装言語やTransportから独立した契約として固定する。
 
 **成果物:**
 

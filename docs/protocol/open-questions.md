@@ -22,6 +22,7 @@ Draft Protocol Specificationに残るOpen Questionsは、実装者が暗黙に�
 | [Settlement Asset Registry](/protocol/specs/settlement-asset-registry#open-questions) | 承認主体、証憑、Network、停止、監視、公開範囲 | `OQ-ASSET-REGISTRY-...` |
 | [Rights Registry](/protocol/specs/rights-registry#open-questions) | Work・Recording、権利主張、審査、証憑、紛争、Rights Snapshot | `OQ-RIGHTS-REGISTRY-...` |
 | [Playback Authorization](/protocol/specs/playback-authorization#open-questions) | Playback Session、権利・購読認可、Media Adapter、Range配信、証跡 | `OQ-STREAMING-...` |
+| [Player Client](/protocol/specs/player-client#open-questions) | PWA基盤、Wallet統合順序、OSS再利用、Client Event、Codec・Accessibility、Community表示 | `OQ-PLAYER-...` |
 | [Playback Verification](/protocol/specs/playback-verification#open-questions) | Event Schema、重複、検証Policy、Fraud Review、Usage Snapshot、Privacy | `OQ-USAGE-ORACLE-...` |
 | [Creator Distribution](/protocol/specs/creator-distribution#open-questions) | Revenue、控除、Pool、User-Centric計算、Rights保留、端数、説明 | `OQ-DISTRIBUTION-...` |
 

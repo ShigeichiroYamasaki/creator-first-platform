@@ -5,7 +5,7 @@ description: Account・決済とRights・UsageをCreator Distribution Allocation
 
 # End-to-End Vertical Slice
 
-現在の9つのDraft Protocol Specificationを、Creator First Platformの最初の検証可能な実装経路として接続します。このページは実装順序と境界を示すものであり、サービス、決済、分配またはSmart Contractが稼働していることを示すものではありません。
+現在の10個のDraft Protocol Specificationを、Creator First Platformの最初の検証可能な実装経路として接続します。このページは実装順序と境界を示すものであり、サービス、決済、分配またはSmart Contractが稼働していることを示すものではありません。
 
 ::: warning すべてDraft・未実装です
 各仕様のOpen Questions、法人・法務・権利・税務・プライバシー・セキュリティ上の承認、本番実装、監査は完了していません。ここに示す`ACTIVE`や`FINALIZED`は仕様上の状態名であり、現実のサービス状態ではありません。
@@ -66,6 +66,7 @@ Walletは支払認可手段の一つであり、人間のIdentityやRights Owner
 | Subscription | [SPEC-ACCOUNT-001](/protocol/specs/subscription-settlement) | Payment Reference、Revenue入力、Entitlement | Payment Intentが`FINALIZED`、Subscriptionが`ACTIVE` |
 | Rights | [SPEC-RIGHTS-001](/protocol/specs/rights-registry) | ContentごとのRights Snapshot | 必要範囲が`ACTIVE`。紛争・不足範囲を明示 |
 | Streaming | [SPEC-STREAMING-001](/protocol/specs/playback-authorization) | Authorization Decision、Playback Session、Delivery Evidence | Subscription・任意のCredential特権・Rights・Plan・地域・期間を固定し、Media Adapterへの迂回経路なし |
+| Player | [SPEC-STREAMING-002](/protocol/specs/player-client) | Canonical Catalog Request、Playback Session操作、Support Intent、Client Playback Event | Gateway専用APIだけを使用し、通常再生でWallet署名を要求せず、Client状態を権限またはVerified Usageにしない |
 | Usage | [SPEC-USAGE-001](/protocol/specs/playback-verification) | PeriodごとのUsage Snapshot | Snapshotが`FINALIZED`、Event重複なし、Policy Version固定 |
 | Distribution | [SPEC-DISTRIBUTION-001](/protocol/specs/creator-distribution) | Distribution Result、Held Allocation、Settlement Instruction | Revenue・Usage・Rights・Policyを固定して`FINALIZED` |
 
@@ -80,13 +81,14 @@ Walletは支払認可手段の一つであり、人間のIdentityやRights Owner
 5. 必要に応じてRelayerまたはPaymasterがGasをスポンサーする。Matching Stablecoin TransferがFinality条件を満たした後だけPaymentを`FINALIZED`、Subscriptionを`ACTIVE`にし、Native FeeまたはRelayer受付を支払として扱わない。
 6. WorkとRecordingを分離して登録し、Rights Claim、証憑、審査、Permission、紛争状態を含むRights Snapshotを確定する。
 7. Early Supporter限定機能を要求する場合は、同意済みSBT、Wallet Link、Credential Status、Creator ScopeおよびPrivilege Policyの確認済みSnapshotを取得する。確定済みPaymentをQualificationに使う場合は一回限りのPayment Referenceを検証し、Relayer送信後も確定済みMint Eventまで`ACTIVE`にしない。通常再生ではCredentialを必須にしない。
-8. Active Subscription、任意のCredential特権、Rights Snapshot、Plan、地域、期間からAuthorization Decisionと短時間Playback Sessionを作成する。
-9. Gatewayだけが非公開Media Adapterへ接続し、Range配信を行ってDelivery Evidenceを生成する。
-10. Playback EventをSession、Authorization Decision、Delivery Evidence、Client等の複数Evidenceで検証し、重複を排除する。
-11. Distribution Periodを閉じ、Challenge Windowを経てUsage Snapshotを`FINALIZED`にする。
-12. 法人会計からRevenue Snapshotを確定し、控除とCreator・Community・Platform等のPoolを明示する。
-13. Revenue、Usage、Rights、Distribution Policyの正確なVersionから、整数演算でDistribution Resultを計算する。
-14. Rightsが不完全・紛争中の額は受取人を推測せずHeld Allocationに置き、確定済み部分だけをSettlement Instructionへ変換する。
+8. PlayerはCanonical Track IDだけでGatewayへ再生を要求し、通常再生ではWallet署名を要求しない。
+9. Active Subscription、任意のCredential特権、Rights Snapshot、Plan、地域、期間からAuthorization Decisionと短時間Playback Sessionを作成する。
+10. Gatewayだけが非公開Media Adapterへ接続し、Range配信を行ってDelivery Evidenceを生成する。
+11. Playback EventをSession、Authorization Decision、Delivery Evidence、Client等の複数Evidenceで検証し、重複を排除する。
+12. Distribution Periodを閉じ、Challenge Windowを経てUsage Snapshotを`FINALIZED`にする。
+13. 法人会計からRevenue Snapshotを確定し、控除とCreator・Community・Platform等のPoolを明示する。
+14. Revenue、Usage、Rights、Distribution Policyの正確なVersionから、整数演算でDistribution Resultを計算する。
+15. Rightsが不完全・紛争中の額は受取人を推測せずHeld Allocationに置き、確定済み部分だけをSettlement Instructionへ変換する。
 
 ## 失敗時の既定動作
 

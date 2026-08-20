@@ -25,6 +25,9 @@ source_specifications:
   - id: SPEC-STREAMING-001
     version: 0.1.0
     path: protocol/streaming/playback-authorization-spec.md
+  - id: SPEC-STREAMING-002
+    version: 0.1.0
+    path: protocol/streaming/player-client-spec.md
   - id: SPEC-USAGE-001
     version: 0.1.0
     path: protocol/usage/playback-verification-spec.md

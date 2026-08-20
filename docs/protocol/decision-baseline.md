@@ -5,7 +5,7 @@ description: Open Question、公開Decision、Mock専用仮定を分離し、後
 
 # Decision Baseline
 
-IMP-001は、未決定事項を実装値へ暗黙に変換しないためのDecision境界です。9つのDraft Protocol Specificationを正規Sourceとして参照し、各Open Questionの割当、状態、実装可否、公開Decision証拠を検証します。
+IMP-001は、未決定事項を実装値へ暗黙に変換しないためのDecision境界です。10個のDraft Protocol Specificationを正規Sourceとして参照し、各Open Questionの割当、状態、実装可否、公開Decision証拠を検証します。
 
 ::: warning すべて未決定から開始します
 初期状態では、全Open Questionに`UNASSIGNED / OPEN / BLOCKED`を適用し、Mock Assumptionは0件です。この基盤の追加は、技術、法務、Rights、税務、Privacy、SecurityまたはOSS License上の判断を承認するものではありません。

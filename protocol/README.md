@@ -62,6 +62,7 @@ Planned domains include:
 | [SPEC-BLOCKCHAIN-001 Approved Settlement Asset Registry](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/blockchain/settlement-asset-registry-spec.md) | blockchain / payment | Draft | 0.1.0 |
 | [SPEC-RIGHTS-001 Rights Registry and Versioned Rights State](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/rights/rights-registry-spec.md) | rights / content | Draft | 0.1.0 |
 | [SPEC-STREAMING-001 Streaming Authorization and Playback Session](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/streaming/playback-authorization-spec.md) | streaming / authorization | Draft | 0.1.0 |
+| [SPEC-STREAMING-002 Player Client and Gateway Interaction](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/streaming/player-client-spec.md) | streaming / client | Draft | 0.1.0 |
 | [SPEC-USAGE-001 Playback Event Verification and Usage Snapshot](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/usage/playback-verification-spec.md) | usage / privacy | Draft | 0.1.0 |
 | [SPEC-DISTRIBUTION-001 Creator Distribution Calculation and Allocation](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/distribution/creator-allocation-spec.md) | distribution / accounting | Draft | 0.1.0 |
 

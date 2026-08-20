@@ -28,6 +28,7 @@ const requiredProtocolRoutes = [
   'protocol/specs/subscription-settlement',
   'protocol/specs/settlement-asset-registry',
   'protocol/specs/rights-registry',
+  'protocol/specs/player-client',
   'protocol/specs/playback-verification',
   'protocol/specs/creator-distribution'
 ]
