@@ -4,7 +4,7 @@
 **Version:** 0.1.0  
 **Protocol Domain:** account / payment  
 **Specification ID:** SPEC-ACCOUNT-001  
-**Last Updated:** 2026-08-19
+**Last Updated:** 2026-08-20
 
 ## Related Documents
 
@@ -38,6 +38,7 @@ This specification covers:
 - creation of a subscription payment intent;
 - validation of an approved settlement asset and plan price;
 - authorization and submission of a payment;
+- optional Relayer, Paymaster or Smart Account submission without changing the payment asset;
 - chain finality and duplicate-payment handling;
 - subscription activation, renewal, cancellation and expiry;
 - audit records and privacy boundaries.
@@ -62,6 +63,7 @@ These items require separate specifications or an approved implementation policy
 - **Payment Wallet:** a linked or transaction-scoped wallet that authorizes asset transfer.
 - **Subscription Service:** the authoritative off-chain service for subscription state.
 - **Settlement Adapter:** the chain-specific component that submits or observes settlement.
+- **Relayer / Paymaster:** an optional component that submits a bounded authorized transaction or sponsors its Network Fee without becoming payment evidence.
 - **Settlement Contract:** an optional smart contract receiving and recording payment.
 - **Finality Provider:** the configured source of canonical chain and finality information.
 - **Asset Registry Operator:** an authorized role applying approved asset-registry changes.
@@ -73,6 +75,7 @@ These items require separate specifications or an approved implementation policy
 - **Payment Intent:** an immutable request binding one account, plan, period, asset, amount and expiration.
 - **Payment Reference:** the canonical transaction and event reference used for duplicate detection.
 - **Finalized Payment:** a matching payment that satisfies the configured chain-finality policy.
+- **Network Fee:** the chain-native execution fee, distinct from the Approved Settlement Asset amount and never sufficient to activate a Subscription.
 - **Entitlement Period:** the half-open UTC interval `[starts_at, ends_at)` during which access is active.
 
 Common terms and representations follow `protocol/glossary.md` and `protocol/conventions.md`.
@@ -175,6 +178,11 @@ An implementation MAY omit `PAST_DUE` and expire directly when no grace-period p
 - **REQ-ACCOUNT-016:** Failed, expired, underpaid, overpaid, wrong-asset and wrong-chain transfers MUST enter an exception workflow without automatic subscription activation.
 - **REQ-ACCOUNT-017:** Upgrade, emergency-stop and registry-administration capabilities MUST use least privilege, multi-party control appropriate to risk, and an auditable delay or documented emergency exception.
 - **REQ-ACCOUNT-018:** The implementation MUST provide a reconciliation process linking each finalized entitlement to exactly one accepted Payment Reference and ledger entry.
+- **REQ-ACCOUNT-115:** Subscription price, authorization, accepted Transfer and accounting record MUST be denominated in the exact Approved Settlement Asset bound by the Payment Intent; a native Gas Token MUST NOT be substituted for that asset.
+- **REQ-ACCOUNT-116:** A sponsored flow MUST bind Relayer or Paymaster authorization to the Payment Intent, permitted target, calldata or operation digest, chain, nonce, expiry and sponsorship policy version.
+- **REQ-ACCOUNT-117:** Relayer submission, User Operation acceptance, Transaction Hash creation or Network Fee payment MUST NOT activate a Subscription; the matching Approved Settlement Asset Transfer MUST independently reach finality.
+- **REQ-ACCOUNT-118:** A Testnet profile MUST use a clearly identified `MockJPYC` or equivalent Test Asset with no monetary value, redemption claim or exchangeability with production JPYC, and MUST reject Mainnet assets and production chain identities.
+- **REQ-ACCOUNT-119:** Relayer, Paymaster, Deployer and Settlement administration keys MUST use least privilege, MUST NOT be committed to source control or emitted in logs, and MUST be separable for rotation or revocation.
 
 ### MUST NOT
 
@@ -184,6 +192,9 @@ An implementation MAY omit `PAST_DUE` and expire directly when no grace-period p
 - **REQ-ACCOUNT-022:** The system MUST NOT silently change price, asset, decimals, chain, period or policy versions after Payment Intent creation.
 - **REQ-ACCOUNT-023:** The system MUST NOT activate access from a pending transaction, untrusted webhook or client screenshot.
 - **REQ-ACCOUNT-024:** An operator MUST NOT manually create paid entitlement without a distinct, authorized adjustment record and reason code.
+- **REQ-ACCOUNT-120:** The system MUST NOT present ETH or another native Gas Token as the Subscription Price, paid revenue or Early Supporter payment amount.
+- **REQ-ACCOUNT-121:** Gas Sponsorship MUST NOT prove Subscriber qualification, payment completion, identity or entitlement.
+- **REQ-ACCOUNT-122:** A production JPYC brand, symbol or Contract MUST NOT be used in a Testnet fixture in a way that implies real value, redemption or official production integration.
 
 ### SHOULD
 
@@ -258,6 +269,8 @@ Case normalization and chain-specific transaction rules MUST be defined by the S
 | `PAYMENT_REORG_DETECTED` | Previously observed transaction leaves canonical chain | Do not silently rewrite; open incident and apply approved remedy |
 | `SUBSCRIPTION_STATE_CONFLICT` | Requested transition is invalid for current state | Reject with current state and correlation ID |
 | `DEPENDENCY_UNAVAILABLE` | Chain, finality or registry dependency is unavailable | Fail closed for activation and retry safely |
+| `SPONSORSHIP_POLICY_MISMATCH` | Relayer request exceeds target, operation, nonce, expiry or policy scope | Reject sponsorship without changing Payment Intent or Subscription |
+| `NATIVE_FEE_ONLY` | A Network Fee was paid but no matching settlement-asset Transfer finalized | Keep payment pending or fail; never activate |
 
 ## Security Requirements
 
@@ -333,6 +346,9 @@ Audit access MUST be role-restricted. Integrity protection and retention MUST sa
 | REQ-ACCOUNT-022–024 | Mutation / authorization | Bound intent cannot be modified; pending evidence and manual edits cannot create paid entitlement |
 | REQ-ACCOUNT-025–028 | UX / resilience / review | Preview is accurate; finality control, custody decision and asset evidence are documented |
 | REQ-ACCOUNT-029–030 | Conformance | Optional flow preserves all MUST, MUST NOT and invariant requirements |
+| REQ-ACCOUNT-115–117 | Integration / sponsorship | Price and finality remain bound to JPYC等のApproved Asset; Relayer or Gas evidence alone never activates |
+| REQ-ACCOUNT-118 | Testnet isolation | MockJPYC has no production value or identity and Mainnet assets are rejected |
+| REQ-ACCOUNT-119–122 | Security / UX / negative | Keys are separated, native fees create no paid entitlement, and Test UI cannot imply production JPYC value |
 
 Property tests MUST cover concurrent callbacks, duplicate events, timestamp boundaries, integer limits and chain reorganizations.
 
@@ -345,6 +361,7 @@ Property tests MUST cover concurrent callbacks, duplicate events, timestamp boun
 - A legal review approves the concrete payment flow and each production asset entry.
 - Security review approves contracts, adapters, administrative controls and emergency procedures.
 - Operational runbooks cover dependency outage, late/wrong payment, reorganization and registry suspension.
+- Testnet acceptance proves a User without Native Gas Token can complete a sponsored MockJPYC payment while only the finalized MockJPYC Transfer activates the Subscription.
 - No unresolved Open Question is silently decided by implementation.
 
 ## Open Questions

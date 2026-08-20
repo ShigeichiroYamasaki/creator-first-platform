@@ -42,6 +42,7 @@ flowchart LR
     MUSIC[Read-only Music Volume]
     EVENTS[Playback Evidence Pipeline]
     CHAIN[Smart Contracts]
+    RELAYER[Payment / SBT Relayer]
 
     PLAYER --> EDGE --> GATEWAY
     GATEWAY --> READ
@@ -49,6 +50,7 @@ flowchart LR
     GATEWAY --> NAVI --> MUSIC
     GATEWAY --> EVENTS
     NAVI --> EVENTS
+    GATEWAY --> RELAYER --> CHAIN
 ```
 
 NavidromeのPortはPublic Networkへ公開しない。Gatewayだけが専用内部NetworkからNavidromeへ接続できるものとする。
@@ -87,6 +89,8 @@ Gatewayは次を担当する。
 Smart Contractは次を担当する。
 
 - Subscriptionの成立、更新、取消しおよび期限
+- JPYC等の承認済みSettlement AssetによるPayment Event
+- Early Supporter SBTの発行、失効およびBurn Event
 - Settlement Assetの許可状態
 - Versioned Rights StateのCommitment
 - Usage RootおよびDistribution Root
@@ -289,10 +293,12 @@ cloudflared
     -> Streaming Authorization Gateway
         -> Navidrome
         -> SQLite Read Model / Playback Evidence
-        -> Base Sepolia Public RPC
+        -> Base Sepolia RPC
+        -> Relayer Module
 ```
 
 - Gatewayは単一の軽量Processとして実装する
+- RelayerはGateway内の限定Moduleとし、別の常駐Application Serverを追加しない
 - Read Model、Nonce、Session、Allowlist、Playback Evidenceおよび月間配信Byte数はSQLiteへ保存できる
 - PostgreSQL、Redis、Event Queue、Local Blockchain Nodeおよび検索ClusterをTest環境へ配置しない
 - Cloudflare側でPublic TLSを終端するため、Quick Tunnel構成ではCaddyを必須としない
@@ -305,6 +311,10 @@ cloudflared
 Gatewayを唯一のPublic Application Boundaryとし、NavidromeのPort、Credential、Internal APIおよびMedia IDをClientへ公開しない。
 
 - Wallet認証はnonce、domain、URI、Chain ID、有効期限を検証するSIWEを使用する
+- 利用者が認識するSubscription PriceとPayment Intentは`MockJPYC`建てとし、Test ETHを支払資産として受け付けない
+- Gatewayは署名済みPayment Authorizationを検証してRelayerへ渡せるが、Relayer受付またはGas支払だけでSubscriptionを有効化しない
+- `DemoSubscription`は一致する`MockJPYC` TransferがFinality条件を満たした後だけ有効化する
+- 明示的なSBT受領同意とQualificationを確認した後だけ、RelayerがEarly Supporter SBT発行Transactionを送信できる
 - Test参加者はWallet Allowlistまたは明示的な招待記録で制限する
 - SubscriptionおよびRights判定はBase Sepolia Public RPCから取得し、15〜30秒の短時間Cacheへ保存する
 - RPC Timeout、Rate Limit、Chain ID不一致、Contract Address不一致または判定不能時は新規Playback SessionをFail Closedにする
@@ -316,8 +326,9 @@ Base SepoliaのTest Contractは少なくとも次を分離する。
 - `MockJPYC`: 金銭的価値、償還請求権または実在JPYCとの交換可能性を持たないTest Token
 - `DemoSubscription`: Wallet、Plan、開始時刻、有効期限および取消状態
 - `DemoRightsRegistry`: Creator First Track ID、公開状態、Rights Versionおよび停止状態
+- `DemoEarlySupporterSBT`: 譲渡不能、失効可能かつ金銭的権利を持たないTest Credential
 
-Chain IDは`84532`とし、Contract Address、Deployment Transaction、ABI、Source Commitおよび使用RPCをデモ画面へ表示する。Test ETHはFaucet由来だけを使用する。Mainnet Asset、本番Wallet、本番秘密鍵、実在Subscription、実在Rights、未公開音源または個人情報をTest環境へ投入しない。Deployer KeyはRepositoryへCommitせず、可能な限りVMへ常置しない。
+Chain IDは`84532`とし、Contract Address、Deployment Transaction、ABI、Source Commitおよび使用RPCをデモ画面へ表示する。Test ETHはFaucet由来のGasにだけ使用し、料金表示、Payment Intent、Subscription RevenueまたはSBT資格額に使用しない。Mainnet Asset、本番Wallet、本番秘密鍵、実在Subscription、実在Rights、未公開音源または個人情報をTest環境へ投入しない。Deployer KeyとRelayer KeyはRepositoryへCommitせず、用途と権限を分離し、可能な限りVMへ常置しない。
 
 #### Test Environment Acceptance Criteria
 
@@ -334,6 +345,9 @@ Chain IDは`84532`とし、Contract Address、Deployment Transaction、ABI、Sou
 9. Playback Evidence、配信Byte数およびDenial Reasonの監査可能な記録
 10. 700 MiB警告と800 MiB新規Session停止の自動Test
 11. e2-microでOOMを発生させず、同時Direct Play 1〜3本と最大1 Transcodeの測定結果を保存すること
+12. `MockJPYC`の正しいAsset、Amount、ChainおよびPayment IntentだけがSubscriptionを有効化し、Test ETH、誤Asset、未確定または重複Paymentが有効化しないこと
+13. 利用者がTest ETHを保持しなくてもRelayer経由でPaymentとSBT発行を操作でき、Gas支払がSubscription Paymentとして記録されないこと
+14. 明示的同意とQualificationがある場合だけDemo SBTを一回発行し、Transfer、重複発行、失効後の特権およびSBT単独での通常再生を拒否すること
 
 ### 12.3 Production Candidate Topology
 

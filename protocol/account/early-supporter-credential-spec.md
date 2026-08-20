@@ -130,6 +130,11 @@ Reissuance creates a new Credential identity. It MUST NOT reactivate or transfer
 - **REQ-EARLY-SUPPORTER-013:** A Streaming privilege MUST be evaluated only together with an active Subscription and applicable active Rights State; the Credential MUST NOT replace either authority.
 - **REQ-EARLY-SUPPORTER-014:** New Privilege Evaluations MUST fail closed when Account, Wallet Link, Credential, Contract approval, Policy, Subscription or Rights state is unavailable, stale beyond policy, suspended or reorganization-unsafe.
 - **REQ-EARLY-SUPPORTER-015:** Credential and Privilege audit data MUST minimize personal data, separate public chain facts from restricted Account mappings and follow approved retention and access controls.
+- **REQ-EARLY-SUPPORTER-027:** When a finalized Subscription or Support Payment is Qualification evidence, the Credential Record MUST bind an opaque qualification reference to the exact Payment Intent, accepted Payment Reference, Approved Settlement Asset snapshot and finality decision without publishing the paid amount.
+- **REQ-EARLY-SUPPORTER-028:** Payment-derived issuance MUST reject pending, wrong-asset, wrong-chain, duplicate, reused or non-final Payment References and MUST NOT treat a Network Fee or sponsorship record as Qualification.
+- **REQ-EARLY-SUPPORTER-029:** A sponsored issuance MUST bind consent, recipient, Credential Deployment, Qualification, policy version, nonce, expiry and permitted mint operation before a Relayer submits it.
+- **REQ-EARLY-SUPPORTER-030:** Credential Status MUST become `ACTIVE` only after the approved Indexer observes the matching finalized issuance event; Relayer acceptance or transaction submission is insufficient.
+- **REQ-EARLY-SUPPORTER-031:** Issuer, Relayer, Revoker, Burner and Deployer credentials MUST use least privilege, be independently revocable where practical, and remain absent from source control and public logs.
 
 ### MUST NOT
 
@@ -139,6 +144,7 @@ Reissuance creates a new Credential identity. It MUST NOT reactivate or transfer
 - **REQ-EARLY-SUPPORTER-019:** A later Qualification or Privilege Policy version MUST NOT silently rewrite the meaning or audit interpretation of a historical issuance or authorization decision.
 - **REQ-EARLY-SUPPORTER-020:** Reissuance, multiple Wallets or multiple Accounts MUST NOT silently multiply one Qualification into concurrent active privileges beyond the approved uniqueness policy.
 - **REQ-EARLY-SUPPORTER-021:** Navidrome, another Media Adapter, a CDN or an arbitrary token contract MUST NOT become the authority for Credential validity or Privilege activation.
+- **REQ-EARLY-SUPPORTER-032:** The Credential MUST NOT encode a paid amount, grant greater privilege from a larger JPYC payment, or treat Gas sponsorship as financial support unless a separately approved future policy completes required legal, tax, accounting and consumer review.
 
 ### SHOULD
 
@@ -175,7 +181,7 @@ Reissuance creates a new Credential identity. It MUST NOT reactivate or transfer
 | Source | Triggering actor | Required inputs and validation | Result | Event | Failure behavior |
 | --- | --- | --- | --- | --- | --- |
 | none | Candidate / Account Service | authenticated Account, Wallet Link, Qualification, disclosure | `PENDING_CONSENT` | `CredentialConsentRequested` | create no issuance authority |
-| `PENDING_CONSENT` | Candidate / Issuer | exact consent, current Wallet proof, approved deployment and issuer | `ACTIVE` | `EarlySupporterCredentialIssued` | reject without partial activation |
+| `PENDING_CONSENT` | Candidate / Issuer / Relayer | exact consent, current Wallet proof, approved deployment and issuer, valid optional Payment evidence, finalized issuance event | `ACTIVE` | `EarlySupporterCredentialIssued` | remain pending or reject without partial activation |
 | `ACTIVE` | authorized revoker | applicable policy or incident decision | `REVOKED` | `EarlySupporterCredentialRevoked` | preserve active state if command is unauthorized |
 | `ACTIVE` | authorized burner | approved burn authority and exact Token ID | `BURNED` | Contract burn plus indexed status event | preserve active state if burn fails |
 | `REVOKED` or `BURNED` | Candidate / Issuer | completed recovery, old invalidation, new Wallet Link and consent | new `PENDING_CONSENT` record | `CredentialReissuanceRequested` | old Credential remains invalid |
@@ -206,6 +212,8 @@ evaluatePrivilege(account_id, requested_capability, policy_version)
 | `CREDENTIAL_STATE_STALE` | Read Model freshness or reorganization safety fails | fail closed for new privilege |
 | `PRIVILEGE_SCOPE_MISMATCH` | Creator, content, Plan, territory, interval or capability differs | deny with non-sensitive reason |
 | `RECOVERY_INCOMPLETE` | old Credential is not invalidated or new Wallet Link is not approved | deny reissuance activation |
+| `PAYMENT_QUALIFICATION_INVALID` | optional Payment evidence is pending, reused, wrong-asset, wrong-chain or not final | deny issuance |
+| `SPONSORED_ISSUANCE_INVALID` | Relayer operation exceeds consent, deployment, mint, nonce, expiry or policy scope | deny submission or activation |
 
 ## Security Requirements
 
@@ -257,6 +265,8 @@ Audit records cover qualification decision, disclosure version, consent, issuer 
 | REQ-EARLY-SUPPORTER-016–021 | Negative / privacy / authority boundary | public data excludes prohibited fields and Credential never creates financial, governance or standalone playback authority |
 | REQ-EARLY-SUPPORTER-022–025 | Conformance | implemented SHOULD behavior is tested or deviation is documented under conventions |
 | REQ-EARLY-SUPPORTER-026 | Optional privacy conformance | a private proof preserves status, uniqueness, scope, revocation and audit semantics |
+| REQ-EARLY-SUPPORTER-027–030 | Payment / sponsorship / finality | only eligible finalized approved-asset evidence can qualify and only finalized mint events activate |
+| REQ-EARLY-SUPPORTER-031–032 | Key separation / negative economics | privileged keys are separated; paid amount and Gas never create financial or expanded privilege |
 
 Adversarial tests include arbitrary look-alike contracts, forged Wallet Links, duplicate Qualification, transfer attempts, stale and reorganized events, issuer compromise simulation, replayed consent, concurrent reissuance, old-Wallet use, scope widening, Policy rollback and direct Media Adapter access.
 
@@ -270,6 +280,7 @@ Adversarial tests include arbitrary look-alike contracts, forged Wallet Links, d
 - Reorganized or stale source state fails closed.
 - Public Contract data contains no direct personal data, support amount or detailed listening history.
 - Security Token, revenue and governance rights are absent from the Contract and Privilege Policy fixture.
+- A User without Native Gas Token can receive a consent-bound Relayer issuance, while sponsorship alone creates neither Qualification nor an active Credential.
 - No unresolved Open Question is silently decided by implementation.
 
 ## Open Questions

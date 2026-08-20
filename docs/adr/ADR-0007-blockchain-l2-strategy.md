@@ -220,7 +220,7 @@ Chain変更時にもProtocol Specificationの意味が維持されることを�
 
 ## 9. Stablecoin Settlement
 
-SubscriptionおよびCreator Distributionには、法的・技術的要件を満たすStablecoinを利用できる。
+SubscriptionおよびCreator Distributionには、法的・技術的要件を満たすJPYC等のStablecoinを使用する。ETH等のネイティブトークンはGasまたはNetwork Feeの精算にだけ使用し、Subscription PriceまたはCreator Distribution Assetとして暗黙に採用しない。
 
 JPYCは重要な候補であるが、Protocol Coreを特定Stablecoin Contract Addressへ固定しない。
 
@@ -242,8 +242,11 @@ Settlement Asset Registryを設け、
 - Decimals
 - Status
 - Activation Period
+- Allowed Operation Type
 
 等をVersion管理する。
+
+Testnetでは、金銭的価値、償還請求権または実在JPYCとの交換可能性を持たない`MockJPYC`だけをDemo SubscriptionのSettlement Assetとして承認する。Mainnet JPYCとTest Tokenは異なるAsset ID、Contract Address、Networkおよび表示を持たなければならない。
 
 ---
 
@@ -700,7 +703,7 @@ L2
 
 等を意識しなくてもPlatformを利用できることを目標とする。
 
-Account Abstraction、Gas Sponsorship、Bundling等を利用できるが、具体方式は別ADRで決定する。
+Account Abstraction、Relayer、Paymaster、Gas Sponsorship、Bundling等を利用できる。利用者が確認する支払額はJPYC等の承認済みSettlement Assetで固定し、Sponsorが支払うNative FeeをSubscription Paymentとして記録しない。具体方式とSponsorship PolicyはADR-0008および各Deployment Policyで決定する。
 
 BlockchainはUser Experienceを複雑化する目的で導入しない。
 

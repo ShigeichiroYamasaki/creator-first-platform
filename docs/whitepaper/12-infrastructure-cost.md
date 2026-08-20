@@ -721,7 +721,7 @@ flowchart LR
 
 ## 12.25 Gas Sponsorship
 
-利用者のガバナンス投票やCreator Claimでは、必要に応じてPlatformがGasをスポンサーする。
+利用者のSubscription Payment、Early Supporter SBT発行、ガバナンス投票またはCreator Claimでは、必要に応じてPlatformがRelayerまたはPaymasterを通じてGasをスポンサーする。
 
 月間Gas Sponsorship Costを、
 
@@ -736,6 +736,8 @@ $$
 とする。
 
 これをCreator/User Participation Costとして事業計画に含める。
+
+Gas Sponsorship CostはJPYC等で表示するSubscription Priceと分離し、利用者がETH等でサービス料金を支払ったものとして記録しない。テスト系ではFaucet由来のTestnet Gas Tokenだけを使用し、`MockJPYC`決済とSBT発行を無料で検証する。本番系ではSponsorship上限、対象Operation、Rate Limit、失敗時の再送、秘密鍵管理および会計処理を承認済みPolicyとして定義する。
 
 ---
 

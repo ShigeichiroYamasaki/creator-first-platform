@@ -545,23 +545,26 @@ flowchart LR
 
 ## 4.14 Payment Layer
 
-利用者の決済は、一般的な決済サービスを利用できる構成とする。
+利用者のサブスクリプション決済は、JPYC等の承認済みステーブルコインを使用する。Payment Layerは、Asset Registry、Payment Intent、Wallet Authorization、Settlement AdapterおよびFinality確認を分離し、ETH等のネイティブトークンをSubscription Priceとして扱わない。
 
 ```mermaid
 flowchart LR
     USER[Listener]
-    CARD[Card / Fiat Payment]
-    PSP[Payment Service Provider]
-    CORP[Operating Corporation]
+    WALLET[Wallet / Smart Account]
+    INTENT[Payment Intent]
+    ASSET[Approved JPYC等]
+    RELAYER[Relayer / Paymaster]
+    CHAIN[Settlement Contract]
+    SUB[Active Subscription]
 
-    USER --> CARD
-    CARD --> PSP
-    PSP --> CORP
+    USER --> WALLET --> INTENT
+    ASSET --> INTENT --> CHAIN --> SUB
+    RELAYER -->|Gas Sponsorship| CHAIN
 ```
 
-決済手段と、分配プロトコルは分離する。
+RelayerまたはPaymasterは利用者のGas操作を抽象化できるが、料金を支払ったことのSource of Truthにはならない。指定されたAsset、Chain、Contract、Amount、WalletおよびPayment Intentに一致するTransferがFinality条件を満たした場合だけSubscriptionを有効化する。
 
-つまり、利用者が日本円で支払っても、内部の分配処理を透明で検証可能にすることは可能である。
+テスト系では実在JPYCと交換できず金銭的価値を持たない`MockJPYC`を用い、本番系では具体的なJPYC商品・発行者・Contract Address・Networkを法務、技術およびSecurity審査後にAsset Registryへ登録する。
 
 ---
 
@@ -603,11 +606,15 @@ flowchart TD
     DIST[Distribution Contract]
     GROWTH[Growth Pool Contract]
     TREASURY[Treasury / Settlement]
+    SUBSCRIPTION[Subscription Settlement]
+    SBT[Early Supporter SBT]
 
     GOV --> DIST
     GOV --> GROWTH
     RIGHTS --> DIST
     USAGE --> DIST
+    SUBSCRIPTION --> TREASURY
+    SUBSCRIPTION -. finalized qualification .-> SBT
     TREASURY --> DIST
     TREASURY --> GROWTH
 ```

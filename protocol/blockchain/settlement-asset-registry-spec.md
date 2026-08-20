@@ -4,7 +4,7 @@
 **Version:** 0.1.0  
 **Protocol Domain:** blockchain / payment  
 **Specification ID:** SPEC-BLOCKCHAIN-001  
-**Last Updated:** 2026-08-19
+**Last Updated:** 2026-08-20
 
 ## Related Documents
 
@@ -64,6 +64,8 @@ This specification covers:
 - **Technical Asset Identity:** the tuple of network namespace, `chain_id`, contract address and deployment identity required to distinguish the asset from similarly named tokens.
 - **Activation Window:** the half-open UTC interval `[effective_from, effective_until)` in which an `ACTIVE` entry may be used for new operations.
 - **Consumer Snapshot:** the exact registry version and Asset Entry version bound by a consuming operation.
+- **Network Fee Asset:** a chain-native asset used to execute a transaction; it is not an Approved Settlement Asset unless separately reviewed and explicitly activated for the consuming operation.
+- **Test Asset:** an asset restricted to a named Testnet profile and represented as having no production value, redemption claim or production-asset identity.
 
 Common terms follow `protocol/glossary.md` and `protocol/conventions.md`.
 
@@ -104,6 +106,9 @@ Common terms follow `protocol/glossary.md` and `protocol/conventions.md`.
 - `status`
 - `effective_from`
 - `effective_until` (optional)
+- `allowed_operation_types`
+- `environment` (`test` or `production`)
+- `test_asset_disclosure_reference` (required for Test Assets)
 - `created_at`
 
 References MUST identify immutable or integrity-protected evidence versions. URLs MAY accompany them but MUST NOT be the only integrity mechanism for approval evidence.
@@ -157,6 +162,10 @@ DRAFT → REVIEW_PENDING → APPROVED → SCHEDULED → ACTIVE → DEPRECATED
 - **REQ-BLOCKCHAIN-018:** Migration to a replacement asset or deployment MUST define non-overlapping new-operation windows and preserve the original Consumer Snapshots.
 - **REQ-BLOCKCHAIN-019:** Registry serialization, address normalization and comparison MUST be deterministic and defined per supported network namespace.
 - **REQ-BLOCKCHAIN-020:** An entry MUST identify the finality policy required before its transfers may be treated as finalized by a consumer.
+- **REQ-BLOCKCHAIN-034:** Every Asset Entry MUST bind its allowed operation types and environment; a Subscription consumer MUST reject an entry not approved for Subscription Payment in the current environment.
+- **REQ-BLOCKCHAIN-035:** A Network Fee Asset MUST be modeled separately and MUST NOT become an Approved Settlement Asset from chain-native status, Gas payment or Wallet balance alone.
+- **REQ-BLOCKCHAIN-036:** A Test Asset entry named `MockJPYC` or similar MUST use a Testnet identity, disclose that it has no monetary value or redemption claim, and remain technically and operationally isolated from every production JPYC entry.
+- **REQ-BLOCKCHAIN-037:** Promotion from Testnet to production MUST require a new production Asset Entry and full legal, technical, security and approval evidence; changing an environment flag is insufficient.
 
 ### MUST NOT
 
@@ -166,6 +175,7 @@ DRAFT → REVIEW_PENDING → APPROVED → SCHEDULED → ACTIVE → DEPRECATED
 - **REQ-BLOCKCHAIN-024:** The registry MUST NOT represent legal review as a permanent guarantee; its scope, date, limitations and re-review triggers MUST remain visible.
 - **REQ-BLOCKCHAIN-025:** Restricted legal identity, contractual, security or personal data MUST NOT be stored on a public blockchain.
 - **REQ-BLOCKCHAIN-026:** Suspension or revocation MUST NOT silently invalidate or reinterpret a previously finalized operation.
+- **REQ-BLOCKCHAIN-038:** The registry MUST NOT infer production approval, issuer endorsement, redemption or value from a Test Asset's name, symbol, decimals or interface similarity.
 
 ### SHOULD
 
@@ -247,6 +257,8 @@ Read results MUST include a schema version and integrity mechanism. Write interf
 | `REGISTRY_TRANSITION_UNAUTHORIZED` | Actor lacks required authority | Reject and audit security signal |
 | `REGISTRY_CONCURRENCY_CONFLICT` | Entry changed since command was authorized | Reject; require refresh and reauthorization |
 | `INVALID_EFFECTIVE_TIME` | Transition is retroactive or window is invalid | Reject transition |
+| `ASSET_ENVIRONMENT_MISMATCH` | Test or production environment differs from the consuming operation | Reject new operation |
+| `NATIVE_FEE_AS_SETTLEMENT` | A consumer attempts to treat Gas payment as Subscription settlement | Reject and record an integration defect |
 
 ## Security Requirements
 
@@ -313,8 +325,9 @@ The audit history MUST allow an independent reviewer to reconstruct:
 | REQ-BLOCKCHAIN-025–026 | Privacy / historical property | Prohibited data stays off-chain; suspension never rewrites finalized meaning |
 | REQ-BLOCKCHAIN-027–031 | Conformance / operational | Implemented SHOULD behavior is evidenced or deviations are documented under conventions |
 | REQ-BLOCKCHAIN-032–033 | Optional conformance | Anchoring or scoped approval preserves every MUST, MUST NOT and invariant |
+| REQ-BLOCKCHAIN-034–038 | Environment / negative / migration | Operation scope is enforced; Gas is not settlement; MockJPYC cannot imply or migrate into production approval |
 
-Property and adversarial tests MUST include address casing, chain-ID mismatch, proxy upgrade, duplicate symbol, overlapping windows, stale cache, concurrent transition, replayed approval and emergency suspension.
+Property and adversarial tests MUST include address casing, chain-ID mismatch, proxy upgrade, duplicate symbol, overlapping windows, stale cache, concurrent transition, replayed approval, emergency suspension, Testnet/Mainnet substitution and Native Fee misuse.
 
 ## Acceptance Criteria
 

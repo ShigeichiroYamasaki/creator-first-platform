@@ -1006,23 +1006,24 @@ Emergency Keyを「何でもできる管理者鍵」にしない。
 
 ## 9.36 Stablecoin Settlement
 
-クリエイターへの分配には、価格変動の大きい暗号資産より、法定通貨連動型ステーブルコインを利用する構成を検討する。
+利用者のサブスクリプション支払いとクリエイターへの分配には、価格変動の大きいETH等ではなく、JPYC等の承認済み法定通貨連動型ステーブルコインを使用する。
 
 日本国内では、法令・事業者要件を満たすステーブルコインや決済経路を選択する。
 
 ```mermaid
 flowchart LR
-    FIAT[Subscription Payment]
-    PSP[Payment Provider]
-    TREASURY[Treasury]
-    STABLE[Stablecoin Settlement]
+    USER[Subscriber Wallet]
+    INTENT[Payment Intent]
+    STABLE[Approved JPYC等]
+    FINAL[Finalized Settlement]
+    TREASURY[Treasury / Accounting]
     CREATOR[Creator]
 
-    FIAT --> PSP --> TREASURY
-    TREASURY --> STABLE --> CREATOR
+    USER --> INTENT
+    STABLE --> INTENT --> FINAL --> TREASURY --> CREATOR
 ```
 
-利用者が暗号資産を保有しなくてもサービスを利用できる構造を基本とする。
+支払資産はChain、Contract Address、Issuer、Product、Decimals、利用目的および有効期間をRegistryで固定する。Testnetでは金銭的価値を持たない`MockJPYC`を使用し、実在JPYCとの交換可能性や償還請求権を表示しない。
 
 ---
 
@@ -1037,6 +1038,8 @@ flowchart LR
 - RPC
 
 などを意識させない。
+
+特にSubscription PaymentとSBT発行では、Relayer、PaymasterまたはSmart AccountがGasをスポンサーできる。ネイティブトークンはネットワーク手数料にだけ使用し、Subscription Price、Early Supporter資格またはCreator Distribution額へ算入しない。
 
 ```mermaid
 flowchart LR

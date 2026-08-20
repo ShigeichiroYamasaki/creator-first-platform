@@ -333,6 +333,8 @@ flowchart LR
 
 構造を基本候補とする。
 
+オンチェーンSubscriptionではJPYC等の承認済みステーブルコインをサービス料金とし、ETH等のNative TokenはNetwork Feeとして分離する。RelayerまたはPaymasterがGasを負担しても、それ自体を利用者の支払い、売上、寄附、SBT資格またはCreatorへの分配額として扱わない。テスト系の`MockJPYC`は金銭的価値、償還請求権および実在JPYCとの交換可能性を持たないことを明示する。
+
 ---
 
 ## 11.12 JPYC等を利用する場合

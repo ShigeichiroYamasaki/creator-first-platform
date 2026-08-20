@@ -380,6 +380,8 @@ flowchart LR
 
 Early Supporterの履歴は、本人の同意に基づいて譲渡不能なSBTとして発行できる。SBTは投資商品、将来収益への請求権、Creator Revenueの分配権またはProtocol Governanceの議決権ではなく、正規Issuerが特定の基準と時点に基づいて発行したCommunity Credentialとする。
 
+JPYC等による初期SubscriptionまたはSupportをQualification Policyの入力にする場合、金額そのものではなく、承認済みPayment IntentがFinality条件を満たしたという版管理済みEvidenceを参照する。未確定、誤Asset、誤Chainまたは重複PaymentからSBTを発行しない。テスト系では`MockJPYC`以外の資産を受け付けず、実在JPYC、実在資金またはMainnet Walletを使用しない。
+
 SBTに対応する特権は、通常のSubscriptionへ追加される限定的な利用権としてPolicyで定義する。例えば、CreatorとRights Holderが許諾した先行試聴、限定音源、イベント、Beta機能またはCommunity表示を対象にできる。
 
 ```mermaid
@@ -393,6 +395,7 @@ flowchart LR
     PRIV[Bounded Privilege]
 
     ACTION --> POLICY --> SBT --> ACCOUNT
+    PAYMENT[Finalized Approved Stablecoin Payment] -. optional evidence .-> POLICY
     ACCOUNT --> PRIV
     SUB --> PRIV
     RIGHTS --> PRIV
@@ -401,6 +404,8 @@ flowchart LR
 SBT保有だけで全楽曲、全地域、全期間または全品質の再生を許可しない。再生時にはPlatform Account、Wallet Link、Subscription、Rights State、対象Creator、特権Policy、失効状態およびRead Modelの鮮度をGatewayが評価する。
 
 発行Contract、Chain、Issuer、Qualification Policy、Creator Scope、発行時点、StatusおよびLifecycleを版管理する。Wallet紛失や変更、不正発行、資格取消し、利用者からの削除要求に備え、Burn、Revocationおよび監査可能な再発行手順を用意する。個人情報、支援金額および詳細な視聴履歴はPublic Blockchainへ記録しない。
+
+一般利用者へSBT発行用Gas Tokenを要求しない。明示的な受領同意とWallet署名を得た後、限定権限を持つRelayerまたはPaymasterがTestnet Transactionを送信できる。ただしGas Sponsorshipは資格、支払完了または特権を証明せず、発行の冪等性、Issuer権限および確定済みChain Eventを別に検証する。
 
 SBTの発行基準と利用特権はSTOの購入額、Security Token保有量、将来のCreator人気または収益に連動させない。STO投資家向けの付帯利益として設計する場合は、このCommunity Credentialとは別の制度として法務、会計、税務および開示の確認を必要とする。
 

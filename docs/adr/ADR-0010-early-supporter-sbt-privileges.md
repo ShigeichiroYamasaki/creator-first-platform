@@ -65,9 +65,13 @@ Early Supporter Credentialは少なくとも次を版管理する。
 
 Qualification Policyは、対象Creator、対象Action、判定期間、SnapshotまたはEvent Source、重複排除、Bot対策、異議申立ておよびIssuer権限を定義する。
 
+JPYC等による初期SubscriptionまたはSupportを対象Actionにする場合、Qualificationは承認済みAsset、Payment Intent、Finalityおよび一回限りのPayment Referenceを参照する。支払額をPublic Metadataへ記録せず、未確定、誤Asset、誤Chain、重複または取消済みPaymentから発行しない。
+
 利用者の受領意思を確認せずにPublic WalletへSBTを送り付けない。発行操作は同じQualificationとPolicy Versionに対して冪等にし、同一Credentialの二重発行を拒否する。
 
 Early Supporterの資格をSTOへの申込額、Security Token保有量、Creatorの将来人気、将来収益または投機的価値へ連動させない。
+
+一般利用者へSBT発行用Native Gas Tokenを要求しない。明示的同意と目的限定Wallet署名の後、`MINTER_ROLE`だけを持つRelayerが発行Transactionを送信できる。Relayer受付、Gas支払またはTransaction送信は発行成功ではなく、確定済みCredential EventをIndexerが取り込んだ時点でCredentialを`ACTIVE`とする。
 
 ## 6. Privilege Policy
 
@@ -173,6 +177,9 @@ Community Reputationを投資・経済力・Protocol支配へ変換し、Whitepa
 10. Wallet Recovery時に旧Credentialが無効化され、新Credentialとの監査Linkが残る
 11. NavidromeへGatewayを迂回して到達できない
 12. Token Metadata、LogおよびDelivery Evidenceに個人情報、支援額または詳細な公開視聴履歴を含めない
+13. `MockJPYC`の確定済みPaymentをQualificationに使う場合、誤Asset、誤Chain、未確定および重複Paymentから発行しない
+14. 利用者がTest ETHを保持しなくてもRelayer経由で発行でき、Gas Sponsorshipを支払・資格または発行成功として扱わない
+15. Relayer、Issuer、RevokerおよびDeployerの権限と鍵を分離し、Repositoryや公開Logへ秘密を残さない
 
 ## 15. Related Documents
 

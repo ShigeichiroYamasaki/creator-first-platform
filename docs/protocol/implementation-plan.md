@@ -114,12 +114,15 @@ flowchart TD
 **成果物:**
 
 - 正確なNetwork・contract identityを持つMock Asset Entry
+- 金銭的価値、償還請求権または実在JPYCとの交換可能性を持たない`MockJPYC`
 - activate、suspend、revoke、cache expiryのRegistry fixture
 - Payment Intent、Matching Transfer、Finality、Subscription state machine
+- Payment IntentへBoundしたRelayer submissionとFaucet由来GasのSponsorship fixture
 - duplicate callback、wrong asset、wrong amount、late payment、reorganizationのSimulation
+- Native Gas支払だけではSubscriptionを有効化しないNegative fixture
 - Payment ReferenceからMock Revenue entryへの一回限りの連携
 
-**終了証拠:** `ACTIVE`でないAssetや`FINALIZED`でないPaymentからSubscriptionが有効にならず、同じPaymentが二重有効化されない。
+**終了証拠:** `ACTIVE`でないAssetや`FINALIZED`でないPaymentからSubscriptionが有効にならず、同じPaymentが二重有効化されない。利用者がTest ETHを持たなくてもRelayer経由でMockJPYC Paymentを完了できる一方、Relayer受付またはGas支払だけでは有効化されない。
 
 ### IMP-005 Rights Registry Mock
 
@@ -148,6 +151,8 @@ flowchart TD
 - Authorization Decision、reason code、Playback Session、Concurrency Lease
 - Account、Subscription、Rights、Plan、地域、期間を固定したPolicy evaluator
 - 同意済みDemo SBTの発行、Transfer拒否、Revocation、Wallet回復およびreorganization-aware Credential Read Model
+- Consent、Qualification、Credential Deployment、Mint、NonceおよびExpiryへBoundしたSBT Relayer fixture
+- 任意の確定済みMockJPYC Payment Qualificationと、誤Asset・誤Chain・未確定・重複PaymentのNegative fixture
 - Creator Scope、Credential Status、Privilege Policy Versionを固定し、SubscriptionとRightsを置き換えないPolicy evaluator
 - Canonical Track IDとMock Navidrome Media IDのversioned mapping
 - `Remote-User`等のClient supplied trusted header除去
@@ -155,7 +160,7 @@ flowchart TD
 - idempotentなDelivery EvidenceとUsage handoff
 - Subscription取消し、Credential失効、Wallet Link制限、Privilege停止、Rights停止、stale Read Model、adapter outageのfailure fixture
 
-**終了証拠:** Public routeまたは偽造headerからMedia Adapterを迂回できず、SBT単独でSubscriptionまたはRightsを代替できず、Playback Sessionが別Account・Credential・Privilege・Track・Rights・Planへ拡張されず、Adapter交換後もCanonical IDとEvidence semanticsが同一である。
+**終了証拠:** Public routeまたは偽造headerからMedia Adapterを迂回できず、SBT単独でSubscriptionまたはRightsを代替できず、Playback Sessionが別Account・Credential・Privilege・Track・Rights・Planへ拡張されず、Adapter交換後もCanonical IDとEvidence semanticsが同一である。利用者はTest ETHなしでSBTを受領できるが、Gas SponsorshipだけではQualificationまたはCredentialを作れない。
 
 ### IMP-007 Usage Pipeline Mock
 

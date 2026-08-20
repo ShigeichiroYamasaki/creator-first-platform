@@ -170,11 +170,13 @@ flowchart LR
 
 ## 3.8 利用者からクリエイターへの資金の流れ
 
-利用者は Creator First Platform にサブスクリプション料金を支払う。
+利用者は、JPYC等の`Approved Settlement Asset Registry`で承認された法定通貨連動型ステーブルコインにより、Creator First Platformへサブスクリプション料金を支払う。ETH等の価格変動するネイティブトークンをSubscription Priceとして受け付けない。
 
 ```mermaid
 flowchart TD
-    USER[Listener] -->|Subscription| PAY[Payment Layer]
+    USER[Listener Wallet] -->|JPYC等| INTENT[Payment Intent]
+    REG[Approved Settlement Asset Registry] --> INTENT
+    INTENT -->|Finalized Transfer| PAY[Settlement Layer]
     PAY --> CORP[運営株式会社]
     CORP --> POOL[Distributable Revenue]
     POOL --> RIGHTS[Usage / Rights Pool]
@@ -194,27 +196,26 @@ flowchart TD
 
 ---
 
-## 3.9 法定通貨とステーブルコイン
+## 3.9 ステーブルコイン決済とネットワーク手数料
 
-利用者にブロックチェーン利用を強制しない。日本では、日本円によるカード決済など、一般的なUXを基本とする。
+サブスクリプションのオンチェーン決済経路では、JPYC等の承認済みステーブルコインを支払資産とする。利用者が認識する料金表示、Payment Intent、領収・会計記録およびSubscription有効化の根拠は、すべて同じ承認済みSettlement Assetと整数額へ結び付ける。
 
-一方、プロトコル内部やクリエイターへの分配については、法令、会計、税務、利用者保護、コストを踏まえ、適法なステーブルコイン等を利用する可能性を検討する。
+一方、Transaction実行に必要なETH等のネイティブトークンはネットワーク手数料であり、サブスクリプション料金ではない。一般利用者へGas Tokenの取得を要求せず、Relayer、PaymasterまたはSmart Accountにより手数料を抽象化する。誰がGasを負担した場合でも、支払済みSubscriptionとして認識するのはJPYC等の一致するTransferがFinality条件を満たした場合だけとする。
 
 ```mermaid
 flowchart LR
-    USER[User] -->|日本円・カード等| FIAT[Payment Provider]
-    FIAT --> CORP[運営株式会社]
-    CORP --> SETTLE[Settlement Layer]
-    SETTLE --> FIATPAY[法定通貨]
-    SETTLE --> STABLE[ステーブルコイン等]
-    FIATPAY --> CREATOR[Creator]
-    STABLE --> CREATOR
+    USER[User] -->|JPYC等の支払認可| WALLET[Wallet / Smart Account]
+    SPONSOR[Relayer / Paymaster] -->|Gasを抽象化| CHAIN[Blockchain]
+    WALLET -->|Approved Stablecoin| CHAIN
+    CHAIN --> FINAL[Finalized Payment]
+    FINAL --> CORP[運営株式会社の会計]
+    CORP --> CREATOR[Creator Distribution]
 ```
 
-::: info 決済とプロトコルは分離する
-Creator First Platform の価値は「暗号資産で音楽料金を払えること」ではない。
+::: info 支払資産とGasを分離する
+Creator First Platform の価値は、価格変動する暗号資産で音楽料金を払うことではない。
 
-**利用者の決済UX** と **分配ルールの透明性・検証可能性** は分離して設計する。
+**JPYC等で表示・確定するサービス料金**、**ネイティブトークンで精算されるネットワーク手数料**、**分配ルールの透明性・検証可能性**を別の概念として設計する。
 :::
 
 ---

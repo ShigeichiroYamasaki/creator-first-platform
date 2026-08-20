@@ -424,6 +424,8 @@ Nullifierは異なるService Context間でUser Tracking Identifierとして再�
 
 Userは関連付けられたWalletを使用してJPYC等のApproved Settlement AssetでSubscription Paymentを行える。
 
+Subscription Price、Payment Intent、Payment Eventおよび会計上の受領額は承認済みSettlement Assetで表現する。ETH等のNative Gas TokenはNetwork Feeであり、Subscription Paymentではない。
+
 概念的には、
 
 ```mermaid
@@ -442,7 +444,7 @@ flowchart LR
 
 Wallet保有だけでSubscriptionが有効になるわけではない。
 
-Paymentの成立とSubscription Stateを明示的に関連付ける。
+指定Asset、Chain、Contract、Amount、WalletおよびPayment Intentに一致するTransferがFinality条件を満たした場合だけ、Paymentの成立とSubscription Stateを明示的に関連付ける。
 
 ---
 
@@ -562,6 +564,7 @@ User pays JPYC
 だけを意識し、Gas処理は、
 
 - Paymaster
+- Relayer
 - Sponsored Transaction
 - Fee Conversion
 - Platform Subsidy
@@ -569,6 +572,10 @@ User pays JPYC
 等で抽象化できる。
 
 Gas Sponsorship PolicyはAbuse ResistanceとCost Controlを考慮する。
+
+RelayerまたはPaymasterの受付結果、Transaction HashまたはGas支払だけをSubscription Paymentの証拠としてはならない。Settlement Adapterは承認済みStablecoin Transferを独立に検証する。
+
+Testnet Demoでは`MockJPYC`を支払資産とし、Faucet由来のNative TokenはRelayerのGasにだけ使用する。利用者へTestnet ETHの取得を要求せず、Mainnet Asset、本番Walletまたは本番秘密鍵を使用しない。
 
 ---
 
