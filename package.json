@@ -36,7 +36,7 @@
     "validate": "npm run workflow:test && npm run workflow:validate && npm run community:test && npm run community:validate && npm run deployment:test && npm run protocol:test && npm run protocol:validate && npm run decisions:test && npm run decisions:validate && npm run status:test && npm run status:validate && npm run streaming:test && npm run streaming:validate && npm run docs:build && npm run site:test && npm run site:validate"
   },
   "devDependencies": {
-    "markdown-it-mathjax3": "^4.3.2",
+    "markdown-it-mathjax3": "^5.2.0",
     "mermaid": "^11.17.0",
     "vitepress": "1.6.4",
     "vue": "^3.5.41",
