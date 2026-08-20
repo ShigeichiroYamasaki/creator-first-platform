@@ -60,6 +60,22 @@ A verifiable assertion issued by an authorized issuer concerning an Account, Par
 
 A Credential MUST have a defined issuer, type, version, status and lifecycle.
 
+## Early Supporter Credential
+
+A non-transferable, revocable Credential issued under a versioned Qualification Policy to record an approved early-support action for a bounded Creator or Community scope.
+
+An Early Supporter Credential is not a Subscription, Rights grant, Security Token, revenue claim, shareholder right or Governance eligibility proof.
+
+## Qualification Policy
+
+A versioned rule set defining the evidence, interval, scope, uniqueness, abuse treatment, issuer authority and appeal path for Credential issuance.
+
+## Privilege Policy
+
+A versioned authorization overlay mapping an eligible Credential type, issuer and scope to bounded product capabilities within applicable Account, Subscription, Rights, Plan, territory and time constraints.
+
+A Privilege Policy does not create Rights or Subscription state.
+
 ## User
 
 A Participant who uses Creator First Platform services.
@@ -140,11 +156,11 @@ A Media Adapter does not determine Subscription, Rights Ownership, Verified Usag
 
 ## Authorization Decision
 
-An immutable allow or deny result bound to the exact Account, Subscription, Rights, content, policy and time inputs used for playback authorization.
+An immutable allow or deny result bound to the exact Account, Subscription, applicable Credential and Privilege, Rights, content, policy and time inputs used for playback authorization.
 
 ## Playback Session
 
-A short-lived and revocable authorization for one Account context to request one bounded content version under defined Plan, Rights, territory, time and delivery parameters.
+A short-lived and revocable authorization for one Account context to request one bounded content version under defined Subscription, Plan, applicable Credential and Privilege, Rights, territory, time and delivery parameters.
 
 Playback Session authorization does not itself establish Verified Usage.
 

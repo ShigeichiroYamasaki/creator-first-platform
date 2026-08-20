@@ -251,6 +251,29 @@ NavidromeのExternalized Authenticationを利用する場合、GatewayはClient 
 
 MVPではGatewayが音声ResponseをBufferせずに中継する。これはStreaming、Subscription、RightsおよびUsageをEnd-to-Endで検証するための段階的構成であり、本番Scaleの最終形を固定するものではない。
 
+Early Supporter SBTによる特権を導入する場合も、NavidromeをToken Gateまたは資格のSource of Truthにしない。Indexerが確認済みSBT Eventから再編成耐性を持つCredential / Privilege Read Modelを構築し、GatewayがPlatform Session、Wallet Link、Active Subscription、Rights Snapshotおよび版管理されたPrivilege Policyと合わせて評価する。
+
+```mermaid
+flowchart LR
+    CHAIN[Early Supporter SBT]
+    INDEXER[Credential Indexer]
+    READ[Privilege Read Model]
+    SESSION[Platform Session]
+    SUB[Subscription Read Model]
+    RIGHTS[Rights Read Model]
+    GATEWAY[Streaming Gateway]
+    TICKET[Short-lived Playback Ticket]
+    NAV[Private Navidrome Adapter]
+
+    CHAIN --> INDEXER --> READ --> GATEWAY
+    SESSION --> GATEWAY
+    SUB --> GATEWAY
+    RIGHTS --> GATEWAY
+    GATEWAY --> TICKET --> NAV
+```
+
+Wallet署名はWallet Controlを、SBTはIssuerによるCredentialを証明するが、いずれも単独では再生を許可しない。Playback Ticketには使用したCredential、Privilege Policy、SubscriptionおよびRightsのVersionをBindingし、短時間かつ失効可能にする。
+
 負荷試験で定義するScale Triggerを超えた場合は、事前Transcode、Object Storage、CDNおよび短時間署名URLへAudio Byte Deliveryを移す。Creator First Track ID、Rights DecisionおよびPlayback Evidenceの境界を維持することで、Navidromeを将来置換可能にする。
 
 詳細な設計判断は[ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway)に記録する。

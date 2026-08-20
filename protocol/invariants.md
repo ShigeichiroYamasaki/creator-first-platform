@@ -15,6 +15,9 @@ A lower-level Protocol Specification or implementation MUST NOT override these i
 - **INV-IDENTITY-003**  
   Control of a Wallet MUST NOT by itself prove that its controller is a Creator, Rights Holder or Governance Eligible Person.
 
+- **INV-IDENTITY-004**
+  Control of a Wallet or possession of a Credential Token MUST NOT by itself authorize Subscription service, content Rights, monetary distribution or Protocol Governance.
+
 ## Governance
 
 - **INV-GOVERNANCE-001**  
@@ -71,13 +74,16 @@ A lower-level Protocol Specification or implementation MUST NOT override these i
   A media delivery path MUST NOT bypass the applicable Subscription and Rights authorization boundary.
 
 - **INV-DELIVERY-002**
-  A Playback Session MUST bind the exact Account context, content version, Subscription scope, Rights State, policy version and expiry used to authorize it.
+  A Playback Session MUST bind the exact Account context, content version, Subscription scope, applicable Credential and Privilege versions, Rights State, policy version and expiry used to authorize it.
 
 - **INV-DELIVERY-003**
   A Media Adapter identifier, file path or vendor-specific object identifier MUST NOT replace the Canonical Track identity used by Rights, Usage or Distribution.
 
 - **INV-DELIVERY-004**
   Authorization, byte delivery, Media Adapter counters or client progress alone MUST NOT establish Verified Usage.
+
+- **INV-DELIVERY-005**
+  A service privilege derived from a Credential MUST NOT broaden or replace the applicable Subscription and Rights authorization boundary.
 
 ## Distribution
 

@@ -20,6 +20,7 @@
 
 - `protocol/account/account-lifecycle-spec.md`
 - `protocol/account/subscription-settlement-spec.md`
+- `protocol/account/early-supporter-credential-spec.md`
 - `protocol/rights/rights-registry-spec.md`
 - `protocol/usage/playback-verification-spec.md`
 - `protocol/conventions.md`
@@ -28,13 +29,14 @@
 
 ## Goal
 
-Define the implementation-independent boundary that converts an authenticated Platform Session, active Subscription and applicable Rights State into a short-lived Playback Session, authorizes media delivery without exposing an internal Media Adapter and emits evidence that can be verified by the Usage domain.
+Define the implementation-independent boundary that converts an authenticated Platform Session, active Subscription, optional bounded Credential privilege and applicable Rights State into a short-lived Playback Session, authorizes media delivery without exposing an internal Media Adapter and emits evidence that can be verified by the Usage domain.
 
 ## Scope
 
 This specification covers:
 
 - playback authorization inputs and deterministic reason codes;
+- bounded Credential and Privilege Policy overlays that never replace Subscription or Rights;
 - short-lived Playback Session creation, use, expiry and revocation;
 - canonical Track identity and Media Adapter mapping;
 - allowed media request and response behavior, including byte ranges;
@@ -76,6 +78,7 @@ This specification covers:
 - **Concurrency Lease:** time-bounded record reserving an allowed simultaneous playback slot.
 - **Delivery Evidence:** authenticated server-side observation of an authorized media response, range, byte summary and timing; it does not by itself prove Verified Usage.
 - **Authorization Read Model:** versioned off-chain projection of confirmed Account, Subscription and Rights inputs used to keep synchronous chain RPC outside the playback critical path.
+- **Credential Privilege Snapshot:** versioned input containing an approved Credential Record, active Privilege Policy, source provenance and freshness classification as defined by SPEC-ACCOUNT-004.
 
 Common terms follow `protocol/glossary.md` and `protocol/conventions.md`.
 
@@ -96,6 +99,7 @@ Common terms follow `protocol/glossary.md` and `protocol/conventions.md`.
 - Account ID and state version;
 - Canonical Track ID and requested content version;
 - Plan and active Subscription reference;
+- optional Credential and Privilege claim requested by the client, treated as an untrusted selector rather than proof;
 - requested format and maximum bitrate;
 - trusted or policy-approved territory context;
 - request time and idempotency key;
@@ -105,6 +109,7 @@ Common terms follow `protocol/glossary.md` and `protocol/conventions.md`.
 
 - Playback Authorization Policy version;
 - Subscription Read Model version, source block and freshness status;
+- approved Credential Deployment, Credential Record, Wallet Link, Privilege Policy, source version and freshness status when a privilege is required;
 - content publication state and Rights Snapshot version;
 - license use, territory and effective interval;
 - Catalog Mapping version and Media Adapter state;
@@ -149,7 +154,7 @@ AUTHORIZED → STARTED → ACTIVE → CLOSED
 - **REQ-STREAMING-005:** Authorization MUST require a published Canonical Track ID and the exact content version requested.
 - **REQ-STREAMING-006:** Authorization MUST bind the applicable Rights Snapshot version, use, territory, effective interval and dispute or suspension treatment.
 - **REQ-STREAMING-007:** Authorization MUST reject a request outside the approved Plan, territory, license window or content state with a stable non-sensitive reason code.
-- **REQ-STREAMING-008:** A successful decision MUST create a unique Playback Session bound to Account, Canonical Track ID, content version, Subscription, Plan, Rights Snapshot, policy version, format limits, issue time and expiry.
+- **REQ-STREAMING-008:** A successful decision MUST create a unique Playback Session bound to Account, Canonical Track ID, content version, Subscription, Plan, applicable Credential and Privilege versions, Rights Snapshot, policy version, format limits, issue time and expiry.
 - **REQ-STREAMING-009:** Playback Session identifiers MUST be unguessable, time bounded, revocable and scoped so that possession alone does not authorize another Account or content version.
 - **REQ-STREAMING-010:** Playback Session creation MUST be idempotent for the same authorized Account, request key and canonical request; conflicting replay MUST fail.
 - **REQ-STREAMING-011:** Every media request MUST revalidate Playback Session ownership, state, expiry, bounded content and allowed delivery parameters.
@@ -167,11 +172,17 @@ AUTHORIZED → STARTED → ACTIVE → CLOSED
 - **REQ-STREAMING-023:** Every accepted delivery response MUST produce idempotent Delivery Evidence bound to Playback Session, Authorization Decision, Canonical Track ID, content version, Rights Snapshot, range summary, byte summary, response status and trusted timestamps.
 - **REQ-STREAMING-024:** Delivery Evidence MUST authenticate its producer, schema and evidence version and MUST support duplicate, delayed and reordered ingestion.
 - **REQ-STREAMING-025:** Closing, revoking or expiring a Playback Session MUST release its Concurrency Lease exactly once or expose a recoverable reconciliation state.
-- **REQ-STREAMING-026:** Account restriction, Subscription cancellation, Rights suspension and emergency media suspension MUST have documented cache invalidation and new-request enforcement behavior.
-- **REQ-STREAMING-027:** New Playback Session creation MUST fail closed when required Account, Subscription, Rights, Catalog Mapping or policy state is unavailable, stale beyond policy or reorganization-unsafe.
+- **REQ-STREAMING-026:** Account restriction, Wallet Link restriction, Subscription cancellation, Credential revocation or burn, Privilege suspension, Rights suspension and emergency media suspension MUST have documented cache invalidation and new-request enforcement behavior.
+- **REQ-STREAMING-027:** New Playback Session creation MUST fail closed when required Account, Wallet Link, Subscription, Credential, Privilege, Rights, Catalog Mapping or policy state is unavailable, stale beyond policy or reorganization-unsafe.
 - **REQ-STREAMING-028:** Any grace behavior for an already active stream MUST be explicitly versioned, bounded and auditable by reason and MUST NOT permit a new Playback Session.
 - **REQ-STREAMING-029:** Authorization and Delivery Evidence records MUST be access controlled, encrypted where applicable, retained by approved schedule and redact direct personal data from routine logs.
 - **REQ-STREAMING-030:** Protocol conformance MUST remain possible with a replacement Media Adapter without changing Canonical Track IDs, Rights references, Playback Session semantics or Usage evidence semantics.
+- **REQ-STREAMING-047:** A Credential-derived privilege MUST require an active purpose-bound Wallet Link and a Credential Privilege Snapshot approved for the exact Account, issuer, Credential type, scope and chain context.
+- **REQ-STREAMING-048:** A Credential-derived privilege MUST be evaluated only as an overlay on an active Subscription and applicable Rights State; it MUST NOT replace either prerequisite.
+- **REQ-STREAMING-049:** Privilege evaluation MUST bind the exact Credential status version, Privilege Policy version, Creator or Community scope, Plan constraints, content scope, territory, activation interval and decision time.
+- **REQ-STREAMING-050:** The Gateway MUST ignore client-supplied Credential authority, Contract address, Token ID, Privilege value and internal scope in favor of approved Read Model and Policy inputs.
+- **REQ-STREAMING-051:** Credential revocation, burn, Wallet Link restriction or Privilege suspension MUST reject new Playback Sessions within the approved propagation bound.
+- **REQ-STREAMING-052:** Delivery Evidence for a Credential-derived privilege MUST record privacy-restricted Credential and Privilege version references sufficient to reproduce the decision without publishing Wallet ownership or supporter affinity.
 
 ### MUST NOT
 
@@ -183,6 +194,9 @@ AUTHORIZED → STARTED → ACTIVE → CLOSED
 - **REQ-STREAMING-036:** A dependency outage MUST NOT be treated as evidence that Subscription or Rights are active.
 - **REQ-STREAMING-037:** A denied request MUST NOT reveal protected Rights evidence, another Account, internal topology, adapter credential or fraud-control detail.
 - **REQ-STREAMING-038:** A Playback Session MUST NOT silently expand to another Account, Track, content version, Plan, territory, Rights Snapshot or delivery quality.
+- **REQ-STREAMING-053:** SBT ownership, Credential possession or Wallet control MUST NOT authorize playback when Subscription or Rights is inactive.
+- **REQ-STREAMING-054:** A Credential privilege MUST NOT expand to another issuer, Credential type, Creator or Community scope, Privilege Policy, Account or Wallet Link.
+- **REQ-STREAMING-055:** Navidrome, another Media Adapter or a client-provided token Contract MUST NOT determine Credential validity or Privilege activation.
 
 ### SHOULD
 
@@ -201,6 +215,7 @@ AUTHORIZED → STARTED → ACTIVE → CLOSED
 ## Invariants
 
 - `INV-IDENTITY-001`
+- `INV-IDENTITY-004`
 - `INV-PRIVACY-001`
 - `INV-PRIVACY-002`
 - `INV-RIGHTS-005`
@@ -210,6 +225,7 @@ AUTHORIZED → STARTED → ACTIVE → CLOSED
 - `INV-DELIVERY-002`
 - `INV-DELIVERY-003`
 - `INV-DELIVERY-004`
+- `INV-DELIVERY-005`
 - `INV-EVOLUTION-001`
 - `INV-EVOLUTION-003`
 - **SPEC-INV-STREAMING-001:** No media delivery path bypasses the applicable Gateway authorization boundary.
@@ -218,6 +234,8 @@ AUTHORIZED → STARTED → ACTIVE → CLOSED
 - **SPEC-INV-STREAMING-004:** Delivery Evidence never becomes Verified Usage without SPEC-USAGE-001 verification.
 - **SPEC-INV-STREAMING-005:** A dependency failure never creates a new authorization grant.
 - **SPEC-INV-STREAMING-006:** Replacement of a conforming Media Adapter does not change protocol-level Playback Session or evidence semantics.
+- **SPEC-INV-STREAMING-007:** Credential-derived privilege never creates playback authorization without an active Subscription and applicable Rights State.
+- **SPEC-INV-STREAMING-008:** Credential or Privilege invalidation never broadens an existing or new Playback Session.
 
 ## State Transitions
 
@@ -253,6 +271,7 @@ Stable categories MUST distinguish at least:
 
 - unauthenticated, expired, revoked or Account-mismatched session;
 - inactive, expired, cancelled, stale or unavailable Subscription;
+- inactive, revoked, burned, scope-mismatched, stale or unavailable Credential or Privilege;
 - unpublished, disputed, suspended, territory-denied or window-denied content;
 - unknown Track, content version, Catalog Mapping or Media Adapter;
 - Plan, format, bitrate, concurrency or rate-limit denial;
@@ -280,7 +299,7 @@ Audit records MUST cover:
 - Playback Session creation, first use, range use, close, expiry and revocation;
 - Concurrency Lease acquisition, renewal, release and reconciliation;
 - Catalog Mapping and policy activation;
-- Account, Subscription, Rights and emergency invalidation receipt;
+- Account, Wallet Link, Subscription, Credential, Privilege, Rights and emergency invalidation receipt;
 - adapter request status, sanitized delivery summary and failure category;
 - privileged configuration, network-boundary and trusted-source changes;
 - Delivery Evidence acceptance, conflict and handoff to Usage.
@@ -289,7 +308,7 @@ Audit records MUST separate restricted Account-level history from privacy-safe o
 
 ## Versioning and Migration
 
-- Authorization Policy, Playback Session schema, Catalog Mapping, adapter interface, reason taxonomy and Delivery Evidence schema MUST be independently versioned.
+- Authorization Policy, Credential / Privilege binding, Playback Session schema, Catalog Mapping, adapter interface, reason taxonomy and Delivery Evidence schema MUST be independently versioned.
 - Policy activation MUST define behavior for existing Playback Sessions and new requests.
 - Media Adapter migration MUST preserve Canonical Track identity and define mapping overlap, rollback and evidence continuity.
 - Read Model migration MUST define source checkpoint, replay, reorganization and freshness behavior.
@@ -304,10 +323,12 @@ Audit records MUST separate restricted Account-level history from privacy-safe o
 | REQ-STREAMING-019–025 | Range / streaming / evidence / lease | Partial delivery streams safely, records idempotent evidence and releases leases exactly once |
 | REQ-STREAMING-026–030 | Invalidation / outage / privacy / portability | New grants fail closed, grace is bounded, records are protected and adapter replacement preserves semantics |
 | REQ-STREAMING-031–038 | Negative / authority boundary | Wallet, adapter, client, outage and session reuse never expand authorization or create Verified Usage |
+| REQ-STREAMING-047–052 | Credential privilege / end-to-end / privacy | Exact active Credential and Policy overlay an active Subscription and Rights decision, propagate invalidation and preserve restricted auditability |
+| REQ-STREAMING-053–055 | Credential negative / authority boundary | Credential ownership never bypasses Subscription or Rights and no client or adapter selects Credential authority |
 | REQ-STREAMING-039–044 | Conformance | Implemented SHOULD behavior is tested or deviation is documented under conventions |
 | REQ-STREAMING-045–046 | Optional conformance | Navidrome or signed-CDN adapters satisfy the same authorization and evidence boundary |
 
-Property and adversarial tests MUST include forged identity headers, direct adapter access, guessed session IDs, owner mismatch, scope widening, replay, concurrent lease races, cancellation, overlapping and invalid ranges, upstream timeout, stale and reorganized Read Models, Subscription cancellation, Rights suspension, territory and time boundaries, mapping migration, evidence duplication and adapter credential leakage.
+Property and adversarial tests MUST include forged identity headers, direct adapter access, guessed session IDs, owner mismatch, scope widening, replay, concurrent lease races, cancellation, overlapping and invalid ranges, upstream timeout, stale and reorganized Read Models, Subscription cancellation, Credential revocation, Wallet rotation, Privilege suspension, look-alike token Contracts, Rights suspension, territory and time boundaries, mapping migration, evidence duplication and adapter credential leakage.
 
 ## Acceptance Criteria
 
@@ -316,6 +337,9 @@ Property and adversarial tests MUST include forged identity headers, direct adap
 - Direct Media Adapter access and forged trusted headers fail in automated network and integration tests.
 - Seek, reconnect, cancellation and multiple legitimate Range requests remain within one bounded Playback Session.
 - Subscription cancellation and Rights suspension reject new sessions within the approved propagation bound.
+- Credential ownership without an active Subscription and applicable Rights never creates a Playback Session.
+- Eligible Early Supporter privilege unlocks only its exact Creator, content, Plan, territory, interval and quality scope.
+- Credential revocation, burn, Wallet Link restriction and Privilege suspension reject new sessions within the approved propagation bound.
 - Dependency outages never synthesize entitlement or Rights approval.
 - Delivery Evidence is correlated with the exact Authorization Decision yet cannot alone become Verified Usage.
 - A fixture can replace a Navidrome adapter with a mock signed-object adapter without changing protocol-level IDs or evidence semantics.
@@ -330,3 +354,4 @@ Property and adversarial tests MUST include forged identity headers, direct adap
 - **OQ-STREAMING-005:** **Decision owner:** Protocol Governance / Product and Creator and User Representatives; **Blocks:** first eligible playback experience; **Question:** Which formats, bitrate ceilings, accessibility exceptions and Plan capabilities are protocol policy rather than product configuration?
 - **OQ-STREAMING-006:** **Decision owner:** Operating Company / Infrastructure, Finance and Product; **Blocks:** production media scaling plan; **Question:** Which measured latency, concurrency, bandwidth and unit-cost thresholds trigger migration from Gateway relay to signed CDN delivery?
 - **OQ-STREAMING-007:** **Decision owner:** Operating Company / Legal and Open Source Compliance; **Blocks:** production Navidrome use; **Question:** What deployment, modification, notice, source-offer and upgrade controls satisfy the applicable Navidrome and dependency licenses?
+- **OQ-STREAMING-008:** **Decision owner:** Operating Company / Product, Rights Operations, Security and Creator Representatives; **Blocks:** Credential-derived Playback Policy; **Question:** Which Credential and Privilege fields, propagation bound, denial reasons and active-stream treatment should the Gateway apply for the first Early Supporter experience?

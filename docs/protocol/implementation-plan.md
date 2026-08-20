@@ -63,7 +63,7 @@ flowchart TD
 
 **目的:** 実装開始に必要なOpen Questionと権限を、仮定と承認済み判断に分離する。
 
-**現在の基盤:** [Decision Baseline](/protocol/decision-baseline)は、8仕様をSourceとして全Open Questionへ安全な既定状態を適用し、個別DecisionとMock Assumptionの完全性をCIで検証する。追跡Work Packageは[GitHub Issue #9](https://github.com/ShigeichiroYamasaki/creator-first-platform/issues/9)。
+**現在の基盤:** [Decision Baseline](/protocol/decision-baseline)は、9仕様をSourceとして全Open Questionへ安全な既定状態を適用し、個別DecisionとMock Assumptionの完全性をCIで検証する。追跡Work Packageは[GitHub Issue #9](https://github.com/ShigeichiroYamasaki/creator-first-platform/issues/9)。
 
 **成果物:**
 
@@ -77,7 +77,7 @@ flowchart TD
 
 ### IMP-002 Canonical Contracts
 
-**目的:** 8仕様間で受け渡すArtifactを、実装言語やTransportから独立した契約として固定する。
+**目的:** 9仕様間で受け渡すArtifactを、実装言語やTransportから独立した契約として固定する。
 
 **成果物:**
 
@@ -139,21 +139,23 @@ flowchart TD
 
 ### IMP-006 Streaming Gateway Mock
 
-**目的:** Active SubscriptionとRights Snapshotから短時間Playback Sessionを作成し、非公開Media Adapter経由のRange配信とDelivery EvidenceをMockで検証する。
+**目的:** Active Subscription、任意のEarly Supporter Credential特権とRights Snapshotから短時間Playback Sessionを作成し、非公開Media Adapter経由のRange配信とDelivery EvidenceをMockで検証する。
 
-**対象仕様:** [SPEC-STREAMING-001](/protocol/specs/playback-authorization)
+**対象仕様:** [SPEC-ACCOUNT-004](/protocol/specs/early-supporter-credential)、[SPEC-STREAMING-001](/protocol/specs/playback-authorization)
 
 **成果物:**
 
 - Authorization Decision、reason code、Playback Session、Concurrency Lease
 - Account、Subscription、Rights、Plan、地域、期間を固定したPolicy evaluator
+- 同意済みDemo SBTの発行、Transfer拒否、Revocation、Wallet回復およびreorganization-aware Credential Read Model
+- Creator Scope、Credential Status、Privilege Policy Versionを固定し、SubscriptionとRightsを置き換えないPolicy evaluator
 - Canonical Track IDとMock Navidrome Media IDのversioned mapping
 - `Remote-User`等のClient supplied trusted header除去
 - Range、Seek、Reconnect、Cancellation、BackpressureのStreaming Adapter
 - idempotentなDelivery EvidenceとUsage handoff
-- Subscription取消し、Rights停止、stale Read Model、adapter outageのfailure fixture
+- Subscription取消し、Credential失効、Wallet Link制限、Privilege停止、Rights停止、stale Read Model、adapter outageのfailure fixture
 
-**終了証拠:** Public routeまたは偽造headerからMedia Adapterを迂回できず、Playback Sessionが別Account・Track・Rights・Planへ拡張されず、Adapter交換後もCanonical IDとEvidence semanticsが同一である。
+**終了証拠:** Public routeまたは偽造headerからMedia Adapterを迂回できず、SBT単独でSubscriptionまたはRightsを代替できず、Playback Sessionが別Account・Credential・Privilege・Track・Rights・Planへ拡張されず、Adapter交換後もCanonical IDとEvidence semanticsが同一である。
 
 ### IMP-007 Usage Pipeline Mock
 

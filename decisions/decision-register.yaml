@@ -13,6 +13,9 @@ source_specifications:
   - id: SPEC-ACCOUNT-003
     version: 0.1.0
     path: protocol/account/account-lifecycle-spec.md
+  - id: SPEC-ACCOUNT-004
+    version: 0.1.0
+    path: protocol/account/early-supporter-credential-spec.md
   - id: SPEC-BLOCKCHAIN-001
     version: 0.1.0
     path: protocol/blockchain/settlement-asset-registry-spec.md

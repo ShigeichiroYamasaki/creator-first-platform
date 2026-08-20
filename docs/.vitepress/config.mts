@@ -239,6 +239,10 @@ export default defineConfig({
                 link: '/protocol/specs/wallet-linking'
               },
               {
+                text: 'Early Supporter Credential (Draft)',
+                link: '/protocol/specs/early-supporter-credential'
+              },
+              {
                 text: 'Subscription Settlement (Draft)',
                 link: '/protocol/specs/subscription-settlement'
               },
@@ -278,7 +282,8 @@ export default defineConfig({
               { text: '0006 Zero-Knowledge Proof', link: '/adr/ADR-0006-zero-knowledge-proof-strategy' },
               { text: '0007 Blockchain / L2', link: '/adr/ADR-0007-blockchain-l2-strategy' },
               { text: '0008 Account / Wallet / Identity', link: '/adr/ADR-0008-account-wallet-identity-strategy' },
-              { text: '0009 Navidrome / Streaming Gateway', link: '/adr/ADR-0009-navidrome-streaming-gateway' }
+              { text: '0009 Navidrome / Streaming Gateway', link: '/adr/ADR-0009-navidrome-streaming-gateway' },
+              { text: '0010 Early Supporter SBT', link: '/adr/ADR-0010-early-supporter-sbt-privileges' }
             ]
           }
         ],

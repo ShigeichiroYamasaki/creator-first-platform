@@ -376,6 +376,34 @@ flowchart LR
 
 これは原則として「投資証明」ではなく、コミュニティ上の履歴である。
 
+### Early Supporter SBTとサービス特権
+
+Early Supporterの履歴は、本人の同意に基づいて譲渡不能なSBTとして発行できる。SBTは投資商品、将来収益への請求権、Creator Revenueの分配権またはProtocol Governanceの議決権ではなく、正規Issuerが特定の基準と時点に基づいて発行したCommunity Credentialとする。
+
+SBTに対応する特権は、通常のSubscriptionへ追加される限定的な利用権としてPolicyで定義する。例えば、CreatorとRights Holderが許諾した先行試聴、限定音源、イベント、Beta機能またはCommunity表示を対象にできる。
+
+```mermaid
+flowchart LR
+    ACTION[Early Support Action]
+    POLICY[Qualification Policy]
+    SBT[Early Supporter SBT]
+    ACCOUNT[Linked Platform Account]
+    SUB[Active Subscription]
+    RIGHTS[Active Rights]
+    PRIV[Bounded Privilege]
+
+    ACTION --> POLICY --> SBT --> ACCOUNT
+    ACCOUNT --> PRIV
+    SUB --> PRIV
+    RIGHTS --> PRIV
+```
+
+SBT保有だけで全楽曲、全地域、全期間または全品質の再生を許可しない。再生時にはPlatform Account、Wallet Link、Subscription、Rights State、対象Creator、特権Policy、失効状態およびRead Modelの鮮度をGatewayが評価する。
+
+発行Contract、Chain、Issuer、Qualification Policy、Creator Scope、発行時点、StatusおよびLifecycleを版管理する。Wallet紛失や変更、不正発行、資格取消し、利用者からの削除要求に備え、Burn、Revocationおよび監査可能な再発行手順を用意する。個人情報、支援金額および詳細な視聴履歴はPublic Blockchainへ記録しない。
+
+SBTの発行基準と利用特権はSTOの購入額、Security Token保有量、将来のCreator人気または収益に連動させない。STO投資家向けの付帯利益として設計する場合は、このCommunity Credentialとは別の制度として法務、会計、税務および開示の確認を必要とする。
+
 ---
 
 ## 8.13 金銭的リターンを中心にしない

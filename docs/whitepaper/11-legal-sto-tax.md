@@ -478,6 +478,22 @@ flowchart LR
 
 ---
 
+### 11.17.1 Early Supporter SBTとSTOの分離
+
+Early Supporter SBTは、初期の発見、支援またはCommunity参加を示す譲渡不能なCredentialとして設計できる。ただし、その名称や非譲渡性だけで法的性質が決まるものではなく、発行対価、対象者、付与されるサービス、投資との関係および実際の経済的価値を含む実態を確認する。
+
+Community CredentialとしてのSBTは、次のものから明確に分離する。
+
+- Security Tokenおよび株主権
+- 投資元本または将来収益への請求権
+- Creator RevenueまたはDistribution Poolへの参加権
+- Security Token保有量に応じた特典
+- Protocol Governanceの議決権
+
+SBTがストリーミングサービスの特権を表す場合、通常のSubscription契約、対象コンテンツのRights、利用地域、期間、品質および取消条件を利用規約とPrivilege Policyで明示する。SBT保有だけを無制限または永久の再生権とせず、株式会社が消費者対応、表示、会計・税務、権利許諾、失効およびWallet回復の責任を負う。
+
+特にSTOの申込者または投資家だけにSBTを付与する場合、SBTが募集条件、現物での利益、投資家への付帯サービスまたは開示対象となる可能性を、募集前に金融規制、会計・税務および消費者保護の専門家と個別に確認する。その確認が完了するまで、Early Supporter SBTの資格をSTOへの出資額またはSecurity Token保有へ連動させない。
+
 ## 11.18 STO と株主権
 
 STOを株式会社の株式と接続する場合、

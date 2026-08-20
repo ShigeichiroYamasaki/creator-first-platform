@@ -447,6 +447,7 @@ Track Range、Transcoding、Metadata Scan等の実装範囲が大きく、Subscr
 - ADR-0007はSubscriptionとCommitmentが利用するBlockchain / L2を定義する
 - ADR-0008はPlatform Account、Wallet、Sessionの分離を定義する
 - ADR-0009はこれらを実際のMedia Deliveryへ接続するApplication Boundaryを定義する
+- ADR-0010はEarly Supporter SBTをSubscriptionとRightsを置き換えない限定Privilegeへ接続する
 
 ## 19. Related Documents
 
@@ -457,6 +458,7 @@ Track Range、Transcoding、Metadata Scan等の実装範囲が大きく、Subscr
 - [Protocol: Vertical Slice](/protocol/vertical-slice)
 - [Protocol: Implementation Plan](/protocol/implementation-plan)
 - [Protocol: Subscription Settlement](/protocol/specs/subscription-settlement)
+- [Protocol: Early Supporter Credential](/protocol/specs/early-supporter-credential)
 - [Protocol: Rights Registry](/protocol/specs/rights-registry)
 - [Protocol: Playback Verification](/protocol/specs/playback-verification)
 - [Navidrome Externalized Authentication](https://www.navidrome.org/docs/usage/integration/authentication/)
@@ -475,6 +477,7 @@ Track Range、Transcoding、Metadata Scan等の実装範囲が大きく、Subscr
 ```text
 Wallet / Passkey Login
     -> Subscription Read Model
+    -> Optional Early Supporter Privilege Read Model
     -> Track Rights Decision
     -> Playback Session
     -> Navidrome Range Stream

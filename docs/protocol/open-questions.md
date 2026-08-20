@@ -17,6 +17,7 @@ Draft Protocol Specificationに残るOpen Questionsは、実装者が暗黙に�
 | --- | --- | --- |
 | [Account Lifecycle](/protocol/specs/account-lifecycle#open-questions) | 登録、認証、Recovery、状態、保存期間 | `OQ-ACCOUNT-LIFECYCLE-...` |
 | [Wallet Linking](/protocol/specs/wallet-linking#open-questions) | Step-up、Wallet共有、Challenge、解除、証跡 | `OQ-WALLET-LINKING-...` |
+| [Early Supporter Credential](/protocol/specs/early-supporter-credential#open-questions) | 資格、同意、SBT発行・失効、Wallet回復、特権、STO分離 | `OQ-EARLY-SUPPORTER-...` |
 | [Subscription Settlement](/protocol/specs/subscription-settlement#open-questions) | Chain、決済商品、資金フロー、会計、返金、更新 | `OQ-SUBSCRIPTION-...` |
 | [Settlement Asset Registry](/protocol/specs/settlement-asset-registry#open-questions) | 承認主体、証憑、Network、停止、監視、公開範囲 | `OQ-ASSET-REGISTRY-...` |
 | [Rights Registry](/protocol/specs/rights-registry#open-questions) | Work・Recording、権利主張、審査、証憑、紛争、Rights Snapshot | `OQ-RIGHTS-REGISTRY-...` |

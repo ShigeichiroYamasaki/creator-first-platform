@@ -5,7 +5,7 @@ description: Account・決済とRights・UsageをCreator Distribution Allocation
 
 # End-to-End Vertical Slice
 
-現在の8つのDraft Protocol Specificationを、Creator First Platformの最初の検証可能な実装経路として接続します。このページは実装順序と境界を示すものであり、サービス、決済、分配またはSmart Contractが稼働していることを示すものではありません。
+現在の9つのDraft Protocol Specificationを、Creator First Platformの最初の検証可能な実装経路として接続します。このページは実装順序と境界を示すものであり、サービス、決済、分配またはSmart Contractが稼働していることを示すものではありません。
 
 ::: warning すべてDraft・未実装です
 各仕様のOpen Questions、法人・法務・権利・税務・プライバシー・セキュリティ上の承認、本番実装、監査は完了していません。ここに示す`ACTIVE`や`FINALIZED`は仕様上の状態名であり、現実のサービス状態ではありません。
@@ -22,6 +22,7 @@ flowchart TD
     ASSET[Active Settlement Asset]
     PAYMENT[Finalized Payment]
     SUB[Active Subscription]
+    CREDENTIAL[Optional Active Early Supporter Credential]
 
     CONTENT[Work / Recording]
     RIGHTS[Active Rights Snapshot]
@@ -36,6 +37,7 @@ flowchart TD
     INSTRUCTION[Settlement Instruction]
 
     ACCOUNT --> WALLET --> PAYMENT --> SUB --> AUTHZ --> DELIVERY --> PLAY --> USAGE
+    WALLET --> CREDENTIAL --> AUTHZ
     ASSET --> PAYMENT
     PAYMENT --> REVENUE
 
@@ -56,10 +58,11 @@ Walletは支払認可手段の一つであり、人間のIdentityやRights Owner
 | --- | --- | --- | --- |
 | Account | [SPEC-ACCOUNT-003](/protocol/specs/account-lifecycle) | AccountとSessionのVersion参照 | Accountが対象操作を許す状態で、Sessionが有効 |
 | Wallet | [SPEC-ACCOUNT-002](/protocol/specs/wallet-linking) | Link ID、Purpose、Wallet証明 | Linkが`ACTIVE`で、署名Challengeを一度だけ消費 |
+| Early Supporter Credential | [SPEC-ACCOUNT-004](/protocol/specs/early-supporter-credential) | Credential Record、Status、Privilege Policy Snapshot | 利用する場合だけ、同意済みCredential、Wallet Link、Scope、Policy、鮮度が有効。SubscriptionとRightsを置換しない |
 | Settlement Asset | [SPEC-BLOCKCHAIN-001](/protocol/specs/settlement-asset-registry) | Asset EntryとRegistry Snapshot | 対象Network・用途・時刻で`ACTIVE` |
 | Subscription | [SPEC-ACCOUNT-001](/protocol/specs/subscription-settlement) | Payment Reference、Revenue入力、Entitlement | Payment Intentが`FINALIZED`、Subscriptionが`ACTIVE` |
 | Rights | [SPEC-RIGHTS-001](/protocol/specs/rights-registry) | ContentごとのRights Snapshot | 必要範囲が`ACTIVE`。紛争・不足範囲を明示 |
-| Streaming | [SPEC-STREAMING-001](/protocol/specs/playback-authorization) | Authorization Decision、Playback Session、Delivery Evidence | Subscription・Rights・Plan・地域・期間を固定し、Media Adapterへの迂回経路なし |
+| Streaming | [SPEC-STREAMING-001](/protocol/specs/playback-authorization) | Authorization Decision、Playback Session、Delivery Evidence | Subscription・任意のCredential特権・Rights・Plan・地域・期間を固定し、Media Adapterへの迂回経路なし |
 | Usage | [SPEC-USAGE-001](/protocol/specs/playback-verification) | PeriodごとのUsage Snapshot | Snapshotが`FINALIZED`、Event重複なし、Policy Version固定 |
 | Distribution | [SPEC-DISTRIBUTION-001](/protocol/specs/creator-distribution) | Distribution Result、Held Allocation、Settlement Instruction | Revenue・Usage・Rights・Policyを固定して`FINALIZED` |
 
@@ -73,13 +76,14 @@ Walletは支払認可手段の一つであり、人間のIdentityやRights Owner
 4. Payment Intentを作成し、指定された資産・額・受取先・期限を固定する。
 5. Matching TransferがFinality条件を満たした後だけ、Paymentを`FINALIZED`、Subscriptionを`ACTIVE`にする。
 6. WorkとRecordingを分離して登録し、Rights Claim、証憑、審査、Permission、紛争状態を含むRights Snapshotを確定する。
-7. Active Subscription、Rights Snapshot、Plan、地域、期間からAuthorization Decisionと短時間Playback Sessionを作成する。
-8. Gatewayだけが非公開Media Adapterへ接続し、Range配信を行ってDelivery Evidenceを生成する。
-9. Playback EventをSession、Authorization Decision、Delivery Evidence、Client等の複数Evidenceで検証し、重複を排除する。
-10. Distribution Periodを閉じ、Challenge Windowを経てUsage Snapshotを`FINALIZED`にする。
-11. 法人会計からRevenue Snapshotを確定し、控除とCreator・Community・Platform等のPoolを明示する。
-12. Revenue、Usage、Rights、Distribution Policyの正確なVersionから、整数演算でDistribution Resultを計算する。
-13. Rightsが不完全・紛争中の額は受取人を推測せずHeld Allocationに置き、確定済み部分だけをSettlement Instructionへ変換する。
+7. Early Supporter限定機能を要求する場合は、同意済みSBT、Wallet Link、Credential Status、Creator ScopeおよびPrivilege Policyの確認済みSnapshotを取得する。通常再生ではCredentialを必須にしない。
+8. Active Subscription、任意のCredential特権、Rights Snapshot、Plan、地域、期間からAuthorization Decisionと短時間Playback Sessionを作成する。
+9. Gatewayだけが非公開Media Adapterへ接続し、Range配信を行ってDelivery Evidenceを生成する。
+10. Playback EventをSession、Authorization Decision、Delivery Evidence、Client等の複数Evidenceで検証し、重複を排除する。
+11. Distribution Periodを閉じ、Challenge Windowを経てUsage Snapshotを`FINALIZED`にする。
+12. 法人会計からRevenue Snapshotを確定し、控除とCreator・Community・Platform等のPoolを明示する。
+13. Revenue、Usage、Rights、Distribution Policyの正確なVersionから、整数演算でDistribution Resultを計算する。
+14. Rightsが不完全・紛争中の額は受取人を推測せずHeld Allocationに置き、確定済み部分だけをSettlement Instructionへ変換する。
 
 ## 失敗時の既定動作
 
@@ -89,6 +93,7 @@ Walletは支払認可手段の一つであり、人間のIdentityやRights Owner
 | Wallet署名が不一致・再利用 | Linkまたは支払認可を拒否 | Addressの提示だけで所有を認める |
 | Asset Entryが不明・停止・古い | 新しいPayment Intentを拒否 | Token名やSymbolだけで資産を選ぶ |
 | Paymentが未確定・重複 | Entitlementを有効化しない | Callback受信だけで支払済みにする |
+| Credentialが未発行・失効・古い | 限定特権を拒否する。通常Planの許可は独立評価する | SBT保有だけでSubscriptionまたはRightsを代替する |
 | Rights範囲が不明・紛争中 | 対象利用またはAllocationを保留 | UploaderをRights Holderとして全額配分する |
 | Playback認可状態が不明・古い | 新規Playback Sessionを拒否 | RPC停止やCache欠損をActiveとみなす |
 | Media Adapterが直接要求された | 非公開NetworkとGatewayで拒否 | Navidrome等の内部認証をClientへ渡す |
@@ -105,6 +110,8 @@ Walletは支払認可手段の一つであり、人間のIdentityやRights Owner
 - すべてのArtifactが正確なSpecification、Policy、Schema、Snapshot Versionを参照する
 - 同じPayment、Playback Event、Recipient Allocationを再送しても二重有効化・二重算入・二重Instructionが発生しない
 - Playback Sessionが別Account、Track、Plan、Rights Version、地域、期間または品質へ拡張されない
+- SBTを持たない利用者の通常Plan認可を不当に拒否せず、SBT保有者もSubscriptionまたはRightsを迂回できない
+- Credential特権が別Issuer、Creator Scope、Account、Wallet LinkまたはPrivilege Policyへ拡張されない
 - Public NetworkからMedia Adapterへ直接到達できず、偽造Identity Headerと任意Upstream URLが拒否される
 - Navidrome AdapterをMock Signed-object Adapterへ交換してもCanonical Track IDとEvidence semanticsが変わらない
 - Network停止、RPC不一致、Evidence遅延、Queue重複、Rights紛争、計算失敗を注入してもfail closedになる

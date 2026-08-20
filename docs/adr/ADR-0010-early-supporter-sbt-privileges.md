@@ -1,0 +1,185 @@
+---
+description: Early Supporter SBTを非金銭的なCommunity Credentialとして発行し、通常Subscriptionへ追加される限定的なStreaming特権へ安全に接続する設計判断。
+---
+
+# ADR-0010: Early Supporter SBT Privileges
+
+**Status:** Proposed
+**Date:** 2026-08-20
+**Last Updated:** 2026-08-20
+
+## 1. Context
+
+Whitepaperは、まだ小規模なCreatorを発見し支援した履歴をEarly Supporterとして記録し、金銭的リターンではなくCommunity Reputationとして扱う方針を示している。
+
+一方、Streaming Gatewayの現行設計はActive SubscriptionとRights Stateを必須とし、Wallet ControlまたはToken Balanceだけで再生を許可しない。Early Supporter SBTを単純なToken Gateとして追加すると、Account、Subscription、Rights、CredentialおよびSTOの責務が混在する。
+
+## 2. Decision
+
+Creator First PlatformはEarly Supporter SBTを、正規Issuerが版管理されたQualification Policyに基づいて発行する、譲渡不能かつ失効可能なCommunity Credentialとして扱う。
+
+SBTは通常のSubscriptionを置き換えず、Active SubscriptionとActive Rightsの範囲内で追加される限定的なPrivilegeの入力とする。
+
+```text
+playback_allowed =
+  account_session_active
+  AND wallet_link_active
+  AND subscription_active
+  AND rights_active
+  AND (
+    base_plan_allows_content
+    OR (
+      early_supporter_credential_active
+      AND privilege_policy_allows_content
+      AND creator_scope_matches
+    )
+  )
+```
+
+SBT単独でSubscription、Rights、本人性、唯一の人間、投資家資格、Creator資格またはGovernance Eligibilityを証明しない。
+
+## 3. Credential Model
+
+Early Supporter Credentialは少なくとも次を版管理する。
+
+- Chain IDおよびContract Address
+- Token IDおよびCredential Type
+- Authorized Issuer
+- Qualification Policy IDおよびVersion
+- Creator ScopeまたはCommunity Scope
+- Issuance Event、Source BlockおよびFinality Reference
+- Active、RevokedまたはBurnedのStatus
+- Status Effective TimeおよびStatus Version
+- Holder WalletとPlatform Accountを結ぶWallet Link Version
+- 再発行時の旧Credential参照
+
+個人情報、支援金額、詳細な視聴履歴、Legal Identityおよび秘密情報はPublic Blockchainへ記録しない。
+
+## 4. Token Standard
+
+初期候補はERC-721互換の[ERC-5192](https://eips.ethereum.org/EIPS/eip-5192)とし、`locked(tokenId) == true`かつ移転操作が失敗することを検証する。
+
+発行前同意、Burn権限およびWallet Rotationをより明確に表現する場合は[ERC-5484](https://eips.ethereum.org/EIPS/eip-5484)を評価する。採用Standard、Burn Authorization、Metadataの不変性およびRecovery手順はContract Deploymentごとに固定する。
+
+## 5. Qualification and Issuance
+
+Qualification Policyは、対象Creator、対象Action、判定期間、SnapshotまたはEvent Source、重複排除、Bot対策、異議申立ておよびIssuer権限を定義する。
+
+利用者の受領意思を確認せずにPublic WalletへSBTを送り付けない。発行操作は同じQualificationとPolicy Versionに対して冪等にし、同一Credentialの二重発行を拒否する。
+
+Early Supporterの資格をSTOへの申込額、Security Token保有量、Creatorの将来人気、将来収益または投機的価値へ連動させない。
+
+## 6. Privilege Policy
+
+PrivilegeはSBT Metadataへ永久に埋め込まず、Operating CompanyがRights Holderとの許諾および利用規約に基づいて版管理するPolicyとして定義する。
+
+対象候補は次のとおりとする。
+
+- CreatorとRights Holderが許諾した先行試聴
+- 限定Recordingまたは限定イベント
+- Beta機能
+- Community BadgeまたはProfile表示
+- Subscription Plan内の限定的な品質・機能拡張
+
+Privilegeは対象Creator、Canonical Track、Content Version、Territory、License Window、Plan、品質、開始・終了時刻および緊急停止条件でBoundする。
+
+## 7. Authentication and Wallet Linking
+
+Wallet署名はWallet Controlの証明にのみ利用し、SBT保有と再生認可を同一視しない。Platform Session内で、目的を明示したWallet Linkを確立し、Account RecoveryとWallet RotationをAccount Serviceが管理する。
+
+Wallet紛失時は、旧CredentialをRevokedまたはBurnedにしてから、新Walletへ新Token IDを再発行する。秘密鍵の譲渡またはWallet売買による実質的移転をSBTだけで完全に防げないため、Account Security、利用規約、異常検知および再発行監査を組み合わせる。
+
+## 8. Authorization Read Model
+
+Gatewayは再生Requestごとに同期RPCを行わない。Credential Indexerが確認済みEventからReorganization-awareなCredential / Privilege Read Modelを構築する。
+
+Read ModelはSource Block、Block Hash、Transaction Hash、Log Index、Finality、Contract Version、Credential Status、Policy VersionおよびFreshnessを保持する。
+
+Credential、Subscription、Rights、Wallet LinkまたはPolicyが不明、期限切れ、失効、再編成中または許容範囲を超えて古い場合、新しいPlayback SessionをFail Closedで拒否する。
+
+## 9. Playback Session Binding
+
+認可成功時の短時間Playback Sessionは次をBindingする。
+
+- AccountおよびPlatform Session
+- Wallet Link Version
+- SubscriptionおよびPlan
+- Early Supporter Credential IDとStatus Version
+- Privilege Policy IDとVersion
+- Canonical Track IDとContent Version
+- Rights Snapshot、TerritoryおよびLicense Window
+- Format、Bitrate、Issue TimeおよびExpiry
+
+CredentialまたはPrivilegeの取消しは、定義された伝播時間内に新規Playback Sessionを拒否する。進行中StreamのGrace BehaviorはSubscriptionおよびRightsの規則を超えて拡張しない。
+
+## 10. STO and Legal Boundary
+
+Early Supporter SBTはSecurity Token、株主権、投資元本、配当、収益分配、換金請求権またはProtocol Governance Voting Powerを表さない。
+
+SBT Contract、発行条件、利用規約、表示、会計および監査証跡をSTOから分離する。STO投資家だけへの付与、投資額連動、料金減免その他の経済的価値を導入する場合は、実装または募集前にOperating Companyが金融規制、会計・税務、消費者保護および開示を専門家と確認する。
+
+## 11. Privacy and User Control
+
+Public SBTはWalletとEarly Supporter属性の関連を第三者に公開する。発行前に公開範囲、Metadata、Burn権限、失効、再発行およびAccount連携を説明し、明示的な受領意思を取得する。
+
+表示名、メッセージ、支援額、視聴履歴またはLegal IdentityをToken Metadataへ保存しない。将来Privacy要求が高まる場合は、非公開CredentialまたはZero-Knowledge Proofへの移行を別ADRで検討する。
+
+## 12. Alternatives Considered
+
+### SBT alone grants all streaming
+
+SubscriptionとRightsの境界を迂回し、永久かつ過大な権利と誤認されるため採用しない。
+
+### Query blockchain synchronously for every media request
+
+RPC停止、Latency、Rate LimitおよびChain ReorganizationがPlayback Pathへ直接影響するため採用しない。
+
+### Store privileges permanently in token metadata
+
+Rights、Territory、License Window、Planおよび法的条件の変更へ安全に対応できないため採用しない。
+
+### Give the SBT governance or revenue rights
+
+Community Reputationを投資・経済力・Protocol支配へ変換し、Whitepaperの目的とGlobal Invariantsに反するため採用しない。
+
+## 13. Consequences
+
+### Positive
+
+- Early Supportを譲渡不能な履歴として可視化できる
+- SubscriptionとRightsの既存境界を維持できる
+- NavidromeをCredentialまたはPolicyのSource of Truthにしない
+- PrivilegeをRightsと利用規約に応じて更新・停止できる
+- STO、Revenue DistributionおよびGovernanceから分離できる
+
+### Trade-offs
+
+- Credential IndexerとRead Modelが追加される
+- Wallet紛失、Account Recoveryおよび再発行の運用が必要になる
+- Public WalletとCommunity属性のPrivacyリスクが生じる
+- 特権の経済的価値に応じて法務、税務、会計および消費者対応が必要になる
+
+## 14. Testnet Acceptance Criteria
+
+1. 金銭的価値を持たないDemo SBTをTestnetへDeployする
+2. 利用者の同意後だけ一つのQualificationにつき一つ発行する
+3. Transfer操作を拒否する
+4. Active Subscription、Active Rights、Active SBTおよび一致するPrivilegeで限定試験音を再生できる
+5. SBTがなくても通常Planで許可された試験音は再生できる
+6. SBTだけでSubscriptionまたはRightsを迂回できない
+7. Creator Scope、Policy Version、TerritoryまたはContent Version不一致を拒否する
+8. RevokeまたはBurn後、定義された時間内に新規Playback Sessionを拒否する
+9. staleまたはreorganization-unsafeなCredential Read ModelでFail Closedになる
+10. Wallet Recovery時に旧Credentialが無効化され、新Credentialとの監査Linkが残る
+11. NavidromeへGatewayを迂回して到達できない
+12. Token Metadata、LogおよびDelivery Evidenceに個人情報、支援額または詳細な公開視聴履歴を含めない
+
+## 15. Related Documents
+
+- [Whitepaper: Platform Architecture](/whitepaper/04-platform-architecture)
+- [Whitepaper: Discovery and Community](/whitepaper/08-discovery-community)
+- [Whitepaper: Legal, STO and Tax](/whitepaper/11-legal-sto-tax)
+- [ADR-0008 Account / Wallet / Identity Strategy](./ADR-0008-account-wallet-identity-strategy.md)
+- [ADR-0009 Navidrome / Streaming Gateway](./ADR-0009-navidrome-streaming-gateway.md)
+- [SPEC-ACCOUNT-004 Early Supporter Credential](../protocol/specs/early-supporter-credential.md)
+- [SPEC-STREAMING-001 Playback Authorization](../protocol/specs/playback-authorization.md)

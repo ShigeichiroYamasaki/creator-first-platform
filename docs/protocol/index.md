@@ -8,7 +8,7 @@ Creator First Platform の Protocol Specification は、Whitepaper・CFP・Gover
 
 Protocol Specification は、人間向けの説明書であると同時に、AIエージェントが実装・テスト・レビューを行うための **実装契約**として利用します。
 
-8仕様をAccount・Payment・Rights・Streaming・Usage・Distributionの一つの経路として読む場合は、[End-to-End Vertical Slice](/protocol/vertical-slice)を参照してください。Mock／Testnetでの作業分解とStage Gateは[Vertical Slice Implementation Plan](/protocol/implementation-plan)にまとめています。
+9仕様をAccount・Payment・Credential・Rights・Streaming・Usage・Distributionの一つの経路として読む場合は、[End-to-End Vertical Slice](/protocol/vertical-slice)を参照してください。Mock／Testnetでの作業分解とStage Gateは[Vertical Slice Implementation Plan](/protocol/implementation-plan)にまとめています。
 
 ::: warning 現在のStatus: Draft
 公開中のProtocol Specificationは設計・レビュー段階です。本番サービスや資金を扱う承認済み仕様ではありません。実装開始前にOpen Questionsを解決し、法務・セキュリティ・ガバナンスの承認とVersion更新が必要です。
@@ -20,10 +20,11 @@ Protocol Specification は、人間向けの説明書であると同時に、AI�
 | --- | --- | --- | --- |
 | [SPEC-ACCOUNT-003 Account Lifecycle](/protocol/specs/account-lifecycle) | Account / Identity | 0.1.0 | 登録、認証、Session、Recovery、閉鎖 |
 | [SPEC-ACCOUNT-002 Wallet Linking](/protocol/specs/wallet-linking) | Account / Identity | 0.1.0 | Wallet関連付け、署名、解除、権限分離 |
+| [SPEC-ACCOUNT-004 Early Supporter Credential](/protocol/specs/early-supporter-credential) | Account / Credential | 0.1.0 | SBT同意、発行、失効、Wallet回復、限定特権 |
 | [SPEC-BLOCKCHAIN-001 Settlement Asset Registry](/protocol/specs/settlement-asset-registry) | Blockchain / Payment | 0.1.0 | JPYC等の審査、承認、停止、履歴管理 |
 | [SPEC-ACCOUNT-001 Subscription Settlement](/protocol/specs/subscription-settlement) | Account / Payment | 0.1.0 | Payment Intent、Finality、Subscription有効化 |
 | [SPEC-RIGHTS-001 Rights Registry](/protocol/specs/rights-registry) | Rights / Content | 0.1.0 | Work・Recording、権利主張、審査、紛争、Rights Snapshot |
-| [SPEC-STREAMING-001 Playback Authorization](/protocol/specs/playback-authorization) | Streaming / Authorization | 0.1.0 | Subscription・Rights認可、Playback Session、Media Adapter、Delivery Evidence |
+| [SPEC-STREAMING-001 Playback Authorization](/protocol/specs/playback-authorization) | Streaming / Authorization | 0.1.0 | Subscription・Credential特権・Rights認可、Playback Session、Media Adapter、Delivery Evidence |
 | [SPEC-USAGE-001 Playback Verification](/protocol/specs/playback-verification) | Usage / Privacy | 0.1.0 | Playback Event、重複防止、検証、Usage Snapshot、Challenge |
 | [SPEC-DISTRIBUTION-001 Creator Distribution](/protocol/specs/creator-distribution) | Distribution / Accounting | 0.1.0 | Revenue、User-Centric計算、Rights分割、保留、端数、Allocation |
 
@@ -145,12 +146,15 @@ ADR-0008を実装可能な仕様へ落とし込みます。
 protocol/account/
 ├── account-lifecycle-spec.md         # Draft v0.1.0
 ├── wallet-linking-spec.md            # Draft v0.1.0
+├── early-supporter-credential-spec.md # Draft v0.1.0
 └── subscription-settlement-spec.md   # Draft v0.1.0
 ```
 
 現在のDraftとして、[SPEC-ACCOUNT-001 Subscription Settlement and Activation](/protocol/specs/subscription-settlement) を定義しています。これは、承認済み決済資産、Payment Intent、Finality、二重有効化防止、Subscription State、監査要件を実装可能な要件へ変換したものです。
 
 AccountとWalletの関連付け・解除・回復時の安全要件は、[SPEC-ACCOUNT-002 Wallet Linking and Unlinking](/protocol/specs/wallet-linking) が定義します。
+
+Early Supporter SBTの同意、発行、失効、Wallet回復と、Subscription・Rightsを置き換えない限定特権は、[SPEC-ACCOUNT-004 Early Supporter Credential and Privilege](/protocol/specs/early-supporter-credential) が定義します。
 
 Account登録、認証、Session、Recovery、停止・閉鎖の基盤は、[SPEC-ACCOUNT-003 Account Lifecycle, Authentication and Recovery](/protocol/specs/account-lifecycle) が定義します。
 
