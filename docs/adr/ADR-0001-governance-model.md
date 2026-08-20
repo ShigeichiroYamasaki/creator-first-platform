@@ -6,6 +6,7 @@ description: CreatorとUserの抽選代表による二院制の熟議を、Proto
 
 **Status:** Proposed  
 **Date:** 2026-07-27
+**Last Updated:** 2026-08-20
 
 ## Context
 

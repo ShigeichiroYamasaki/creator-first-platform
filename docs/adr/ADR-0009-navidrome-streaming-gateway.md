@@ -6,6 +6,7 @@ description: Navidromeを交換可能なメディアサーバーとして利用�
 
 **Status:** Proposed
 **Date:** 2026-08-19
+**Last Updated:** 2026-08-20
 
 ## 1. Context
 

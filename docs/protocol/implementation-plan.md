@@ -246,6 +246,12 @@ flowchart TD
 | G4 Creator Slice | IMP-008–010 | Distribution・Settlement Stub・一括Scenarioの完全照合 | 実在Creator報酬や本番Settlementを扱うこと |
 | G5 Review Ready | IMP-011 | threat／privacy／operations evidence | 監査済み・適法・本番Readyと主張すること |
 
+## Testnetデモから本番系への移行
+
+IMP-001–011は、[Testnetデモ](/demo/)を成立させるMock／Testnet Work Packageです。G5を通過しても本番実装の開始を自動承認しません。
+
+本番系は、TestnetデモのNetwork、Contract Address、Source Commit、Artifact lineage、失敗試験を公開し、Blocking Decisionの解決、専門家レビュー、独立Security Review、Smart Contract監査、本番用の鍵・権限・インフラ・契約・監視・復旧設計を別Gateで承認した後に実装します。Testnet用の鍵、Token、Contract、Rights Fixtureまたは管理権限を本番へ流用してはなりません。
+
 ## End-to-End Test Matrix
 
 | Scenario | 注入条件 | 期待結果 |

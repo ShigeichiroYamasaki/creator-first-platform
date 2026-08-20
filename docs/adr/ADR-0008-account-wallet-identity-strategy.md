@@ -6,6 +6,7 @@ description: Web2アカウント、Wallet、本人確認、権限、Recoveryを�
 
 **Status:** Proposed  
 **Date:** 2026-07-29
+**Last Updated:** 2026-08-20
 
 ## 1. Context
 

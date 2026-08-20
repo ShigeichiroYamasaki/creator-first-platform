@@ -77,10 +77,18 @@ for (const file of adrFiles) {
   const source = await readFile(file, 'utf8')
   const status = metadata(source, 'Status')
   const date = metadata(source, 'Date')
+  const lastUpdated = metadata(source, 'Last Updated')
   if (!status) errors.push(`${file}: missing Status metadata`)
   else adrStatuses.add(status)
   if (!isoDate(date)) errors.push(`${file}: missing or invalid Date metadata`)
-  else sourceDates.push({ date, file })
+  if (!isoDate(lastUpdated)) {
+    errors.push(`${file}: missing or invalid Last Updated metadata`)
+  } else {
+    sourceDates.push({ date: lastUpdated, file })
+    if (isoDate(date) && isoDate(lastUpdated) < isoDate(date)) {
+      errors.push(`${file}: Last Updated ${lastUpdated} predates Date ${date}`)
+    }
+  }
 }
 
 const specificationStatuses = new Set()

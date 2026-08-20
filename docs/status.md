@@ -5,7 +5,7 @@ description: Creator First Platformの公開文書、Draft仕様、未実装範�
 
 # 現在の状況
 
-> **基準日: 2026-08-19**
+> **基準日: 2026-08-20**
 
 Creator First Platformは現在、**構想、公開文書、設計判断、Protocol Specificationを整備している段階**です。本ページは、将来像と現在成立しているものを区別するための状態表示です。
 
@@ -21,6 +21,7 @@ Creator First Platformは現在、**構想、公開文書、設計判断、Proto
 | CFP | Draft | 提案プロセス案とCFP-0001 | 採択主体・手続・記録方式の確定 |
 | ADR | Proposed | 9件の設計判断案 | レビュー、採否決定、Status更新 |
 | Protocol | Draft 0.1.0 | Account、Wallet、決済、決済資産台帳、Rights、Streaming、Usage、Distributionの8仕様 | Open Questions解決、法務・セキュリティ・ガバナンス承認 |
+| Testnetデモ | 準備中 | [利用入口と本番移行条件](/demo/)、Vertical Slice実装計画 | Mock実装、Testnet選定、公開URL・Contract・Source Commitの検証 |
 | アプリケーション | 未実装 | 公開文書、Vertical Slice実装計画、Navidrome / Streaming Gateway構成案、検証スクリプト | Blocking Decision確定、Mock実装、テスト、運用設計 |
 | Smart Contract | 未実装 | 将来の要件・不変条件 | チェーン選定、脅威分析、実装、監査、段階的デプロイ |
 | ステーブルコイン決済 | 未提供 | 決済・資産審査のDraft仕様 | 対象商品・ネットワーク・取扱形態の法務／技術審査 |
@@ -34,6 +35,7 @@ Creator First Platformは現在、**構想、公開文書、設計判断、Proto
 - [Creator First Proposal](/proposals/)
 - [Architecture Decision Records](/adr/)
 - [Protocol Specification](/protocol/)
+- [Testnetデモ入口](/demo/)
 - GitHub上のProtocol検証、文書ビルド、公開前メタデータ検査
 
 Protocolの8仕様は公開して読める状態ですが、すべてDraftです。要件IDとテスト対応の自動検証は、仕様の完全性、安全性、法令適合性または本番承認を意味しません。
@@ -72,8 +74,9 @@ Protocolの8仕様は公開して読める状態ですが、すべてDraftです
 1. [Draft仕様のOpen Questionsと責任主体](/protocol/open-questions)を確定する
 2. 法務・権利・税務・プライバシー・セキュリティの専門レビュー条件を定義する
 3. [Vertical Slice Implementation Plan](/protocol/implementation-plan)のBlocking Decisionを解決し、Mock Work Packageへ着手する
-4. テスト環境で失敗、再試行、重複、取消し、監査、緊急停止を検証する
-5. 本番資金を扱う前に独立レビュー、監査、運用手順、インシデント対応を完了する
+4. [Testnetデモ](/demo/)で失敗、再試行、重複、取消し、監査、緊急停止を検証し、Network・Contract・Source Commitを公開する
+5. Testnetデモの成立後、本番用の鍵、権限、インフラ、契約、監視、復旧を別実装する
+6. 本番資金を扱う前に独立レビュー、監査、運用手順、インシデント対応を完了する
 
 段階的な全体計画は[ロードマップ](/whitepaper/13-roadmap)を参照してください。
 

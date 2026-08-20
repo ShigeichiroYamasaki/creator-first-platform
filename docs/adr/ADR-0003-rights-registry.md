@@ -6,6 +6,7 @@ description: 楽曲、権利者、権利種別、持分、許諾範囲、証憑�
 
 **Status:** Proposed  
 **Date:** 2026-07-29
+**Last Updated:** 2026-08-20
 
 ## 1. Context
 
