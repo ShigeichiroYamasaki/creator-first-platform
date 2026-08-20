@@ -1,0 +1,59 @@
+name: creator-first-streaming
+
+services:
+  navidrome-data-init:
+    image: deluan/navidrome:0.63.2
+    user: "0:0"
+    entrypoint: ["chown", "-R"]
+    command: ["${NAVIDROME_UID:-1000}:${NAVIDROME_GID:-1000}", "/data"]
+    volumes:
+      - navidrome-data:/data
+    network_mode: none
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+
+  navidrome:
+    image: deluan/navidrome:0.63.2
+    user: "${NAVIDROME_UID:-1000}:${NAVIDROME_GID:-1000}"
+    restart: unless-stopped
+    depends_on:
+      navidrome-data-init:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:${NAVIDROME_PORT:-4533}:4533"
+    environment:
+      ND_LOGLEVEL: info
+      ND_MUSICFOLDER: /music
+      ND_DATAFOLDER: /data
+      ND_SCANNER_SCANONSTARTUP: "true"
+      ND_SCANNER_SCHEDULE: "@every 1m"
+      ND_ENABLEDOWNLOADS: "false"
+      ND_ENABLESHARING: "false"
+      ND_ENABLEEXTERNALSERVICES: "false"
+      ND_ENABLEINSIGHTSCOLLECTOR: "false"
+      ND_ENABLELOGREDACTING: "true"
+    volumes:
+      - navidrome-data:/data
+      - ./music:/music:ro
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:4533/"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+    networks:
+      - media
+
+volumes:
+  navidrome-data:
+
+networks:
+  media:
+    driver: bridge

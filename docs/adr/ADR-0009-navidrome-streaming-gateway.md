@@ -256,7 +256,88 @@ NavidromeのPlay CountまたはScrobbleだけをCreator Distributionの根拠に
 
 ## 12. Deployment Topology
 
-初期構成は次を想定する。
+Deploymentは、ローカル単体確認、開発・プレゼン用Test環境および本番候補環境を分離する。Test環境の成立は、本番環境のSecurity、Rights、Privacy、可用性または法令適合性を証明しない。
+
+### 12.1 Local Standalone Verification
+
+Gateway実装前のローカル検証に限り、Navidrome `0.63.2`をHost Loopbackの`127.0.0.1:4533`へ公開し、合成試験音でScanと再生を確認する。この例外はLANまたはInternetへの公開を許可せず、Gateway実装時に削除する。手順は[ローカル音楽ストリーミング](/demo/local-streaming)に記録する。
+
+### 12.2 Development and Presentation Test Environment
+
+開発およびプレゼンでSubscription-to-Playback Vertical Sliceを実証する環境は、金銭的価値を持たないTest Assetと合成または利用許諾確認済み音源だけを扱い、月額費用を発生させないことを設計目標とする。ただしCloud ProviderのFree Tierまたは第三者Serviceの無償提供を保証とみなさず、Billing、Quotaおよび利用条件をDeploy前に再確認する。
+
+#### Resource and Cost Boundary
+
+Test環境は次を満たす。
+
+- Google Cloud Free Tier対象RegionのCompute Engine `e2-micro`を1台だけ使用する
+- Persistent Diskは`pd-standard`とし、Boot、音源、DatabaseおよびCacheの合計を30 GB-month以下にする
+- 課金対象となる外部IPv4、Load Balancer、Cloud NAT、Cloud DNSおよび自動Snapshotを使用しない
+- VMには外部IPv6だけを割り当て、Inbound PortをInternetへ開放しない
+- Public HTTPS入口はCloudflare Quick Tunnelを使用し、`cloudflared`からIPv6のOutbound接続を確立する
+- Quick TunnelのURLが再起動時に変わり得ること、SLAがないことおよび開発・Test用途限定であることを表示する
+- Google Cloud Budget Alertを設定する。ただしAlertはHard Capではないため、Gateway自身が配信Byte数を制限する
+- Gatewayは月間Audio Deliveryが700 MiBに達した時点で警告し、800 MiBで新規Playback Sessionを停止する
+- 少なくとも200 MiBをTunnel、RPC、管理およびProtocol Overheadの予備として残す
+
+#### Runtime Boundary
+
+e2-micro上のRuntimeは原則として次だけで構成する。
+
+```text
+cloudflared
+    -> Streaming Authorization Gateway
+        -> Navidrome
+        -> SQLite Read Model / Playback Evidence
+        -> Base Sepolia Public RPC
+```
+
+- Gatewayは単一の軽量Processとして実装する
+- Read Model、Nonce、Session、Allowlist、Playback Evidenceおよび月間配信Byte数はSQLiteへ保存できる
+- PostgreSQL、Redis、Event Queue、Local Blockchain Nodeおよび検索ClusterをTest環境へ配置しない
+- Cloudflare側でPublic TLSを終端するため、Quick Tunnel構成ではCaddyを必須としない
+- 音源は96 kbpsまたは128 kbpsへ事前変換し、Direct Playを基本とする
+- Navidromeの同時Transcodeは最大1本とし、Client切断時のTranscode Cancellationを有効にする
+- プレゼン成立条件は同時Direct Play 1〜3本を目標とし、実測値を記録する
+
+#### Gateway and Smart Contract Boundary
+
+Gatewayを唯一のPublic Application Boundaryとし、NavidromeのPort、Credential、Internal APIおよびMedia IDをClientへ公開しない。
+
+- Wallet認証はnonce、domain、URI、Chain ID、有効期限を検証するSIWEを使用する
+- Test参加者はWallet Allowlistまたは明示的な招待記録で制限する
+- SubscriptionおよびRights判定はBase Sepolia Public RPCから取得し、15〜30秒の短時間Cacheへ保存する
+- RPC Timeout、Rate Limit、Chain ID不一致、Contract Address不一致または判定不能時は新規Playback SessionをFail Closedにする
+- 認可成功時だけ、Account、Track、Rights Version、SubscriptionおよびTTLをBindingした短時間Playback Ticketを発行する
+- Gatewayは許可済み`Range` HeaderだけをNavidromeへ渡し、配信Byte数とServer-side Playback EvidenceをSQLiteへ記録する
+
+Base SepoliaのTest Contractは少なくとも次を分離する。
+
+- `MockJPYC`: 金銭的価値、償還請求権または実在JPYCとの交換可能性を持たないTest Token
+- `DemoSubscription`: Wallet、Plan、開始時刻、有効期限および取消状態
+- `DemoRightsRegistry`: Creator First Track ID、公開状態、Rights Versionおよび停止状態
+
+Chain IDは`84532`とし、Contract Address、Deployment Transaction、ABI、Source Commitおよび使用RPCをデモ画面へ表示する。Test ETHはFaucet由来だけを使用する。Mainnet Asset、本番Wallet、本番秘密鍵、実在Subscription、実在Rights、未公開音源または個人情報をTest環境へ投入しない。Deployer KeyはRepositoryへCommitせず、可能な限りVMへ常置しない。
+
+#### Test Environment Acceptance Criteria
+
+開発・プレゼン用環境は少なくとも次を再現できなければならない。
+
+1. AllowlistされたWalletによるSIWE成功と、未許可Walletの拒否
+2. 有効な`DemoSubscription`とActive Rightsによる試験音再生
+3. Subscription期限切れまたは取消し後の新規再生拒否
+4. Rights停止またはRights Version不一致後の新規再生拒否
+5. RPC停止、Timeoutまたは誤Chain接続時のFail Closed
+6. Playback Ticketの期限切れ、Owner不一致およびReplayの拒否
+7. HTTP Range、Seek、Pause、ReconnectおよびClient Abort
+8. NavidromeへPublic経路から直接到達できないこと
+9. Playback Evidence、配信Byte数およびDenial Reasonの監査可能な記録
+10. 700 MiB警告と800 MiB新規Session停止の自動Test
+11. e2-microでOOMを発生させず、同時Direct Play 1〜3本と最大1 Transcodeの測定結果を保存すること
+
+### 12.3 Production Candidate Topology
+
+本番候補構成は次を想定する。
 
 ```text
 Public:   Caddy :443
@@ -340,6 +421,11 @@ Track Range、Transcoding、Metadata Scan等の実装範囲が大きく、Subscr
 8. Playback Evidenceの欠損、重複および順序逆転
 9. Load TestによるGateway RelayのScale Trigger
 10. NavidromeおよびGatewayのOSS License、Security、Privacy Review
+11. 12.2のTest環境Acceptance Criteriaを再現した検証証拠
+12. 外部IPv4、Load Balancer、Cloud NATおよび追加Diskが作成されていないことのBilling Inventory
+13. Quick Tunnel以外からGatewayおよびNavidromeへ到達できないこと
+14. Base Sepolia Chain ID、Contract Address、ABIおよびSource Commitの一致
+15. Test環境に本番資金、実在Rights、未公開音源、個人情報または本番Credentialが存在しないこと
 
 ## 17. Open Questions
 
@@ -375,6 +461,12 @@ Track Range、Transcoding、Metadata Scan等の実装範囲が大きく、Subscr
 - [Protocol: Playback Verification](/protocol/specs/playback-verification)
 - [Navidrome Externalized Authentication](https://www.navidrome.org/docs/usage/integration/authentication/)
 - [Navidrome Security Considerations](https://www.navidrome.org/docs/usage/admin/security/)
+- [Google Cloud Free Tier](https://docs.cloud.google.com/free/docs/free-cloud-features)
+- [Google Cloud External IP Pricing](https://cloud.google.com/vpc/network-pricing)
+- [Cloudflare Quick Tunnels](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/)
+- [Cloudflare Tunnel Run Parameters](https://developers.cloudflare.com/tunnel/advanced/run-parameters/)
+- [Base Sepolia Connection Information](https://docs.base.org/base-chain/quickstart/connecting-to-base)
+- [Base Sepolia Faucets](https://docs.base.org/base-chain/network-information/network-faucets)
 
 ## 20. Follow-up Work
 

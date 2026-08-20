@@ -5,3 +5,5 @@ docs/.vitepress/dist/
 .env
 .env.*
 *.log
+docker/navidrome/music/*
+!docker/navidrome/music/.gitkeep

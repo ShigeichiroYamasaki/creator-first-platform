@@ -182,6 +182,15 @@ export default defineConfig({
       ],
 
       sidebar: {
+        '/demo/': [
+          {
+            text: 'Demo',
+            items: [
+              { text: 'Testnetデモ入口', link: '/demo/' },
+              { text: 'ローカル音楽ストリーミング', link: '/demo/local-streaming' }
+            ]
+          }
+        ],
         '/whitepaper/': [
           {
             text: 'ホワイトペーパー',

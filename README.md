@@ -27,6 +27,17 @@ npm run validate
 npm run docs:preview
 ```
 
+## ローカル音楽ストリーミング
+
+DockerとNavidromeを使ったローカル開発用の音楽ストリーミングサーバーを起動できます。
+
+```sh
+npm run streaming:up
+npm run streaming:verify
+```
+
+[http://127.0.0.1:4533](http://127.0.0.1:4533)で最初のローカル管理者を作成し、生成された試験音を再生します。停止は`npm run streaming:down`です。構成、安全境界、音源の扱いは[ローカル音楽ストリーミング手順](docs/demo/local-streaming.md)を参照してください。
+
 ## 文書から実装まで
 
 設計と実装の追跡可能性を保つため、原則として次の順序で更新します。

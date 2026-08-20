@@ -39,11 +39,13 @@ flowchart LR
 | 対象Testnet | 未決定 |
 | Demo Contract Address | 未デプロイ |
 | Streaming Gateway | 仕様・Mock計画段階 |
-| Navidrome Media Adapter | 仕様・Mock計画段階 |
+| Navidrome Media Adapter | [ローカルDocker Server実装済み](/demo/local-streaming)、Gateway未接続 |
 | Testnet決済 | 未実装 |
 | Rights / Usage / Distribution | Draft仕様、未実装 |
 
 進捗と成立条件は[現在の状況](/status)、[Vertical Slice Implementation Plan](/protocol/implementation-plan)、[Decision Baseline](/protocol/decision-baseline)で確認できます。
+
+公開Testnetの前段階として、[ローカル音楽ストリーミング](/demo/local-streaming)で合成試験音のScanと再生を検証できます。
 
 ## 本番移行の禁止条件
 

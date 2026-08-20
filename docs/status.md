@@ -22,7 +22,7 @@ Creator First Platformは現在、**構想、公開文書、設計判断、Proto
 | ADR | Proposed | 9件の設計判断案 | レビュー、採否決定、Status更新 |
 | Protocol | Draft 0.1.0 | Account、Wallet、決済、決済資産台帳、Rights、Streaming、Usage、Distributionの8仕様 | Open Questions解決、法務・セキュリティ・ガバナンス承認 |
 | Testnetデモ | 準備中 | [利用入口と本番移行条件](/demo/)、Vertical Slice実装計画 | Mock実装、Testnet選定、公開URL・Contract・Source Commitの検証 |
-| アプリケーション | 未実装 | 公開文書、Vertical Slice実装計画、Navidrome / Streaming Gateway構成案、検証スクリプト | Blocking Decision確定、Mock実装、テスト、運用設計 |
+| アプリケーション | ローカル部分実装 | [Navidrome Docker Server](/demo/local-streaming)、合成試験音、Vertical Slice実装計画、Gateway構成案 | Gateway、Mock Subscription／Rights、Playback Evidence、E2Eテスト |
 | Smart Contract | 未実装 | 将来の要件・不変条件 | チェーン選定、脅威分析、実装、監査、段階的デプロイ |
 | ステーブルコイン決済 | 未提供 | 決済・資産審査のDraft仕様 | 対象商品・ネットワーク・取扱形態の法務／技術審査 |
 | DAOガバナンス | 未稼働 | 抽選議会と熟議の構想 | Community形成、適格性、抽選、異議申立て、実証 |
@@ -36,13 +36,14 @@ Creator First Platformは現在、**構想、公開文書、設計判断、Proto
 - [Architecture Decision Records](/adr/)
 - [Protocol Specification](/protocol/)
 - [Testnetデモ入口](/demo/)
+- [ローカル音楽ストリーミング手順](/demo/local-streaming)
 - GitHub上のProtocol検証、文書ビルド、公開前メタデータ検査
 
 Protocolの8仕様は公開して読める状態ですが、すべてDraftです。要件IDとテスト対応の自動検証は、仕様の完全性、安全性、法令適合性または本番承認を意味しません。
 
-## 現在提供していないもの
+## 現在公開・本番提供していないもの
 
-- 音楽のアップロード、再生、検索またはレコメンド機能
+- 実音源を用いた公開環境でのアップロード、再生、検索またはレコメンド機能
 - 利用者アカウント、Creator登録またはRights Holder審査
 - サブスクリプション契約または決済受付
 - JPYCその他のトークンの販売、交換、媒介または保管
