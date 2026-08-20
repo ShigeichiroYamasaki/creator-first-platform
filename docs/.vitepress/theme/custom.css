@@ -38,11 +38,17 @@
 
 .mermaid-diagram__canvas {
   overflow-x: auto;
+  padding-bottom: 0.5rem;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
 }
 
 .mermaid-diagram svg {
-  max-width: 100%;
+  display: block;
+  width: auto;
+  max-width: none !important;
   height: auto;
+  margin-inline: auto;
 }
 
 .mermaid-diagram__status,
