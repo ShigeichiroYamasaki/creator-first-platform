@@ -19,8 +19,11 @@ hero:
       text: ADR一覧を見る
       link: /adr/
     - theme: alt
-      text: Protocolを見る
+      text: スマートコントラクト仕様を見る
       link: /protocol/
+    - theme: alt
+      text: GitHubを見る
+      link: https://github.com/ShigeichiroYamasaki/creator-first-platform
 
 features:
   - title: Testnetデモ
