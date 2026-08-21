@@ -376,6 +376,28 @@ flowchart LR
 
 これは原則として「投資証明」ではなく、コミュニティ上の履歴である。
 
+### Supporter / Early Supporter SBTの表示例
+
+利用者が音楽Playerから特定のCreatorを応援する意思を明示すると、一般のSupporterとして記録できる。本人が公開Credentialの受領に同意した場合は、譲渡不能なSupporter SBTを発行し、Fan Communityへの参加資格やSupporter表示へ利用できる。
+
+そのSupport Actionが、版管理されたEarly Qualification Policyの対象期間、Creator Scopeおよび条件を満たす場合は、Early Supporterという追加の履歴をSBTで表現できる。一般Supporterは継続的な応援を、Early SupporterはCreatorの初期段階から応援した履歴を示し、両者を同じ資格として扱わない。
+
+以下は架空の`CREATOR A`に対するCommunity Credentialの表示例である。実際のToken Metadata、Creator名、発行時点、Contract、Chain、Issuer、Policy VersionおよびStatusは、確定した実装と利用者の同意に従って表示する。
+
+#### 一般Supporter SBT
+
+![継続的な応援とコミュニティ参加を示す一般Supporter SBTの表示例](/images/supporter-sbt-example.webp)
+
+*複数の葉へ育った植物と青緑の音声波形は、Creatorへの継続的な支援とCommunityへの参加を表す。*
+
+#### Early Supporter SBT
+
+![Creatorの初期段階からの支援履歴を示すEarly Supporter SBTの表示例](/images/early-supporter-sbt-example.webp)
+
+*芽吹きと最初の光は、Creatorがまだ初期段階だった時期の発見と支援を表す。*
+
+これらの画像はCredentialの視覚表現例であり、画像の所持、複製、URLまたはClient表示だけでは資格を証明しない。GatewayとCommunity Serviceは、正規Contractの確定済みEvent、Wallet Link、Credential Status、Policy VersionおよびRead Modelの鮮度を検証する。
+
 ### Early Supporter SBTとサービス特権
 
 Early Supporterの履歴は、本人の同意に基づいて譲渡不能なSBTとして発行できる。SBTは投資商品、将来収益への請求権、Creator Revenueの分配権またはProtocol Governanceの議決権ではなく、正規Issuerが特定の基準と時点に基づいて発行したCommunity Credentialとする。

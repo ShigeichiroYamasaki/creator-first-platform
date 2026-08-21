@@ -350,15 +350,19 @@ export default defineConfig({
               /<details class="mermaid-diagram__source">[\s\S]*?<\/details>/g,
               ''
             )
+            const withoutCredentialArtwork = withoutMermaidSources.replace(
+              /<h3[^>]*id="supporter-early-supporter-sbtの表示例"[^>]*>[\s\S]*?(?=<h3|<h2|$)/,
+              ''
+            )
 
             if (environment.relativePath?.startsWith('protocol/specs/')) {
-              return withoutMermaidSources.replace(
+              return withoutCredentialArtwork.replace(
                 /<h2[^>]*id="test-requirements"[^>]*>[\s\S]*?(?=<h2|$)/,
                 ''
               )
             }
 
-            return withoutMermaidSources
+            return withoutCredentialArtwork
           },
           translations: {
             button: {
