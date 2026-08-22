@@ -60,9 +60,17 @@ A verifiable assertion issued by an authorized issuer concerning an Account, Par
 
 A Credential MUST have a defined issuer, type, version, status and lifecycle.
 
+## Supporter Credential
+
+A non-transferable, revocable Credential recording explicit support for a bounded Creator scope with one issuance-time Tier.
+
+## Supporter Tier
+
+`SUPPORTER` or `EARLY_SUPPORTER`; Early includes general capability while remaining distinguishable. Later policy does not silently rewrite it.
+
 ## Early Supporter Credential
 
-A non-transferable, revocable Credential issued under a versioned Qualification Policy to record an approved early-support action for a bounded Creator or Community scope.
+A Supporter Credential whose Contract-side issuance decision satisfied an approved versioned Early Qualification Policy for a bounded Creator or Community scope.
 
 An Early Supporter Credential is not a Subscription, Rights grant, Security Token, revenue claim, shareholder right or Governance eligibility proof.
 

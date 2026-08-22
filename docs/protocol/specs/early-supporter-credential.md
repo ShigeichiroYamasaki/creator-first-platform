@@ -1,6 +1,6 @@
 ---
-title: SPEC-ACCOUNT-004 Early Supporter Credential
-description: Early Supporter SBTの同意、発行、失効、Wallet回復と限定Streaming特権への接続を定義するDraft Protocol Specification
+title: SPEC-ACCOUNT-004 Supporter Credential and Early Tier
+description: 一般Supporter SBT、Early Tier、Wallet同意、発行、失効、回復と版管理された特権行使を定義するDraft Protocol Specification
 editLink: false
 ---
 

@@ -4,7 +4,7 @@
 **Version:** 0.1.0
 **Protocol Domain:** streaming / client
 **Specification ID:** SPEC-STREAMING-002
-**Last Updated:** 2026-08-21
+**Last Updated:** 2026-08-22
 
 ## Related Documents
 
@@ -126,7 +126,7 @@ NOT_SUPPORTER → CONSENT_PENDING → SUBMITTED → CONFIRMING → ACTIVE
                                                               └→ BURNED
 ```
 
-General Supporter and Early Supporter are independently rendered capabilities. `SUBMITTED` or `CONFIRMING` is not `ACTIVE`.
+General Supporter and Early Supporter are independently rendered tiers of one Supporter Credential. `SUBMITTED` or `CONFIRMING` is not `ACTIVE`, and an Early result is not final until the authoritative Contract event is finalized and indexed.
 
 ## Requirements
 
@@ -152,6 +152,10 @@ General Supporter and Early Supporter are independently rendered capabilities. `
 - **REQ-PLAYER-018:** The Player MUST provide keyboard-operable playback controls, programmatic labels, visible focus, sufficient contrast and status announcements for material asynchronous Wallet, Credential and playback outcomes.
 - **REQ-PLAYER-019:** The Testnet Demo MUST identify its environment, chain and test assets, and MUST distinguish MockJPYC and Test ETH from production money or a subscription price.
 - **REQ-PLAYER-020:** The Testnet Demo MUST serve the PWA and Gateway API from an approved same-origin boundary unless an alternative CORS, cookie and signing-domain threat review is recorded.
+- **REQ-PLAYER-039:** Before Supporter registration, the Player MUST disclose Creator, public non-transferable SBT, chain, Contract, nonce or deadline, consent version and Gas sponsor, then sign and submit only unchanged Gateway-issued typed data for the active Wallet Link.
+- **REQ-PLAYER-040:** The Player MUST NOT select Early tier and MUST distinguish signature, relay, submitted, confirming, finalized general or Early tier, effective privilege, failure, revocation and burn from authoritative state.
+- **REQ-PLAYER-041:** Community and Streaming privileges MUST use Gateway-issued bounded capabilities, remain distinct by general or Early tier, and fail closed when stale or inactive; metadata, images, route guards and Wallet claims MUST NOT grant authority.
+- **REQ-PLAYER-042:** Supporter registration consent or signature MUST NOT combine JPYC transfer, token approval, Subscription purchase or another Wallet operation.
 
 ### MUST NOT
 
@@ -230,8 +234,11 @@ closePlaybackSession(playback_session_id, reason)
 createWalletChallenge(purpose, chain_context)
 verifyWalletApproval(challenge, signature_or_authorization)
 createSupportIntent(canonical_creator_id, consent_version, idempotency_key)
+submitSupportAuthorization(support_intent_id, typed_signature)
+getSupportRegistrationStatus(support_intent_id)
 getSupporterCredentials(account_id)
 getCommunityCapabilities(account_id, creator_scope)
+requestCommunityAccess(canonical_creator_id, capability_id)
 ```
 
 Transport names MAY differ. Responses MUST use canonical public identifiers, stable status categories, version and freshness fields where required, and MUST NOT disclose adapter credentials or topology.
@@ -248,6 +255,7 @@ Transport names MAY differ. Responses MUST use canonical public identifiers, sta
 | `PLAYER_WALLET_REJECTED` | User rejects or Wallet fails an operation | preserve Account playback where otherwise valid and grant no Wallet-derived effect |
 | `PLAYER_CREDENTIAL_PENDING` | transaction is not finalized or indexed | display pending and grant no active capability |
 | `PLAYER_CAPABILITY_STALE` | Credential or Community view exceeds freshness bound | hide or disable protected capability and refresh from Gateway |
+| `PLAYER_PRIVILEGE_DENIED` | active Credential does not satisfy the current bounded Privilege Policy | issue no protected route, stream or community token and show a non-sensitive reason |
 | `PLAYER_MEDIA_UNSUPPORTED` | Browser cannot play the approved representation | offer an allowed alternative profile or accessible error |
 | `PLAYER_OFFLINE` | Gateway cannot be reached | retain only approved preferences and public static assets; do not replay protected media |
 
@@ -317,6 +325,7 @@ Client logs are diagnostic claims and MUST NOT replace authoritative server audi
 | REQ-PLAYER-024–028 | Negative credential / privacy / usage | pending SBT, broad signatures, offline protected audio, public history and client progress never create authority |
 | REQ-PLAYER-029–035 | Conformance | implemented SHOULD behavior is tested or deviation is documented under conventions |
 | REQ-PLAYER-036–038 | Optional conformance | chosen framework, OSS test client or future native client preserves Protocol behavior |
+| REQ-PLAYER-039–042 | Supporter registration / privilege exercise | typed consent is disclosed and unchanged; Contract selects one tier; privileges use bounded Gateway capabilities; payment stays separate |
 
 Browser and adversarial tests MUST include direct Navidrome URL attempts, injected internal IDs, forged capability state, stale Credential views, pending transactions, rejected Wallet requests, expired sessions, overlapping and invalid ranges, rapid seek and skip, logout during playback, Account switching, offline reload, service-worker cache inspection, telemetry redaction, keyboard-only use, screen-reader announcements and unsupported codecs.
 

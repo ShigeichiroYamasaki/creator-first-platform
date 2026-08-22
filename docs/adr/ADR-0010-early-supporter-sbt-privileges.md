@@ -1,22 +1,24 @@
 ---
-description: Early Supporter SBTを非金銭的なCommunity Credentialとして発行し、通常Subscriptionへ追加される限定的なStreaming特権へ安全に接続する設計判断。
+description: 一般SupporterとEarly Supporterを一つの非金銭的SBT Credentialとして発行し、版管理された特権へ安全に接続する設計判断。
 ---
 
-# ADR-0010: Early Supporter SBT Privileges
+# ADR-0010: Supporter SBT and Privileges
 
 **Status:** Proposed
 **Date:** 2026-08-20
-**Last Updated:** 2026-08-20
+**Last Updated:** 2026-08-22
 
 ## 1. Context
 
-Whitepaperは、まだ小規模なCreatorを発見し支援した履歴をEarly Supporterとして記録し、金銭的リターンではなくCommunity Reputationとして扱う方針を示している。
+Whitepaperは、PlayerからCreatorを支援する意思を表明した利用者を一般Supporterとして記録し、そのうち版管理された初期条件を満たした利用者をEarly Supporterとして可視化する方針を示している。いずれも金銭的リターンではなくCommunity Reputationとして扱う。
 
 一方、Streaming Gatewayの現行設計はActive SubscriptionとRights Stateを必須とし、Wallet ControlまたはToken Balanceだけで再生を許可しない。Early Supporter SBTを単純なToken Gateとして追加すると、Account、Subscription、Rights、CredentialおよびSTOの責務が混在する。
 
 ## 2. Decision
 
-Creator First PlatformはEarly Supporter SBTを、正規Issuerが版管理されたQualification Policyに基づいて発行する、譲渡不能かつ失効可能なCommunity Credentialとして扱う。
+Creator First PlatformはSupporter SBTを、利用者の明示的なSupport Intentに基づいて正規Issuerが発行する、譲渡不能かつ失効可能なCommunity Credentialとして扱う。一般SupporterとEarly Supporterは別Tokenを重複発行せず、原則として一つのCreator ScopeとHolder Walletにつき一つのSBTへ`SUPPORTER`または`EARLY_SUPPORTER`のTierを確定して記録する。
+
+Early Tierは発行Transaction内で、承認済みの版管理されたQualification Policyから決定する。Player、GatewayまたはRelayerはEarly Tierを自己申告、先取り表示または上書きしない。
 
 SBTは通常のSubscriptionを置き換えず、Active SubscriptionとActive Rightsの範囲内で追加される限定的なPrivilegeの入力とする。
 
@@ -40,12 +42,12 @@ SBT単独でSubscription、Rights、本人性、唯一の人間、投資家資�
 
 ## 3. Credential Model
 
-Early Supporter Credentialは少なくとも次を版管理する。
+Supporter Credentialは少なくとも次を版管理する。
 
 - Chain IDおよびContract Address
-- Token IDおよびCredential Type
+- Token ID、Credential TypeおよびSupporter Tier
 - Authorized Issuer
-- Qualification Policy IDおよびVersion
+- Qualification Policy ID、Versionおよび発行時に確定したTier
 - Creator ScopeまたはCommunity Scope
 - Issuance Event、Source BlockおよびFinality Reference
 - Active、RevokedまたはBurnedのStatus
@@ -57,13 +59,13 @@ Early Supporter Credentialは少なくとも次を版管理する。
 
 ## 4. Token Standard
 
-初期候補はERC-721互換の[ERC-5192](https://eips.ethereum.org/EIPS/eip-5192)とし、`locked(tokenId) == true`かつ移転操作が失敗することを検証する。
+初期候補はERC-721互換の[ERC-5192](https://eips.ethereum.org/EIPS/eip-5192)とし、`locked(tokenId) == true`かつ移転操作が失敗することを検証する。一般SupporterとEarly Supporterの表示画像は、同じSBTの確定済みTierに応じたMetadataで切り替える。
 
 発行前同意、Burn権限およびWallet Rotationをより明確に表現する場合は[ERC-5484](https://eips.ethereum.org/EIPS/eip-5484)を評価する。採用Standard、Burn Authorization、Metadataの不変性およびRecovery手順はContract Deploymentごとに固定する。
 
 ## 5. Qualification and Issuance
 
-Qualification Policyは、対象Creator、対象Action、判定期間、SnapshotまたはEvent Source、重複排除、Bot対策、異議申立ておよびIssuer権限を定義する。
+Qualification Policyは、対象Creator、対象Action、判定期間、最大Early人数その他のEarly条件、SnapshotまたはEvent Source、重複排除、Bot対策、異議申立ておよびIssuer権限を定義する。一般Supporter登録はSupport Intentと受領同意を必要とし、Early Tierは同じ発行操作内でContractが決定する。
 
 JPYC等による初期SubscriptionまたはSupportを対象Actionにする場合、Qualificationは承認済みAsset、Payment Intent、Finalityおよび一回限りのPayment Referenceを参照する。支払額をPublic Metadataへ記録せず、未確定、誤Asset、誤Chain、重複または取消済みPaymentから発行しない。
 
@@ -71,11 +73,17 @@ JPYC等による初期SubscriptionまたはSupportを対象Actionにする場合
 
 Early Supporterの資格をSTOへの申込額、Security Token保有量、Creatorの将来人気、将来収益または投機的価値へ連動させない。
 
-一般利用者へSBT発行用Native Gas Tokenを要求しない。明示的同意と目的限定Wallet署名の後、`MINTER_ROLE`だけを持つRelayerが発行Transactionを送信できる。Relayer受付、Gas支払またはTransaction送信は発行成功ではなく、確定済みCredential EventをIndexerが取り込んだ時点でCredentialを`ACTIVE`とする。
+一般利用者へSBT発行用Native Gas Tokenを要求しない。明示的同意とEIP-712等による目的限定Wallet署名の後、最小権限のRelayerが発行Transactionを送信できる。署名は少なくともHolder Wallet、Canonical Creator Scope、Credential Deployment、Nonce、Deadline、ConsentまたはTerms Versionおよび許可するMint操作をBindする。Supporter登録をJPYC支払、Token ApprovalまたはSubscription購入と同じ署名へ混在させない。
+
+Relayer受付、Gas支払またはTransaction送信は発行成功ではなく、確定済みCredential EventをIndexerが取り込んだ時点でCredentialを`ACTIVE`とする。
+
+登録は`Player -> Gateway Intent -> Wallet署名 -> Relayer -> Contract Tier判定 -> Indexer`と進み、各状態を区別する。ProxyのUpgradeとPolicy権限は分離してTimelock管理し、既発行Tierを暗黙に変更しない。
 
 ## 6. Privilege Policy
 
 PrivilegeはSBT Metadataへ永久に埋め込まず、Operating CompanyがRights Holderとの許諾および利用規約に基づいて版管理するPolicyとして定義する。
+
+Credentialは支援ScopeとTierを証明し、Privilege Policyは現在許可する操作を定義する。Early認定条件と特権内容は別々に版管理する。
 
 対象候補は次のとおりとする。
 
@@ -86,6 +94,8 @@ PrivilegeはSBT Metadataへ永久に埋め込まず、Operating CompanyがRights
 - Subscription Plan内の限定的な品質・機能拡張
 
 Privilegeは対象Creator、Canonical Track、Content Version、Territory、License Window、Plan、品質、開始・終了時刻および緊急停止条件でBoundする。
+
+Off-chain特権はGatewayがRead Modelを評価して限定Streaming Session、Community Tokenまたは期限付き招待を発行する。On-chain特権は対象Contractが承認済みSBTのHolder、Scope、TierおよびPolicyを検証する。Client申告やMetadataを権限根拠にしない。
 
 ## 7. Authentication and Wallet Linking
 
@@ -150,6 +160,7 @@ Community Reputationを投資・経済力・Protocol支配へ変換し、Whitepa
 
 ### Positive
 
+- 一般SupporterとEarly Supporterを重複Tokenではなく一つの監査可能なTierモデルで表現できる
 - Early Supportを譲渡不能な履歴として可視化できる
 - SubscriptionとRightsの既存境界を維持できる
 - NavidromeをCredentialまたはPolicyのSource of Truthにしない
@@ -188,5 +199,6 @@ Community Reputationを投資・経済力・Protocol支配へ変換し、Whitepa
 - [Whitepaper: Legal, STO and Tax](/whitepaper/11-legal-sto-tax)
 - [ADR-0008 Account / Wallet / Identity Strategy](./ADR-0008-account-wallet-identity-strategy.md)
 - [ADR-0009 Navidrome / Streaming Gateway](./ADR-0009-navidrome-streaming-gateway.md)
-- [SPEC-ACCOUNT-004 Early Supporter Credential](../protocol/specs/early-supporter-credential.md)
-- [SPEC-STREAMING-001 Playback Authorization](../protocol/specs/playback-authorization.md)
+- [SPEC-ACCOUNT-004 Supporter Credential, Early Tier and Privilege](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/account/early-supporter-credential-spec.md)
+- [SPEC-STREAMING-001 Playback Authorization](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/streaming/playback-authorization-spec.md)
+- [SPEC-STREAMING-002 Player Client and Gateway Interaction](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/streaming/player-client-spec.md)
