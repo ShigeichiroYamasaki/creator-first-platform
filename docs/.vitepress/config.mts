@@ -12,6 +12,7 @@ export default defineConfig({
     description: 'CreatorとUserが共同統治する、クリエイター中心の音楽配信プラットフォーム構想',
 
     base: '/creator-first-platform/',
+    srcExclude: ['**/* 2.md'],
     vite: {
       plugins: [
         {

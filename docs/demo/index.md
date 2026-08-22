@@ -31,6 +31,10 @@ flowchart LR
 4. 法務・Rights・Privacy・SecurityレビューとSmart Contract監査を終える。
 5. Testnet成果物をそのまま本番へ流用せず、本番用の鍵、権限、インフラ、契約、監視、復旧手順を別Gateで実装する。
 
+## ローカルTest User登録
+
+GatewayとPlayerを起動した後、[テストユーザー登録画面を開く](http://127.0.0.1:5173/#/register)ことができます。登録するのは公開用AliasとDemo利用条件・Privacy Noticeの確認だけです。実名、メール、電話番号、Passwordまたは本番Walletを入力しないでください。この登録は本番Account、本人確認、Subscription契約または資産口座ではありません。
+
 ## 現在の状態
 
 | 項目 | 状態 |
@@ -41,6 +45,7 @@ flowchart LR
 | Streaming Gateway | [ローカルMock実装済み](/demo/local-gateway)、公開環境未デプロイ |
 | Navidrome Media Adapter | Adapter実装済み、専用User・非公開Network・Canonical Mapping未設定 |
 | Player PWA | ローカルGateway接続済み、公開環境未デプロイ |
+| Test User登録 | AliasだけのローカルTest-only Profile実装済み、本番Authenticator未実装 |
 | Testnet決済 | 未実装 |
 | Rights / Usage / Distribution | Draft仕様、未実装 |
 

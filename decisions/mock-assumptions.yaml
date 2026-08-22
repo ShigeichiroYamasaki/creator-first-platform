@@ -12,6 +12,8 @@ assumptions:
       - OQ-PLAYER-001
       - OQ-PLAYER-002
       - OQ-PLAYER-006
+      - OQ-ACCOUNT-LIFECYCLE-001
+      - OQ-ACCOUNT-LIFECYCLE-002
       - OQ-STREAMING-001
       - OQ-STREAMING-003
       - OQ-STREAMING-004
@@ -23,12 +25,16 @@ assumptions:
       Session, an 800 MiB monthly demo limit, SQLite evidence, a fixed active Mock
       Subscription and Rights Snapshot, an in-memory Mock Supporter Credential,
       a bounded File adapter and an optional explicitly mapped Navidrome adapter.
+      Test User registration creates only an ephemeral alias profile and opaque
+      test identifier bound to the local Gateway Session; it collects no email,
+      phone number, password, legal name or production authenticator.
     expires_when: >-
-      The owning Product, Security, Accessibility, Rights and Protocol decision
-      owners approve the first Player, Wallet and Community capability profile.
+      The owning Product, Security, Accessibility, Privacy, Rights and Protocol
+      decision owners approve the first Account, Player, Wallet and Community profile.
     prohibited_uses:
       - Production deployment or a claim that the Player stack is finally approved
       - Real JPYC, production Wallet keys, real SBT issuance or valuable privileges
       - Direct Navidrome or arbitrary upstream access from the public Player
       - Rights-cleared music distribution, offline protected audio or verified usage
       - Production use of the fixed Subscription, Rights, TTL, byte budget or SQLite choices
+      - Claiming that a Test User is an ACTIVE Platform Account or verified person

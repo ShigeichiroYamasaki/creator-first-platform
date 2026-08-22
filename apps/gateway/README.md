@@ -16,6 +16,8 @@ npm run player:dev:gateway
 
 Playerは`http://127.0.0.1:5173`、Gateway healthは`http://127.0.0.1:8787/api/v1/health`です。既定のFile Media AdapterはRepositoryが生成する5秒の合成WAVだけを読みます。
 
+`http://127.0.0.1:5173/#/register`では、Aliasだけを使うTest Userを登録できます。これはGateway ProcessとCookie Session内だけで有効なTest-only Profileであり、本番Platform Account、本人確認、AuthenticatorまたはWallet Linkではありません。
+
 ## Navidrome adapter
 
 Navidromeを使用する場合は、内部URL、専用User Credential、各Canonical Trackに対応する内部Media IDを明示します。
@@ -38,6 +40,7 @@ Credential、内部Media ID、OpenSubsonic URLまたは`Remote-User`をPlayerへ
 - 固定のMock SubscriptionとMock RightsをActiveとして扱うローカル試験専用実装
 - Wallet署名はSIWE messageとEIP-712 Support Intentに対して復元検証する
 - Supporter SBT、Early判定、RelayerおよびBlockchain TransactionはMockであり、JPYCを扱わない
+- Test User登録ではAlias、同意版、Opaque IDだけを扱い、メール、電話番号、Passwordまたは法的氏名を収集しない
 - Playback SessionはAccount、Track、Rights version、Media mappingおよび5分の期限へBoundする
 - Client指定のUpstream URL、Navidrome ID、Trusted Identity Headerおよび複数Rangeを受け付けない
 - Delivery Evidenceは`.local/gateway.sqlite`へ保存し、詳細なWallet情報を記録しない

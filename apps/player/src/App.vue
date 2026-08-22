@@ -11,6 +11,7 @@ import type {
   SupportIntent,
   SupportStatus,
   SupporterTier,
+  TestUserView,
   Track
 } from './api/types'
 import { AudioEngine } from './audio/AudioEngine'
@@ -40,6 +41,13 @@ const supportIntent = ref<SupportIntent>()
 const supportStatus = ref<SupportStatus>('NOT_SUPPORTER')
 const supporterTier = ref<SupporterTier>('NONE')
 const capabilityMessage = ref('')
+const testUser = ref<TestUserView>({ registered: false })
+const showRegistration = ref(false)
+const registrationAlias = ref('')
+const acceptedTerms = ref(false)
+const acceptedPrivacy = ref(false)
+const acknowledgedTestOnly = ref(false)
+const registeringUser = ref(false)
 
 let audioEngine: AudioEngine | undefined
 let walletAdapter: Eip1193WalletAdapter | undefined
@@ -56,6 +64,12 @@ const tierLabel = computed(() => ({
   SUPPORTER: 'Supporter',
   EARLY_SUPPORTER: 'Early Supporter'
 })[supporterTier.value])
+const registrationReady = computed(() =>
+  registrationAlias.value.trim().length >= 2 &&
+  acceptedTerms.value &&
+  acceptedPrivacy.value &&
+  acknowledgedTestOnly.value
+)
 
 function newOperationId(): string {
   return crypto.randomUUID()
@@ -248,6 +262,50 @@ function cancelSupportIntent(): void {
   supportStatus.value = 'NOT_SUPPORTER'
 }
 
+function openRegistration(): void {
+  clearNotices()
+  if (testUser.value.registered) {
+    message.value = `${testUser.value.displayName} はTest Userとして登録済みです。`
+    return
+  }
+  showRegistration.value = true
+  if (window.location.hash !== '#/register') window.location.hash = '/register'
+}
+
+function closeRegistration(): void {
+  showRegistration.value = false
+  if (window.location.hash === '#/register') {
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+  }
+}
+
+function handleRegistrationRoute(): void {
+  if (window.location.hash === '#/register' && !testUser.value.registered) showRegistration.value = true
+}
+
+async function registerTestUser(): Promise<void> {
+  if (!registrationReady.value || registeringUser.value) return
+  clearNotices()
+  registeringUser.value = true
+  try {
+    testUser.value = await gateway.registerTestUser({
+      displayName: registrationAlias.value.trim(),
+      termsVersion: 'demo-terms-v1',
+      privacyNoticeVersion: 'demo-privacy-v1',
+      acceptedTerms: true,
+      acceptedPrivacyNotice: true,
+      acknowledgedTestOnly: true,
+      idempotencyKey: newOperationId()
+    })
+    closeRegistration()
+    message.value = `${testUser.value.displayName} をTest Userとして登録しました。`
+  } catch (cause) {
+    error.value = cause instanceof Error ? cause.message : 'Test Userを登録できません'
+  } finally {
+    registeringUser.value = false
+  }
+}
+
 onMounted(async () => {
   if (audioElement.value) {
     audioEngine = new AudioEngine(audioElement.value)
@@ -259,6 +317,13 @@ onMounted(async () => {
     navigator.mediaSession.setActionHandler('previoustrack', () => void moveTrack(-1))
     navigator.mediaSession.setActionHandler('nexttrack', () => void moveTrack(1))
   }
+  window.addEventListener('hashchange', handleRegistrationRoute)
+  try {
+    testUser.value = await gateway.getTestUser()
+  } catch {
+    testUser.value = { registered: false }
+  }
+  handleRegistrationRoute()
   try {
     tracks.value = await gateway.listTracks()
     selectedTrack.value = tracks.value[0]
@@ -270,6 +335,7 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  window.removeEventListener('hashchange', handleRegistrationRoute)
   audioEngine?.close()
   void closePlaybackSession()
 })
@@ -285,9 +351,14 @@ onBeforeUnmount(() => {
           <h1>Player</h1>
         </div>
       </div>
-      <div class="environment" :class="mode">
-        <span class="status-dot" aria-hidden="true"></span>
-        {{ mode === 'mock' ? 'LOCAL MOCK' : 'GATEWAY' }}
+      <div class="topbar-actions">
+        <button type="button" class="registration-link" @click="openRegistration">
+          {{ testUser.registered ? testUser.displayName : 'テストユーザー登録' }}
+        </button>
+        <div class="environment" :class="mode">
+          <span class="status-dot" aria-hidden="true"></span>
+          {{ mode === 'mock' ? 'LOCAL MOCK' : 'GATEWAY' }}
+        </div>
       </div>
     </header>
 
@@ -431,6 +502,48 @@ onBeforeUnmount(() => {
     <div class="notices" aria-live="polite" aria-atomic="true">
       <p v-if="message" class="notice success-notice">{{ message }}</p>
       <p v-if="error" class="notice error-notice">{{ error }}</p>
+    </div>
+
+    <div v-if="showRegistration" class="dialog-backdrop" @click.self="closeRegistration">
+      <section class="consent-dialog registration-dialog" role="dialog" aria-modal="true" aria-labelledby="registration-title">
+        <p class="eyebrow">Local test profile</p>
+        <h2 id="registration-title">テストユーザー登録</h2>
+        <p class="dialog-copy">
+          この登録はローカルDemo Session内だけで有効です。メール、電話番号、Password、法的氏名、Walletは登録しません。
+        </p>
+        <div class="registration-notice">
+          <strong>Demo利用条件・Privacy Notice v1</strong>
+          <ul>
+            <li>金銭的価値、本人確認、継続利用またはデータ復旧を保証しません。</li>
+            <li>AliasはGateway Process内、Opaque IDと同意版の監査記録はローカルSQLiteに保存します。</li>
+            <li>ブラウザを閉じるかGatewayを再起動すると、画面上の登録状態を利用できなくなる場合があります。</li>
+          </ul>
+        </div>
+        <form class="registration-form" @submit.prevent="registerTestUser">
+          <label>
+            <span>公開用Alias</span>
+            <input
+              v-model="registrationAlias"
+              type="text"
+              minlength="2"
+              maxlength="24"
+              autocomplete="off"
+              placeholder="Demo Listener 01"
+              required
+            />
+          </label>
+          <p class="fine-print">2〜24文字の文字・数字・空白・`_`・`-`のみ。実名や連絡先を入力しないでください。</p>
+          <label class="check-row"><input v-model="acceptedTerms" type="checkbox" /> <span>Demo利用条件 v1に同意します</span></label>
+          <label class="check-row"><input v-model="acceptedPrivacy" type="checkbox" /> <span>Demo Privacy Notice v1を確認しました</span></label>
+          <label class="check-row"><input v-model="acknowledgedTestOnly" type="checkbox" /> <span>本番Account、本人確認または資産口座ではないことを理解しました</span></label>
+          <div class="dialog-actions">
+            <button type="button" class="secondary-button" @click="closeRegistration">キャンセル</button>
+            <button type="submit" class="primary-button" :disabled="!registrationReady || registeringUser">
+              {{ registeringUser ? '登録中…' : 'Test Userを登録' }}
+            </button>
+          </div>
+        </form>
+      </section>
     </div>
 
     <div v-if="supportIntent" class="dialog-backdrop" @click.self="cancelSupportIntent">

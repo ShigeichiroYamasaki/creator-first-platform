@@ -6,6 +6,8 @@ import type {
   SupportIntent,
   SupportRegistration,
   SupporterTier,
+  TestUserRegistration,
+  TestUserView,
   Track,
   WalletChallenge
 } from './types'
@@ -48,6 +50,27 @@ const wait = (milliseconds: number) => new Promise((resolve) => window.setTimeou
 export class MockGatewayClient implements GatewayPort {
   private registrations = new Map<string, SupportRegistration>()
   private tier: SupporterTier = 'NONE'
+  private testUser: TestUserView = { registered: false }
+
+  async getTestUser(): Promise<TestUserView> {
+    await wait(40)
+    return this.testUser
+  }
+
+  async registerTestUser(input: TestUserRegistration): Promise<TestUserView> {
+    await wait(120)
+    if (this.testUser.registered) return this.testUser
+    this.testUser = {
+      registered: true,
+      testUserId: crypto.randomUUID(),
+      displayName: input.displayName.trim(),
+      state: 'TEST_ONLY',
+      createdAt: new Date().toISOString(),
+      termsVersion: input.termsVersion,
+      privacyNoticeVersion: input.privacyNoticeVersion
+    }
+    return this.testUser
+  }
 
   async listTracks(): Promise<Track[]> {
     await wait(120)

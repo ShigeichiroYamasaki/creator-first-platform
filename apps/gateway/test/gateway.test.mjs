@@ -170,6 +170,73 @@ test('Gateway verifies SIWE and EIP-712 before activating demo Supporter capabil
   assert.equal(otherArtist.body.code, 'EARLY_SUPPORTER_REQUIRED')
 })
 
+test('Test User registration is private, idempotent and bound to one demo session', async (context) => {
+  const config = loadConfig({
+    GATEWAY_PORT: '8787',
+    GATEWAY_DATABASE_PATH: ':memory:',
+    GATEWAY_MEDIA_ROOT: new URL('../../../docker/navidrome/music', import.meta.url).pathname
+  })
+  const gateway = createGatewayServer({ config, mediaAdapter: new FileMediaAdapter(config.mediaRoot) })
+  const address = await gateway.listen(0)
+  context.after(() => gateway.close())
+  const baseUrl = `http://127.0.0.1:${address.port}${config.basePath}`
+  const first = client(baseUrl)
+  const second = client(baseUrl)
+
+  const initial = await json(await first.request('/v1/demo/user'))
+  assert.deepEqual(initial.body, { registered: false })
+  const invalid = await json(await first.request('/v1/demo/users', {
+    method: 'POST',
+    body: JSON.stringify({
+      displayName: 'person@example.test',
+      termsVersion: 'demo-terms-v1',
+      privacyNoticeVersion: 'demo-privacy-v1',
+      acceptedTerms: true,
+      acceptedPrivacyNotice: true,
+      acknowledgedTestOnly: true,
+      idempotencyKey: 'register-key-invalid'
+    })
+  }))
+  assert.equal(invalid.response.status, 400)
+  assert.equal(invalid.body.code, 'INVALID_TEST_ALIAS')
+
+  const registrationRequest = {
+    displayName: 'Demo Listener 01',
+    termsVersion: 'demo-terms-v1',
+    privacyNoticeVersion: 'demo-privacy-v1',
+    acceptedTerms: true,
+    acceptedPrivacyNotice: true,
+    acknowledgedTestOnly: true,
+    idempotencyKey: 'register-key-0001'
+  }
+  const created = await json(await first.request('/v1/demo/users', {
+    method: 'POST', body: JSON.stringify(registrationRequest)
+  }))
+  assert.equal(created.response.status, 201)
+  assert.equal(created.body.registered, true)
+  assert.equal(created.body.state, 'TEST_ONLY')
+  assert.equal(created.body.displayName, 'Demo Listener 01')
+  assert.notEqual(created.body.testUserId, created.body.displayName)
+  assert.equal(gateway.store.demoUserRegistrationCount(), 1)
+
+  const replayed = await json(await first.request('/v1/demo/users', {
+    method: 'POST', body: JSON.stringify(registrationRequest)
+  }))
+  assert.equal(replayed.response.status, 200)
+  assert.equal(replayed.body.testUserId, created.body.testUserId)
+  assert.equal(gateway.store.demoUserRegistrationCount(), 1)
+
+  const conflicting = await json(await first.request('/v1/demo/users', {
+    method: 'POST',
+    body: JSON.stringify({ ...registrationRequest, displayName: 'Another Alias' })
+  }))
+  assert.equal(conflicting.response.status, 409)
+  assert.equal(conflicting.body.code, 'TEST_USER_ALREADY_REGISTERED')
+
+  const unrelated = await json(await second.request('/v1/demo/user'))
+  assert.deepEqual(unrelated.body, { registered: false })
+})
+
 test('single Range parser rejects multi-range and out-of-bounds input', () => {
   assert.deepEqual(parseSingleRange(undefined, 100), { start: 0, end: 99, partial: false })
   assert.deepEqual(parseSingleRange('bytes=20-29', 100), { start: 20, end: 29, partial: true })

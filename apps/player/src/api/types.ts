@@ -40,6 +40,26 @@ export interface PlatformSessionView {
   accountLabel: string
 }
 
+export interface TestUserView {
+  registered: boolean
+  testUserId?: string
+  displayName?: string
+  state?: 'TEST_ONLY'
+  createdAt?: string
+  termsVersion?: string
+  privacyNoticeVersion?: string
+}
+
+export interface TestUserRegistration {
+  displayName: string
+  termsVersion: 'demo-terms-v1'
+  privacyNoticeVersion: 'demo-privacy-v1'
+  acceptedTerms: true
+  acceptedPrivacyNotice: true
+  acknowledgedTestOnly: true
+  idempotencyKey: string
+}
+
 export interface TypedData {
   domain: Record<string, unknown>
   primaryType: string
@@ -76,6 +96,8 @@ export interface CommunityCapability {
 }
 
 export interface GatewayPort {
+  getTestUser(): Promise<TestUserView>
+  registerTestUser(input: TestUserRegistration): Promise<TestUserView>
   listTracks(): Promise<Track[]>
   createPlaybackSession(trackId: string, idempotencyKey: string): Promise<PlaybackSession>
   closePlaybackSession(playbackSessionId: string): Promise<void>
