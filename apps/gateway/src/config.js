@@ -1,0 +1,49 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const repositoryRoot = fileURLToPath(new URL('../../..', import.meta.url))
+
+function positiveInteger(value, fallback, name) {
+  const parsed = Number(value ?? fallback)
+  if (!Number.isSafeInteger(parsed) || parsed <= 0) throw new Error(`${name} must be a positive integer`)
+  return parsed
+}
+
+function basePath(value = '/api') {
+  if (!value.startsWith('/') || value.startsWith('//') || /[?#]/.test(value)) {
+    throw new Error('GATEWAY_BASE_PATH must be a path')
+  }
+  return value === '/' ? '' : value.replace(/\/$/, '')
+}
+
+export function loadConfig(environment = process.env) {
+  const adapter = environment.GATEWAY_MEDIA_ADAPTER ?? 'file'
+  if (!['file', 'navidrome'].includes(adapter)) {
+    throw new Error('GATEWAY_MEDIA_ADAPTER must be file or navidrome')
+  }
+
+  return {
+    host: environment.GATEWAY_HOST ?? '127.0.0.1',
+    port: positiveInteger(environment.GATEWAY_PORT, 8787, 'GATEWAY_PORT'),
+    basePath: basePath(environment.GATEWAY_BASE_PATH),
+    allowedOrigin: environment.GATEWAY_ALLOWED_ORIGIN ?? 'http://127.0.0.1:5173',
+    publicDomain: environment.GATEWAY_SIWE_DOMAIN ?? '127.0.0.1:5173',
+    publicUri: environment.GATEWAY_PUBLIC_URI ?? 'http://127.0.0.1:5173',
+    chainId: positiveInteger(environment.GATEWAY_CHAIN_ID, 84532, 'GATEWAY_CHAIN_ID'),
+    playbackTtlMs: positiveInteger(environment.GATEWAY_PLAYBACK_TTL_MS, 300_000, 'GATEWAY_PLAYBACK_TTL_MS'),
+    monthlyByteLimit: positiveInteger(
+      environment.GATEWAY_MONTHLY_BYTE_LIMIT,
+      800 * 1024 * 1024,
+      'GATEWAY_MONTHLY_BYTE_LIMIT'
+    ),
+    databasePath: environment.GATEWAY_DATABASE_PATH ?? path.join(repositoryRoot, '.local/gateway.sqlite'),
+    adapter,
+    mediaRoot: environment.GATEWAY_MEDIA_ROOT ?? path.join(repositoryRoot, 'docker/navidrome/music'),
+    navidromeUrl: environment.NAVIDROME_INTERNAL_URL ?? 'http://127.0.0.1:4533',
+    navidromeUsername: environment.NAVIDROME_USERNAME,
+    navidromePassword: environment.NAVIDROME_PASSWORD,
+    navidromeMediaIds: Object.fromEntries(
+      Object.entries(environment).filter(([name, value]) => name.startsWith('NAVIDROME_MEDIA_ID_') && value)
+    )
+  }
+}

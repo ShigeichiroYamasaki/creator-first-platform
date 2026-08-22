@@ -48,6 +48,8 @@ npm run player:dev
 
 既定では`127.0.0.1`だけで待ち受けます。基本再生、Queue、Seek、EIP-1193 Wallet接続、SIWE、Supporter登録同意、EIP-712署名、Mock SBT TierとCommunity Capability表示を確認できます。Mockは実Transaction、実JPYC、実SBTを扱いません。詳細は[`apps/player/README.md`](apps/player/README.md)を参照してください。
 
+Gatewayを通した再生は、2つのTerminalで`npm run gateway:dev`と`npm run player:dev:gateway`を起動します。短命Playback Session、Range配信、SIWE／EIP-712検証、Mock SBT資格およびDelivery Evidenceを確認できます。詳細は[`apps/gateway/README.md`](apps/gateway/README.md)を参照してください。
+
 ## 文書から実装まで
 
 設計と実装の追跡可能性を保つため、原則として次の順序で更新します。

@@ -5,7 +5,7 @@ description: Start the Creator First Platform local Navidrome music server with 
 
 # Local music streaming
 
-The first implementation slice runs Navidrome `0.63.2` locally with Docker Compose. It validates library scanning, administration, search, and playback. Subscription and rights decisions, wallets, smart contracts, playback evidence, and the Streaming Authorization Gateway are not connected yet.
+The first implementation slice runs Navidrome `0.63.2` locally with Docker Compose. It independently validates library scanning, administration, search, and playback. The Streaming Gateway Mock is implemented separately, but this administration Compose does not connect it or grant Navidrome authority over subscriptions, rights, wallets, or smart contracts.
 
 ::: warning Local development only
 Navidrome binds only to `127.0.0.1`. Do not load unreleased real music, personal data, production credentials, or funds. Do not expose this server to a LAN, the Internet, or a tunnel.
@@ -48,8 +48,8 @@ Stopping does not delete the named volume that contains the local database and s
 
 ## Boundary
 
-The host port is loopback-only, the music mount is read-only, and the Navidrome process is non-root. A network-isolated one-shot init service only fixes named-volume ownership before Navidrome starts. The local slice uses an explicit bridge network; that media network becomes internal when the Gateway is added. Linux capabilities are dropped from Navidrome, and sharing, downloads, external services, and anonymous insights are disabled. The image uses the fixed `deluan/navidrome:0.63.2` tag.
+The host port is loopback-only, the music mount is read-only, and the Navidrome process is non-root. A network-isolated one-shot init service only fixes named-volume ownership before Navidrome starts. The local slice uses an explicit bridge network; the Navidrome-adapter deployment will replace the host port with an internal media network. Linux capabilities are dropped from Navidrome, and sharing, downloads, external services, and anonymous insights are disabled. The image uses the fixed `deluan/navidrome:0.63.2` tag.
 
-This is not the final [ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway) topology. A later slice will put the Streaming Authorization Gateway in front of Navidrome and remove direct client access.
+This is not the final [ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway) topology. The local Gateway Mock currently uses its bounded synthetic-file adapter. Enabling the Navidrome adapter will remove the host port and place Gateway and Navidrome on a private media network.
 
 Japanese instructions: [ローカル音楽ストリーミング](/demo/local-streaming)

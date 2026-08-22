@@ -22,7 +22,7 @@ Creator First Platformは現在、**構想、公開文書、設計判断、Proto
 | ADR | Proposed | 11件の設計判断案 | レビュー、採否決定、Status更新 |
 | Protocol | Draft 0.1.0 | Account、Wallet、Supporter Credential／Early Tier、決済、決済資産台帳、Rights、Streaming Authorization、Player、Usage、Distributionの10仕様 | Open Questions解決、法務・セキュリティ・ガバナンス承認 |
 | Testnetデモ | 準備中 | [利用入口と本番移行条件](/demo/)、Vertical Slice実装計画 | Mock実装、Testnet選定、公開URL・Contract・Source Commitの検証 |
-| アプリケーション | ローカル部分実装 | [Navidrome Docker Server](/demo/local-streaming)、Vue Player PWA Mock、合成試験音、Wallet／Supporter UI | Gateway接続、Mock Subscription／Rights、Playback Evidence、E2Eテスト |
+| アプリケーション | ローカルVertical Slice | [Navidrome Docker Server](/demo/local-streaming)、[Streaming Gateway Mock](/demo/local-gateway)、Vue Player PWA、合成試験音、SIWE／EIP-712、Playback Evidence | Navidrome専用User・非公開Network接続、Read Model、Testnet Contract、Security Review |
 | Smart Contract | 未実装 | Subscription、Rights、Early Supporter SBT等の要件・不変条件 | チェーン選定、脅威分析、実装、監査、段階的デプロイ |
 | ステーブルコイン決済 | 未提供 | 決済・資産審査のDraft仕様 | 対象商品・ネットワーク・取扱形態の法務／技術審査 |
 | DAOガバナンス | 未稼働 | 抽選議会と熟議の構想 | Community形成、適格性、抽選、異議申立て、実証 |

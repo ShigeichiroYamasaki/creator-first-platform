@@ -5,7 +5,7 @@ description: Docker ComposeとNavidromeでCreator First Platformのローカル�
 
 # ローカル音楽ストリーミング
 
-Creator First Platformの最初の実装として、Navidrome `0.63.2`をDocker Composeでローカル起動できます。この段階ではNavidrome自体のライブラリスキャン、管理画面、検索、再生を検証します。Subscription、Rights判定、Wallet、Smart Contract、Playback EvidenceおよびStreaming Authorization Gatewayはまだ接続していません。
+Creator First Platformの最初の実装として、Navidrome `0.63.2`をDocker Composeでローカル起動できます。この手順ではNavidrome自体のライブラリスキャン、管理画面、検索、再生を独立して検証します。Streaming Gateway Mockは別途実装済みですが、この管理用Composeには接続せず、Subscription、Rights、WalletまたはSmart Contractの権限をNavidromeへ持たせません。
 
 ::: warning ローカル開発専用です
 Navidromeは`127.0.0.1`だけで待ち受けます。実在する未公開音源、個人情報、本番Credentialまたは本番資金を投入しないでください。LAN、InternetまたはTunnelへ公開しないでください。
@@ -69,10 +69,10 @@ docker/navidrome/music/
 - Navidrome本体はnon-rootで実行する。Networkを持たない一時Init Serviceだけが、起動前にNamed Volumeの所有権を設定して終了する
 - Linux CapabilityをすべてDropし、`no-new-privileges`を有効にする
 - Sharing、Download、External Service、Anonymous Insightsを無効にする
-- 明示的なbridge Networkを使い、Host公開はloopbackだけに制限する。Gateway追加時はNavidrome側Networkを`internal`へ変更する
+- 明示的なbridge Networkを使い、Host公開はloopbackだけに制限する。Navidrome Adapterを有効化する構成ではHost Portを削除し、GatewayとNavidromeだけの`internal` Networkへ変更する
 - Imageを`deluan/navidrome:0.63.2`へ固定する
 
-これは[ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway)の最終Topologyではありません。次の実装段階でGatewayを追加し、ClientからNavidromeへの直接到達を廃止します。
+これは[ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway)の最終Topologyではありません。[ローカルStreaming Gateway](/demo/local-gateway)は既定で合成音源File Adapterを使用します。Navidrome Adapterを有効化する段階でHost Portを削除し、ClientからNavidromeへの直接到達を廃止します。
 
 ## 現段階の成立条件
 
