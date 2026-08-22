@@ -7,8 +7,8 @@ description: Creator First Platformの本番実装前に、合成データと金
 
 Creator First Platformは、まずTestnet上のデモシステムでProtocol、Streaming Gateway、Smart Contract連携、失敗時の挙動を検証し、その証拠をレビューした後に本番系を実装します。
 
-::: warning デモシステムは現在準備中です
-現時点では音楽再生、Wallet接続、Testnet Token操作または申込みを利用できません。公開URL、対象Network、Contract Address、検証済みCommitが確定するまで、外部サイトや第三者が提示する送金先・Token・Wallet接続を公式デモとして扱わないでください。
+::: warning 公開デモは現在準備中です
+ローカルPlayer MVPは合成試験音とMock資格だけで利用できますが、公開Testnetサービスではありません。公開URL、Network、Contract Address、検証済みCommitが確定するまで、外部サイトが提示する送金先・Token・Wallet接続を公式デモとして扱わないでください。
 :::
 
 ## 実装順序
@@ -40,12 +40,13 @@ flowchart LR
 | Demo Contract Address | 未デプロイ |
 | Streaming Gateway | 仕様・Mock計画段階 |
 | Navidrome Media Adapter | [ローカルDocker Server実装済み](/demo/local-streaming)、Gateway未接続 |
+| Player PWA | ローカルMock実装済み、Gateway・Navidrome未接続 |
 | Testnet決済 | 未実装 |
 | Rights / Usage / Distribution | Draft仕様、未実装 |
 
 進捗と成立条件は[現在の状況](/status)、[Vertical Slice Implementation Plan](/protocol/implementation-plan)、[Decision Baseline](/protocol/decision-baseline)で確認できます。
 
-公開Testnetの前段階として、[ローカル音楽ストリーミング](/demo/local-streaming)で合成試験音のScanと再生を検証できます。
+公開Testnetの前段階として、[ローカル音楽ストリーミング](/demo/local-streaming)とRepositoryの`npm run player:dev`で合成試験音を検証できます。
 
 ## 本番移行の禁止条件
 

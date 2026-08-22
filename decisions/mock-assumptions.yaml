@@ -2,5 +2,25 @@ schema_version: 0.1.0
 status: DRAFT
 
 # Mock assumptions are explicit, bounded substitutes for unresolved decisions.
-# An empty list means no implementation value has been authorized yet.
-assumptions: []
+assumptions:
+  - id: MOCK-ASSUMPTION-001
+    state: ACTIVE
+    scope:
+      - IMP-003
+      - IMP-006
+    source_questions:
+      - OQ-PLAYER-001
+      - OQ-PLAYER-002
+      - OQ-PLAYER-006
+    value: >-
+      The local Player MVP uses Vue 3 and TypeScript, one browser Audio element,
+      an external EIP-1193 Wallet, synthetic audio, a same-origin Gateway
+      adapter and an in-memory Mock Supporter Credential capability.
+    expires_when: >-
+      The owning Product, Security, Accessibility, Rights and Protocol decision
+      owners approve the first Player, Wallet and Community capability profile.
+    prohibited_uses:
+      - Production deployment or a claim that the Player stack is finally approved
+      - Real JPYC, production Wallet keys, real SBT issuance or valuable privileges
+      - Direct Navidrome or arbitrary upstream access from the public Player
+      - Rights-cleared music distribution, offline protected audio or verified usage

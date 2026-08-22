@@ -10,6 +10,12 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
+    "player:seed": "node scripts/generate-player-test-audio.mjs",
+    "player:dev": "npm run player:seed && vite --config apps/player/vite.config.ts --host 127.0.0.1",
+    "player:typecheck": "vue-tsc --noEmit -p apps/player/tsconfig.json",
+    "player:build": "npm run player:seed && npm run player:typecheck && vite build --config apps/player/vite.config.ts",
+    "player:test": "node --test apps/player/test/*.test.mjs",
+    "player:validate": "node scripts/validate-player.mjs",
     "streaming:config": "docker compose -f docker/navidrome/compose.yml config --quiet",
     "streaming:seed": "node scripts/generate-local-test-audio.mjs",
     "streaming:up": "npm run streaming:seed && npm run streaming:config && docker compose -f docker/navidrome/compose.yml up -d --wait",
@@ -33,13 +39,17 @@
     "site:test": "node --test scripts/validate-site-output.test.mjs",
     "workflow:validate": "node scripts/validate-workflows.mjs",
     "workflow:test": "node --test scripts/validate-workflows.test.mjs",
-    "validate": "npm run workflow:test && npm run workflow:validate && npm run community:test && npm run community:validate && npm run deployment:test && npm run protocol:test && npm run protocol:validate && npm run decisions:test && npm run decisions:validate && npm run status:test && npm run status:validate && npm run streaming:test && npm run streaming:validate && npm run docs:build && npm run site:test && npm run site:validate"
+    "validate": "npm run workflow:test && npm run workflow:validate && npm run community:test && npm run community:validate && npm run deployment:test && npm run protocol:test && npm run protocol:validate && npm run decisions:test && npm run decisions:validate && npm run status:test && npm run status:validate && npm run streaming:test && npm run streaming:validate && npm run player:test && npm run player:build && npm run player:validate && npm run docs:build && npm run site:test && npm run site:validate"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "5.2.4",
     "markdown-it-mathjax3": "^4.3.2",
     "mermaid": "^11.17.0",
+    "typescript": "5.8.3",
+    "vite": "5.4.21",
     "vitepress": "1.6.4",
     "vue": "^3.5.41",
+    "vue-tsc": "2.2.12",
     "yaml": "^2.9.0"
   }
 }
