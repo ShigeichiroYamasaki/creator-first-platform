@@ -6,7 +6,7 @@ description: Navidromeを非公開Media Adapterとして利用し、Wallet・Sup
 
 **Status:** Proposed
 **Date:** 2026-08-21
-**Last Updated:** 2026-08-21
+**Last Updated:** 2026-08-22
 
 ## 1. Context
 
@@ -117,17 +117,19 @@ Artist画面の「サポーターになる」は、単なるLocal Likeではな�
 ```text
 Support Intent
     -> User consent
-    -> Wallet purpose check when required
-    -> Canonical support record
-    -> General Supporter Credential issuance
-    -> Early Qualification evaluation
-    -> Optional Early Supporter Credential issuance
+    -> Gateway-issued EIP-712 typed data
+    -> Purpose-bound Wallet signature
+    -> Relayer submission
+    -> Contract-side Supporter registration and Early Tier evaluation
+    -> Finalized Supporter SBT event
     -> Community capability refresh
 ```
 
-Playerは一般Supporter、Early Supporter、発行処理中、Active、Revoked、Burnedおよび失敗を区別する。Relayer受付またはTransaction送信を発行成功として表示せず、確認済みCredential EventをRead Modelが取り込んだ後だけActiveとして表示する。
+一つのCreator ScopeとWalletにつき原則一つのSupporter SBTを発行し、その確定済みTierを一般SupporterまたはEarly Supporterとして表示する。Playerは未登録、署名待ち、Relayer受付、Transaction送信、Confirming、一般Supporter Active、Early Supporter Active、Revoked、Burnedおよび失敗を区別する。Early判定結果をTransaction確定前に保証せず、確認済みCredential EventをRead Modelが取り込んだ後だけActiveとして表示する。
 
 SBTを公開Walletへ発行する前に、譲渡不能性、公開Metadata、対象Creator、用途、Burn、失効およびRecoveryを説明し、明示的同意を得る。Community参加資格または限定再生はGatewayの版管理されたPrivilege Policyで判定し、Client表示だけでAccessを許可しない。
+
+標準登録はGasless Relayer Flowとし、JPYC支払を同じ署名へ混在させない。特権はSBT MetadataでなくGatewayの短命Capabilityで行使する。
 
 ## 8. Client State and Privacy
 

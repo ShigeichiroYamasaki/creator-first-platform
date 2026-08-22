@@ -356,10 +356,15 @@ export default defineConfig({
             )
 
             if (environment.relativePath?.startsWith('protocol/specs/')) {
-              return withoutCredentialArtwork.replace(
-                /<h2[^>]*id="test-requirements"[^>]*>[\s\S]*?(?=<h2|$)/,
-                ''
-              )
+              return withoutCredentialArtwork
+                .replace(
+                  /<h2[^>]*id="interfaces"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  ''
+                )
+                .replace(
+                  /<h2[^>]*id="test-requirements"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  ''
+                )
             }
 
             return withoutCredentialArtwork

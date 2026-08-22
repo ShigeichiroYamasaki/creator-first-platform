@@ -1,10 +1,10 @@
-# Early Supporter Credential and Privilege
+# Supporter Credential, Early Tier and Privilege
 
 **Status:** Draft
 **Version:** 0.1.0
 **Protocol Domain:** account / credential / entitlement
 **Specification ID:** SPEC-ACCOUNT-004
-**Last Updated:** 2026-08-20
+**Last Updated:** 2026-08-22
 
 ## Related Documents
 
@@ -28,13 +28,14 @@
 
 ## Goal
 
-Define an implementation-independent lifecycle for a consensual, non-transferable Early Supporter Credential and convert its verified state into bounded, versioned service privileges without replacing Subscription, Rights or Account authorization.
+Define an implementation-independent lifecycle for a consensual, non-transferable Supporter Credential with general and Early tiers, and convert its verified state into bounded, versioned service privileges without replacing Subscription, Rights or Account authorization.
 
 ## Scope
 
 This specification covers:
 
 - qualification, consent, issuance, uniqueness and non-transferability;
+- Support Intent、Relayer submissionおよびContract-side Early Tier determination;
 - issuer and deployment approval;
 - active, revoked and burned status;
 - Wallet Link binding, recovery and reissuance;
@@ -65,7 +66,10 @@ This specification covers:
 
 ## Definitions
 
-- **Early Supporter Credential:** an issuer assertion that a linked Wallet satisfied an approved early-support condition for a bounded Creator or Community scope.
+- **Supporter Credential:** an issuer assertion that a linked Wallet explicitly registered support for one bounded Creator or Community scope.
+- **Supporter Tier:** the issuance-time classification `SUPPORTER` or `EARLY_SUPPORTER`; Early Supporter includes general Supporter capability but remains distinguishable for policy evaluation.
+- **Support Intent:** an idempotent request to register support for one Canonical Creator and receive the disclosed Credential.
+- **Early Supporter Credential:** a Supporter Credential whose Contract-side issuance decision satisfied the exact approved Early Qualification Policy version.
 - **Qualification Policy:** versioned rules defining eligible action, evidence, interval, scope, uniqueness, abuse treatment and appeal.
 - **Credential Deployment:** exact Chain ID, Contract Address, bytecode or implementation version, token standard profile and approved issuer configuration.
 - **Credential Status:** `PENDING_CONSENT`, `ACTIVE`, `REVOKED` or `BURNED` with an effective version and time.
@@ -120,7 +124,7 @@ Reissuance creates a new Credential identity. It MUST NOT reactivate or transfer
 - **REQ-EARLY-SUPPORTER-003:** Qualification MUST use a versioned Policy defining eligible evidence, interval, Creator or Community scope, uniqueness, abuse treatment and appeal path.
 - **REQ-EARLY-SUPPORTER-004:** Issuance MUST require an authenticated Account, active purpose-bound Wallet Link, current proof of Wallet control and an explicit receiver consent record describing public visibility, metadata, burn authority and recovery behavior.
 - **REQ-EARLY-SUPPORTER-005:** Issuance MUST be idempotent for the same Credential type, Qualification identity, scope, Policy version and recipient; conflicting duplicate issuance MUST fail.
-- **REQ-EARLY-SUPPORTER-006:** An active Early Supporter SBT MUST be non-transferable, and conformance tests MUST verify both its declared interface and rejection of every applicable transfer path.
+- **REQ-EARLY-SUPPORTER-006:** An active Supporter SBT of either tier MUST be non-transferable, and conformance tests MUST verify both its declared interface and rejection of every applicable transfer path.
 - **REQ-EARLY-SUPPORTER-007:** Credential Status transitions MUST be monotonic for one Token ID, versioned, time-bound and auditable; a revoked or burned Token ID MUST NOT return to `ACTIVE`.
 - **REQ-EARLY-SUPPORTER-008:** A Credential used for a Platform Account MUST bind an active Wallet Link with the approved access-privilege purpose and exact chain context.
 - **REQ-EARLY-SUPPORTER-009:** Wallet recovery or rotation MUST revoke or burn the old Credential before a replacement becomes active and MUST link old and new records through a privacy-restricted audit reference.
@@ -135,6 +139,12 @@ Reissuance creates a new Credential identity. It MUST NOT reactivate or transfer
 - **REQ-EARLY-SUPPORTER-029:** A sponsored issuance MUST bind consent, recipient, Credential Deployment, Qualification, policy version, nonce, expiry and permitted mint operation before a Relayer submits it.
 - **REQ-EARLY-SUPPORTER-030:** Credential Status MUST become `ACTIVE` only after the approved Indexer observes the matching finalized issuance event; Relayer acceptance or transaction submission is insufficient.
 - **REQ-EARLY-SUPPORTER-031:** Issuer, Relayer, Revoker, Burner and Deployer credentials MUST use least privilege, be independently revocable where practical, and remain absent from source control and public logs.
+- **REQ-EARLY-SUPPORTER-033:** One Creator and Holder MUST have at most one active SBT with one Contract-selected tier; Player, Gateway and Relayer MUST NOT select it.
+- **REQ-EARLY-SUPPORTER-034:** Support Intent MUST bind Holder, Creator, deployment, chain, nonce, deadline, consent and operation, rejecting replay, substitution and duplicates.
+- **REQ-EARLY-SUPPORTER-035:** Final issuance MUST record scope, Holder, Token ID, tier, Policy version and joined time without prohibited personal or payment data.
+- **REQ-EARLY-SUPPORTER-036:** Qualification and Privilege Policies MUST be independently versioned and MUST NOT silently rewrite issued tiers.
+- **REQ-EARLY-SUPPORTER-037:** Off-chain privilege MUST use a bounded Gateway capability; on-chain privilege MUST verify the approved deployment, Holder, scope, tier and policy.
+- **REQ-EARLY-SUPPORTER-038:** Privilege results MUST carry decision, reason, versions, provenance and freshness; upgrade and policy roles MUST be separate, and registration MUST NOT authorize payment or Subscription operations.
 
 ### MUST NOT
 
@@ -175,13 +185,14 @@ Reissuance creates a new Credential identity. It MUST NOT reactivate or transfer
 - **SPEC-INV-EARLY-SUPPORTER-003:** Credential ownership never replaces Subscription or Rights authorization.
 - **SPEC-INV-EARLY-SUPPORTER-004:** Recovery creates a new Credential while preserving an auditable invalidation boundary for the old Credential.
 - **SPEC-INV-EARLY-SUPPORTER-005:** STO, revenue and governance rights never arise solely from this Credential.
+- **SPEC-INV-EARLY-SUPPORTER-006:** One Supporter registration produces one Credential tier; Early Supporter remains a specialization of general Supporter rather than a duplicate active SBT.
 
 ## State Transitions
 
 | Source | Triggering actor | Required inputs and validation | Result | Event | Failure behavior |
 | --- | --- | --- | --- | --- | --- |
 | none | Candidate / Account Service | authenticated Account, Wallet Link, Qualification, disclosure | `PENDING_CONSENT` | `CredentialConsentRequested` | create no issuance authority |
-| `PENDING_CONSENT` | Candidate / Issuer / Relayer | exact consent, current Wallet proof, approved deployment and issuer, valid optional Payment evidence, finalized issuance event | `ACTIVE` | `EarlySupporterCredentialIssued` | remain pending or reject without partial activation |
+| `PENDING_CONSENT` | Candidate / Issuer / Relayer | exact Support Intent authorization, current Wallet proof, approved deployment and issuer, Contract-side tier decision, valid optional Payment evidence, finalized issuance event | `ACTIVE` | `SupporterRegistered` | remain pending or reject without partial activation |
 | `ACTIVE` | authorized revoker | applicable policy or incident decision | `REVOKED` | `EarlySupporterCredentialRevoked` | preserve active state if command is unauthorized |
 | `ACTIVE` | authorized burner | approved burn authority and exact Token ID | `BURNED` | Contract burn plus indexed status event | preserve active state if burn fails |
 | `REVOKED` or `BURNED` | Candidate / Issuer | completed recovery, old invalidation, new Wallet Link and consent | new `PENDING_CONSENT` record | `CredentialReissuanceRequested` | old Credential remains invalid |
@@ -192,12 +203,15 @@ Equivalent operations MUST be available to authorized components:
 
 ```text
 requestCredentialConsent(account_id, wallet_link_id, qualification_ref, policy_version)
-issueCredential(consent_id, deployment_id, idempotency_key)
+submitSupportAuthorization(support_intent_id, typed_signature)
+registerSupporterWithSignature(canonical_creator_id, holder, nonce, deadline, consent_version, signature)
+getSupporterTier(canonical_creator_id, holder)
 revokeCredential(credential_id, reason, authorization)
 burnCredential(credential_id, reason, authorization)
 requestCredentialReissuance(old_credential_id, new_wallet_link_id, recovery_ref)
 getCredentialSnapshot(account_id, credential_type, scope)
 evaluatePrivilege(account_id, requested_capability, policy_version)
+issueBoundedCapability(privilege_evaluation_id, capability_type)
 ```
 
 ## Error Conditions
@@ -214,6 +228,8 @@ evaluatePrivilege(account_id, requested_capability, policy_version)
 | `RECOVERY_INCOMPLETE` | old Credential is not invalidated or new Wallet Link is not approved | deny reissuance activation |
 | `PAYMENT_QUALIFICATION_INVALID` | optional Payment evidence is pending, reused, wrong-asset, wrong-chain or not final | deny issuance |
 | `SPONSORED_ISSUANCE_INVALID` | Relayer operation exceeds consent, deployment, mint, nonce, expiry or policy scope | deny submission or activation |
+| `SUPPORT_INTENT_INVALID` | authorization is replayed, expired, consumed or scope-mismatched | return an existing idempotent result or deny submission |
+| `CAPABILITY_ISSUANCE_DENIED` | tier, Credential or Policy cannot authorize the capability | issue no Playback Session, Community Token or invitation |
 
 ## Security Requirements
 
@@ -221,6 +237,7 @@ evaluatePrivilege(account_id, requested_capability, policy_version)
 - Contract upgrades or deployment replacements MUST NOT cause arbitrary contracts with matching method names to become trusted.
 - Indexer ingestion MUST detect removed logs, duplicate logs, finality regressions and Contract replacement.
 - Client-supplied Contract, Token ID, Wallet identity, internal reason or Privilege value MUST be ignored in favor of approved server-side context.
+- Typed authorization MUST be verified before Relayer submission and by the Contract; upgrade and policy roles MUST be separated.
 - Rate limits and abuse detection MUST cover consent, qualification, issuance, recovery and repeated authorization attempts.
 
 ## Privacy Requirements
@@ -250,7 +267,7 @@ Audit records cover qualification decision, disclosure version, consent, issuer 
 
 ## Versioning and Migration
 
-- Credential Deployment, Qualification Policy, consent disclosure, status schema, Read Model and Privilege Policy are independently versioned.
+- Credential Deployment, Contract implementation, Qualification Policy, consent disclosure, status schema, Read Model and Privilege Policy are independently versioned.
 - A Contract replacement requires explicit migration, source checkpoint, overlap or cutoff rule, replay plan and rollback.
 - Historical issuance and authorization decisions remain interpretable under their original versions.
 - A Policy migration never changes the status of a historical Token ID without an explicit lifecycle transition.
@@ -267,6 +284,7 @@ Audit records cover qualification decision, disclosure version, consent, issuer 
 | REQ-EARLY-SUPPORTER-026 | Optional privacy conformance | a private proof preserves status, uniqueness, scope, revocation and audit semantics |
 | REQ-EARLY-SUPPORTER-027–030 | Payment / sponsorship / finality | only eligible finalized approved-asset evidence can qualify and only finalized mint events activate |
 | REQ-EARLY-SUPPORTER-031–032 | Key separation / negative economics | privileged keys are separated; paid amount and Gas never create financial or expanded privilege |
+| REQ-EARLY-SUPPORTER-033–038 | Contract / Wallet / Relayer / privilege | one Contract-selected tier is replay-safe; history remains versioned; bounded off-chain and on-chain exercise works; registration cannot authorize payment |
 
 Adversarial tests include arbitrary look-alike contracts, forged Wallet Links, duplicate Qualification, transfer attempts, stale and reorganized events, issuer compromise simulation, replayed consent, concurrent reissuance, old-Wallet use, scope widening, Policy rollback and direct Media Adapter access.
 
