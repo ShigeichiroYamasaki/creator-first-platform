@@ -20,7 +20,9 @@ const requirements = [
   ['delivery_evidence', 'Delivery Evidence store'],
   ['CATALOG_MAPPING_UNAVAILABLE', 'fail-closed mapping'],
   ['SUBSCRIPTION_INACTIVE', 'subscription decision'],
-  ['SUPPORTER_REQUIRED', 'credential overlay decision']
+  ['SUPPORTER_REQUIRED', 'credential overlay decision'],
+  ['/v1/demo/users', 'Test User registration API'],
+  ['demo_user_registrations', 'Test User audit record']
 ]
 
 const missing = requirements.filter(([needle]) => !source.includes(needle))

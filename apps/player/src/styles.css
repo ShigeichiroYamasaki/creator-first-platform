@@ -14,6 +14,9 @@ button:focus-visible, input:focus-visible { outline: 3px solid #67e8f9; outline-
 
 .app-shell { width: min(1440px, 100%); margin: 0 auto; padding: 28px; }
 .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+.registration-link { border: 1px solid #475569; border-radius: 999px; padding: 8px 12px; background: #111827; color: #a5f3fc; font-size: .75rem; font-weight: 800; cursor: pointer; }
+.registration-link:hover { border-color: #22d3ee; }
 .brand { display: flex; align-items: center; gap: 12px; }
 .brand img { border-radius: 11px; }
 h1, h2, p { margin-top: 0; }
@@ -84,6 +87,14 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .contract-value { max-width: 250px; overflow-wrap: anywhere; font-family: ui-monospace, monospace; }
 .dialog-warning { color: #fef3c7; font-size: .82rem; line-height: 1.6; }
 .dialog-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dialog-copy { color: #cbd5e1; font-size: .9rem; line-height: 1.65; }
+.registration-notice { border: 1px solid #334155; border-radius: 12px; padding: 12px 14px; background: #0f172a; color: #cbd5e1; font-size: .78rem; line-height: 1.55; }
+.registration-notice ul { margin: 8px 0 0; padding-left: 18px; }
+.registration-form { display: grid; gap: 14px; margin-top: 18px; }
+.registration-form > label:first-child { display: grid; gap: 7px; color: #cbd5e1; font-size: .82rem; font-weight: 700; }
+.registration-form input[type="text"] { width: 100%; border: 1px solid #475569; border-radius: 10px; padding: 11px 12px; background: #0f172a; color: #f8fafc; }
+.check-row { display: grid; grid-template-columns: 20px 1fr; gap: 9px; align-items: start; color: #cbd5e1; font-size: .82rem; line-height: 1.5; }
+.check-row input { width: 17px; height: 17px; margin-top: 2px; accent-color: #8b5cf6; }
 
 @media (max-width: 1050px) {
   .content-grid { grid-template-columns: 1fr 1.15fr; }
@@ -92,6 +103,8 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 
 @media (max-width: 720px) {
   .app-shell { padding: 16px; }
+  .topbar { align-items: flex-start; gap: 12px; }
+  .topbar-actions { align-items: flex-end; flex-direction: column-reverse; }
   .content-grid, .identity-stack { grid-template-columns: 1fr; }
   .identity-stack { grid-column: auto; }
   .library { order: 2; }

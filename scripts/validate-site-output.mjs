@@ -197,7 +197,13 @@ for (const file of files) {
     if (!['http:', 'https:'].includes(url.protocol)) continue
 
     externalReferenceCount += 1
-    if (url.protocol !== 'https:') {
+    const approvedLocalDemoLink =
+      url.protocol === 'http:' &&
+      url.hostname === '127.0.0.1' &&
+      url.port === '5173' &&
+      url.pathname === '/' &&
+      url.hash === '#/register'
+    if (url.protocol !== 'https:' && !approvedLocalDemoLink) {
       errors.push(`${displayPath}: external link must use HTTPS: ${href}`)
     }
     if (url.username || url.password) {

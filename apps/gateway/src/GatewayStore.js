@@ -49,6 +49,15 @@ export class GatewayStore {
         completed_at TEXT NOT NULL,
         evidence_version TEXT NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS demo_user_registrations (
+        registration_id TEXT PRIMARY KEY,
+        test_user_id TEXT NOT NULL UNIQUE,
+        owner_id TEXT NOT NULL UNIQUE,
+        terms_version TEXT NOT NULL,
+        privacy_notice_version TEXT NOT NULL,
+        registered_at TEXT NOT NULL,
+        context TEXT NOT NULL
+      );
     `)
   }
 
@@ -165,6 +174,29 @@ export class GatewayStore {
     return this.database.prepare(`
       SELECT * FROM delivery_evidence WHERE session_id = ? ORDER BY completed_at
     `).all(sessionId)
+  }
+
+  recordDemoUserRegistration(value) {
+    this.database.prepare(`
+      INSERT INTO demo_user_registrations VALUES (?, ?, ?, ?, ?, ?, 'local-test-only')
+    `).run(
+      value.registrationId,
+      value.testUserId,
+      value.ownerId,
+      value.termsVersion,
+      value.privacyNoticeVersion,
+      value.registeredAt
+    )
+  }
+
+  demoUserRegistration(ownerId) {
+    return this.database.prepare(`
+      SELECT * FROM demo_user_registrations WHERE owner_id = ?
+    `).get(ownerId)
+  }
+
+  demoUserRegistrationCount() {
+    return this.database.prepare('SELECT COUNT(*) AS total FROM demo_user_registrations').get().total
   }
 
   close() {

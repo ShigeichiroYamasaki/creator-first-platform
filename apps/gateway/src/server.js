@@ -7,6 +7,8 @@ import { GatewayStore } from './GatewayStore.js'
 const COOKIE_NAME = 'cfp_demo_session'
 const POLICY_VERSION = 'gateway-demo-policy-v1'
 const SUPPORT_POLICY_VERSION = 1
+const DEMO_TERMS_VERSION = 'demo-terms-v1'
+const DEMO_PRIVACY_VERSION = 'demo-privacy-v1'
 const MAX_BODY_BYTES = 64 * 1024
 const VERIFYING_CONTRACT = '0x0000000000000000000000000000000000005192'
 
@@ -84,7 +86,10 @@ export function createGatewayServer({ config, mediaAdapter, store = new GatewayS
       active: true,
       subscriptionActive: true,
       walletAddress: undefined,
-      tiers: new Map()
+      tiers: new Map(),
+      demoUser: undefined,
+      demoRegistrationKey: undefined,
+      demoRegistrationHash: undefined
     }
     accounts.set(platformSessionId, account)
     response.setHeader(
@@ -299,6 +304,74 @@ export function createGatewayServer({ config, mediaAdapter, store = new GatewayS
     sendJson(response, 201, { challengeId, message, expiresAt: expiresAt.toISOString() })
   }
 
+  function demoUserView(account) {
+    return account.demoUser ?? { registered: false }
+  }
+
+  async function registerDemoUser(request, response, account) {
+    const body = await readJson(request)
+    const displayName = typeof body.displayName === 'string'
+      ? body.displayName.trim().normalize('NFKC')
+      : ''
+    if (!/^[\p{L}\p{N}_ -]{2,24}$/u.test(displayName)) {
+      throw new GatewayHttpError(
+        400,
+        'INVALID_TEST_ALIAS',
+        'Alias must be 2–24 letters, numbers, spaces, underscores or hyphens'
+      )
+    }
+    if (
+      body.termsVersion !== DEMO_TERMS_VERSION ||
+      body.privacyNoticeVersion !== DEMO_PRIVACY_VERSION ||
+      body.acceptedTerms !== true ||
+      body.acceptedPrivacyNotice !== true ||
+      body.acknowledgedTestOnly !== true
+    ) {
+      throw new GatewayHttpError(
+        400,
+        'DEMO_NOTICE_ACCEPTANCE_REQUIRED',
+        'Demo terms, privacy notice and test-only acknowledgement are required'
+      )
+    }
+    if (typeof body.idempotencyKey !== 'string' || body.idempotencyKey.length < 8 || body.idempotencyKey.length > 160) {
+      throw new GatewayHttpError(400, 'INVALID_IDEMPOTENCY_KEY', 'A valid idempotencyKey is required')
+    }
+    const registrationHash = requestHash({
+      displayName,
+      termsVersion: body.termsVersion,
+      privacyNoticeVersion: body.privacyNoticeVersion
+    })
+    if (account.demoUser) {
+      if (account.demoRegistrationKey === body.idempotencyKey && account.demoRegistrationHash === registrationHash) {
+        return sendJson(response, 200, account.demoUser)
+      }
+      throw new GatewayHttpError(409, 'TEST_USER_ALREADY_REGISTERED', 'This demo session already has a Test User')
+    }
+
+    const registeredAt = new Date().toISOString()
+    const value = {
+      registered: true,
+      testUserId: randomUUID(),
+      displayName,
+      state: 'TEST_ONLY',
+      createdAt: registeredAt,
+      termsVersion: DEMO_TERMS_VERSION,
+      privacyNoticeVersion: DEMO_PRIVACY_VERSION
+    }
+    store.recordDemoUserRegistration({
+      registrationId: randomUUID(),
+      testUserId: value.testUserId,
+      ownerId: account.accountId,
+      termsVersion: value.termsVersion,
+      privacyNoticeVersion: value.privacyNoticeVersion,
+      registeredAt
+    })
+    account.demoUser = value
+    account.demoRegistrationKey = body.idempotencyKey
+    account.demoRegistrationHash = registrationHash
+    sendJson(response, 201, value)
+  }
+
   async function verifyChallenge(request, response, account) {
     const body = await readJson(request)
     const challenge = challenges.get(body.challengeId)
@@ -450,6 +523,12 @@ export function createGatewayServer({ config, mediaAdapter, store = new GatewayS
       }
       if (request.method === 'GET' && path === '/v1/catalog/home') {
         return sendJson(response, 200, { tracks: catalog.map(publicTrack) })
+      }
+      if (request.method === 'GET' && path === '/v1/demo/user') {
+        return sendJson(response, 200, demoUserView(account))
+      }
+      if (request.method === 'POST' && path === '/v1/demo/users') {
+        return await registerDemoUser(request, response, account)
       }
       if (request.method === 'POST' && path === '/v1/playback-sessions') {
         return await createPlayback(request, response, account)

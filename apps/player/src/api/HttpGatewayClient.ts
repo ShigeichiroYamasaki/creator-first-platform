@@ -6,6 +6,8 @@ import type {
   PlaybackSession,
   SupportIntent,
   SupportRegistration,
+  TestUserRegistration,
+  TestUserView,
   Track,
   WalletChallenge
 } from './types'
@@ -49,6 +51,17 @@ export class HttpGatewayClient implements GatewayPort {
   async listTracks(): Promise<Track[]> {
     const response = await this.request<{ tracks: Track[] }>('/v1/catalog/home')
     return response.tracks
+  }
+
+  getTestUser(): Promise<TestUserView> {
+    return this.request('/v1/demo/user')
+  }
+
+  registerTestUser(input: TestUserRegistration): Promise<TestUserView> {
+    return this.request('/v1/demo/users', {
+      method: 'POST',
+      body: JSON.stringify(input)
+    })
   }
 
   createPlaybackSession(trackId: string, idempotencyKey: string): Promise<PlaybackSession> {
