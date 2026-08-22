@@ -369,6 +369,22 @@ export default defineConfig({
                 )
             }
 
+            if (environment.relativePath?.startsWith('adr/ADR-')) {
+              return withoutCredentialArtwork
+                .replace(
+                  /<h2[^>]*id="[^"]*alternatives-considered[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  ''
+                )
+                .replace(
+                  /<h2[^>]*id="[^"]*(?:testnet-acceptance-criteria|validation-gates)[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  ''
+                )
+                .replace(
+                  /<h2[^>]*id="[^"]*related-documents[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  ''
+                )
+            }
+
             return withoutCredentialArtwork
           },
           translations: {

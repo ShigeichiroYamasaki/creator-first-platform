@@ -723,6 +723,41 @@ flowchart TD
 
 単なる再生数表示ではなく、利用実績、分配ルール、権利比率、Growth Pool 等との関係を説明できる設計を目指す。
 
+### 5.24.1 Creator Workspaceの機能構成
+
+Creator Dashboardは閲覧専用の集計画面ではなく、Creator Journey全体を扱う`Creator Workspace`として構成する。
+
+| 機能領域 | Creatorが行うこと | 確定主体 |
+| --- | --- | --- |
+| Account／Team | Creator Entity、招待、Role、Security確認 | Account／Membership Service |
+| Public Profile | Artist名、Biography、画像、LinkのDraftと公開申請 | Creator Profile Service |
+| Catalog／Asset | Work、Recording、Release、音源、ArtworkのVersion管理 | Catalog／Media Ingest Service |
+| Rights | 役割・比率・地域・期間のClaim、Evidence、共同制作者確認 | Rights Registry／Rights Authority |
+| Release | Readiness確認、公開申請、Schedule、取下げ | Release／Rights Policy |
+| Analytics | Privacy-safeな速報・検証中・確定集計の確認 | Usage Verification Read Model |
+| Revenue | Revenue、Usage、Rights、Policy、Holdの説明確認 | Distribution Engine／法人会計 |
+| Settlement | Instruction、失敗、保留、着金状態の確認 | Settlement Service |
+| Community | Supporter集計、特権申請、告知、Moderation | Credential／Privilege／Community Service |
+| Case／Appeal | 追加資料、訂正、異議申立て、結果確認 | 法人の承認済みReview Process |
+
+```mermaid
+flowchart LR
+    CREATOR[Creator / Team]
+    WS[Creator Workspace]
+    BFF[Creator API / BFF]
+    DOMAIN[Account / Catalog / Rights / Usage / Distribution / Community]
+    READ[Versioned Creator Read Models]
+
+    CREATOR --> WS --> BFF
+    BFF -->|Scoped Command| DOMAIN
+    DOMAIN -->|Events| READ
+    READ -->|Status and Explanation| BFF
+```
+
+一つの画面で状態を把握できても、Upload者をRights Holderとせず、Creator EntityをLegal IdentityやPayeeとせず、速報Analyticsを確定UsageやDistributionとしない。見込額、確定Allocation、Settlement Instructionおよび着金も別状態として表示する。
+
+Testnet Demoでは、まず合成Creator、合成音源、Mock Rights、Analytics FixtureおよびSettlement Stubだけを使い、実在音源、本人確認資料、契約、税務情報、本番Walletまたは価値あるTokenを入力しない。システム境界、API候補、段階的実装および成立条件は[ADR-0012 Creator Workspace](/adr/ADR-0012-creator-workspace)に定義する。
+
 ---
 
 ## 5.25 Creator House への参加

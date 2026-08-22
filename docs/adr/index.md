@@ -39,5 +39,6 @@ flowchart LR
 | [ADR-0009](./ADR-0009-navidrome-streaming-gateway.md)      | Navidrome / Streaming Gateway        | Proposed | 2026-08-19 | 2026-08-22   |
 | [ADR-0010](./ADR-0010-early-supporter-sbt-privileges.md)   | Supporter SBT and Privileges         | Proposed | 2026-08-20 | 2026-08-22   |
 | [ADR-0011](./ADR-0011-integrated-player-client.md)         | Integrated Player Client             | Proposed | 2026-08-21 | 2026-08-22   |
+| [ADR-0012](./ADR-0012-creator-workspace.md)                | Creator Workspace                    | Proposed | 2026-08-22 | 2026-08-22   |
 
 各ADRは初回作成日の`Date`と、内容またはメタデータを最後に変更した`Last Updated`を分けて記録します。

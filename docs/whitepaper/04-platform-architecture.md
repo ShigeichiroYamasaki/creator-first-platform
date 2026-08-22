@@ -136,6 +136,10 @@ flowchart LR
 
 ウォレット、ガス代、チェーン切替などを理解しなくても、一般的な音楽ストリーミングサービスと同等のUXで利用できることを目指す。
 
+クリエーターポータルは`Creator Workspace PWA`として、Profile、Team、Work／Recording／Release、Upload、Rights、公開審査、Analytics、Distribution説明、Settlement状態、Supporter Communityおよび異議申立てを一つのJourneyへ統合する。ただしWorkspace自身をRights、Usage、RevenueまたはSettlementのSource of Truthにはしない。Creator API／BFFがAccount Session、Creator Membership、操作別Role、Step-up、IdempotencyおよびResponse Redactionを強制し、各Domain ServiceへCommandとQueryを振り分ける。
+
+Original MasterはQuarantineされたMedia Ingest／Object Storageで管理し、技術・Rights・公開審査後に配信用Derivativeを生成する。Navidromeは承認済みDerivativeを読む交換可能なMedia Adapterであり、Creator Upload、Original Master、Rights EvidenceまたはRelease状態を管理しない。詳細は[ADR-0012 Creator Workspace](/adr/ADR-0012-creator-workspace)に記録する。
+
 ---
 
 ## 4.4 音楽プレーヤー
