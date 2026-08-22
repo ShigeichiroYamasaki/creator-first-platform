@@ -1,9 +1,11 @@
 node_modules/
 docs/.vitepress/cache/
 docs/.vitepress/dist/
+dist/
 .DS_Store
 .env
 .env.*
 *.log
 docker/navidrome/music/*
 !docker/navidrome/music/.gitkeep
+apps/player/public/demo-tone.wav

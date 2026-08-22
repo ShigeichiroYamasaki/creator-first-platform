@@ -1,0 +1,19 @@
+{
+  "name": "Creator First Player",
+  "short_name": "CF Player",
+  "description": "Gateway専用のCreator First音楽プレーヤー",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "./player-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

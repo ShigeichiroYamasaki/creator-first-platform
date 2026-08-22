@@ -38,6 +38,16 @@ npm run streaming:verify
 
 [http://127.0.0.1:4533](http://127.0.0.1:4533)で最初のローカル管理者を作成し、生成された試験音を再生します。停止は`npm run streaming:down`です。構成、安全境界、音源の扱いは[ローカル音楽ストリーミング手順](docs/demo/local-streaming.md)を参照してください。
 
+## ローカルPlayer MVP
+
+Vue 3製のPlayerを合成音源とMock Gatewayで起動できます。
+
+```sh
+npm run player:dev
+```
+
+既定では`127.0.0.1`だけで待ち受けます。基本再生、Queue、Seek、EIP-1193 Wallet接続、SIWE、Supporter登録同意、EIP-712署名、Mock SBT TierとCommunity Capability表示を確認できます。Mockは実Transaction、実JPYC、実SBTを扱いません。詳細は[`apps/player/README.md`](apps/player/README.md)を参照してください。
+
 ## 文書から実装まで
 
 設計と実装の追跡可能性を保つため、原則として次の順序で更新します。
