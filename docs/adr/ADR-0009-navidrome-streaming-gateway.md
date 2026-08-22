@@ -6,7 +6,9 @@ description: Navidromeを交換可能なメディアサーバーとして利用�
 
 **Status:** Proposed
 **Date:** 2026-08-19
-**Last Updated:** 2026-08-21
+**Last Updated:** 2026-08-22
+
+> **Implementation note (2026-08-22):** `apps/gateway`にローカルMock Vertical Sliceを実装した。固定Mock Subscription／Rights、5分の単一Playback Session、単一Range、SQLite Delivery Evidence、SIWE／EIP-712検証、合成音源File Adapterおよび明示Mapping方式のNavidrome Adapterを含む。これは`MOCK-ASSUMPTION-001`の範囲内であり、Proposed Decision、Open Question、本番Topologyまたは法的Rightsを確定しない。
 
 ## 1. Context
 
@@ -264,7 +266,7 @@ Deploymentは、ローカル単体確認、開発・プレゼン用Test環境お
 
 ### 12.1 Local Standalone Verification
 
-Gateway実装前のローカル検証に限り、Navidrome `0.63.2`をHost Loopbackの`127.0.0.1:4533`へ公開し、合成試験音でScanと再生を確認する。この例外はLANまたはInternetへの公開を許可せず、Gateway実装時に削除する。手順は[ローカル音楽ストリーミング](/demo/local-streaming)に記録する。
+Navidrome Adapterを有効化する前の独立したローカル管理・検証に限り、Navidrome `0.63.2`をHost Loopbackの`127.0.0.1:4533`へ公開し、合成試験音でScanと再生を確認する。この例外はLANまたはInternetへの公開を許可せず、Playerから利用せず、GatewayとNavidromeを同一の非公開Media Networkへ接続する時点で削除する。手順は[ローカル音楽ストリーミング](/demo/local-streaming)に記録する。
 
 ### 12.2 Development and Presentation Test Environment
 

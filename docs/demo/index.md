@@ -38,15 +38,15 @@ flowchart LR
 | 公開デモURL | 準備中 |
 | 対象Testnet | 未決定 |
 | Demo Contract Address | 未デプロイ |
-| Streaming Gateway | 仕様・Mock計画段階 |
-| Navidrome Media Adapter | [ローカルDocker Server実装済み](/demo/local-streaming)、Gateway未接続 |
-| Player PWA | ローカルMock実装済み、Gateway・Navidrome未接続 |
+| Streaming Gateway | [ローカルMock実装済み](/demo/local-gateway)、公開環境未デプロイ |
+| Navidrome Media Adapter | Adapter実装済み、専用User・非公開Network・Canonical Mapping未設定 |
+| Player PWA | ローカルGateway接続済み、公開環境未デプロイ |
 | Testnet決済 | 未実装 |
 | Rights / Usage / Distribution | Draft仕様、未実装 |
 
 進捗と成立条件は[現在の状況](/status)、[Vertical Slice Implementation Plan](/protocol/implementation-plan)、[Decision Baseline](/protocol/decision-baseline)で確認できます。
 
-公開Testnetの前段階として、[ローカル音楽ストリーミング](/demo/local-streaming)とRepositoryの`npm run player:dev`で合成試験音を検証できます。
+公開Testnetの前段階として、[ローカル音楽ストリーミング](/demo/local-streaming)と[ローカルStreaming Gateway](/demo/local-gateway)で合成試験音を検証できます。
 
 ## 本番移行の禁止条件
 

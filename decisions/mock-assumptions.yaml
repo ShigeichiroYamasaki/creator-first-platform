@@ -12,10 +12,17 @@ assumptions:
       - OQ-PLAYER-001
       - OQ-PLAYER-002
       - OQ-PLAYER-006
+      - OQ-STREAMING-001
+      - OQ-STREAMING-003
+      - OQ-STREAMING-004
+      - OQ-STREAMING-008
     value: >-
       The local Player MVP uses Vue 3 and TypeScript, one browser Audio element,
-      an external EIP-1193 Wallet, synthetic audio, a same-origin Gateway
-      adapter and an in-memory Mock Supporter Credential capability.
+      an external EIP-1193 Wallet and synthetic audio. The local Gateway MVP uses
+      Node.js 24, a same-origin HTTP boundary, a five-minute single-stream Playback
+      Session, an 800 MiB monthly demo limit, SQLite evidence, a fixed active Mock
+      Subscription and Rights Snapshot, an in-memory Mock Supporter Credential,
+      a bounded File adapter and an optional explicitly mapped Navidrome adapter.
     expires_when: >-
       The owning Product, Security, Accessibility, Rights and Protocol decision
       owners approve the first Player, Wallet and Community capability profile.
@@ -24,3 +31,4 @@ assumptions:
       - Real JPYC, production Wallet keys, real SBT issuance or valuable privileges
       - Direct Navidrome or arbitrary upstream access from the public Player
       - Rights-cleared music distribution, offline protected audio or verified usage
+      - Production use of the fixed Subscription, Rights, TTL, byte budget or SQLite choices

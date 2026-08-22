@@ -187,7 +187,8 @@ export default defineConfig({
             text: 'Demo',
             items: [
               { text: 'Testnetデモ入口', link: '/demo/' },
-              { text: 'ローカル音楽ストリーミング', link: '/demo/local-streaming' }
+              { text: 'ローカル音楽ストリーミング', link: '/demo/local-streaming' },
+              { text: 'ローカルStreaming Gateway', link: '/demo/local-gateway' }
             ]
           }
         ],

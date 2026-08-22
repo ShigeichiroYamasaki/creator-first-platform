@@ -12,10 +12,14 @@
     "docs:preview": "vitepress preview docs",
     "player:seed": "node scripts/generate-player-test-audio.mjs",
     "player:dev": "npm run player:seed && vite --config apps/player/vite.config.ts --host 127.0.0.1",
+    "player:dev:gateway": "VITE_GATEWAY_MODE=gateway VITE_GATEWAY_BASE=/api vite --config apps/player/vite.config.ts --host 127.0.0.1",
     "player:typecheck": "vue-tsc --noEmit -p apps/player/tsconfig.json",
     "player:build": "npm run player:seed && npm run player:typecheck && vite build --config apps/player/vite.config.ts",
     "player:test": "node --test apps/player/test/*.test.mjs",
     "player:validate": "node scripts/validate-player.mjs",
+    "gateway:dev": "npm run streaming:seed && node apps/gateway/src/index.js",
+    "gateway:test": "npm run streaming:seed && node --test apps/gateway/test/*.test.mjs",
+    "gateway:validate": "node scripts/validate-gateway.mjs",
     "streaming:config": "docker compose -f docker/navidrome/compose.yml config --quiet",
     "streaming:seed": "node scripts/generate-local-test-audio.mjs",
     "streaming:up": "npm run streaming:seed && npm run streaming:config && docker compose -f docker/navidrome/compose.yml up -d --wait",
@@ -39,7 +43,7 @@
     "site:test": "node --test scripts/validate-site-output.test.mjs",
     "workflow:validate": "node scripts/validate-workflows.mjs",
     "workflow:test": "node --test scripts/validate-workflows.test.mjs",
-    "validate": "npm run workflow:test && npm run workflow:validate && npm run community:test && npm run community:validate && npm run deployment:test && npm run protocol:test && npm run protocol:validate && npm run decisions:test && npm run decisions:validate && npm run status:test && npm run status:validate && npm run streaming:test && npm run streaming:validate && npm run player:test && npm run player:build && npm run player:validate && npm run docs:build && npm run site:test && npm run site:validate"
+    "validate": "npm run workflow:test && npm run workflow:validate && npm run community:test && npm run community:validate && npm run deployment:test && npm run protocol:test && npm run protocol:validate && npm run decisions:test && npm run decisions:validate && npm run status:test && npm run status:validate && npm run streaming:test && npm run streaming:validate && npm run gateway:test && npm run gateway:validate && npm run player:test && npm run player:build && npm run player:validate && npm run docs:build && npm run site:test && npm run site:validate"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "5.2.4",
@@ -51,5 +55,8 @@
     "vue": "^3.5.41",
     "vue-tsc": "2.2.12",
     "yaml": "^2.9.0"
+  },
+  "dependencies": {
+    "viem": "2.55.19"
   }
 }

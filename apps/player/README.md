@@ -9,10 +9,10 @@ npm run player:dev
 
 表示されたローカルURLを開くと、Walletなしで基本楽曲を再生できます。Supporter限定曲、Wallet接続、SIWE、EIP-712 Support Intentを試す場合はEIP-1193対応Walletが必要です。Mock Support Intentは署名を要求しますが、Transactionを送信せず、JPYC移転やToken Approvalを含みません。
 
-同一OriginのGateway実装へ接続する場合だけ、次を指定します。
+実装済みの同一Origin Gatewayへ接続する場合は、別Terminalで`npm run gateway:dev`を起動してから次を実行します。
 
 ```sh
-VITE_GATEWAY_MODE=gateway VITE_GATEWAY_BASE=/api npm run player:dev
+npm run player:dev:gateway
 ```
 
 `VITE_GATEWAY_BASE`は同一OriginのPathだけを許可します。PlayerはGatewayが発行した`/v1/streams/` URLのみ再生し、保護音源、Playback Session、Wallet署名、秘密鍵を永続保存しません。
