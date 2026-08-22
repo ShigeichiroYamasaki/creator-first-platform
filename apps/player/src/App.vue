@@ -521,7 +521,7 @@ onBeforeUnmount(() => {
         </div>
         <form class="registration-form" @submit.prevent="registerTestUser">
           <label>
-            <span>公開用Alias</span>
+            <span>デモ表示用Alias</span>
             <input
               v-model="registrationAlias"
               type="text"

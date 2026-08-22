@@ -95,6 +95,8 @@ flowchart TD
 
 **対象仕様:** [SPEC-ACCOUNT-003](/protocol/specs/account-lifecycle)、[SPEC-ACCOUNT-002](/protocol/specs/wallet-linking)
 
+**現在の部分実装:** Gatewayは合成Demo Principal、1時間のHttpOnly Cookie、SIWE Challengeと署名復元、およびAlias限定Test-only Profileを持つ。ただしTest-only ProfileはAccount登録ではなく、Authenticator、Account state machine、Session rotation／logout、Recovery、Wallet Link recordおよびContract Wallet検証は未実装である。したがってIMP-003の終了条件は未達である。
+
 **成果物:**
 
 - Account state machineとSession expiry／rotation
@@ -145,6 +147,8 @@ flowchart TD
 **目的:** Active Subscription、任意のEarly Supporter Credential特権とRights Snapshotから短時間Playback Sessionを作成し、非公開Media Adapter経由のRange配信とDelivery EvidenceをMockで検証する。
 
 **対象仕様:** [SPEC-ACCOUNT-004](/protocol/specs/early-supporter-credential)、[SPEC-STREAMING-001](/protocol/specs/playback-authorization)
+
+**現在の部分実装:** 固定Mock Subscription／Rights、短命Playback Session、Owner Binding、単一Range、Concurrency Lease、SQLite Delivery Evidence、月間Byte Budget、File Adapter、明示Mapping型Navidrome Adapter、EIP-712 Support Intent、Mock Credential状態およびCommunity Capabilityを実装済みである。実SBT Contract、Relayer、Revocation／Recovery、Reorganization-aware Read Model、Client Playback Event、Playback Verification handoff、非公開Cloud Networkおよび障害Fixture一式は未実装であり、IMP-006の終了条件は未達である。
 
 **成果物:**
 

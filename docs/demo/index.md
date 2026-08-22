@@ -33,7 +33,9 @@ flowchart LR
 
 ## ローカルTest User登録
 
-GatewayとPlayerを起動した後、[テストユーザー登録画面を開く](http://127.0.0.1:5173/#/register)ことができます。登録するのは公開用AliasとDemo利用条件・Privacy Noticeの確認だけです。実名、メール、電話番号、Passwordまたは本番Walletを入力しないでください。この登録は本番Account、本人確認、Subscription契約または資産口座ではありません。
+GatewayとPlayerを起動した後、[テストユーザー登録画面を開く](http://127.0.0.1:5173/#/register)ことができます。登録するのはデモ画面に表示するAliasとDemo利用条件・Privacy Noticeの確認だけです。現在のAliasはGateway Process内だけで扱い、公開ProfileやSBT Metadataへ送信しません。実名、メール、電話番号、Passwordまたは本番Walletを入力しないでください。
+
+この操作は、Gatewayが起動時に自動生成する合成Demo PrincipalへTest-only Profileを関連付けるUI検証です。Authenticatorを登録せず、Protocol上のPlatform Accountを`PENDING`または`ACTIVE`にせず、Playback、Wallet Link、SubscriptionまたはSBT資格の認可条件にも使用しません。本番Account登録、本人確認、Subscription契約または資産口座ではありません。
 
 ## 現在の状態
 

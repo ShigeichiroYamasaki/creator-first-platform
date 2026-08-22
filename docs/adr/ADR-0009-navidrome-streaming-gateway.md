@@ -8,7 +8,7 @@ description: Navidromeを交換可能なメディアサーバーとして利用�
 **Date:** 2026-08-19
 **Last Updated:** 2026-08-22
 
-> **Implementation note (2026-08-22):** `apps/gateway`にローカルMock Vertical Sliceを実装した。固定Mock Subscription／Rights、5分の単一Playback Session、単一Range、SQLite Delivery Evidence、SIWE／EIP-712検証、合成音源File Adapterおよび明示Mapping方式のNavidrome Adapterを含む。これは`MOCK-ASSUMPTION-001`の範囲内であり、Proposed Decision、Open Question、本番Topologyまたは法的Rightsを確定しない。
+> **Implementation note (2026-08-22):** `apps/gateway`にローカルMock Vertical Sliceを実装した。固定Mock Subscription／Rights、5分の単一Playback Session、単一Range、SQLite Delivery Evidence、SIWE／EIP-712検証、合成音源File Adapterおよび明示Mapping方式のNavidrome Adapterを含む。現在実装しているApplication APIはCatalog Home、Test-only Profile、Playback Session／Stream、SIWE、Support Intent／Mock Credential StatusおよびCommunity Capabilityの限定Surfaceである。`auth/refresh`、`auth/logout`、Client Playback Event、検索・Artist・Album詳細、実Contract、Indexerおよび本番Read Modelは未実装である。これは`MOCK-ASSUMPTION-001`の範囲内であり、Proposed Decision、Open Question、本番Topologyまたは法的Rightsを確定しない。
 
 ## 1. Context
 
@@ -125,6 +125,8 @@ GET    /v1/streams/:playbackSessionId
 POST   /v1/playback-events
 DELETE /v1/playback-sessions/:playbackSessionId
 ```
+
+上記は採用候補となるTarget Surfaceであり、すべてが現在のMockに実装済みという意味ではない。現行Mock固有の`GET /v1/demo/user`と`POST /v1/demo/users`はAliasとNotice確認のUI検証だけを行うTest Harness APIであり、Platform Account、Authenticator、Wallet Link、SubscriptionまたはCredentialを作成しない。
 
 任意のNavidrome Pathを転送できる汎用Proxyは提供しない。
 

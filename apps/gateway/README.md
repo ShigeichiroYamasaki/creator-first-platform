@@ -16,7 +16,7 @@ npm run player:dev:gateway
 
 Playerは`http://127.0.0.1:5173`、Gateway healthは`http://127.0.0.1:8787/api/v1/health`です。既定のFile Media AdapterはRepositoryが生成する5秒の合成WAVだけを読みます。
 
-`http://127.0.0.1:5173/#/register`では、Aliasだけを使うTest Userを登録できます。これはGateway ProcessとCookie Session内だけで有効なTest-only Profileであり、本番Platform Account、本人確認、AuthenticatorまたはWallet Linkではありません。
+`http://127.0.0.1:5173/#/register`では、Aliasだけを使うTest Userを登録できます。これはGateway ProcessとCookie Session内だけで有効なTest-only Profileであり、本番Platform Account、本人確認、AuthenticatorまたはWallet Linkではありません。Gatewayは別途、起動時に合成Demo Principalを自動生成してMock認可に使用するため、Test User登録の有無はPlayback、Subscription、WalletまたはSBT資格を変更しません。
 
 ## Navidrome adapter
 

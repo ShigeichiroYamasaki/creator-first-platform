@@ -29,6 +29,12 @@
 
 Define a safe and replaceable Player Client that integrates catalog browsing, Navidrome-backed playback, Platform Account sessions, Wallet operations, Supporter Credentials and Community capabilities without bypassing Gateway authorization or making the client authoritative for Protocol state.
 
+## Current Implementation Conformance
+
+The Vue Player and Node.js Gateway are a partial local fixture under `MOCK-ASSUMPTION-001`, not a conforming implementation of every requirement in this Draft. The fixture currently exercises Catalog Home, one Audio Element, basic playback controls, short-lived Playback Sessions, bounded Range delivery, SIWE signature recovery, EIP-712 Support Intent, Mock Credential state and Community Capability. Search, Artist and Album detail, Client Playback Events, logout and Account switching, Service Worker controls, production authentication, real Subscription and finalized Testnet Credential events remain unimplemented.
+
+The fixture also exposes `GET /v1/demo/user` and `POST /v1/demo/users` for Alias and notice UI testing. These Test Harness operations do not create a Platform Account or Authenticator and do not alter playback, Wallet, Subscription, Credential or Community authorization. The Alias remains process-local and is not published to SBT metadata. This isolation is required by `REQ-PLAYER-023` and the Account lifecycle boundary.
+
 ## Scope
 
 - Browser Player behavior and state;
@@ -242,6 +248,8 @@ requestCommunityAccess(canonical_creator_id, capability_id)
 ```
 
 Transport names MAY differ. Responses MUST use canonical public identifiers, stable status categories, version and freshness fields where required, and MUST NOT disclose adapter credentials or topology.
+
+An explicitly marked local Test Harness MAY additionally provide `getDemoUser()` and `registerDemoUser(alias, notice_versions, idempotency_key)`. Those operations are outside the normative Account interface, MUST use a demo-only namespace and MUST NOT satisfy any authentication or authorization precondition above.
 
 ## Error Conditions
 

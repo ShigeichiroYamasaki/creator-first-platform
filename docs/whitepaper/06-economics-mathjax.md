@@ -2,6 +2,7 @@
 description: クリエイターへの公正な還元、利用者価値、運営持続性、不正耐性を両立する経済モデル。
 canonical: whitepaper/06-economics
 robots: noindex, follow
+search: false
 ---
 
 # 6. 経済モデル — Economic Model

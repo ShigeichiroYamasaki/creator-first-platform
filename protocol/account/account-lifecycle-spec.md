@@ -30,6 +30,10 @@
 
 Define a durable Platform Account lifecycle with secure authenticator binding, sessions, authorization, recovery, restriction and closure so that content access, Wallet Links, Creator functions and governance references depend on explicit Account state rather than an email address or wallet.
 
+## Current Implementation Conformance
+
+The local `POST /v1/demo/users` implementation is not an implementation of Account registration defined by this specification. It attaches an ephemeral Alias profile and notice-version record to an automatically generated synthetic Demo Principal. It performs no authenticator ceremony, creates no `PENDING` or `ACTIVE` Platform Account, supplies no recovery path and cannot satisfy `REQ-ACCOUNT-068`–`REQ-ACCOUNT-114` acceptance. Its registration state MUST NOT be used as Account, Subscription, Wallet Link, Credential or legal-identity authorization input. It is permitted only as a bounded fixture under `MOCK-ASSUMPTION-001` while `OQ-ACCOUNT-LIFECYCLE-001` and `OQ-ACCOUNT-LIFECYCLE-002` remain open.
+
 ## Scope
 
 This specification covers:

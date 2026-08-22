@@ -215,6 +215,8 @@ flowchart LR
 
 初期実装では、音源スキャン、検索、Playlist、HTTP RangeおよびTranscodingを早期に検証するため、NavidromeをMedia Server候補として利用する。
 
+2026-08-22時点のRepositoryには、合成音源を使うVue Player、Node.js Gateway、短命Playback Session、Range、SQLite Delivery Evidence、SIWE／EIP-712署名検証、Mock Supporter状態および明示Mapping型Navidrome Adapterが部分実装されている。Account、Subscription、RightsおよびCredentialは固定またはIn-memory Mockであり、Smart Contract、Indexer、Verified Usageおよび本番認証は未実装である。Alias限定Test User登録はUIとNotice確認用のTest-only Profileであり、Platform Accountを作らず、再生、Wallet、SubscriptionまたはSBT認可を変更しない。
+
 ただし、NavidromeをSubscription、RightsまたはCreator DistributionのSource of Truthにはしない。
 
 ```mermaid

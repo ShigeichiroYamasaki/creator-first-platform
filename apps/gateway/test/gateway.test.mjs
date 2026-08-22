@@ -185,6 +185,12 @@ test('Test User registration is private, idempotent and bound to one demo sessio
 
   const initial = await json(await first.request('/v1/demo/user'))
   assert.deepEqual(initial.body, { registered: false })
+  const protectedBeforeRegistration = await json(await first.request('/v1/playback-sessions', {
+    method: 'POST',
+    body: JSON.stringify({ trackId: 'track-mock-002', idempotencyKey: 'test-user-authz-before' })
+  }))
+  assert.equal(protectedBeforeRegistration.response.status, 403)
+  assert.equal(protectedBeforeRegistration.body.code, 'SUPPORTER_REQUIRED')
   const invalid = await json(await first.request('/v1/demo/users', {
     method: 'POST',
     body: JSON.stringify({
@@ -218,6 +224,13 @@ test('Test User registration is private, idempotent and bound to one demo sessio
   assert.equal(created.body.displayName, 'Demo Listener 01')
   assert.notEqual(created.body.testUserId, created.body.displayName)
   assert.equal(gateway.store.demoUserRegistrationCount(), 1)
+
+  const protectedAfterRegistration = await json(await first.request('/v1/playback-sessions', {
+    method: 'POST',
+    body: JSON.stringify({ trackId: 'track-mock-002', idempotencyKey: 'test-user-authz-after' })
+  }))
+  assert.equal(protectedAfterRegistration.response.status, 403)
+  assert.equal(protectedAfterRegistration.body.code, 'SUPPORTER_REQUIRED')
 
   const replayed = await json(await first.request('/v1/demo/users', {
     method: 'POST', body: JSON.stringify(registrationRequest)

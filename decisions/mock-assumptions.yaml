@@ -27,7 +27,9 @@ assumptions:
       a bounded File adapter and an optional explicitly mapped Navidrome adapter.
       Test User registration creates only an ephemeral alias profile and opaque
       test identifier bound to the local Gateway Session; it collects no email,
-      phone number, password, legal name or production authenticator.
+      phone number, password, legal name or production authenticator. It does not
+      create or activate a Platform Account and is never an authorization input for
+      playback, Wallet Link, Subscription, Credential or Community capability.
     expires_when: >-
       The owning Product, Security, Accessibility, Privacy, Rights and Protocol
       decision owners approve the first Account, Player, Wallet and Community profile.

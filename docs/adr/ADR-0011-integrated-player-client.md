@@ -8,6 +8,8 @@ description: Navidromeを非公開Media Adapterとして利用し、Wallet・Sup
 **Date:** 2026-08-21
 **Last Updated:** 2026-08-22
 
+> **Implementation note (2026-08-22):** `apps/player`へVue 3／TypeScriptのローカルPWAを、`apps/gateway`へ対応するMock APIを実装した。Catalog Home、単一Audio Element、Play／Pause／Seek／Next／Previous、短命Playback Session、Range、SIWE、EIP-712 Support Intent、Mock Supporter状態、Community CapabilityおよびAlias限定Test-only Profileを検証できる。Test-only ProfileはPlatform AccountやAuthenticatorではなく、登録の有無は認可を変更しない。Search、Artist／Album詳細、Client Playback Event、Logout／Account Switch、Service Worker、実SBT、実Subscription、Testnet Contractおよび本番Authenticatorは未実装である。Framework等の未決定事項は`MOCK-ASSUMPTION-001`で限定しており、この実装は本ADRの採用確定またはProtocol適合完了を意味しない。
+
 ## 1. Context
 
 Creator First Platformは、Navidromeからの音楽配信に、Platform Account、Wallet、JPYC等によるSubscription、一般Supporter SBT、Early Supporter SBTおよびFan Community参加導線を一つの利用体験として接続する必要がある。
@@ -84,6 +86,8 @@ POST   /v1/auth/siwe/nonce
 POST   /v1/auth/siwe/verify
 POST   /v1/auth/logout
 ```
+
+この一覧はTarget Surfaceである。現行Local Mockはこの一部に加えて、`GET /v1/demo/user`と`POST /v1/demo/users`をTest Harness専用に公開する。この二つはAlias表示とNotice確認だけを扱い、Platform Account登録、Authentication、Wallet Link、SubscriptionまたはCredential APIとして扱わない。
 
 実装上のPathは変更できるが、Playerが任意のOpenSubsonic Endpoint、Navidrome URL、内部Media ID、上流HeaderまたはCredentialを指定できる汎用Proxyを提供しない。
 

@@ -9,7 +9,7 @@ npm run player:dev
 
 表示されたローカルURLを開くと、Walletなしで基本楽曲を再生できます。Supporter限定曲、Wallet接続、SIWE、EIP-712 Support Intentを試す場合はEIP-1193対応Walletが必要です。Mock Support Intentは署名を要求しますが、Transactionを送信せず、JPYC移転やToken Approvalを含みません。
 
-`http://127.0.0.1:5173/#/register`を開くとTest User登録画面を表示します。Aliasだけを使用し、実名、メール、電話番号またはPasswordを入力しないでください。
+`http://127.0.0.1:5173/#/register`を開くとTest User登録画面を表示します。Aliasだけを使用し、実名、メール、電話番号またはPasswordを入力しないでください。このProfileは表示とNotice確認のUI検証専用で、Protocol上のPlatform AccountやAuthenticatorを作らず、再生・Wallet・Subscription・SBT認可を変更しません。
 
 実装済みの同一Origin Gatewayへ接続する場合は、別Terminalで`npm run gateway:dev`を起動してから次を実行します。
 

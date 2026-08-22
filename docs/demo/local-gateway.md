@@ -12,6 +12,8 @@ Creator First PlayerとStreaming Gatewayを同一Originの開発Proxyで接続�
 実JPYC、実SBT、実Subscription、実Rightsまたは価値のある特権を扱いません。既定のMedia AdapterはRepositoryが生成する5秒の合成WAVだけを読みます。InternetやLANへ公開しないでください。
 :::
 
+Test User登録はAlias表示とNotice確認のUIを検証するTest-only Profileです。Gatewayが自動生成する合成Demo Principalとは別のProfileであり、Protocol上のPlatform Account、Authenticator、Wallet Link、SubscriptionまたはSBT資格を作成しません。登録の有無は再生認可を変更しません。
+
 ## 起動
 
 Node.js 24を使用し、Repository Rootで依存関係を準備します。
@@ -53,6 +55,7 @@ npm run player:dev:gateway
 - Accountあたり1本のConcurrency Lease
 - 単一HTTP Range、`206 Partial Content`、SeekおよびClient切断時の中断
 - SIWE署名とEIP-712 Support Intent署名の復元検証
+- Alias限定Test User Profileと、同意Versionを含むローカル監査記録（Account登録・Authenticatorではない）
 - SQLiteへのAuthorization Decision、SessionおよびDelivery Evidence記録
 - 月間800 MiB到達後の新規Session停止
 - 任意Upstream URL、内部Media ID、Query token、`Remote-User`および複数Rangeの拒否
