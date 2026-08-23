@@ -78,6 +78,41 @@ export const subscriptionAbi = [
   }
 ]
 
+export const creatorRegistryAbi = [
+  {
+    type: 'function', name: 'creatorIdByAccount', stateMutability: 'view',
+    inputs: [{ name: 'account', type: 'address' }], outputs: [{ name: '', type: 'uint256' }]
+  },
+  {
+    type: 'function', name: 'creators', stateMutability: 'view',
+    inputs: [{ name: 'creatorId', type: 'uint256' }],
+    outputs: [
+      { name: 'account', type: 'address' }, { name: 'payoutAddress', type: 'address' },
+      { name: 'profileCommitment', type: 'bytes32' }, { name: 'registeredAt', type: 'uint64' },
+      { name: 'releaseCount', type: 'uint32' }, { name: 'active', type: 'bool' }
+    ]
+  },
+  {
+    type: 'function', name: 'registerCreator', stateMutability: 'nonpayable',
+    inputs: [{ name: 'profileCommitment', type: 'bytes32' }, { name: 'payoutAddress', type: 'address' }],
+    outputs: [{ name: 'creatorId', type: 'uint256' }]
+  },
+  {
+    type: 'function', name: 'declareRelease', stateMutability: 'nonpayable',
+    inputs: [{ name: 'metadataCommitment', type: 'bytes32' }, { name: 'rightsDeclarationCommitment', type: 'bytes32' }],
+    outputs: [{ name: 'releaseId', type: 'uint256' }]
+  },
+  {
+    type: 'event', name: 'ReleaseDeclared',
+    inputs: [
+      { indexed: true, name: 'releaseId', type: 'uint256' },
+      { indexed: true, name: 'creatorId', type: 'uint256' },
+      { indexed: false, name: 'metadataCommitment', type: 'bytes32' },
+      { indexed: false, name: 'rightsDeclarationCommitment', type: 'bytes32' }
+    ]
+  }
+]
+
 function hasValidAddress(value) {
   return typeof value === 'string' && isAddress(value) && !/^0x0{40}$/i.test(value)
 }
@@ -97,6 +132,10 @@ export function validateDeploymentManifest(value) {
     throw new Error('Active deployment manifest must identify a full source commit.')
   }
   return { ...value, active: true }
+}
+
+export function hasActiveCreatorRegistry(manifest) {
+  return Boolean(manifest?.active && hasValidAddress(manifest?.contracts?.creatorRegistry))
 }
 
 export function createTestToneWav(frequency, durationSeconds = 8, sampleRate = 8_000) {

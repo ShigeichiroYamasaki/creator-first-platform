@@ -132,7 +132,7 @@ Walletは支払認可手段の一つであり、人間のIdentityやRights Owner
 
 ## 現在の部分実装と未実装範囲
 
-Repositoryには、Vue Player、Node.js Gateway、SQLiteのAuthorization／Delivery Evidence、合成音源File Adapter、任意の明示Mapping型Navidrome Adapter、短命Playback Session、Range、SIWE／EIP-712署名検証、Mock Supporter状態、Alias限定Test-only Profile、およびEthereum SepoliaへデプロイしたTestnet専用MockJPYC／Subscription／Treasury／Supporter SBTがある。ただしPlayerとGatewayは固定Mock Subscription／Rightsと自動生成Demo Principalを使用し、Contract Eventとは未接続である。これらをPlatform Account、本番決済、法的RightsまたはVerified Usageとして扱わない。Test-only Profile登録は認可を変更しない。
+Repositoryには、Vue Player、Node.js Gateway、SQLiteのAuthorization／Delivery Evidence、合成音源File Adapter、任意の明示Mapping型Navidrome Adapter、短命Playback Session、Range、SIWE／EIP-712署名検証、Mock Supporter状態、Alias限定Test-only Profile、Test Creator Profile／Wallet／Creator・Release Commitment UI、およびEthereum Sepolia向けTestnet専用MockJPYC／Subscription／Treasury／Supporter SBT／Creator Registryがある。ただしCreator Registryは自己申告Commitmentだけを扱い、Identity、Rights、Payee、Catalog、StreamingまたはSettlementのSource of Truthではない。PlayerとGatewayは固定Mock Subscription／Rightsと自動生成Demo Principalを使用し、Contract Eventとは未接続である。これらをPlatform Account、本番決済、法的RightsまたはVerified Usageとして扱わない。Test-only Profile登録は認可を変更しない。
 
 Account state machineとAuthenticator、Relayer、Indexer／Read Model、Rights Registry、Playback Event集約、Usage Snapshot、Distribution、Settlement Stub、運用鍵分離、監視、会計連携および本番運用は未実装である。また、Creatorへの実際の送金、源泉徴収、請求書、制裁確認、Wallet変更、失敗回復等を扱うSettlement Executionの詳細仕様は今後必要である。
 

@@ -13,12 +13,22 @@ assert.match(manifest.sourceCommit, /^[0-9a-f]{40}$/i, 'Deployment manifest must
 const addresses = Object.fromEntries(Object.entries(manifest.contracts).map(([key, value]) => [key, getAddress(value)]))
 assert.equal(deploymentRecord.sourceCommit, manifest.sourceCommit, 'Deployment record source commit mismatch')
 const implementation = getAddress(deploymentRecord.contracts.supporterSbtImplementation.address)
+const creatorRegistry = manifest.contracts.creatorRegistry ? getAddress(manifest.contracts.creatorRegistry) : undefined
 const rpcUrl = process.env.SEPOLIA_READ_RPC_URL ?? 'https://ethereum-sepolia-rpc.publicnode.com'
 const client = createPublicClient({ chain: sepolia, transport: http(rpcUrl) })
 
 for (const [name, address] of [...Object.entries(addresses), ['supporterImplementation', implementation]]) {
   const bytecode = await client.getBytecode({ address })
   assert.ok(bytecode && bytecode !== '0x', `${name} has no deployed bytecode at ${address}`)
+}
+
+if (creatorRegistry) {
+  const registryNotice = await client.readContract({
+    address: creatorRegistry,
+    abi: parseAbi(['function TESTNET_NOTICE() view returns (string)']),
+    functionName: 'TESTNET_NOTICE'
+  })
+  assert.equal(registryNotice, 'TESTNET ONLY - NO IDENTITY, RIGHTS, PAYEE OR RELEASE VERIFICATION')
 }
 
 const tokenAbi = parseAbi([
@@ -59,3 +69,4 @@ console.log(`- Subscription: ${addresses.subscription}`)
 console.log(`- Treasury: ${addresses.treasury}`)
 console.log(`- SupporterSBT proxy: ${addresses.supporterSbt}`)
 console.log(`- SupporterSBT implementation: ${implementation}`)
+if (creatorRegistry) console.log(`- Creator Registry: ${creatorRegistry}`)

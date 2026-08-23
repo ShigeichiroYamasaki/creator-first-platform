@@ -32,11 +32,13 @@ assumptions:
       playback, Wallet Link, Subscription, Credential or Community capability. The
       hosted documentation demo is a separate browser-only UI simulation that keeps
       its alias profile in per-tab Session Storage and never calls the Gateway. The
-      hosted Creator fixture similarly keeps a synthetic Creator Profile and up to
-      eight unpublished Release Drafts in per-tab Session Storage. Its Supporter and
-      MockJPYC figures are fixed display fixtures; it never uploads media or evidence,
-      verifies identity or rights, publishes a release, calculates distribution or
-      calls the Gateway, Wallet, Blockchain or an external service. The Treasury
+      hosted Creator fixture keeps a synthetic Creator Profile in per-tab Session
+      Storage. Its public Testnet Journey may connect an explicitly selected Wallet to
+      Ethereum Sepolia and submit salted profile, release-metadata and unverified-rights
+      commitments to the reviewed Creator Registry address from the same-origin
+      deployment manifest. It never uploads media or evidence, verifies identity or
+      rights, publishes a release, calculates distribution, authorizes a Treasury
+      payment or calls the Gateway. The Treasury
       Transparency fixture uses fixed MockJPYC period flows, asset locations and
       purpose-or-obligation balances only to demonstrate two-stage reconciliation.
       It reads no Contract, Wallet, bank, accounting or tax data and cannot authorize
@@ -52,4 +54,5 @@ assumptions:
       - Production use of the fixed Subscription, Rights, TTL, byte budget or SQLite choices
       - Claiming that a Test User is an ACTIVE Platform Account or verified person
       - Claiming that a Test Creator is verified, owns rights, has published a release or can receive payment
+      - Treating a Creator or Release commitment as Identity, Rights, Payee, Catalog, Streaming or Settlement authorization
       - Claiming that Treasury fixture values are real assets, revenue, liabilities, statutory accounts, tax results or authority to spend

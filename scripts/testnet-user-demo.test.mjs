@@ -4,6 +4,7 @@ import { test } from 'node:test'
 
 import {
   createTestToneWav,
+  hasActiveCreatorRegistry,
   SEPOLIA_CHAIN_ID,
   validateDeploymentManifest
 } from '../docs/.vitepress/theme/testnet-user-demo.js'
@@ -31,6 +32,7 @@ test('ships an active Sepolia manifest with reviewed addresses and source commit
   assert.equal(record.contracts.supporterSbtProxy.address, parsed.contracts.supporterSbt)
   assert.match(record.contracts.subscription.transactionHash, /^0x[0-9a-f]{64}$/i)
   assert.match(parsed.testOnlyNotice, /NO VALUE.*NO REDEMPTION.*NOT PRODUCTION JPYC/)
+  assert.equal(hasActiveCreatorRegistry(parsed), false)
 })
 
 test('rejects an active manifest with an invalid chain, address, or source commit', () => {
@@ -52,6 +54,11 @@ test('rejects an active manifest with an invalid chain, address, or source commi
   assert.throws(() => validateDeploymentManifest({ ...base, chainId: 1 }), /Sepolia/)
   assert.throws(() => validateDeploymentManifest({ ...base, sourceCommit: 'short' }), /source commit/)
   assert.throws(() => validateDeploymentManifest({ ...base, contracts: { ...base.contracts, mockJpyc: '0x0' } }), /contract address/)
+  assert.equal(hasActiveCreatorRegistry(validateDeploymentManifest(base)), false)
+  assert.equal(hasActiveCreatorRegistry(validateDeploymentManifest({
+    ...base,
+    contracts: { ...base.contracts, creatorRegistry: '0x5555555555555555555555555555555555555555' }
+  })), true)
 })
 
 test('generates a deterministic mono PCM WAV for the copyright-free player fixture', () => {

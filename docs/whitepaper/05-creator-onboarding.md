@@ -4,6 +4,14 @@ description: クリエイター本人、作品の権利、配信許諾、報酬�
 
 # 5. クリエイター登録 — Creator Onboarding
 
+## Testnetで検証する最小Creator Journey
+
+公開Testnetでは、仮名Profileを現在のTabへ保存し、利用者が明示接続したSepolia WalletからCreator Commitmentと作品の権利自己申告Commitmentを登録する。公開Chainへ実名、作品名、音源、契約書、権利資料、税務情報または秘密情報は保存しない。
+
+この登録は本人確認、Rights Holder確認、Payee審査、配信許諾または作品公開ではない。作品状態は常に`SELF_DECLARED_UNVERIFIED`から始まり、将来の法人によるEvidence確認、Rights Review、契約および異議申立てを経なければRights Registryの`VERIFIED`／`ACTIVE`へ進まない。Creatorが指定したPayout候補Walletも、本人・Wallet Link・税務・制裁・支払承認が完了するまで報酬送金先として使用しない。
+
+[Test Creator Journey](/demo/creator-workspace)ではこの分離を合成データとEthereum Sepoliaで確認できる。
+
 ## 5.1 本章の目的
 
 Creator First Platform におけるクリエイター登録は、単なるアカウント作成ではない。

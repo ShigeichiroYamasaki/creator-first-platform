@@ -44,6 +44,7 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     monthlyPrice,
     monthlyDuration,
   ]);
+  const creatorRegistry = m.contract("CreatorFirstCreatorRegistry", [admin]);
 
   const supporterImplementation = m.contract("SupporterSBTUpgradeable");
   const initializationData = m.encodeFunctionCall(
@@ -71,6 +72,7 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     mockJPYC,
     treasury,
     subscription,
+    creatorRegistry,
     supporterImplementation,
     supporterProxy,
     supporterSBT,

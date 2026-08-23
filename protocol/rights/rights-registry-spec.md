@@ -30,6 +30,10 @@
 
 Define the minimum interoperable behavior for recording content identity, receiving scoped Rights Claims, producing a versioned Rights State after authorized review, preserving disputes and history, and supplying an exact Rights Snapshot to later usage and distribution processes without treating registry data as the source of legal Rights.
 
+## Current Testnet Implementation Conformance
+
+`CreatorFirstCreatorRegistry`とPublic Testnet Creator Journeyは、本仕様のRights Registry実装ではない。Test Creator WalletがProfile CommitmentとRelease／Rights Declaration CommitmentをEthereum Sepoliaへ登録し、`DECLARED_UNVERIFIED`または`WITHDRAWN`の公開監査証跡を作るだけである。実名、作品メタデータ、音源、契約またはEvidenceをOn-chainへ置かず、Creator登録、Payout候補Address、Wallet署名またはCommitmentをLegal Identity、Rights Holder、Payee、`VERIFIED`／`ACTIVE` Rights State、配信許諾、分配または支払の入力としてはならない。これは`REQ-RIGHTS-001`、`REQ-RIGHTS-003`、`REQ-RIGHTS-006`、`REQ-RIGHTS-024`、`REQ-RIGHTS-025`および`REQ-RIGHTS-031`の境界を可視化するTestnet Fixtureであり、Rights Authority、Evidence Store、Review、Dispute、Versioned Rights SnapshotおよびGateway連携は未実装である。
+
 ## Scope
 
 This specification covers:

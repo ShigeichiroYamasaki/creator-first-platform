@@ -19,10 +19,10 @@ Creator First Platformは現在、**構想、公開文書、設計判断、Proto
 | --- | --- | --- | --- |
 | Whitepaper | 公開・策定継続中 | 理念、権利、経済、技術、ガバナンス、法務、ロードマップ | 利害関係者レビューと継続改訂 |
 | CFP | Draft | 提案プロセス案とCFP-0001 | 採択主体・手続・記録方式の確定 |
-| ADR | Proposed | 13件の設計判断案 | レビュー、採否決定、Status更新 |
+| ADR | Proposed | 14件の設計判断案 | レビュー、採否決定、Status更新 |
 | Protocol | Draft 0.1.0 | Account、Wallet、Supporter Credential／Early Tier、決済、決済資産台帳、Rights、Streaming Authorization、Player、Usage、Distribution／資金透明性の10仕様 | Open Questions解決、法務・セキュリティ・ガバナンス承認 |
 | Testnetデモ | Public Testnet Journey部分稼働 | [Test User Journey](/demo/test-user-registration)のProfile、Wallet／Sepolia切替、公開Deployment Manifest、mockJPYC課金、合成Preview／限定Player | 公開Wallet E2E確認、Gateway公開と認可接続、Relayer／Paymaster、Security Review |
-| アプリケーション | 公開Test User Journey＋ローカルPlayback Slice＋Browser Creator Fixture | [Navidrome Docker Server](/demo/local-streaming)、[Streaming Gateway Mock](/demo/local-gateway)、Test User Profile／Wallet／mockJPYC／合成Player UI、Creator Profile、作品Draft、合成Analytics、[資金フロー可視化](/demo/treasury-dashboard)、Vue Player PWA、Delivery Evidence | Account lifecycle／Authenticator、Gas Sponsorship、Creator BFF、Media Ingest、Navidrome非公開Network、Contract Indexer、Rights／Credential／Treasury Read Model、Security Review |
+| アプリケーション | 公開Test User／Creator Journey＋ローカルPlayback Slice | [Navidrome Docker Server](/demo/local-streaming)、[Streaming Gateway Mock](/demo/local-gateway)、Test User Profile／Wallet／mockJPYC／合成Player UI、Test Creator Profile／Wallet／Creator・Release Commitment UI、[資金フロー可視化](/demo/treasury-dashboard)、Vue Player PWA、Delivery Evidence | Account lifecycle／Authenticator、Gas Sponsorship、Creator BFF、Media Ingest、Navidrome非公開Network、Contract Indexer、Rights／Credential／Treasury Read Model、Security Review |
 | Smart Contract | Ethereum Sepoliaへデプロイ済み、監査前 | [公開Address／Source Commit](/demo/testnet-contracts#公開deployment)、一回限りのMockJPYC Test Faucet、Subscription、Treasury、一般／Early Supporter SBT、UUPS Proxy、公開RPC検証 | Etherscan Source Verification、Role分離、Gateway／Indexer接続、Threat Model、独立監査 |
 | ステーブルコイン決済 | 未提供 | 決済・資産審査のDraft仕様 | 対象商品・ネットワーク・取扱形態の法務／技術審査 |
 | DAOガバナンス | 未稼働 | 抽選議会と熟議の構想 | Community形成、適格性、抽選、異議申立て、実証 |

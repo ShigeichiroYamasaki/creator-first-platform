@@ -41,5 +41,6 @@ flowchart LR
 | [ADR-0011](./ADR-0011-integrated-player-client.md)         | Integrated Player Client             | Proposed | 2026-08-21 | 2026-08-23   |
 | [ADR-0013](./ADR-0013-treasury-flow-transparency.md)      | Treasury Flow Transparency Read Model | Proposed | 2026-08-23 | 2026-08-23   |
 | [ADR-0014](./ADR-0014-public-testnet-user-journey.md)     | Public Testnet User Journey           | Proposed | 2026-08-23 | 2026-08-23   |
+| [ADR-0015](./ADR-0015-public-testnet-creator-journey.md)  | Public Testnet Creator Journey        | Proposed | 2026-08-23 | 2026-08-23   |
 
 各ADRは初回作成日の`Date`と、内容またはメタデータを最後に変更した`Last Updated`を分けて記録します。

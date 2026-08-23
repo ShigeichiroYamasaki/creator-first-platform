@@ -43,11 +43,11 @@ Alias Profileの登録だけを、Playback、Wallet Link、Subscriptionまたは
 
 ## 音楽クリエータ向け機能デモ
 
-音楽クリエータは、実名や実在作品を使わずに仮名のCreator Profileを登録し、Creator Workspaceで作品Draft、Rights申告状態、確認Task、合成Analyticsを試せます。最初に登録画面を試す場合と、登録済みFixtureで機能を利用する場合の入口を分けています。
+音楽クリエータは、実名や実在作品を使わずに仮名のCreator Profileを登録し、Test Creator JourneyでSepolia Wallet、Creator Commitmentと作品の権利自己申告Commitmentを試せます。最初に登録画面を試す場合と、登録済みProfileからTestnet機能を利用する場合の入口を分けています。
 
 <DemoServiceChoices kind="creator" />
 
-「登録する」は[Test Creator登録デモ](/demo/creator-registration)、「利用する」は[Creator Workspaceデモ](/demo/creator-workspace)へ移動します。どちらも現在のタブ内だけで動作し、本人確認、権利確認、音源Upload、配信公開、報酬計算または支払処理を行いません。
+「登録する」は[Test Creator登録デモ](/demo/creator-registration)、「利用する」は[Test Creator Journey](/demo/creator-workspace)へ移動します。Profile入力は現在のTabだけ、Wallet AddressとCommitment TransactionはSepoliaへ記録されるが、本人確認、権利確認、音源Upload、配信公開、報酬計算または支払処理を行いません。
 
 Gateway APIとCookie Sessionを含む開発者向け検証は、[ローカルStreaming Gateway](/demo/local-gateway)を起動してPlayerを利用します。
 
@@ -62,7 +62,7 @@ Gateway APIとCookie Sessionを含む開発者向け検証は、[ローカルStr
 | Navidrome Media Adapter | Adapter実装済み、専用User・非公開Network・Canonical Mapping未設定 |
 | Player PWA | ローカルGateway接続済み、公開環境未デプロイ |
 | Test Userサービス | GitHub PagesにProfile／Sepolia Wallet／mockJPYC課金／合成Player Journeyを実装・公開。Gateway認可・本番Authenticator未実装 |
-| Test Creatorサービス | GitHub PagesのCreator Profile登録・作品Draft・確認状態・合成Analyticsを実装済み、本人／権利／公開／支払処理は未実装 |
+| Test Creatorサービス | 仮名Profile、Sepolia Wallet、Creator／Release Commitment UIとContractを実装、Creator Registryの公開Deployment待ち。本人／権利／公開／支払処理は未実装 |
 | Testnet Smart Contract | [Ethereum Sepoliaへデプロイ・公開検証済み](/demo/testnet-contracts)、Gateway／Indexer未接続 |
 | Testnet決済 | 一回限りのMockJPYC Test Faucet、exact-amount Approve、Subscriptionを公開。無価値・償還不可、本番決済ではない |
 | Rights / Usage / Distribution | Draft仕様、未実装 |

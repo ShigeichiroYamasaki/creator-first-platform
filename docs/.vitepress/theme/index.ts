@@ -18,6 +18,7 @@ export default {
     app.component('MermaidDiagram', MermaidDiagram)
     app.component('TestUserRegistrationDemo', TestUserRegistrationDemo)
     app.component('TestnetUserJourneyDemo', defineAsyncComponent(() => import('./TestnetUserJourneyDemo.vue')))
+    app.component('TestnetCreatorJourneyDemo', defineAsyncComponent(() => import('./TestnetCreatorJourneyDemo.vue')))
     app.component('TreasuryFlowDemo', TreasuryFlowDemo)
     app.component('UserServiceDemo', UserServiceDemo)
   }

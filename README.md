@@ -52,14 +52,14 @@ Gatewayを通した再生は、2つのTerminalで`npm run gateway:dev`と`npm ru
 
 ## Testnet Smart Contract
 
-Hardhat 3でMockJPYC、Subscription、Treasury、一般／Early Supporter SBTをローカル検証できます。
+Hardhat 3でMockJPYC、Subscription、Treasury、一般／Early Supporter SBT、および自己申告Commitmentだけを扱うCreator Registryをローカル検証できます。
 
 ```sh
 npm run contracts:compile
 npm run contracts:test
 ```
 
-Source Commit `3ad774abb48b3a5b3559997a00e69316e8ee4006`からEthereum Sepoliaへデプロイ済みです。`npm run contracts:verify:sepolia`で公開RPC上のBytecode、Contract接続、PlanおよびProxy実装先を検証できます。Player／GatewayはContract Eventへ未接続です。Addressと安全境界は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
+決済・SBT ContractはSource Commit `3ad774abb48b3a5b3559997a00e69316e8ee4006`からEthereum Sepoliaへデプロイ済みで、Creator Registryは追加Deployment待ちです。`npm run contracts:verify:sepolia`で公開RPC上のBytecode、Contract接続、Plan、Proxy実装先および公開済みCreator Registry Noticeを検証できます。Player／GatewayはContract Eventへ未接続です。Addressと安全境界は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
 
 ## 文書から実装まで
 

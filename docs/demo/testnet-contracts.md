@@ -1,6 +1,6 @@
 ---
 title: Sepolia Smart Contract Demo
-description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決済とSupporter SBTを検証する手順。
+description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決済、Supporter SBT、Creator Registryを検証する手順。
 ---
 
 # Sepolia Smart Contract Demo
@@ -14,6 +14,7 @@ Hardhat 3とViemを使い、次のTestnet専用コントラクトをEthereum Sep
 | `CreatorFirstTreasury` | Test Assetを保有し、分類・一意な参照付きで支出Eventを出す | 法定会計帳簿、税務申告、Governance承認の正本ではない |
 | `SupporterSBTUpgradeable` | EIP-712 Support Intentを検証し、一般／Early TierをContract内で確定する | Subscription、Rights、STO、配当・収益請求権を表さない |
 | `SupporterSBTProxy` | ERC-1967 ProxyからUUPS実装を呼び出す | Upgradeは監査・Timelock・複数承認を経る本番設計へ置換する |
+| `CreatorFirstCreatorRegistry` | 仮名Creatorと作品／権利自己申告のsalt付きCommitment、状態、Eventを記録する | 本人、Rights、Payee、Catalog、配信許諾、分配または支払を承認しない。Sepolia追加Deployment待ち |
 
 SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を拒否します。Early条件の`POLICY_ROLE`、実装更新の`UPGRADER_ROLE`、署名済みIntentを送る`RELAYER_ROLE`を分離し、発行済みTierを後日のPolicy更新で書き換えません。
 
@@ -43,7 +44,7 @@ npm run contracts:compile
 npm run contracts:test
 ```
 
-テストは、MockJPYCの一回限りの自己取得と移転、Payment／支出Referenceの重複拒否、EIP-712 nonceのreplay拒否、Early上限、ERC-5192、SBT移転拒否を確認します。
+テストは、MockJPYCの一回限りの自己取得と移転、Payment／支出Referenceの重複拒否、EIP-712 nonceのreplay拒否、Early上限、ERC-5192、SBT移転拒否、一Wallet一Creator、Commitment重複拒否、Release自己申告とCreator限定取消しを確認します。
 
 ## InfuraとSepoliaの設定
 

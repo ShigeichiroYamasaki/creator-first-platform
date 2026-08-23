@@ -282,7 +282,7 @@ flowchart LR
 
 Testnetデモでは、金銭的価値を持たないAsset、合成Account、Mock Rights、公開可能な音源Fixtureを使用する。対象Network、Contract Address、Source Commit、既知の制約を公開し、利用者が本番サービスと誤認しない表示を行う。
 
-現在のLocal MockはPhase 1のPlayer／Gateway再生境界と署名UIに加え、Hardhat 3上のTestnet専用MockJPYC決済、TreasuryおよびSupporter SBT Contractの一部を検証している。ContractはEthereum Sepoliaへデプロイし、公開Test User JourneyからMockJPYC Subscriptionを操作できる段階へ進んだが、Alias限定Test-only Profileは本番Account登録の代替ではなく、Gateway／Indexerも未接続であるため、Authenticator、本番決済、Rights／Credential Read Model、Usage／Distribution連携を完了したものとして数えない。
+現在のLocal MockはPhase 1のPlayer／Gateway再生境界と署名UIに加え、Hardhat 3上のTestnet専用MockJPYC決済、Treasury、Supporter SBTおよびCreator Registry Contractの一部を検証している。決済・SBT ContractはEthereum Sepoliaへデプロイし、公開Test User JourneyからMockJPYC Subscriptionを操作できる。Test Creator JourneyとCreator Registryは、仮名Profileと作品／権利自己申告Commitmentだけを扱い、追加Deployment待ちである。いずれも本番Account、Rights、Payeeまたは配信公開の代替ではなく、Gateway／Indexerも未接続であるため、Authenticator、本番決済、Rights／Credential Read Model、Usage／Distribution連携を完了したものとして数えない。
 
 ```mermaid
 flowchart LR
