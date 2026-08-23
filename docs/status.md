@@ -5,7 +5,7 @@ description: Creator First Platformの公開文書、Draft仕様、未実装範�
 
 # 現在の状況
 
-> **基準日: 2026-08-23**
+> **基準日: 2026-08-24**
 
 Creator First Platformは現在、**構想、公開文書、設計判断、Protocol Specificationを整備している段階**です。アプリケーションはローカルPlayback Slice（部分実装）と公開Test-only UIの段階であり、本ページは将来像と現在成立しているものを区別します。
 

@@ -6,7 +6,7 @@ description: Navidromeを交換可能なメディアサーバーとして利用�
 
 **Status:** Proposed
 **Date:** 2026-08-19
-**Last Updated:** 2026-08-23
+**Last Updated:** 2026-08-24
 
 > **Implementation note (2026-08-23):** `apps/gateway`にローカルMock Vertical Sliceを実装した。固定Mock Subscription／Rights、5分の単一Playback Session、単一Range、SQLite Delivery Evidence、SIWE／EIP-712検証、合成音源File Adapterおよび明示Mapping方式のNavidrome Adapterを含む。現在実装しているApplication APIはCatalog Home、Test-only Profile、Playback Session／Stream、SIWE、Support Intent／Mock Credential StatusおよびCommunity Capabilityの限定Surfaceである。Testnet ContractはEthereum Sepoliaへデプロイしたが、GatewayはまだそのEventを参照しない。`auth/refresh`、`auth/logout`、Client Playback Event、検索・Artist・Album詳細、Contract Indexerおよび本番Read Modelは未実装である。これは`MOCK-ASSUMPTION-001`の範囲内であり、Proposed Decision、Open Question、本番Topologyまたは法的Rightsを確定しない。
 
@@ -33,6 +33,8 @@ Navidromeは音楽ライブラリとストリーミングの実装を早期に�
 Creator First Platform は、初期実装において次の構成を採用候補とする。
 
 > **Navidromeは非公開のMedia Serverとし、Creator First Streaming Authorization Gatewayを唯一の公開再生境界とする。**
+
+Navidrome固有のTopology、認証、Network分離、Adapter、配信、Evidence、Scale Triggerおよび置換条件は、本ADRと関連Protocol Specificationを技術的な記録先とする。Whitepaperは製品固有の実装詳細を持たず、技術選択を交換可能に保つ。
 
 ```mermaid
 flowchart LR
