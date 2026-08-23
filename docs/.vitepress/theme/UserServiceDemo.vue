@@ -72,4 +72,3 @@ onMounted(() => {
 .secondary-link { color: var(--vp-c-brand-1); }
 @media (max-width: 540px) { .catalog-grid article { grid-template-columns: 2rem minmax(0, 1fr); } .capability { grid-column: 2; } .primary-link, .secondary-link { width: 100%; justify-content: center; } }
 </style>
-

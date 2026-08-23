@@ -192,4 +192,3 @@ onMounted(() => {
 @media (max-width: 720px) { .metric-grid, .workspace-grid { grid-template-columns: 1fr; } }
 @media (max-width: 540px) { .primary-action, .primary-link { width: 100%; text-align: center; } .task-list li { display: grid; } .task-list strong { text-align: left; } }
 </style>
-

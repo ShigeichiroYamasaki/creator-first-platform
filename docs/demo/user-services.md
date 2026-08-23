@@ -12,4 +12,3 @@ description: Testnet Demoの利用者向け入口として、Test User登録と�
 ::: warning 現在の公開範囲
 登録は現在のタブのSession Storageだけを使うUIシミュレーションです。利用デモは合成Catalog表示までで、実際のGateway認可と音声再生はローカルPlayer MVPで検証します。
 :::
-

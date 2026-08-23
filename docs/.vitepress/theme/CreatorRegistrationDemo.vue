@@ -173,4 +173,3 @@ onMounted(() => {
 .action-row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
 @media (max-width: 540px) { .primary-action, .secondary-action, .primary-link { width: 100%; text-align: center; } .registered-card dl div { grid-template-columns: 1fr; gap: 0.1rem; } }
 </style>
-

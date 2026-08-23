@@ -16,4 +16,3 @@ description: Test Creatorが作品Draft、権利申告状態、確認Task、合�
 </ClientOnly>
 
 本番候補ではWorkspaceを操作面、Creator API／BFFを認証・権限境界とし、Catalog、Media、Rights、Usage、DistributionおよびSettlementのSource of Truthを分離します。
-

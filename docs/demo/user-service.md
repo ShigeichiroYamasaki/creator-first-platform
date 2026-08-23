@@ -12,4 +12,3 @@ description: Test Userの登録状態、合成Catalog、Capability表示とロ�
 </ClientOnly>
 
 このページのCatalog、Artist、作品名、Supporter状態は合成Fixtureであり、権利処理済み音源、Subscription資格、SBTまたは実際の利用実績を表しません。
-

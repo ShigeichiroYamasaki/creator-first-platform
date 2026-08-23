@@ -12,4 +12,3 @@ description: Testnet Demoの音楽クリエータ向け入口として、Creator
 ::: warning Test-only境界
 すべて現在のタブ内だけで動く合成デモです。本人・法人確認、Rights Verification、音源Upload、配信公開、報酬計算、Walletまたは支払処理を行いません。
 :::
-

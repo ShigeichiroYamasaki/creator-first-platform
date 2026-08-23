@@ -16,4 +16,3 @@ description: 音楽クリエータ向けの仮名Profile登録と、本人・権
 </ClientOnly>
 
 Creator Profileの作成は参加申請のUIシミュレーションです。Creator Entity、Legal Identity、Rights Holder、PayeeおよびWallet Controlはそれぞれ独立した審査・記録を必要とします。
-
