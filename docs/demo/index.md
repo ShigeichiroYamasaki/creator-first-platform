@@ -39,6 +39,14 @@ flowchart LR
 
 Browser Demoの入力は現在のタブのSession Storageだけに保存され、Gateway、Blockchainまたは外部サービスへ送信されません。Test Userの登録はPlayback、Wallet Link、SubscriptionまたはSBT資格の認可条件にも使用しません。Test Creatorの登録もPlatform Account、本人確認、Rights、配信公開または報酬受取資格を作成しません。
 
+## 音楽クリエータ向け機能デモ
+
+音楽クリエータは、実名や実在作品を使わずに仮名のCreator Profileを登録し、Creator Workspaceで作品Draft、Rights申告状態、確認Task、合成Analyticsを試せます。最初に登録画面を試す場合と、登録済みFixtureで機能を利用する場合の入口を分けています。
+
+<DemoServiceChoices kind="creator" />
+
+「登録する」は[Test Creator登録デモ](/demo/creator-registration)、「利用する」は[Creator Workspaceデモ](/demo/creator-workspace)へ移動します。どちらも現在のタブ内だけで動作し、本人確認、権利確認、音源Upload、配信公開、報酬計算または支払処理を行いません。
+
 Gateway APIとCookie Sessionを含む開発者向け検証は、[ローカルStreaming Gateway](/demo/local-gateway)を起動してPlayerを利用します。
 
 ## 現在の状態

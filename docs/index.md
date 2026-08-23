@@ -69,7 +69,7 @@ features:
 </div>
 
 <div class="document-meta__row">
-  <span class="document-meta__label">Last Updated</span>
+  <span class="document-meta__label">Revision Date</span>
   <span>2026-08-23</span>
 </div>
 
