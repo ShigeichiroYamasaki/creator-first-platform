@@ -6,9 +6,11 @@ description: 一般SupporterとEarly Supporterを一つの非金銭的SBT Creden
 
 **Status:** Proposed
 **Date:** 2026-08-20
-**Last Updated:** 2026-08-22
+**Last Updated:** 2026-08-23
 
 ## 1. Context
+
+> **Implementation note (2026-08-23):** Testnet専用の`SupporterSBTUpgradeable`をHardhat 3で実装した。EIP-712 Support Intent、Holder nonce／deadline、Contract-side Early判定、Creatorごとの版管理Policyと人数上限、一Scope・Holderあたり一つのActive Credential、ERC-5192、移転拒否、失効・Burn、役割分離およびERC-1967／UUPSをローカルテストしている。Sepolia未デプロイ、Relayer／Indexer／Gateway未接続、監査前であり、本番CredentialまたはProtocol適合完了を意味しない。
 
 Whitepaperは、PlayerからCreatorを支援する意思を表明した利用者を一般Supporterとして記録し、そのうち版管理された初期条件を満たした利用者をEarly Supporterとして可視化する方針を示している。いずれも金銭的リターンではなくCommunity Reputationとして扱う。
 

@@ -10,6 +10,9 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
+    "contracts:compile": "hardhat compile",
+    "contracts:test": "hardhat test nodejs",
+    "contracts:deploy:sepolia": "hardhat ignition deploy ignition/modules/CreatorFirstTestnet.ts --network sepolia --deployment-id sepolia-creator-first-testnet",
     "player:seed": "node scripts/generate-player-test-audio.mjs",
     "player:dev": "npm run player:seed && vite --config apps/player/vite.config.ts --host 127.0.0.1",
     "player:dev:gateway": "VITE_GATEWAY_MODE=gateway VITE_GATEWAY_BASE=/api vite --config apps/player/vite.config.ts --host 127.0.0.1",
@@ -43,10 +46,14 @@
     "site:test": "node --test scripts/validate-site-output.test.mjs",
     "workflow:validate": "node scripts/validate-workflows.mjs",
     "workflow:test": "node --test scripts/validate-workflows.test.mjs",
-    "validate": "npm run workflow:test && npm run workflow:validate && npm run community:test && npm run community:validate && npm run deployment:test && npm run protocol:test && npm run protocol:validate && npm run decisions:test && npm run decisions:validate && npm run status:test && npm run status:validate && npm run streaming:test && npm run streaming:validate && npm run gateway:test && npm run gateway:validate && npm run player:test && npm run player:build && npm run player:validate && npm run docs:build && npm run site:test && npm run site:validate"
+    "validate": "npm run contracts:compile && npm run contracts:test && npm run workflow:test && npm run workflow:validate && npm run community:test && npm run community:validate && npm run deployment:test && npm run protocol:test && npm run protocol:validate && npm run decisions:test && npm run decisions:validate && npm run status:test && npm run status:validate && npm run streaming:test && npm run streaming:validate && npm run gateway:test && npm run gateway:validate && npm run player:test && npm run player:build && npm run player:validate && npm run docs:build && npm run site:test && npm run site:validate"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "5.0.7",
+    "@openzeppelin/contracts": "5.6.1",
+    "@openzeppelin/contracts-upgradeable": "5.6.1",
     "@vitejs/plugin-vue": "5.2.4",
+    "hardhat": "3.14.0",
     "markdown-it-mathjax3": "^4.3.2",
     "mermaid": "^11.17.0",
     "typescript": "5.8.3",

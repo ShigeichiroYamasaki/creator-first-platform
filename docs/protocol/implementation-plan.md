@@ -148,7 +148,7 @@ flowchart TD
 
 **対象仕様:** [SPEC-ACCOUNT-004](/protocol/specs/early-supporter-credential)、[SPEC-STREAMING-001](/protocol/specs/playback-authorization)
 
-**現在の部分実装:** 固定Mock Subscription／Rights、短命Playback Session、Owner Binding、単一Range、Concurrency Lease、SQLite Delivery Evidence、月間Byte Budget、File Adapter、明示Mapping型Navidrome Adapter、EIP-712 Support Intent、Mock Credential状態およびCommunity Capabilityを実装済みである。実SBT Contract、Relayer、Revocation／Recovery、Reorganization-aware Read Model、Client Playback Event、Playback Verification handoff、非公開Cloud Networkおよび障害Fixture一式は未実装であり、IMP-006の終了条件は未達である。
+**現在の部分実装:** 固定Mock Subscription／Rights、短命Playback Session、Owner Binding、単一Range、Concurrency Lease、SQLite Delivery Evidence、月間Byte Budget、File Adapter、明示Mapping型Navidrome Adapter、EIP-712 Support Intent、Mock Credential状態およびCommunity Capabilityを実装済みである。別レイヤーでは、Hardhat 3によるMockJPYC、Subscription、Treasury、一般／Early Supporter SBTとUUPS Proxyをローカルテスト済みである。ただしSepolia未デプロイで、Relayer、Contract Indexer、Gateway接続、Recovery、Reorganization-aware Read Model、Client Playback Event、Playback Verification handoff、非公開Cloud Networkおよび障害Fixture一式は未実装であり、IMP-006の終了条件は未達である。
 
 **成果物:**
 

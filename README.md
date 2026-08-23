@@ -7,7 +7,7 @@ Creator First Platform は、クリエイターの持続可能な活動と利用
 - 設計判断（ADR）: [`docs/adr/`](docs/adr/)
 - 実装仕様: [`protocol/`](protocol/)
 
-現在はホワイトペーパー、ガバナンス、権利管理、JPYC等による決済、STOを含む資金調達、および将来のスマートコントラクト実装に向けた仕様を整備しています。法務・税務に関する記述は一般的な設計資料であり、個別案件では専門家による確認を前提とします。
+現在はホワイトペーパー、ガバナンス、権利管理、JPYC等による決済、STOを含む資金調達の仕様を整備し、Testnet専用Smart Contractの最初の実装を追加しています。法務・税務に関する記述は一般的な設計資料であり、個別案件では専門家による確認を前提とします。
 
 ## ローカルで確認する
 
@@ -49,6 +49,17 @@ npm run player:dev
 既定では`127.0.0.1`だけで待ち受けます。基本再生、Queue、Seek、EIP-1193 Wallet接続、SIWE、Supporter登録同意、EIP-712署名、Mock SBT TierとCommunity Capability表示を確認できます。Mockは実Transaction、実JPYC、実SBTを扱いません。詳細は[`apps/player/README.md`](apps/player/README.md)を参照してください。
 
 Gatewayを通した再生は、2つのTerminalで`npm run gateway:dev`と`npm run player:dev:gateway`を起動します。短命Playback Session、Range配信、SIWE／EIP-712検証、Mock SBT資格およびDelivery Evidenceを確認できます。詳細は[`apps/gateway/README.md`](apps/gateway/README.md)を参照してください。
+
+## Testnet Smart Contract
+
+Hardhat 3でMockJPYC、Subscription、Treasury、一般／Early Supporter SBTをローカル検証できます。
+
+```sh
+npm run contracts:compile
+npm run contracts:test
+```
+
+SepoliaへはInfura RPCとデプロイ専用鍵をHardhat Keystoreに設定してから`npm run contracts:deploy:sepolia`を実行します。現時点では未デプロイで、Player／GatewayもContract Eventへ未接続です。安全境界と手順は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
 
 ## 文書から実装まで
 

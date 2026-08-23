@@ -6,7 +6,7 @@ description: 決済、権利、利用証明、分配、ガバナンスを支え�
 
 **Status:** Proposed  
 **Date:** 2026-07-29
-**Last Updated:** 2026-08-20
+**Last Updated:** 2026-08-23
 
 ## 1. Context
 
@@ -247,6 +247,10 @@ Settlement Asset Registryを設け、
 等をVersion管理する。
 
 Testnetでは、金銭的価値、償還請求権または実在JPYCとの交換可能性を持たない`MockJPYC`だけをDemo SubscriptionのSettlement Assetとして承認する。Mainnet JPYCとTest Tokenは異なるAsset ID、Contract Address、Networkおよび表示を持たなければならない。
+
+最初のSmart Contract開発Profileは、Hardhat 3、Viem、Infura RPCおよびEthereum Sepolia（Chain ID `11155111`）とする。これはTestnet ToolingとEVM上のContract境界を検証する選択であり、本番ChainまたはPrimary L2の決定ではない。SepoliaではETHをGasにだけ使用し、SubscriptionとTreasuryのTest Assetには無価値・償還不可の`MockJPYC`だけを使用する。
+
+2026-08-23時点で、`MockJPYC`、Subscription、Test Treasury、一般／Early Supporter SBT、ERC-1967／UUPS ProxyおよびIgnition ModuleをRepositoryへ実装し、ローカル自動テストを通過している。Sepoliaへのデプロイ、公開Address、Indexer／Gateway接続、Threat Modelおよび独立監査は未完了である。
 
 ---
 

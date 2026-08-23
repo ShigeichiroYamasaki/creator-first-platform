@@ -34,11 +34,11 @@ flowchart LR
 | [ADR-0004](./ADR-0004-creator-distribution-model.md)       | Creator Distribution Model           | Proposed | 2026-07-29 | 2026-08-20   |
 | [ADR-0005](./ADR-0005-usage-oracle.md)                     | Usage Oracle                         | Proposed | 2026-07-29 | 2026-08-20   |
 | [ADR-0006](./ADR-0006-zero-knowledge-proof-strategy.md)    | Zero-Knowledge Proof Strategy        | Proposed | 2026-07-29 | 2026-08-20   |
-| [ADR-0007](./ADR-0007-blockchain-l2-strategy.md)           | Blockchain / L2 Strategy             | Proposed | 2026-07-29 | 2026-08-20   |
+| [ADR-0007](./ADR-0007-blockchain-l2-strategy.md)           | Blockchain / L2 Strategy             | Proposed | 2026-07-29 | 2026-08-23   |
 | [ADR-0008](./ADR-0008-account-wallet-identity-strategy.md) | Account / Wallet / Identity Strategy | Proposed | 2026-07-29 | 2026-08-20   |
-| [ADR-0009](./ADR-0009-navidrome-streaming-gateway.md)      | Navidrome / Streaming Gateway        | Proposed | 2026-08-19 | 2026-08-22   |
-| [ADR-0010](./ADR-0010-early-supporter-sbt-privileges.md)   | Supporter SBT and Privileges         | Proposed | 2026-08-20 | 2026-08-22   |
-| [ADR-0011](./ADR-0011-integrated-player-client.md)         | Integrated Player Client             | Proposed | 2026-08-21 | 2026-08-22   |
+| [ADR-0009](./ADR-0009-navidrome-streaming-gateway.md)      | Navidrome / Streaming Gateway        | Proposed | 2026-08-19 | 2026-08-23   |
+| [ADR-0010](./ADR-0010-early-supporter-sbt-privileges.md)   | Supporter SBT and Privileges         | Proposed | 2026-08-20 | 2026-08-23   |
+| [ADR-0011](./ADR-0011-integrated-player-client.md)         | Integrated Player Client             | Proposed | 2026-08-21 | 2026-08-23   |
 | [ADR-0013](./ADR-0013-treasury-flow-transparency.md)      | Treasury Flow Transparency Read Model | Proposed | 2026-08-23 | 2026-08-23   |
 
 各ADRは初回作成日の`Date`と、内容またはメタデータを最後に変更した`Last Updated`を分けて記録します。

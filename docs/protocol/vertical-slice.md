@@ -5,10 +5,10 @@ description: Account・決済とRights・UsageをCreator Distribution Allocation
 
 # End-to-End Vertical Slice
 
-現在の10個のDraft Protocol Specificationを、Creator First Platformの最初の検証可能な実装経路として接続します。このページは実装順序と境界を示すものであり、サービス、決済、分配またはSmart Contractが稼働していることを示すものではありません。
+現在の10個のDraft Protocol Specificationを、Creator First Platformの最初の検証可能な実装経路として接続します。このページは実装順序と境界を示すものであり、サービス、公開決済、分配またはデプロイ済みSmart Contractが稼働していることを示すものではありません。
 
 ::: warning 全体として未成立です
-Protocol SpecificationはすべてDraftです。ローカルPlayer、Gateway、合成音源、限定的なSIWE／EIP-712およびTest-only Profileは部分実装されていますが、Account lifecycle、MockJPYC決済、実SBT Contract、Rights／Credential Read Model、Usage集計、分配およびSettlementを結ぶEnd-to-End Vertical Sliceは未成立です。各仕様のOpen Questions、法人・法務・権利・税務・プライバシー・セキュリティ上の承認、本番実装、監査も完了していません。ここに示す`ACTIVE`や`FINALIZED`は仕様上またはMock内の状態名であり、現実のサービス状態ではありません。
+Protocol SpecificationはすべてDraftです。ローカルPlayer、Gateway、合成音源、限定的なSIWE／EIP-712、Test-only Profileに加え、Testnet専用MockJPYC決済とSupporter SBT Contractを部分実装しています。しかしContractはSepolia未デプロイでGatewayとも未接続であり、Account lifecycle、Rights／Credential Read Model、Usage集計、分配およびSettlementを結ぶEnd-to-End Vertical Sliceは未成立です。各仕様のOpen Questions、法人・法務・権利・税務・プライバシー・セキュリティ上の承認、本番実装、監査も完了していません。ここに示す`ACTIVE`や`FINALIZED`は仕様上またはMock内の状態名であり、現実のサービス状態ではありません。
 :::
 
 ## 二つの入力経路
@@ -132,8 +132,8 @@ Walletは支払認可手段の一つであり、人間のIdentityやRights Owner
 
 ## 現在の部分実装と未実装範囲
 
-Repositoryには、Vue Player、Node.js Gateway、SQLiteのAuthorization／Delivery Evidence、合成音源File Adapter、任意の明示Mapping型Navidrome Adapter、短命Playback Session、Range、SIWE／EIP-712署名検証、Mock Supporter状態およびAlias限定Test-only Profileがある。ただし固定Mock Subscription／Rightsと自動生成Demo Principalを使用しており、これらをPlatform Account、確定済みSubscription、実SBT、法的RightsまたはVerified Usageとして扱わない。Test-only Profile登録は認可を変更しない。
+Repositoryには、Vue Player、Node.js Gateway、SQLiteのAuthorization／Delivery Evidence、合成音源File Adapter、任意の明示Mapping型Navidrome Adapter、短命Playback Session、Range、SIWE／EIP-712署名検証、Mock Supporter状態、Alias限定Test-only Profile、およびHardhat 3のTestnet専用MockJPYC／Subscription／Treasury／Supporter SBTがある。ただしPlayerとGatewayは固定Mock Subscription／Rightsと自動生成Demo Principalを使用しており、ContractはSepolia未デプロイ・未接続である。これらをPlatform Account、公開決済、法的RightsまたはVerified Usageとして扱わない。Test-only Profile登録は認可を変更しない。
 
-Account state machineとAuthenticator、MockJPYC Payment、Smart Contract、Indexer／Read Model、Rights Registry、Playback Event集約、Usage Snapshot、Distribution、Settlement Stub、鍵管理、監視、会計連携および本番運用は未実装である。また、Creatorへの実際の送金、源泉徴収、請求書、制裁確認、Wallet変更、失敗回復等を扱うSettlement Executionの詳細仕様は今後必要である。
+Account state machineとAuthenticator、Sepolia Deployment、Relayer、Indexer／Read Model、Rights Registry、Playback Event集約、Usage Snapshot、Distribution、Settlement Stub、鍵管理、監視、会計連携および本番運用は未実装である。また、Creatorへの実際の送金、源泉徴収、請求書、制裁確認、Wallet変更、失敗回復等を扱うSettlement Executionの詳細仕様は今後必要である。
 
 次に進むには、[Protocol Decision Queue](/protocol/open-questions)のうちMVPを停止している判断を解決し、[Vertical Slice Implementation Plan](/protocol/implementation-plan)に従って小さなTestnet／Mock環境で再現します。

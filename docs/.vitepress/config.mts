@@ -195,6 +195,7 @@ export default defineConfig({
               { text: 'Test Creator登録デモ', link: '/demo/creator-registration' },
               { text: 'Creator Workspaceデモ', link: '/demo/creator-workspace' },
               { text: '資金フロー可視化デモ', link: '/demo/treasury-dashboard' },
+              { text: 'Sepolia Smart Contract', link: '/demo/testnet-contracts' },
               { text: 'ローカル音楽ストリーミング', link: '/demo/local-streaming' },
               { text: 'ローカルStreaming Gateway', link: '/demo/local-gateway' }
             ]

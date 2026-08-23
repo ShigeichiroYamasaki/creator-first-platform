@@ -1,4 +1,7 @@
 node_modules/
+artifacts/
+cache/
+ignition/deployments/
 docs/.vitepress/cache/
 docs/.vitepress/dist/
 dist/

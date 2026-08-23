@@ -46,14 +46,15 @@ Gateway APIとCookie Sessionを含む開発者向け検証は、[ローカルStr
 | 項目 | 状態 |
 | --- | --- |
 | 公開デモURL | 準備中 |
-| 対象Testnet | 未決定 |
+| 対象Testnet | Sepolia（Infura RPC、デプロイ前） |
 | Demo Contract Address | 未デプロイ |
 | Streaming Gateway | [ローカルMock実装済み](/demo/local-gateway)、公開環境未デプロイ |
 | Navidrome Media Adapter | Adapter実装済み、専用User・非公開Network・Canonical Mapping未設定 |
 | Player PWA | ローカルGateway接続済み、公開環境未デプロイ |
 | Test Userサービス | GitHub Pagesの登録・合成Catalog導線とローカルGateway版を実装済み、本番Authenticator未実装 |
 | Test Creatorサービス | GitHub PagesのCreator Profile登録・作品Draft・確認状態・合成Analyticsを実装済み、本人／権利／公開／支払処理は未実装 |
-| Testnet決済 | 未実装 |
+| Testnet Smart Contract | [Hardhat 3実装・ローカルテスト済み](/demo/testnet-contracts)、Sepolia未デプロイ、Gateway未接続 |
+| Testnet決済 | MockJPYC Subscription／Treasuryを実装・ローカルテスト済み、公開決済未提供 |
 | Rights / Usage / Distribution | Draft仕様、未実装 |
 
 進捗と成立条件は[現在の状況](/status)、[Vertical Slice Implementation Plan](/protocol/implementation-plan)、[Decision Baseline](/protocol/decision-baseline)で確認できます。
