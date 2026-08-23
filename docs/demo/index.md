@@ -31,13 +31,15 @@ flowchart LR
 4. 法務・Rights・Privacy・SecurityレビューとSmart Contract監査を終える。
 5. Testnet成果物をそのまま本番へ流用せず、本番用の鍵、権限、インフラ、契約、監視、復旧手順を別Gateで実装する。
 
-## すぐ試せるTest User登録
+## サービスを選ぶ
 
-[ブラウザだけでテストユーザー登録を試す](/demo/test-user-registration)ことができます。サーバー起動、Wallet接続、Tokenまたは送金は不要です。入力は現在のタブのSession Storageだけに保存され、Gateway、Blockchainまたは外部サービスへ送信されません。実名、メール、電話番号、PasswordまたはWallet Addressを入力しないでください。
+利用者向けと音楽クリエータ向けの入口を分離しました。それぞれのページで「登録」と「利用」を選択できます。公開ページのBrowser Demoはサーバー起動、Wallet接続、Tokenまたは送金を必要としません。
 
-この操作はAlias登録とNotice確認のUIシミュレーションです。Authenticatorを登録せず、Protocol上のPlatform Accountを`PENDING`または`ACTIVE`にせず、Playback、Wallet Link、SubscriptionまたはSBT資格の認可条件にも使用しません。本番Account登録、本人確認、Subscription契約または資産口座ではありません。
+<DemoServiceChoices kind="entry" />
 
-Gateway APIとCookie Sessionを含む開発者向け検証は、[ローカルStreaming Gateway](/demo/local-gateway)を起動してPlayerの`/#/register`を利用します。
+Browser Demoの入力は現在のタブのSession Storageだけに保存され、Gateway、Blockchainまたは外部サービスへ送信されません。Test Userの登録はPlayback、Wallet Link、SubscriptionまたはSBT資格の認可条件にも使用しません。Test Creatorの登録もPlatform Account、本人確認、Rights、配信公開または報酬受取資格を作成しません。
+
+Gateway APIとCookie Sessionを含む開発者向け検証は、[ローカルStreaming Gateway](/demo/local-gateway)を起動してPlayerを利用します。
 
 ## 現在の状態
 
@@ -49,7 +51,8 @@ Gateway APIとCookie Sessionを含む開発者向け検証は、[ローカルStr
 | Streaming Gateway | [ローカルMock実装済み](/demo/local-gateway)、公開環境未デプロイ |
 | Navidrome Media Adapter | Adapter実装済み、専用User・非公開Network・Canonical Mapping未設定 |
 | Player PWA | ローカルGateway接続済み、公開環境未デプロイ |
-| Test User登録 | GitHub Pagesのブラウザ内シミュレーションとローカルGateway版を実装済み、本番Authenticator未実装 |
+| Test Userサービス | GitHub Pagesの登録・合成Catalog導線とローカルGateway版を実装済み、本番Authenticator未実装 |
+| Test Creatorサービス | GitHub PagesのCreator Profile登録・作品Draft・確認状態・合成Analyticsを実装済み、本人／権利／公開／支払処理は未実装 |
 | Testnet決済 | 未実装 |
 | Rights / Usage / Distribution | Draft仕様、未実装 |
 

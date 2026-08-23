@@ -53,11 +53,42 @@ services:
       media:
         ipv4_address: 172.31.0.20
 
+  docs-demo:
+    image: nginx:1.29-alpine
+    restart: unless-stopped
+    read_only: true
+    volumes:
+      - ./site:/usr/share/nginx/html:ro
+      - ./bootstrap/docs-nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    tmpfs:
+      - /var/cache/nginx:size=32m,mode=0755
+      - /var/run:size=1m,mode=0755
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - NET_BIND_SERVICE
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1/creator-first-platform/demo/"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 5s
+    networks:
+      media:
+        ipv4_address: 172.31.0.30
+
   bootstrap-gateway:
     image: nginx:1.29-alpine
     restart: unless-stopped
     depends_on:
       navidrome:
+        condition: service_healthy
+      docs-demo:
         condition: service_healthy
     ports:
       - "127.0.0.1:8080:8080"
@@ -81,7 +112,8 @@ services:
     image: cloudflare/cloudflared:latest
     restart: unless-stopped
     depends_on:
-      - bootstrap-gateway
+      bootstrap-gateway:
+        condition: service_started
     network_mode: host
     command:
       - tunnel

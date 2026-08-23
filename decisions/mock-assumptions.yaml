@@ -31,7 +31,12 @@ assumptions:
       create or activate a Platform Account and is never an authorization input for
       playback, Wallet Link, Subscription, Credential or Community capability. The
       hosted documentation demo is a separate browser-only UI simulation that keeps
-      its alias profile in per-tab Session Storage and never calls the Gateway.
+      its alias profile in per-tab Session Storage and never calls the Gateway. The
+      hosted Creator fixture similarly keeps a synthetic Creator Profile and up to
+      eight unpublished Release Drafts in per-tab Session Storage. Its Supporter and
+      MockJPYC figures are fixed display fixtures; it never uploads media or evidence,
+      verifies identity or rights, publishes a release, calculates distribution or
+      calls the Gateway, Wallet, Blockchain or an external service.
     expires_when: >-
       The owning Product, Security, Accessibility, Privacy, Rights and Protocol
       decision owners approve the first Account, Player, Wallet and Community profile.
@@ -42,3 +47,4 @@ assumptions:
       - Rights-cleared music distribution, offline protected audio or verified usage
       - Production use of the fixed Subscription, Rights, TTL, byte budget or SQLite choices
       - Claiming that a Test User is an ACTIVE Platform Account or verified person
+      - Claiming that a Test Creator is verified, owns rights, has published a release or can receive payment

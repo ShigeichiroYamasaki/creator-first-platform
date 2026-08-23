@@ -188,7 +188,12 @@ export default defineConfig({
             text: 'Demo',
             items: [
               { text: 'Testnetデモ入口', link: '/demo/' },
+              { text: 'ユーザ向けサービス', link: '/demo/user-services' },
               { text: 'Test User登録デモ', link: '/demo/test-user-registration' },
+              { text: 'ユーザ向け利用デモ', link: '/demo/user-service' },
+              { text: '音楽クリエータサービス', link: '/demo/creator-services' },
+              { text: 'Test Creator登録デモ', link: '/demo/creator-registration' },
+              { text: 'Creator Workspaceデモ', link: '/demo/creator-workspace' },
               { text: 'ローカル音楽ストリーミング', link: '/demo/local-streaming' },
               { text: 'ローカルStreaming Gateway', link: '/demo/local-gateway' }
             ]

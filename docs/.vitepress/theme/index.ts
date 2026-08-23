@@ -1,12 +1,20 @@
 import DefaultTheme from 'vitepress/theme'
+import CreatorRegistrationDemo from './CreatorRegistrationDemo.vue'
+import CreatorWorkspaceDemo from './CreatorWorkspaceDemo.vue'
+import DemoServiceChoices from './DemoServiceChoices.vue'
 import MermaidDiagram from './MermaidDiagram.vue'
 import TestUserRegistrationDemo from './TestUserRegistrationDemo.vue'
+import UserServiceDemo from './UserServiceDemo.vue'
 import './custom.css'
 
 export default {
   extends: DefaultTheme,
   enhanceApp({ app }) {
+    app.component('CreatorRegistrationDemo', CreatorRegistrationDemo)
+    app.component('CreatorWorkspaceDemo', CreatorWorkspaceDemo)
+    app.component('DemoServiceChoices', DemoServiceChoices)
     app.component('MermaidDiagram', MermaidDiagram)
     app.component('TestUserRegistrationDemo', TestUserRegistrationDemo)
+    app.component('UserServiceDemo', UserServiceDemo)
   }
 }

@@ -13,3 +13,8 @@ This standalone administration setup exposes Navidrome only on the host loopback
 
 Detailed Japanese instructions: [`docs/demo/local-streaming.md`](../../docs/demo/local-streaming.md)
 Detailed English instructions: [`docs/en/local-streaming.md`](../../docs/en/local-streaming.md)
+
+The Google Cloud test variant is defined in `compose.gcp.yml`. It adds a read-only
+Nginx container for the public documentation and browser-only User／Creator demo,
+while keeping Navidrome behind Basic authentication. Its metadata-driven deployment
+procedure is documented in [`deployment/gcp/README.md`](../../deployment/gcp/README.md).
