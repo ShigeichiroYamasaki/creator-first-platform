@@ -121,7 +121,7 @@ test('rejects a gzip search index over its transfer budget', async () => {
   })
 
   assert.equal(result.status, 1)
-  assert.match(result.stderr, /gzip search index is \d+ bytes \(limit: 300000\)/)
+  assert.match(result.stderr, /gzip search index is \d+ bytes \(limit: 310000\)/)
 })
 
 test('rejects an insecure external link', async () => {
