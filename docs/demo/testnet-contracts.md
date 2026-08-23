@@ -9,7 +9,7 @@ Hardhat 3とViemを使い、Sepoliaへ次のTestnet専用コントラクトを�
 
 | Contract | Testnet上の責務 | 本番境界 |
 | --- | --- | --- |
-| `MockJPYC` | 無価値・償還不可の`tJPYC`を発行する | 実在JPYC、交換、販売、償還を扱わない |
+| `MockJPYC` | 無価値・償還不可の`tJPYC`を発行し、各Addressへ一回限り`2,000 tJPYC`を配布する | 実在JPYC、交換、販売、償還を扱わない。Public `claim()`はTestnet専用 |
 | `CreatorFirstSubscription` | 固定Planの`tJPYC`移転成功と同じTransactionでSubscription期限を更新する | 法的な契約成立、返金、会計・税務判断を行わない |
 | `CreatorFirstTreasury` | Test Assetを保有し、分類・一意な参照付きで支出Eventを出す | 法定会計帳簿、税務申告、Governance承認の正本ではない |
 | `SupporterSBTUpgradeable` | EIP-712 Support Intentを検証し、一般／Early TierをContract内で確定する | Subscription、Rights、STO、配当・収益請求権を表さない |
@@ -27,7 +27,7 @@ npm run contracts:compile
 npm run contracts:test
 ```
 
-テストは、MockJPYC移転、Payment／支出Referenceの重複拒否、EIP-712 nonceのreplay拒否、Early上限、ERC-5192、SBT移転拒否を確認します。
+テストは、MockJPYCの一回限りの自己取得と移転、Payment／支出Referenceの重複拒否、EIP-712 nonceのreplay拒否、Early上限、ERC-5192、SBT移転拒否を確認します。
 
 ## InfuraとSepoliaの設定
 

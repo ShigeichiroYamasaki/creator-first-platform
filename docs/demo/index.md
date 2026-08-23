@@ -33,11 +33,13 @@ flowchart LR
 
 ## サービスを選ぶ
 
-利用者向けと音楽クリエータ向けの入口を分離しました。それぞれのページで「登録」と「利用」を選択できます。公開ページのBrowser Demoはサーバー起動、Wallet接続、Tokenまたは送金を必要としません。
+利用者向けと音楽クリエータ向けの入口を分離しました。Test User登録は、公開ページ上でProfile、Sepolia Wallet、mockJPYC Subscription、合成音源Playerを順に試すJourneyへ拡張しています。Contract未デプロイ中はWalletとPreview Playerまで利用でき、送金操作は自動停止します。
 
 <DemoServiceChoices kind="entry" />
 
-Browser Demoの入力は現在のタブのSession Storageだけに保存され、Gateway、Blockchainまたは外部サービスへ送信されません。Test Userの登録はPlayback、Wallet Link、SubscriptionまたはSBT資格の認可条件にも使用しません。Test Creatorの登録もPlatform Account、本人確認、Rights、配信公開または報酬受取資格を作成しません。
+Test UserのAliasとIDは現在のタブのSession Storageだけに保存されます。Walletを明示接続した後のAddressとTransactionはSepoliaの公開情報になりますが、ProfileとWallet AddressをPlatform Accountとして結合しません。Test Creatorの登録もPlatform Account、本人確認、Rights、配信公開または報酬受取資格を作成しません。
+
+Alias Profileの登録だけを、Playback、Wallet Link、SubscriptionまたはSBT資格の認可条件にも使用しません。公開Journeyの限定合成Trackは、Contract公開後にSepolia上の確定済みSubscription状態だけを参照するUI Gateであり、GatewayのStreaming Authorizationを成立させるものではありません。
 
 ## 音楽クリエータ向け機能デモ
 
@@ -59,10 +61,10 @@ Gateway APIとCookie Sessionを含む開発者向け検証は、[ローカルStr
 | Streaming Gateway | [ローカルMock実装済み](/demo/local-gateway)、公開環境未デプロイ |
 | Navidrome Media Adapter | Adapter実装済み、専用User・非公開Network・Canonical Mapping未設定 |
 | Player PWA | ローカルGateway接続済み、公開環境未デプロイ |
-| Test Userサービス | GitHub Pagesの登録・合成Catalog導線とローカルGateway版を実装済み、本番Authenticator未実装 |
+| Test Userサービス | GitHub PagesにProfile／Sepolia Wallet／mockJPYC課金／合成Player Journeyを実装。Contract未デプロイ中は書込み無効、Gateway認可・本番Authenticator未実装 |
 | Test Creatorサービス | GitHub PagesのCreator Profile登録・作品Draft・確認状態・合成Analyticsを実装済み、本人／権利／公開／支払処理は未実装 |
 | Testnet Smart Contract | [Hardhat 3実装・ローカルテスト済み](/demo/testnet-contracts)、Sepolia未デプロイ、Gateway未接続 |
-| Testnet決済 | MockJPYC Subscription／Treasuryを実装・ローカルテスト済み、公開決済未提供 |
+| Testnet決済 | MockJPYC Subscription／Treasuryと一回限りのTest Faucetを実装・ローカルテスト済み。Sepolia未デプロイのため公開書込みは無効 |
 | Rights / Usage / Distribution | Draft仕様、未実装 |
 
 進捗と成立条件は[現在の状況](/status)、[Vertical Slice Implementation Plan](/protocol/implementation-plan)、[Decision Baseline](/protocol/decision-baseline)で確認できます。

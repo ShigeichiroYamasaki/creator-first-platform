@@ -31,7 +31,7 @@ export default defineConfig({
       chainType: "l1",
       chainId: 11155111,
       url: configVariable("SEPOLIA_RPC_URL"),
-      accounts: [configVariable("SEPOLIA_PRIVATE_KEY")],
+      accounts: [configVariable("DEPLOYER_PRIVATE_KEY")],
     },
   },
 });

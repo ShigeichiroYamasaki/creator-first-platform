@@ -48,6 +48,18 @@ describe("Creator-first testnet settlement", async () => {
     );
   });
 
+  it("allows one fixed self-service test token claim per address", async () => {
+    const { token } = await deployFixture();
+    const initialBalance = await token.read.balanceOf([subscriber.account.address]);
+
+    await token.write.claim({ account: creator.account });
+
+    assert.equal(await token.read.balanceOf([creator.account.address]), parseEther("2000"));
+    assert.equal(await token.read.hasClaimed([creator.account.address]), true);
+    assert.equal(await token.read.balanceOf([subscriber.account.address]), initialBalance);
+    await assert.rejects(token.write.claim({ account: creator.account }));
+  });
+
   it("makes categorized treasury disbursements with an idempotent reference", async () => {
     const { token, treasury, subscription } = await deployFixture();
     const paymentRef = keccak256(toBytes("payment-002"));

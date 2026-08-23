@@ -6,7 +6,7 @@ description: Web2アカウント、Wallet、本人確認、権限、Recoveryを�
 
 **Status:** Proposed  
 **Date:** 2026-07-29
-**Last Updated:** 2026-08-20
+**Last Updated:** 2026-08-23
 
 ## 1. Context
 
@@ -576,6 +576,8 @@ Gas Sponsorship PolicyはAbuse ResistanceとCost Controlを考慮する。
 RelayerまたはPaymasterの受付結果、Transaction HashまたはGas支払だけをSubscription Paymentの証拠としてはならない。Settlement Adapterは承認済みStablecoin Transferを独立に検証する。
 
 Testnet Demoでは`MockJPYC`を支払資産とし、Faucet由来のNative TokenはRelayerのGasにだけ使用する。利用者へTestnet ETHの取得を要求せず、Mainnet Asset、本番Walletまたは本番秘密鍵を使用しない。
+
+2026-08-23の公開Test User Journeyは、Account／Wallet／SubscriptionのUI境界を先行検証する暫定実装である。Same-originの検証済みManifestがSepolia、全Contract AddressおよびSource Commitを`active`として公開した場合だけ書込みを許し、任意Address入力、Mainnet追加または自動接続を認めない。現段階ではRelayer／Paymasterが未実装であるため、Walletによる書込みは利用者のSepolia ETHをGasに必要とし、上記のGas Sponsored終了条件を満たさない。Profile AliasとWallet AddressはPlatform Accountとして永続結合しない。
 
 ---
 
@@ -1156,6 +1158,7 @@ ADR-0008はこれらをApplication Account、Wallet、Identity、Credentialと�
 - ADR-0005: Usage Oracle
 - ADR-0006: Zero-Knowledge Proof Strategy
 - ADR-0007: Blockchain / L2 Strategy
+- ADR-0014: Public Testnet User Journey
 
 ---
 

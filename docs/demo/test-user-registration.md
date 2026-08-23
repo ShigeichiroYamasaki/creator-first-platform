@@ -1,28 +1,39 @@
 ---
-title: Test User登録デモ
-description: サーバー、Wallet、送金なしで、Test UserのAlias登録とTest-only境界をブラウザ内だけで試せるデモ。
+title: Test User Journeyデモ
+description: Test User登録、Sepolia Wallet、mockJPYC Subscription、合成音源Playerを順番に試せるTestnetデモ。
 ---
 
-# Test User登録デモ
+# Test User Journeyデモ
 
-このページはGitHub Pages上でそのまま利用できます。ローカルサーバーの起動やWallet接続は不要です。
+このページはGitHub Pages上で利用でき、Test User登録、EIP-1193 Wallet接続、Ethereum Sepolia上のmockJPYC取得・利用承認・Subscription、合成音源Player操作を一続きで検証する入口です。
 
-::: warning ブラウザ内のUIシミュレーションです
-このデモは入力を現在のタブのSession Storageだけに保存します。Gateway、Blockchain、Smart Contract、Navidromeまたは外部サービスへ送信せず、Platform Account、本人確認、Subscription、Wallet Link、SBTまたは再生権限を作成しません。
+::: warning 現在はContract未デプロイです
+Sepoliaの検証済みContract AddressとSource Commitがまだ公開されていないため、現在の公開ページではProfile登録、Wallet接続、Network切替、Preview Playerを確認できます。mockJPYCの取得・Approve・SubscriptionはAddress公開まで自動的に無効になります。任意Addressを入力して回避する機能はありません。
 :::
 
 <ClientOnly>
-  <TestUserRegistrationDemo />
+  <TestnetUserJourneyDemo />
 </ClientOnly>
 
-## Gateway連携版との違い
+## データと資産の境界
 
-| 項目 | このページ | ローカルGateway連携版 |
+| 項目 | この公開Journey | ローカルGateway連携版 |
 | --- | --- | --- |
-| 事前準備 | 不要 | Node.js 24でPlayerとGatewayを起動 |
-| 保存先 | 現在のタブのSession Storage | Gateway ProcessとローカルSQLite監査記録 |
-| Network送信 | なし | 同一OriginのローカルGatewayだけ |
-| 用途 | Alias登録、Notice、状態表示の体験 | API、Cookie Session、Idempotency、監査境界の開発検証 |
-| 認可への影響 | なし | なし |
+| Profile | AliasとTest User IDを現在のタブだけに保存 | GatewayのDemo PrincipalとCookie Session |
+| Wallet | 利用者が明示接続。AddressとTransactionは公開Chainに記録 | SIWE／EIP-712署名境界をローカル検証 |
+| 支払資産 | 無価値・償還不可の`tJPYC`だけ。Sepolia ETHはGasのみ | 固定Mock Subscription |
+| Player | ページ内で生成する短い合成WAV。PreviewとSubscription限定Track | Gateway経由の合成音源、Range、短命Playback Session |
+| Streaming認可 | Sepolia SubscriptionによるUI解放だけ | Gateway CapabilityとDelivery Evidence |
+| Navidrome | 未接続 | 明示Mapping型Adapterを選択可能 |
 
-APIを含む開発者向け検証は[ローカルStreaming Gateway](/demo/local-gateway)を参照してください。
+公開JourneyのSubscription状態は、まだGatewayのPlayback AuthorizationやNavidromeへ接続されません。API、Cookie、Range、Concurrency、監査境界を含む検証は[ローカルStreaming Gateway](/demo/local-gateway)を参照してください。
+
+## 操作順序
+
+1. 個人情報を含まないAliasでTest User Profileを登録する。
+2. Walletを明示的に接続し、Chain ID `11155111`のSepoliaへ切り替える。
+3. 公開済みManifestが`active`の場合だけ、一回限りの`2,000 tJPYC`を取得する。
+4. Plan価格だけをSubscription ContractへApproveし、Subscriptionを開始する。
+5. Preview Trackを操作し、有効なSubscriptionでは限定合成Trackが解放されることを確認する。
+
+Seed Phraseや秘密鍵は入力しません。本番Wallet、本番資金、Mainnet Asset、実在JPYC、実在楽曲または個人情報を使わないでください。

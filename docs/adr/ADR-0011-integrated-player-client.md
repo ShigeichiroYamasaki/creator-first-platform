@@ -8,7 +8,7 @@ description: Navidromeを非公開Media Adapterとして利用し、Wallet・Sup
 **Date:** 2026-08-21
 **Last Updated:** 2026-08-23
 
-> **Implementation note (2026-08-23):** `apps/player`へVue 3／TypeScriptのローカルPWAを、`apps/gateway`へ対応するMock APIを実装した。Catalog Home、単一Audio Element、Play／Pause／Seek／Next／Previous、短命Playback Session、Range、SIWE、EIP-712 Support Intent、Mock Supporter状態、Community CapabilityおよびAlias限定Test-only Profileを検証できる。Test-only ProfileはPlatform AccountやAuthenticatorではなく、登録の有無は認可を変更しない。GitHub Pagesには別途、Network通信を行わず現在のTabのSession Storageだけを使う登録UIシミュレーションを提供する。Testnet Contractコードは別途実装したがSepolia未デプロイで、Player／Gatewayは引き続きMock状態を使用する。Search、Artist／Album詳細、Client Playback Event、Logout／Account Switch、Service Worker、Contract Indexerおよび本番Authenticatorは未実装である。Framework等の未決定事項は`MOCK-ASSUMPTION-001`で限定しており、この実装は本ADRの採用確定またはProtocol適合完了を意味しない。
+> **Implementation note (2026-08-23):** `apps/player`へVue 3／TypeScriptのローカルPWAを、`apps/gateway`へ対応するMock APIを実装した。Catalog Home、単一Audio Element、Play／Pause／Seek／Next／Previous、短命Playback Session、Range、SIWE、EIP-712 Support Intent、Mock Supporter状態、Community CapabilityおよびAlias限定Test-only Profileを検証できる。Test-only ProfileはPlatform AccountやAuthenticatorではなく、登録の有無は認可を変更しない。GitHub PagesにはADR-0014に基づき、Tab-local Profile、明示的EIP-1193 Wallet接続、Sepolia固定、検証済みDeployment Manifest、mockJPYC課金UIおよび合成Playerを一続きにしたPublic Testnet Journeyを実装した。ContractはSepolia未デプロイのため書込みはfail closedで停止し、公開PlayerのSubscription状態はGateway認可やNavidromeへ接続しない。ローカルPlayer／Gatewayは引き続きMock状態を使用する。Search、Artist／Album詳細、Client Playback Event、Logout／Account Switch、Service Worker、Contract Indexerおよび本番Authenticatorは未実装である。Framework等の未決定事項は`MOCK-ASSUMPTION-001`で限定しており、この実装は本ADRの採用確定またはProtocol適合完了を意味しない。
 
 ## 1. Context
 
@@ -253,6 +253,7 @@ Latency、離脱、PrivacyおよびWallet依存障害を増やすため採用し
 - [ADR-0008 Account / Wallet / Identity Strategy](./ADR-0008-account-wallet-identity-strategy.md)
 - [ADR-0009 Navidrome / Streaming Authorization Gateway](./ADR-0009-navidrome-streaming-gateway.md)
 - [ADR-0010 Early Supporter SBT Privileges](./ADR-0010-early-supporter-sbt-privileges.md)
+- [ADR-0014 Public Testnet User Journey](./ADR-0014-public-testnet-user-journey.md)
 - [Whitepaper: Platform Architecture](/whitepaper/04-platform-architecture)
 - [Whitepaper: Discovery and Community](/whitepaper/08-discovery-community)
 - [Protocol: Playback Authorization](/protocol/specs/playback-authorization)

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "environment": "sepolia-demo",
+  "chainId": 11155111,
+  "networkName": "Ethereum Sepolia",
+  "status": "not-deployed",
+  "sourceCommit": null,
+  "contracts": {
+    "mockJpyc": null,
+    "subscription": null,
+    "treasury": null,
+    "supporterSbt": null
+  },
+  "testOnlyNotice": "TESTNET ONLY - NO VALUE, NO REDEMPTION, NOT PRODUCTION JPYC"
+}
