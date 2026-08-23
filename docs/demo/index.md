@@ -62,7 +62,7 @@ Gateway APIとCookie Sessionを含む開発者向け検証は、[ローカルStr
 | Navidrome Media Adapter | Adapter実装済み、専用User・非公開Network・Canonical Mapping未設定 |
 | Player PWA | ローカルGateway接続済み、公開環境未デプロイ |
 | Test Userサービス | GitHub PagesにProfile／Sepolia Wallet／mockJPYC課金／合成Player Journeyを実装・公開。Gateway認可・本番Authenticator未実装 |
-| Test Creatorサービス | 仮名Profile、Sepolia Wallet、Creator／Release Commitment UIとContractを実装、Creator Registryの公開Deployment待ち。本人／権利／公開／支払処理は未実装 |
+| Test Creatorサービス | [仮名Profile、Sepolia Wallet、Creator／Release Commitment Journey](/demo/creator-workspace)とCreator Registryを公開。本人／権利／公開／支払処理は未実装 |
 | Testnet Smart Contract | [Ethereum Sepoliaへデプロイ・公開検証済み](/demo/testnet-contracts)、Gateway／Indexer未接続 |
 | Testnet決済 | 一回限りのMockJPYC Test Faucet、exact-amount Approve、Subscriptionを公開。無価値・償還不可、本番決済ではない |
 | Rights / Usage / Distribution | Draft仕様、未実装 |

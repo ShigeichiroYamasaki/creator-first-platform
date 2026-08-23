@@ -119,7 +119,7 @@ Privacy表示には使えるが、Wallet署名、Contract Event、重複拒否�
 
 ## Implementation Status
 
-2026-08-23時点でContract、Contract Test、公開Creator Journey UIおよび設計・Protocol境界を実装した。Sepolia Deployment、Manifest公開、公開RPC検証、Etherscan Source Verification、Role分離、Creator BFF、Indexer、Rights Review、Wallet RecoveryおよびTreasury連携は未完了である。
+2026-08-23時点でContract、Contract Test、公開Creator Journey UIおよび設計・Protocol境界を実装し、Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`のCreator RegistryをEthereum Sepoliaの`0x5676d34d7C41849311b99932d8272af58b63e6E9`へデプロイした。Manifest公開と、公開RPCによるBytecode、Testnet Notice、初期Creator数およびRelease IDの検証を完了した。Etherscan Source Verification、Role分離、Creator BFF、Indexer、Rights Review、Wallet RecoveryおよびTreasury連携は未完了である。
 
 ## Related Documents
 

@@ -153,7 +153,7 @@ Rights、Credential、Media IDおよびStreaming Authorization境界を迂回す
 
 ## Implementation Status
 
-2026-08-23時点で、Journey UI、Manifest検証、合成Player、一回限りのMockJPYC `claim()`、Contract Testおよび公開Site TestをRepositoryへ実装済みである。Source Commit `3ad774abb48b3a5b3559997a00e69316e8ee4006`からEthereum Sepoliaへ全Contractをデプロイし、Manifestを`active`へ更新した。公開RPCでBytecode、MockJPYC Notice／Claim額、SubscriptionのAsset／Treasury／PlanおよびERC-1967 Implementation Slotを検証済みである。Etherscan Source Verification、Bootstrap Role分離、Relayer／Paymaster、Gateway／Indexer連携および本番Streaming Authorizationは未実装である。この部分実装は本ADRの採用確定、Security Auditまたは本番利用承認を意味しない。
+2026-08-23時点で、Journey UI、Manifest検証、合成Player、一回限りのMockJPYC `claim()`、Contract Testおよび公開Site TestをRepositoryへ実装済みである。公開構成Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`をEthereum Sepoliaへデプロイし、Manifestを`active`へ更新した。公開RPCでBytecode、MockJPYC Notice／Claim額、SubscriptionのAsset／Treasury／Plan、ERC-1967 Implementation SlotおよびCreator Registry Noticeを検証済みである。Etherscan Source Verification、Bootstrap Role分離、Relayer／Paymaster、Gateway／Indexer連携および本番Streaming Authorizationは未実装である。この部分実装は本ADRの採用確定、Security Auditまたは本番利用承認を意味しない。
 
 ## Related Documents
 

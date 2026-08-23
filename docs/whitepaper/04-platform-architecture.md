@@ -215,7 +215,7 @@ flowchart LR
 
 初期実装では、音源スキャン、検索、Playlist、HTTP RangeおよびTranscodingを早期に検証するため、NavidromeをMedia Server候補として利用する。
 
-2026-08-23時点のRepositoryには、合成音源を使うVue Player、Node.js Gateway、短命Playback Session、Range、SQLite Delivery Evidence、SIWE／EIP-712署名検証、Mock Supporter状態、明示Mapping型Navidrome Adapter、およびHardhat 3によるTestnet専用MockJPYC／Subscription／Treasury／Supporter SBT／Creator Registryが部分実装されている。GitHub PagesのTest User JourneyはAlias限定Profile、Wallet、mockJPYC Subscriptionと合成Playerを統合し、Test Creator Journeyは仮名Profile、Wallet、Creator／Release Commitmentを統合する。決済・SBT ContractはSource Commit `3ad774abb48b3a5b3559997a00e69316e8ee4006`からEthereum Sepoliaへデプロイ済みで、Creator Registryは追加Deployment待ちである。ただしPlayer／Gatewayとは未接続で、Account、Rights、Contract Indexer、Verified Usageおよび本番認証も未実装である。ProfileとCommitmentはPlatform Account、Legal Identity、RightsまたはPayeeを作らない。
+2026-08-23時点のRepositoryには、合成音源を使うVue Player、Node.js Gateway、短命Playback Session、Range、SQLite Delivery Evidence、SIWE／EIP-712署名検証、Mock Supporter状態、明示Mapping型Navidrome Adapter、およびHardhat 3によるTestnet専用MockJPYC／Subscription／Treasury／Supporter SBT／Creator Registryが部分実装されている。GitHub PagesのTest User JourneyはAlias限定Profile、Wallet、mockJPYC Subscriptionと合成Playerを統合し、Test Creator Journeyは仮名Profile、Wallet、Creator／Release Commitmentを統合する。公開構成Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`をEthereum Sepoliaへデプロイし、公開RPC検証済みである。ただしPlayer／Gatewayとは未接続で、Account、Rights、Contract Indexer、Verified Usageおよび本番認証も未実装である。ProfileとCommitmentはPlatform Account、Legal Identity、RightsまたはPayeeを作らない。
 
 ただし、NavidromeをSubscription、RightsまたはCreator DistributionのSource of Truthにはしない。
 

@@ -5,7 +5,7 @@ description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決
 
 # Sepolia Smart Contract Demo
 
-Hardhat 3とViemを使い、次のTestnet専用コントラクトをEthereum Sepoliaへデプロイしました。すべてSource Commit `3ad774abb48b3a5b3559997a00e69316e8ee4006`から生成されています。
+Hardhat 3とViemを使い、次のTestnet専用コントラクトをEthereum Sepoliaへデプロイしました。公開構成はSource Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`で再現できます。
 
 | Contract | Testnet上の責務 | 本番境界 |
 | --- | --- | --- |
@@ -14,7 +14,7 @@ Hardhat 3とViemを使い、次のTestnet専用コントラクトをEthereum Sep
 | `CreatorFirstTreasury` | Test Assetを保有し、分類・一意な参照付きで支出Eventを出す | 法定会計帳簿、税務申告、Governance承認の正本ではない |
 | `SupporterSBTUpgradeable` | EIP-712 Support Intentを検証し、一般／Early TierをContract内で確定する | Subscription、Rights、STO、配当・収益請求権を表さない |
 | `SupporterSBTProxy` | ERC-1967 ProxyからUUPS実装を呼び出す | Upgradeは監査・Timelock・複数承認を経る本番設計へ置換する |
-| `CreatorFirstCreatorRegistry` | 仮名Creatorと作品／権利自己申告のsalt付きCommitment、状態、Eventを記録する | 本人、Rights、Payee、Catalog、配信許諾、分配または支払を承認しない。Sepolia追加Deployment待ち |
+| `CreatorFirstCreatorRegistry` | 仮名Creatorと作品／権利自己申告のsalt付きCommitment、状態、Eventを記録する | 本人、Rights、Payee、Catalog、配信許諾、分配または支払を承認しない |
 
 SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を拒否します。Early条件の`POLICY_ROLE`、実装更新の`UPGRADER_ROLE`、署名済みIntentを送る`RELAYER_ROLE`を分離し、発行済みTierを後日のPolicy更新で書き換えません。
 
@@ -27,8 +27,9 @@ SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を�
 | CreatorFirstTreasury | [`0x57a9…4215`](https://sepolia.etherscan.io/address/0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215) |
 | SupporterSBT Proxy | [`0x2D01…0923`](https://sepolia.etherscan.io/address/0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923) |
 | SupporterSBT Implementation | [`0x350a…7a66`](https://sepolia.etherscan.io/address/0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66) |
+| CreatorFirstCreatorRegistry | [`0x5676…e6E9`](https://sepolia.etherscan.io/address/0x5676d34d7C41849311b99932d8272af58b63e6E9) |
 
-Chain IDは`11155111`です。[公開Manifest](/testnet/deployment.json)と[Transactionを含むDeployment Record](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Sepolia RPCからBytecode、MockJPYC Notice／Claim額、SubscriptionのAsset／Treasury／PlanおよびERC-1967 Implementation Slotを再検証します。
+Chain IDは`11155111`です。[公開Manifest](/testnet/deployment.json)と[Transactionを含むDeployment Record](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Sepolia RPCからBytecode、MockJPYC Notice／Claim額、SubscriptionのAsset／Treasury／Plan、ERC-1967 Implementation SlotおよびCreator RegistryのTestnet Noticeを再検証します。
 
 ```sh
 npm run contracts:verify:sepolia

@@ -59,7 +59,7 @@ npm run contracts:compile
 npm run contracts:test
 ```
 
-決済・SBT ContractはSource Commit `3ad774abb48b3a5b3559997a00e69316e8ee4006`からEthereum Sepoliaへデプロイ済みで、Creator Registryは追加Deployment待ちです。`npm run contracts:verify:sepolia`で公開RPC上のBytecode、Contract接続、Plan、Proxy実装先および公開済みCreator Registry Noticeを検証できます。Player／GatewayはContract Eventへ未接続です。Addressと安全境界は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
+Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`の構成をEthereum Sepoliaへデプロイ済みです。`npm run contracts:verify:sepolia`で公開RPC上のBytecode、Contract接続、Plan、Proxy実装先およびCreator Registry Noticeを検証できます。Player／GatewayはContract Eventへ未接続です。Addressと安全境界は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
 
 ## 文書から実装まで
 

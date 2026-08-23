@@ -4,7 +4,7 @@
   "network": "Ethereum Sepolia",
   "chainId": 11155111,
   "deployedAt": "2026-08-23",
-  "sourceCommit": "3ad774abb48b3a5b3559997a00e69316e8ee4006",
+  "sourceCommit": "9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7",
   "deploymentTool": "Hardhat Ignition 3.14.0",
   "compiler": {
     "version": "0.8.28",
@@ -39,6 +39,12 @@
       "transactionHash": "0x90c24620e4b659b63c36b5d1a368f0c337297330ac7da4733ea7bdd8e1b60232",
       "blockNumber": 11550090,
       "implementation": "0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66"
+    },
+    "creatorRegistry": {
+      "address": "0x5676d34d7C41849311b99932d8272af58b63e6E9",
+      "transactionHash": "0x8f425ff6bfb41759c541e357045f2bd6b710ad775c089cfcf0b88edc9d8b3e3f",
+      "blockNumber": 11550751,
+      "sourceCommit": "9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7"
     }
   },
   "subscriptionPlan": {
@@ -49,6 +55,7 @@
     "enabled": true
   },
   "testAssetNotice": "TESTNET ONLY - NO VALUE, NO REDEMPTION, NOT PRODUCTION JPYC",
+  "creatorRegistryNotice": "TESTNET ONLY - NO IDENTITY, RIGHTS, PAYEE OR RELEASE VERIFICATION",
   "verification": {
     "onchainConfiguration": "verified",
     "explorerSourceCode": "pending",

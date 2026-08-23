@@ -250,7 +250,7 @@ Testnetでは、金銭的価値、償還請求権または実在JPYCとの交換
 
 最初のSmart Contract開発Profileは、Hardhat 3、Viem、Infura RPCおよびEthereum Sepolia（Chain ID `11155111`）とする。これはTestnet ToolingとEVM上のContract境界を検証する選択であり、本番ChainまたはPrimary L2の決定ではない。SepoliaではETHをGasにだけ使用し、SubscriptionとTreasuryのTest Assetには無価値・償還不可の`MockJPYC`だけを使用する。
 
-2026-08-23時点で、`MockJPYC`、Subscription、Test Treasury、一般／Early Supporter SBT、ERC-1967／UUPS ProxyおよびIgnition ModuleをRepositoryへ実装し、Source Commit `3ad774abb48b3a5b3559997a00e69316e8ee4006`からEthereum Sepoliaへデプロイした。公開RPCでBytecode、Contract接続、PlanおよびProxy実装先を検証済みである。Etherscan Source Verification、Role分離、Indexer／Gateway接続、Threat Modelおよび独立監査は未完了である。
+2026-08-23時点で、`MockJPYC`、Subscription、Test Treasury、一般／Early Supporter SBT、ERC-1967／UUPS Proxy、Creator RegistryおよびIgnition ModuleをRepositoryへ実装し、公開構成Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`をEthereum Sepoliaへデプロイした。公開RPCでBytecode、Contract接続、Plan、Proxy実装先およびCreator Registry Noticeを検証済みである。Etherscan Source Verification、Role分離、Indexer／Gateway接続、Threat Modelおよび独立監査は未完了である。
 
 ---
 
