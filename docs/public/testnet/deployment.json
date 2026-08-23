@@ -3,13 +3,14 @@
   "environment": "sepolia-demo",
   "chainId": 11155111,
   "networkName": "Ethereum Sepolia",
-  "status": "not-deployed",
-  "sourceCommit": null,
+  "status": "active",
+  "sourceCommit": "3ad774abb48b3a5b3559997a00e69316e8ee4006",
+  "deploymentRecord": "/creator-first-platform/testnet/deployment-record.json",
   "contracts": {
-    "mockJpyc": null,
-    "subscription": null,
-    "treasury": null,
-    "supporterSbt": null
+    "mockJpyc": "0xBc89cF411Fe4fEc602e854fF32E78BBD131F5f49",
+    "subscription": "0x7bEeD194032a8D655cF72E61889896eef97F3d90",
+    "treasury": "0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215",
+    "supporterSbt": "0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923"
   },
   "testOnlyNotice": "TESTNET ONLY - NO VALUE, NO REDEMPTION, NOT PRODUCTION JPYC"
 }

@@ -13,6 +13,7 @@
     "contracts:compile": "hardhat compile",
     "contracts:test": "hardhat test nodejs",
     "contracts:deploy:sepolia": "hardhat ignition deploy ignition/modules/CreatorFirstTestnet.ts --network sepolia --deployment-id sepolia-creator-first-testnet",
+    "contracts:verify:sepolia": "node scripts/verify-sepolia-contracts.mjs",
     "testnet-demo:test": "node --test scripts/testnet-user-demo.test.mjs",
     "player:seed": "node scripts/generate-player-test-audio.mjs",
     "player:dev": "npm run player:seed && vite --config apps/player/vite.config.ts --host 127.0.0.1",

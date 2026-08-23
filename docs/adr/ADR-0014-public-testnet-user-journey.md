@@ -15,7 +15,7 @@ description: GitHub Pages上でTest User登録、Sepolia Wallet、MockJPYC Subsc
 
 Test User登録デモは、当初AliasとNoticeを現在のTabのSession Storageへ保存するだけのBrowser Fixtureだった。この構成はPrivacy境界の確認には適するが、利用者がCreator First Platformの中心的な流れであるWallet接続、Stablecoin建てSubscriptionおよび音楽Player操作を連続して検証できない。
 
-一方、GitHub Pagesは静的Hostingであり、秘密鍵、Relayer Credential、Server Sessionまたは保護音源を保持できない。Sepolia Contractはまだ未デプロイで、任意Contract Addressを利用者が入力できるUIや、未検証AddressへTransactionを送るUIを公開すると、誤Chain、偽Token、Phishingおよび本番資産の誤使用につながる。
+一方、GitHub Pagesは静的Hostingであり、秘密鍵、Relayer Credential、Server Sessionまたは保護音源を保持できない。設計時点ではSepolia Contractが未デプロイであり、任意Contract Addressを利用者が入力できるUIや、未検証AddressへTransactionを送るUIを公開すると、誤Chain、偽Token、Phishingおよび本番資産の誤使用につながる。
 
 また、Test User Profile、Wallet Address、Subscription、Streaming Authorizationは異なる責任を持つ。UI上で一続きに見せても、Alias登録だけをAccount、本人確認または再生権限として扱ってはならない。
 
@@ -153,7 +153,7 @@ Rights、Credential、Media IDおよびStreaming Authorization境界を迂回す
 
 ## Implementation Status
 
-2026-08-23時点で、Journey UI、Manifest検証、合成Player、一回限りのMockJPYC `claim()`、Contract Testおよび公開Site TestをRepositoryへ実装済みである。Manifestは`not-deployed`であり、Sepolia Contract書込み、Relayer／Paymaster、Gateway／Indexer連携および本番Streaming Authorizationは未実装である。この部分実装は本ADRの採用確定、Security Auditまたは本番利用承認を意味しない。
+2026-08-23時点で、Journey UI、Manifest検証、合成Player、一回限りのMockJPYC `claim()`、Contract Testおよび公開Site TestをRepositoryへ実装済みである。Source Commit `3ad774abb48b3a5b3559997a00e69316e8ee4006`からEthereum Sepoliaへ全Contractをデプロイし、Manifestを`active`へ更新した。公開RPCでBytecode、MockJPYC Notice／Claim額、SubscriptionのAsset／Treasury／PlanおよびERC-1967 Implementation Slotを検証済みである。Etherscan Source Verification、Bootstrap Role分離、Relayer／Paymaster、Gateway／Indexer連携および本番Streaming Authorizationは未実装である。この部分実装は本ADRの採用確定、Security Auditまたは本番利用承認を意味しない。
 
 ## Related Documents
 

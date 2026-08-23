@@ -7,8 +7,8 @@ description: Test User登録、Sepolia Wallet、mockJPYC Subscription、合成�
 
 このページはGitHub Pages上で利用でき、Test User登録、EIP-1193 Wallet接続、Ethereum Sepolia上のmockJPYC取得・利用承認・Subscription、合成音源Player操作を一続きで検証する入口です。
 
-::: warning 現在はContract未デプロイです
-Sepoliaの検証済みContract AddressとSource Commitがまだ公開されていないため、現在の公開ページではProfile登録、Wallet接続、Network切替、Preview Playerを確認できます。mockJPYCの取得・Approve・SubscriptionはAddress公開まで自動的に無効になります。任意Addressを入力して回避する機能はありません。
+::: warning Testnet専用です
+SepoliaのContract AddressとSource Commitを公開し、mockJPYCの取得・Approve・Subscriptionを有効化しました。tJPYCは無価値・償還不可で実在JPYCではなく、Sepolia ETHはGasにだけ使用します。Gateway、Navidrome、本番Accountまたは本番決済とは未接続です。
 :::
 
 <ClientOnly>

@@ -5,7 +5,7 @@ description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決
 
 # Sepolia Smart Contract Demo
 
-Hardhat 3とViemを使い、Sepoliaへ次のTestnet専用コントラクトをデプロイできます。コードとローカルテストは実装済みですが、公開Contract Addressはまだありません。
+Hardhat 3とViemを使い、次のTestnet専用コントラクトをEthereum Sepoliaへデプロイしました。すべてSource Commit `3ad774abb48b3a5b3559997a00e69316e8ee4006`から生成されています。
 
 | Contract | Testnet上の責務 | 本番境界 |
 | --- | --- | --- |
@@ -16,6 +16,22 @@ Hardhat 3とViemを使い、Sepoliaへ次のTestnet専用コントラクトを�
 | `SupporterSBTProxy` | ERC-1967 ProxyからUUPS実装を呼び出す | Upgradeは監査・Timelock・複数承認を経る本番設計へ置換する |
 
 SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を拒否します。Early条件の`POLICY_ROLE`、実装更新の`UPGRADER_ROLE`、署名済みIntentを送る`RELAYER_ROLE`を分離し、発行済みTierを後日のPolicy更新で書き換えません。
+
+## 公開Deployment
+
+| Contract | Sepolia Address |
+| --- | --- |
+| MockJPYC | [`0xBc89…5f49`](https://sepolia.etherscan.io/address/0xBc89cF411Fe4fEc602e854fF32E78BBD131F5f49) |
+| CreatorFirstSubscription | [`0x7bEe…3d90`](https://sepolia.etherscan.io/address/0x7bEeD194032a8D655cF72E61889896eef97F3d90) |
+| CreatorFirstTreasury | [`0x57a9…4215`](https://sepolia.etherscan.io/address/0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215) |
+| SupporterSBT Proxy | [`0x2D01…0923`](https://sepolia.etherscan.io/address/0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923) |
+| SupporterSBT Implementation | [`0x350a…7a66`](https://sepolia.etherscan.io/address/0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66) |
+
+Chain IDは`11155111`です。[公開Manifest](/testnet/deployment.json)と[Transactionを含むDeployment Record](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Sepolia RPCからBytecode、MockJPYC Notice／Claim額、SubscriptionのAsset／Treasury／PlanおよびERC-1967 Implementation Slotを再検証します。
+
+```sh
+npm run contracts:verify:sepolia
+```
 
 ## ローカル検証
 
@@ -35,12 +51,12 @@ InfuraでEthereum Sepolia用API Keyを作成し、完全なHTTPS Endpointとデ�
 
 ```sh
 npx hardhat keystore set SEPOLIA_RPC_URL
-npx hardhat keystore set SEPOLIA_PRIVATE_KEY
+npx hardhat keystore set DEPLOYER_PRIVATE_KEY
 ```
 
 `SEPOLIA_RPC_URL`には`https://sepolia.infura.io/v3/<API_KEY>`形式のEndpointを入力します。秘密鍵は`0x`から始まる32-byte値です。Keystoreの値、`.env`、Seed Phrase、本番鍵をGitへ追加しないでください。
 
-デプロイ前に次を確認します。
+再デプロイ前に次を確認します。
 
 - 対象Chain IDがSepoliaの`11155111`である
 - デプロイ鍵には少量のSepolia ETHだけがあり、本番資産がない

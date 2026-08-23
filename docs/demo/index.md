@@ -7,8 +7,8 @@ description: Creator First Platformの本番実装前に、合成データと金
 
 Creator First Platformは、まずTestnet上のデモシステムでProtocol、Streaming Gateway、Smart Contract連携、失敗時の挙動を検証し、その証拠をレビューした後に本番系を実装します。
 
-::: warning 公開デモは現在準備中です
-ローカルPlayer MVPは合成試験音とMock資格だけで利用できますが、公開Testnetサービスではありません。公開URL、Network、Contract Address、検証済みCommitが確定するまで、外部サイトが提示する送金先・Token・Wallet接続を公式デモとして扱わないでください。
+::: warning 公開Testnetは実験環境です
+Ethereum SepoliaのContract AddressとSource Commitを公開しましたが、Gateway、Navidrome、Indexer、本番Accountおよび本番決済とは未接続です。本ページ以外が提示する送金先、TokenまたはWallet接続を公式Demoとして扱わず、本番資産や実在JPYCを使用しないでください。
 :::
 
 ## 実装順序
@@ -33,7 +33,7 @@ flowchart LR
 
 ## サービスを選ぶ
 
-利用者向けと音楽クリエータ向けの入口を分離しました。Test User登録は、公開ページ上でProfile、Sepolia Wallet、mockJPYC Subscription、合成音源Playerを順に試すJourneyへ拡張しています。Contract未デプロイ中はWalletとPreview Playerまで利用でき、送金操作は自動停止します。
+利用者向けと音楽クリエータ向けの入口を分離しました。Test User登録は、公開ページ上でProfile、Sepolia Wallet、mockJPYC Subscription、合成音源Playerを順に試すJourneyへ拡張しています。
 
 <DemoServiceChoices kind="entry" />
 
@@ -55,16 +55,16 @@ Gateway APIとCookie Sessionを含む開発者向け検証は、[ローカルStr
 
 | 項目 | 状態 |
 | --- | --- |
-| 公開デモURL | 準備中 |
-| 対象Testnet | Sepolia（Infura RPC、デプロイ前） |
-| Demo Contract Address | 未デプロイ |
+| 公開デモURL | [Test User Journey](/demo/test-user-registration) |
+| 対象Testnet | Ethereum Sepolia（Chain ID `11155111`） |
+| Demo Contract Address | [公開Deployment一覧](/demo/testnet-contracts#公開deployment) |
 | Streaming Gateway | [ローカルMock実装済み](/demo/local-gateway)、公開環境未デプロイ |
 | Navidrome Media Adapter | Adapter実装済み、専用User・非公開Network・Canonical Mapping未設定 |
 | Player PWA | ローカルGateway接続済み、公開環境未デプロイ |
-| Test Userサービス | GitHub PagesにProfile／Sepolia Wallet／mockJPYC課金／合成Player Journeyを実装。Contract未デプロイ中は書込み無効、Gateway認可・本番Authenticator未実装 |
+| Test Userサービス | GitHub PagesにProfile／Sepolia Wallet／mockJPYC課金／合成Player Journeyを実装・公開。Gateway認可・本番Authenticator未実装 |
 | Test Creatorサービス | GitHub PagesのCreator Profile登録・作品Draft・確認状態・合成Analyticsを実装済み、本人／権利／公開／支払処理は未実装 |
-| Testnet Smart Contract | [Hardhat 3実装・ローカルテスト済み](/demo/testnet-contracts)、Sepolia未デプロイ、Gateway未接続 |
-| Testnet決済 | MockJPYC Subscription／Treasuryと一回限りのTest Faucetを実装・ローカルテスト済み。Sepolia未デプロイのため公開書込みは無効 |
+| Testnet Smart Contract | [Ethereum Sepoliaへデプロイ・公開検証済み](/demo/testnet-contracts)、Gateway／Indexer未接続 |
+| Testnet決済 | 一回限りのMockJPYC Test Faucet、exact-amount Approve、Subscriptionを公開。無価値・償還不可、本番決済ではない |
 | Rights / Usage / Distribution | Draft仕様、未実装 |
 
 進捗と成立条件は[現在の状況](/status)、[Vertical Slice Implementation Plan](/protocol/implementation-plan)、[Decision Baseline](/protocol/decision-baseline)で確認できます。

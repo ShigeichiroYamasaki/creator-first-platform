@@ -8,7 +8,7 @@ description: Navidromeを交換可能なメディアサーバーとして利用�
 **Date:** 2026-08-19
 **Last Updated:** 2026-08-23
 
-> **Implementation note (2026-08-23):** `apps/gateway`にローカルMock Vertical Sliceを実装した。固定Mock Subscription／Rights、5分の単一Playback Session、単一Range、SQLite Delivery Evidence、SIWE／EIP-712検証、合成音源File Adapterおよび明示Mapping方式のNavidrome Adapterを含む。現在実装しているApplication APIはCatalog Home、Test-only Profile、Playback Session／Stream、SIWE、Support Intent／Mock Credential StatusおよびCommunity Capabilityの限定Surfaceである。Testnet Contractコードは別途実装したがSepolia未デプロイで、GatewayはまだそのEventを参照しない。`auth/refresh`、`auth/logout`、Client Playback Event、検索・Artist・Album詳細、Contract Indexerおよび本番Read Modelは未実装である。これは`MOCK-ASSUMPTION-001`の範囲内であり、Proposed Decision、Open Question、本番Topologyまたは法的Rightsを確定しない。
+> **Implementation note (2026-08-23):** `apps/gateway`にローカルMock Vertical Sliceを実装した。固定Mock Subscription／Rights、5分の単一Playback Session、単一Range、SQLite Delivery Evidence、SIWE／EIP-712検証、合成音源File Adapterおよび明示Mapping方式のNavidrome Adapterを含む。現在実装しているApplication APIはCatalog Home、Test-only Profile、Playback Session／Stream、SIWE、Support Intent／Mock Credential StatusおよびCommunity Capabilityの限定Surfaceである。Testnet ContractはEthereum Sepoliaへデプロイしたが、GatewayはまだそのEventを参照しない。`auth/refresh`、`auth/logout`、Client Playback Event、検索・Artist・Album詳細、Contract Indexerおよび本番Read Modelは未実装である。これは`MOCK-ASSUMPTION-001`の範囲内であり、Proposed Decision、Open Question、本番Topologyまたは法的Rightsを確定しない。
 
 ## 1. Context
 
@@ -332,7 +332,7 @@ Base SepoliaのTest Contractは少なくとも次を分離する。
 - `DemoRightsRegistry`: Creator First Track ID、公開状態、Rights Versionおよび停止状態
 - `DemoEarlySupporterSBT`: 譲渡不能、失効可能かつ金銭的権利を持たないTest Credential
 
-Chain IDは`84532`とし、Contract Address、Deployment Transaction、ABI、Source Commitおよび使用RPCをデモ画面へ表示する。Test ETHはFaucet由来のGasにだけ使用し、料金表示、Payment Intent、Subscription RevenueまたはSBT資格額に使用しない。Mainnet Asset、本番Wallet、本番秘密鍵、実在Subscription、実在Rights、未公開音源または個人情報をTest環境へ投入しない。Deployer KeyとRelayer KeyはRepositoryへCommitせず、用途と権限を分離し、可能な限りVMへ常置しない。
+最初の公開Contract JourneyのChain IDはEthereum Sepoliaの`11155111`とし、Contract Address、Deployment Transaction、ABI、Source Commitおよび使用RPCをデモ画面へ表示する。ADR-0007で将来のPrimary L2を決定した後は、Environmentごとに別ManifestとAsset Registry Entryを使用する。Test ETHはGasにだけ使用し、料金表示、Payment Intent、Subscription RevenueまたはSBT資格額に使用しない。Mainnet Asset、本番Wallet、本番秘密鍵、実在Subscription、実在Rights、未公開音源または個人情報をTest環境へ投入しない。Deployer KeyとRelayer KeyはRepositoryへCommitせず、用途と権限を分離し、可能な限りVMへ常置しない。
 
 #### Test Environment Acceptance Criteria
 

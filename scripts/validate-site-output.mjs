@@ -74,7 +74,8 @@ function outputUrlPath(file) {
   return `/creator-first-platform/${path}`
 }
 
-const generatedFiles = await siteFiles(outputDirectory)
+const generatedFiles = (await siteFiles(outputDirectory))
+  .filter((file) => !/ \d+\.[^/]+$/.test(file.replaceAll('\\', '/')))
 const generatedPaths = new Set(generatedFiles.map((file) => outputUrlPath(file)))
 const files = generatedFiles.filter((file) => file.endsWith('.html'))
 const errors = []

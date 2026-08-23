@@ -61,7 +61,8 @@ const protocolDirectory = pathArgument(arguments_, '--protocol-dir', join(root, 
 
 const errors = []
 const statusSource = await readFile(statusPath, 'utf8')
-const adrFiles = (await filesMatching(adrDirectory, '.md')).filter((file) => /ADR-\d{4}-.+\.md$/.test(file))
+const adrFiles = (await filesMatching(adrDirectory, '.md'))
+  .filter((file) => /ADR-\d{4}-.+\.md$/.test(file) && !/ \d+\.md$/.test(file))
 const specificationFiles = (await filesMatching(protocolDirectory, '-spec.md'))
   .filter((file) => !file.includes(`${join(protocolDirectory, 'templates')}/`))
 

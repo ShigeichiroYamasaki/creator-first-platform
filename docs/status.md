@@ -21,9 +21,9 @@ Creator First Platformは現在、**構想、公開文書、設計判断、Proto
 | CFP | Draft | 提案プロセス案とCFP-0001 | 採択主体・手続・記録方式の確定 |
 | ADR | Proposed | 13件の設計判断案 | レビュー、採否決定、Status更新 |
 | Protocol | Draft 0.1.0 | Account、Wallet、Supporter Credential／Early Tier、決済、決済資産台帳、Rights、Streaming Authorization、Player、Usage、Distribution／資金透明性の10仕様 | Open Questions解決、法務・セキュリティ・ガバナンス承認 |
-| Testnetデモ | 公開UI部分実装、Contract未デプロイ | [Test User Journey](/demo/test-user-registration)のProfile、Wallet／Sepolia切替、fail-closed Deployment Manifest、mockJPYC課金UI、合成Preview Player | Sepoliaデプロイ、Address／Source Commit公開、Contract書込みE2E、Gateway公開と認可接続 |
+| Testnetデモ | Public Testnet Journey部分稼働 | [Test User Journey](/demo/test-user-registration)のProfile、Wallet／Sepolia切替、公開Deployment Manifest、mockJPYC課金、合成Preview／限定Player | 公開Wallet E2E確認、Gateway公開と認可接続、Relayer／Paymaster、Security Review |
 | アプリケーション | 公開Test User Journey＋ローカルPlayback Slice＋Browser Creator Fixture | [Navidrome Docker Server](/demo/local-streaming)、[Streaming Gateway Mock](/demo/local-gateway)、Test User Profile／Wallet／mockJPYC／合成Player UI、Creator Profile、作品Draft、合成Analytics、[資金フロー可視化](/demo/treasury-dashboard)、Vue Player PWA、Delivery Evidence | Account lifecycle／Authenticator、Gas Sponsorship、Creator BFF、Media Ingest、Navidrome非公開Network、Contract Indexer、Rights／Credential／Treasury Read Model、Security Review |
-| Smart Contract | Testnetコード部分実装、未デプロイ | [Hardhat 3／Sepolia構成](/demo/testnet-contracts)、一回限りのMockJPYC Test Faucet、Subscription、Treasury、一般／Early Supporter SBT、UUPS Proxy、ローカル自動テスト | Sepoliaデプロイ、公開Address／Source Commit、Gateway／Indexer接続、Threat Model、独立監査 |
+| Smart Contract | Ethereum Sepoliaへデプロイ済み、監査前 | [公開Address／Source Commit](/demo/testnet-contracts#公開deployment)、一回限りのMockJPYC Test Faucet、Subscription、Treasury、一般／Early Supporter SBT、UUPS Proxy、公開RPC検証 | Etherscan Source Verification、Role分離、Gateway／Indexer接続、Threat Model、独立監査 |
 | ステーブルコイン決済 | 未提供 | 決済・資産審査のDraft仕様 | 対象商品・ネットワーク・取扱形態の法務／技術審査 |
 | DAOガバナンス | 未稼働 | 抽選議会と熟議の構想 | Community形成、適格性、抽選、異議申立て、実証 |
 | STO | 未実施 | 資金調達手段としての検討事項 | 発行設計、法的分類、取扱事業者、開示、投資家保護の専門家確認 |

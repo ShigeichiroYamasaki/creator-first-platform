@@ -59,7 +59,7 @@ npm run contracts:compile
 npm run contracts:test
 ```
 
-SepoliaへはInfura RPCとデプロイ専用鍵をHardhat Keystoreに設定してから`npm run contracts:deploy:sepolia`を実行します。現時点では未デプロイで、Player／GatewayもContract Eventへ未接続です。安全境界と手順は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
+Source Commit `3ad774abb48b3a5b3559997a00e69316e8ee4006`からEthereum Sepoliaへデプロイ済みです。`npm run contracts:verify:sepolia`で公開RPC上のBytecode、Contract接続、PlanおよびProxy実装先を検証できます。Player／GatewayはContract Eventへ未接続です。Addressと安全境界は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
 
 ## 文書から実装まで
 

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "environment": "sepolia-demo",
+  "network": "Ethereum Sepolia",
+  "chainId": 11155111,
+  "deployedAt": "2026-08-23",
+  "sourceCommit": "3ad774abb48b3a5b3559997a00e69316e8ee4006",
+  "deploymentTool": "Hardhat Ignition 3.14.0",
+  "compiler": {
+    "version": "0.8.28",
+    "optimizerRuns": 200,
+    "viaIR": true,
+    "evmTarget": "cancun"
+  },
+  "deployer": "0x67df94e6ed03d533c9c63d582f5e20447db3c803",
+  "contracts": {
+    "mockJpyc": {
+      "address": "0xBc89cF411Fe4fEc602e854fF32E78BBD131F5f49",
+      "transactionHash": "0x9640f4a834b1711881a04657538992350480343d18bafd15a05d9f7b2bf402ca",
+      "blockNumber": 11550079
+    },
+    "supporterSbtImplementation": {
+      "address": "0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66",
+      "transactionHash": "0x7c92c53b61f535bc2f1ad9acbb68365be6741320d03a73facfcbdea21557d0c9",
+      "blockNumber": 11550079
+    },
+    "treasury": {
+      "address": "0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215",
+      "transactionHash": "0x164a07a9adf037332839b174888379ea08d0d1f0ca74174c3e78d717de8ba4ff",
+      "blockNumber": 11550084
+    },
+    "subscription": {
+      "address": "0x7bEeD194032a8D655cF72E61889896eef97F3d90",
+      "transactionHash": "0x78cde79da5ab6c5e5d1112777cc0106d946a1b6522ebfcad3c244cb8e2f186a7",
+      "blockNumber": 11550090
+    },
+    "supporterSbtProxy": {
+      "address": "0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923",
+      "transactionHash": "0x90c24620e4b659b63c36b5d1a368f0c337297330ac7da4733ea7bdd8e1b60232",
+      "blockNumber": 11550090,
+      "implementation": "0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66"
+    }
+  },
+  "subscriptionPlan": {
+    "asset": "0xBc89cF411Fe4fEc602e854fF32E78BBD131F5f49",
+    "priceAtomic": "1000000000000000000000",
+    "durationSeconds": 2592000,
+    "version": 1,
+    "enabled": true
+  },
+  "testAssetNotice": "TESTNET ONLY - NO VALUE, NO REDEMPTION, NOT PRODUCTION JPYC",
+  "verification": {
+    "onchainConfiguration": "verified",
+    "explorerSourceCode": "pending",
+    "independentAudit": "not-started"
+  },
+  "operationalWarning": "All bootstrap roles remain assigned to the deployer. Separate operational roles before broader public testing."
+}
