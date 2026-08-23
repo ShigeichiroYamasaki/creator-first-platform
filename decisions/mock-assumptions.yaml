@@ -29,7 +29,9 @@ assumptions:
       test identifier bound to the local Gateway Session; it collects no email,
       phone number, password, legal name or production authenticator. It does not
       create or activate a Platform Account and is never an authorization input for
-      playback, Wallet Link, Subscription, Credential or Community capability.
+      playback, Wallet Link, Subscription, Credential or Community capability. The
+      hosted documentation demo is a separate browser-only UI simulation that keeps
+      its alias profile in per-tab Session Storage and never calls the Gateway.
     expires_when: >-
       The owning Product, Security, Accessibility, Privacy, Rights and Protocol
       decision owners approve the first Account, Player, Wallet and Community profile.

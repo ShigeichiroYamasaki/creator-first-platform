@@ -35,7 +35,7 @@ test('accepts the complete generated site', async () => {
   const result = await runValidator()
 
   assert.equal(result.status, 0, result.stderr)
-  assert.match(result.stdout, /3727 internal reference\(s\)/)
+  assert.match(result.stdout, /3762 internal reference\(s\)/)
 })
 
 test('rejects an unresolved internal page reference', async () => {
@@ -137,15 +137,17 @@ test('rejects an insecure external link', async () => {
   assert.match(result.stderr, /external link must use HTTPS/)
 })
 
-test('rejects an unapproved loopback demo link', async () => {
-  const result = await runValidator(async (directory) => {
-    const path = join(directory, 'demo/index.html')
-    const source = await readFile(path, 'utf8')
-    await writeFile(path, source.replace('127.0.0.1:5173/#/register', '127.0.0.1:5174/#/register'), 'utf8')
-  })
+test('rejects a loopback demo link', async () => {
+  const result = await runValidator((directory) => mutateHome(
+    directory,
+    (source) => source.replace(
+      'href="https://github.com/ShigeichiroYamasaki/creator-first-platform"',
+      'href="http://127.0.0.1:5173/#/register"'
+    )
+  ))
 
   assert.equal(result.status, 1)
-  assert.match(result.stderr, /external link must use HTTPS: http:\/\/127\.0\.0\.1:5174/)
+  assert.match(result.stderr, /external link must use HTTPS: http:\/\/127\.0\.0\.1:5173/)
 })
 
 test('rejects an unsafe target=_blank external link', async () => {

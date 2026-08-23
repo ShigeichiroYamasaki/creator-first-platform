@@ -31,11 +31,13 @@ flowchart LR
 4. 法務・Rights・Privacy・SecurityレビューとSmart Contract監査を終える。
 5. Testnet成果物をそのまま本番へ流用せず、本番用の鍵、権限、インフラ、契約、監視、復旧手順を別Gateで実装する。
 
-## ローカルTest User登録
+## すぐ試せるTest User登録
 
-GatewayとPlayerを起動した後、[テストユーザー登録画面を開く](http://127.0.0.1:5173/#/register)ことができます。登録するのはデモ画面に表示するAliasとDemo利用条件・Privacy Noticeの確認だけです。現在のAliasはGateway Process内だけで扱い、公開ProfileやSBT Metadataへ送信しません。実名、メール、電話番号、Passwordまたは本番Walletを入力しないでください。
+[ブラウザだけでテストユーザー登録を試す](/demo/test-user-registration)ことができます。サーバー起動、Wallet接続、Tokenまたは送金は不要です。入力は現在のタブのSession Storageだけに保存され、Gateway、Blockchainまたは外部サービスへ送信されません。実名、メール、電話番号、PasswordまたはWallet Addressを入力しないでください。
 
-この操作は、Gatewayが起動時に自動生成する合成Demo PrincipalへTest-only Profileを関連付けるUI検証です。Authenticatorを登録せず、Protocol上のPlatform Accountを`PENDING`または`ACTIVE`にせず、Playback、Wallet Link、SubscriptionまたはSBT資格の認可条件にも使用しません。本番Account登録、本人確認、Subscription契約または資産口座ではありません。
+この操作はAlias登録とNotice確認のUIシミュレーションです。Authenticatorを登録せず、Protocol上のPlatform Accountを`PENDING`または`ACTIVE`にせず、Playback、Wallet Link、SubscriptionまたはSBT資格の認可条件にも使用しません。本番Account登録、本人確認、Subscription契約または資産口座ではありません。
+
+Gateway APIとCookie Sessionを含む開発者向け検証は、[ローカルStreaming Gateway](/demo/local-gateway)を起動してPlayerの`/#/register`を利用します。
 
 ## 現在の状態
 
@@ -47,7 +49,7 @@ GatewayとPlayerを起動した後、[テストユーザー登録画面を開く
 | Streaming Gateway | [ローカルMock実装済み](/demo/local-gateway)、公開環境未デプロイ |
 | Navidrome Media Adapter | Adapter実装済み、専用User・非公開Network・Canonical Mapping未設定 |
 | Player PWA | ローカルGateway接続済み、公開環境未デプロイ |
-| Test User登録 | AliasだけのローカルTest-only Profile実装済み、本番Authenticator未実装 |
+| Test User登録 | GitHub Pagesのブラウザ内シミュレーションとローカルGateway版を実装済み、本番Authenticator未実装 |
 | Testnet決済 | 未実装 |
 | Rights / Usage / Distribution | Draft仕様、未実装 |
 

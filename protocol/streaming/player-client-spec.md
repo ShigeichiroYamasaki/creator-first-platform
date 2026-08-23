@@ -33,7 +33,7 @@ Define a safe and replaceable Player Client that integrates catalog browsing, Na
 
 The Vue Player and Node.js Gateway are a partial local fixture under `MOCK-ASSUMPTION-001`, not a conforming implementation of every requirement in this Draft. The fixture currently exercises Catalog Home, one Audio Element, basic playback controls, short-lived Playback Sessions, bounded Range delivery, SIWE signature recovery, EIP-712 Support Intent, Mock Credential state and Community Capability. Search, Artist and Album detail, Client Playback Events, logout and Account switching, Service Worker controls, production authentication, real Subscription and finalized Testnet Credential events remain unimplemented.
 
-The fixture also exposes `GET /v1/demo/user` and `POST /v1/demo/users` for Alias and notice UI testing. These Test Harness operations do not create a Platform Account or Authenticator and do not alter playback, Wallet, Subscription, Credential or Community authorization. The Alias remains process-local and is not published to SBT metadata. This isolation is required by `REQ-PLAYER-023` and the Account lifecycle boundary.
+The fixture also exposes `GET /v1/demo/user` and `POST /v1/demo/users` for Alias and notice UI testing. These Test Harness operations do not create a Platform Account or Authenticator and do not alter playback, Wallet, Subscription, Credential or Community authorization. The Alias remains process-local and is not published to SBT metadata. The hosted documentation demo is a separate client-only simulation using per-tab Session Storage and no Gateway call; it has the same non-authoritative boundary. This isolation is required by `REQ-PLAYER-023` and the Account lifecycle boundary.
 
 ## Scope
 

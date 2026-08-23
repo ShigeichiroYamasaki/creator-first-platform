@@ -8,7 +8,7 @@ description: Navidromeを非公開Media Adapterとして利用し、Wallet・Sup
 **Date:** 2026-08-21
 **Last Updated:** 2026-08-22
 
-> **Implementation note (2026-08-22):** `apps/player`へVue 3／TypeScriptのローカルPWAを、`apps/gateway`へ対応するMock APIを実装した。Catalog Home、単一Audio Element、Play／Pause／Seek／Next／Previous、短命Playback Session、Range、SIWE、EIP-712 Support Intent、Mock Supporter状態、Community CapabilityおよびAlias限定Test-only Profileを検証できる。Test-only ProfileはPlatform AccountやAuthenticatorではなく、登録の有無は認可を変更しない。Search、Artist／Album詳細、Client Playback Event、Logout／Account Switch、Service Worker、実SBT、実Subscription、Testnet Contractおよび本番Authenticatorは未実装である。Framework等の未決定事項は`MOCK-ASSUMPTION-001`で限定しており、この実装は本ADRの採用確定またはProtocol適合完了を意味しない。
+> **Implementation note (2026-08-22):** `apps/player`へVue 3／TypeScriptのローカルPWAを、`apps/gateway`へ対応するMock APIを実装した。Catalog Home、単一Audio Element、Play／Pause／Seek／Next／Previous、短命Playback Session、Range、SIWE、EIP-712 Support Intent、Mock Supporter状態、Community CapabilityおよびAlias限定Test-only Profileを検証できる。Test-only ProfileはPlatform AccountやAuthenticatorではなく、登録の有無は認可を変更しない。GitHub Pagesには別途、Network通信を行わず現在のTabのSession Storageだけを使う登録UIシミュレーションを提供する。Search、Artist／Album詳細、Client Playback Event、Logout／Account Switch、Service Worker、実SBT、実Subscription、Testnet Contractおよび本番Authenticatorは未実装である。Framework等の未決定事項は`MOCK-ASSUMPTION-001`で限定しており、この実装は本ADRの採用確定またはProtocol適合完了を意味しない。
 
 ## 1. Context
 

@@ -188,6 +188,7 @@ export default defineConfig({
             text: 'Demo',
             items: [
               { text: 'Testnetデモ入口', link: '/demo/' },
+              { text: 'Test User登録デモ', link: '/demo/test-user-registration' },
               { text: 'ローカル音楽ストリーミング', link: '/demo/local-streaming' },
               { text: 'ローカルStreaming Gateway', link: '/demo/local-gateway' }
             ]
@@ -365,6 +366,22 @@ export default defineConfig({
                 )
                 .replace(
                   /<h2[^>]*id="test-requirements"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  ''
+                )
+            }
+
+            if (environment.relativePath?.startsWith('adr/ADR-')) {
+              return withoutCredentialArtwork
+                .replace(
+                  /<h2[^>]*id="[^"]*alternatives-considered[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  ''
+                )
+                .replace(
+                  /<h2[^>]*id="[^"]*(?:testnet-acceptance-criteria|validation-gates)[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  ''
+                )
+                .replace(
+                  /<h2[^>]*id="[^"]*related-documents[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
                   ''
                 )
             }
