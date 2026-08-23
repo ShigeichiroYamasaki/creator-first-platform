@@ -4,6 +4,7 @@ import CreatorWorkspaceDemo from './CreatorWorkspaceDemo.vue'
 import DemoServiceChoices from './DemoServiceChoices.vue'
 import MermaidDiagram from './MermaidDiagram.vue'
 import TestUserRegistrationDemo from './TestUserRegistrationDemo.vue'
+import TreasuryFlowDemo from './TreasuryFlowDemo.vue'
 import UserServiceDemo from './UserServiceDemo.vue'
 import './custom.css'
 
@@ -15,6 +16,7 @@ export default {
     app.component('DemoServiceChoices', DemoServiceChoices)
     app.component('MermaidDiagram', MermaidDiagram)
     app.component('TestUserRegistrationDemo', TestUserRegistrationDemo)
+    app.component('TreasuryFlowDemo', TreasuryFlowDemo)
     app.component('UserServiceDemo', UserServiceDemo)
   }
 }

@@ -69,6 +69,11 @@ features:
 </div>
 
 <div class="document-meta__row">
+  <span class="document-meta__label">Last Updated</span>
+  <span>2026-08-23</span>
+</div>
+
+<div class="document-meta__row">
   <span class="document-meta__label">Author</span>
   <span>山崎重一郎 (Shigeichiro Yamasaki)</span>
 </div>

@@ -6,7 +6,9 @@ description: 利用者中心の利用実績を基礎に、人気集中を抑え�
 
 **Status:** Proposed  
 **Date:** 2026-07-29
-**Last Updated:** 2026-08-20
+**Last Updated:** 2026-08-23
+
+資金の所在、期間収支、Creator未払、税・運営・Promotion・Community予算および残余の横断的な照合は、[ADR-0013](./ADR-0013-treasury-flow-transparency.md)で定義する。
 
 ## 1. Context
 

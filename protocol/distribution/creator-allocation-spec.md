@@ -4,7 +4,7 @@
 **Version:** 0.1.0  
 **Protocol Domain:** distribution / accounting  
 **Specification ID:** SPEC-DISTRIBUTION-001  
-**Last Updated:** 2026-08-19
+**Last Updated:** 2026-08-23
 
 ## Related Documents
 
@@ -16,6 +16,7 @@
 - ADR: `docs/adr/ADR-0003-rights-registry.md`
 - ADR: `docs/adr/ADR-0004-creator-distribution-model.md`
 - ADR: `docs/adr/ADR-0005-usage-oracle.md`
+- ADR: `docs/adr/ADR-0013-treasury-flow-transparency.md`
 
 ### Related Specifications
 
@@ -77,6 +78,9 @@ This specification covers:
 - **Held Allocation:** an amount not payable because Rights, fraud, compliance, accounting or operational conditions are unresolved.
 - **Distribution Result:** an immutable versioned set of pools, Content Allocations, Recipient Allocations, holds, residuals and commitments for one Distribution Period.
 - **Settlement Instruction:** an authorized output referencing a finalized Recipient Allocation, approved settlement asset and recipient payment profile; it is not itself payment finality.
+- **Treasury Transparency Snapshot:** a versioned explanatory Read Model that reconciles period flows, ending asset locations and ending obligations, approved reserves and unallocated remainder from referenced authoritative sources; it is not a statutory financial statement or payment authority.
+- **Asset Location:** the reconciled custody or accounting location of an ending balance, such as an identified Contract, corporate custody account or receivable ledger.
+- **Purpose or Obligation:** a transparency category identifying an approved obligation, reserve, budget or unallocated remainder without determining its statutory accounting classification.
 
 Common terms follow `protocol/glossary.md` and `protocol/conventions.md`.
 
@@ -123,6 +127,16 @@ Common terms follow `protocol/glossary.md` and `protocol/conventions.md`.
 - approved settlement-asset entry when producing Settlement Instructions;
 - prior carried balances and their provenance.
 
+### Treasury Transparency Inputs
+
+- opening balance and prior finalized Treasury Transparency Snapshot;
+- finalized receipt, reversal and outflow references;
+- exact Contract balances with Network, Block and finality evidence;
+- corporate custody, receivable, payable and tax-accounting references;
+- finalized Distribution Results and settlement-state references;
+- approved operations, promotion and community budget references;
+- adjustment authority, evidence and applicable disclosure policy.
+
 ## Outputs
 
 - immutable candidate and finalized Distribution Result versions;
@@ -132,6 +146,8 @@ Common terms follow `protocol/glossary.md` and `protocol/conventions.md`.
 - result commitment and verification report;
 - privacy-safe public and Creator explanation records;
 - Settlement Instructions referencing exact finalized allocations.
+- versioned Treasury Transparency Snapshots with period-flow, asset-location and purpose-or-obligation reconciliation;
+- privacy-safe public Treasury summaries and authorized Creator explanations.
 
 ## State
 
@@ -187,6 +203,12 @@ DRAFT → INPUTS_FROZEN → CALCULATED → REVIEW_PENDING → FINALIZED
 - **REQ-DISTRIBUTION-030:** Public period transparency MUST include privacy-safe revenue, deduction, pool, policy, Usage, Rights, hold, residual, commitment and settlement-completion summaries.
 - **REQ-DISTRIBUTION-031:** A Creator or Rights Holder explanation MUST trace an authorized recipient's amount through pool, usage allocation, Rights split, hold, carry and settlement status without exposing another User's private data.
 - **REQ-DISTRIBUTION-032:** Input or dependency unavailability MUST stop affected finalization or instruction generation rather than substitute estimates as finalized amounts.
+- **REQ-DISTRIBUTION-052:** Every Treasury Transparency Snapshot MUST identify a stable Period ID, Snapshot version, exact Asset ID and integer unit, source cutoff, as-of time, generation time and reconciliation state.
+- **REQ-DISTRIBUTION-053:** A Treasury Transparency Snapshot MUST reconcile opening balance plus finalized inflows minus finalized outflows plus or minus approved adjustments to ending balance in one exact asset unit.
+- **REQ-DISTRIBUTION-054:** Ending balance MUST reconcile to evidence-backed Asset Locations, including each applicable Contract custody, corporate custody, receivable and other approved asset category.
+- **REQ-DISTRIBUTION-055:** Ending Asset Locations MUST reconcile to separately identified Creator payables, tax reserves or payables, operations reserve, promotion budget, community budget, other approved purposes and net unallocated reserve.
+- **REQ-DISTRIBUTION-056:** Every Treasury flow, location and purpose-or-obligation row MUST identify category, amount, source reference, authority, evidence, status and applicable policy or accounting-period reference.
+- **REQ-DISTRIBUTION-057:** A correction to a finalized Treasury Transparency Snapshot MUST create a new version with cause, authority, changed source references, line and total deltas and affected published commitments.
 
 ### MUST NOT
 
@@ -200,6 +222,9 @@ DRAFT → INPUTS_FROZEN → CALCULATED → REVIEW_PENDING → FINALIZED
 - **REQ-DISTRIBUTION-040:** User-level listening history, payment history, identity or per-User Content Allocation MUST NOT be published on a public blockchain or Creator-facing aggregate view.
 - **REQ-DISTRIBUTION-041:** A Settlement Instruction MUST NOT be represented as completed payment before the applicable settlement-finality evidence exists.
 - **REQ-DISTRIBUTION-042:** Distribution calculation MUST NOT determine legal Rights, tax status, withholding duty, sanctions eligibility or payment-account ownership.
+- **REQ-DISTRIBUTION-058:** A Treasury Transparency Snapshot MUST NOT be represented as a statutory balance sheet, income statement, accounting ledger, tax return, payment instruction or budget-execution authority.
+- **REQ-DISTRIBUTION-059:** An implementation MUST NOT treat a Wallet or Contract balance as revenue, profit, distributable cash or beneficial ownership, or net different assets, unless supported by the applicable authoritative accounting, Rights and conversion records.
+- **REQ-DISTRIBUTION-060:** Estimated, pending, stale or unreconciled source data MUST NOT be displayed as finalized Treasury amounts or silently mixed into finalized totals.
 
 ### SHOULD
 
@@ -209,6 +234,8 @@ DRAFT → INPUTS_FROZEN → CALCULATED → REVIEW_PENDING → FINALIZED
 - **REQ-DISTRIBUTION-046:** Reconciliation SHOULD detect duplicate receipts, missing reversals, asset mismatch, impossible shares and downstream double instruction before finalization.
 - **REQ-DISTRIBUTION-047:** Settlement batching SHOULD preserve per-allocation provenance and idempotency while minimizing fees under the approved policy.
 - **REQ-DISTRIBUTION-048:** Creator-facing explanations SHOULD distinguish calculated, held, carried, instructed, settled and failed amounts.
+- **REQ-DISTRIBUTION-061:** Treasury public summaries SHOULD provide machine-readable Snapshot, source, policy, status and commitment references alongside human-readable period-flow and ending-balance explanations.
+- **REQ-DISTRIBUTION-062:** Treasury disclosure SHOULD apply privacy and commercial-confidentiality thresholds while preserving enough aggregated evidence for Creator, User and Governance oversight.
 
 ### MAY
 
@@ -237,6 +264,8 @@ DRAFT → INPUTS_FROZEN → CALCULATED → REVIEW_PENDING → FINALIZED
 - **SPEC-INV-DISTRIBUTION-004:** Platform revenue never silently absorbs Creator residual, held or carried balances.
 - **SPEC-INV-DISTRIBUTION-005:** Finalized result content never changes under the same version.
 - **SPEC-INV-DISTRIBUTION-006:** Public verification never exposes User-level listening or payment history.
+- **SPEC-INV-DISTRIBUTION-007:** Every finalized Treasury period flow and both ending-balance views reconcile exactly in one declared asset unit.
+- **SPEC-INV-DISTRIBUTION-008:** A transparency view never replaces an authoritative accounting, tax, custody, distribution, settlement or governance record and never authorizes movement of funds.
 
 ## Calculation Model
 
@@ -287,6 +316,10 @@ correctDistribution(result_id, correction)
 getDistributionResult(result_id, result_version)
 getRecipientExplanation(result_id, authorized_recipient)
 createSettlementInstructions(result_id, result_version)
+createTreasuryTransparencySnapshot(period_id, asset_id, source_cutoffs)
+verifyTreasuryTransparencySnapshot(snapshot_id, snapshot_version)
+getTreasuryTransparencySnapshot(snapshot_id, snapshot_version, disclosure_profile)
+correctTreasuryTransparencySnapshot(snapshot_id, correction)
 ```
 
 Implementations MAY expose different transport or method names, but calculation, authorization, privacy, idempotency and audit semantics MUST remain equivalent.
@@ -327,6 +360,7 @@ Audit records MUST cover:
 - review, challenge, finalization and correction;
 - Content, Recipient, Held, residual and carried-balance provenance;
 - Settlement Instruction creation, retry, cancellation and finality reference;
+- Treasury source cutoffs, balances, budget references, reconciliation, publication and correction;
 - privileged access to recipient explanations and restricted inputs.
 
 Audit records MUST be tamper-evident, access controlled and retained under approved legal, accounting, privacy and operational schedules.
@@ -350,8 +384,11 @@ Audit records MUST be tamper-evident, access controlled and retained under appro
 | REQ-DISTRIBUTION-033–042 | Negative / separation | Unverified usage, disputed Rights, capital influence, hidden deductions and premature payment claims never affect finalized results |
 | REQ-DISTRIBUTION-043–048 | Conformance | Implemented SHOULD behavior is verified or deviation is documented under conventions |
 | REQ-DISTRIBUTION-049–051 | Optional conformance | Commitments, community pools and settlement paths preserve every MUST, MUST NOT and invariant |
+| REQ-DISTRIBUTION-052–057 | Treasury reconciliation | Period flow, ending Asset Locations and purposes or obligations reconcile with exact source, authority, evidence and correction provenance |
+| REQ-DISTRIBUTION-058–060 | Treasury separation / negative | Transparency is never represented as statutory accounting or authority; Wallet balances and unfinished data never become finalized revenue or totals |
+| REQ-DISTRIBUTION-061–062 | Treasury disclosure conformance | Human and machine-readable explanations preserve oversight while applying privacy and confidentiality thresholds |
 
-Property and adversarial tests MUST include zero usage, one-unit pools, maximum integers, share totals below/equal/above one, non-divisible amounts, order permutations, duplicate receipts, stale Rights, disputed shares, concurrent finalization, correction replay, instruction retry, asset mismatch, sparse privacy groups and unavailable dependencies.
+Property and adversarial tests MUST include zero usage, one-unit pools, maximum integers, share totals below/equal/above one, non-divisible amounts, order permutations, duplicate receipts, stale Rights, disputed shares, concurrent finalization, correction replay, instruction retry, asset mismatch, sparse privacy groups, unavailable dependencies, mismatched Treasury totals, stale chain cutoffs, unapproved adjustments, cross-asset netting and unfinished source data.
 
 ## Acceptance Criteria
 
@@ -361,6 +398,8 @@ Property and adversarial tests MUST include zero usage, one-unit pools, maximum 
 - Rights tests prove no uploader, Account or Wallet bypasses the exact Rights Snapshot.
 - Privacy review proves public and Creator-facing records cannot reveal User-level listening or payment history.
 - Finance and accounting review approves the concrete Revenue Snapshot, deduction, reconciliation and ledger interfaces.
+- Every Treasury test period proves period-flow ending balance equals the Asset Location total, which equals the purpose-or-obligation total in the exact same asset unit.
+- Treasury tests prove Wallet or Contract balances do not automatically become revenue, profit, distributable cash or payment authority, and that corrections preserve prior versions and explicit deltas.
 - Legal, tax and rights review approves the concrete first-jurisdiction hold, recipient, withholding-boundary and record-retention procedures.
 - Security review covers policy tampering, operator collusion, key compromise, arithmetic faults, instruction replay and privacy leakage.
 - Operational runbooks cover reconciliation mismatch, disputed Rights, failed settlement, correction, lost recipient access and incident response.

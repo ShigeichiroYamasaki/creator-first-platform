@@ -153,6 +153,7 @@ onMounted(() => {
           </li>
         </ul>
       </section>
+      <p><a class="primary-link" :href="withBase('/demo/treasury-dashboard')">資金フロー可視化デモを見る</a></p>
     </template>
   </section>
 </template>

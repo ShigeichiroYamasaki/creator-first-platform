@@ -194,6 +194,7 @@ export default defineConfig({
               { text: '音楽クリエータサービス', link: '/demo/creator-services' },
               { text: 'Test Creator登録デモ', link: '/demo/creator-registration' },
               { text: 'Creator Workspaceデモ', link: '/demo/creator-workspace' },
+              { text: '資金フロー可視化デモ', link: '/demo/treasury-dashboard' },
               { text: 'ローカル音楽ストリーミング', link: '/demo/local-streaming' },
               { text: 'ローカルStreaming Gateway', link: '/demo/local-gateway' }
             ]
@@ -296,7 +297,8 @@ export default defineConfig({
               { text: '0008 Account / Wallet / Identity', link: '/adr/ADR-0008-account-wallet-identity-strategy' },
               { text: '0009 Navidrome / Streaming Gateway', link: '/adr/ADR-0009-navidrome-streaming-gateway' },
               { text: '0010 Early Supporter SBT', link: '/adr/ADR-0010-early-supporter-sbt-privileges' },
-              { text: '0011 Integrated Player Client', link: '/adr/ADR-0011-integrated-player-client' }
+              { text: '0011 Integrated Player Client', link: '/adr/ADR-0011-integrated-player-client' },
+              { text: '0013 Treasury Flow Transparency', link: '/adr/ADR-0013-treasury-flow-transparency' }
             ]
           }
         ],

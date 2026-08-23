@@ -27,7 +27,7 @@ Protocol Specification は、人間向けの説明書であると同時に、AI�
 | [SPEC-STREAMING-001 Playback Authorization](/protocol/specs/playback-authorization) | Streaming / Authorization | 0.1.0 | Subscription・Credential特権・Rights認可、Playback Session、Media Adapter、Delivery Evidence |
 | [SPEC-STREAMING-002 Player Client](/protocol/specs/player-client) | Streaming / Client | 0.1.0 | Gateway専用PWA、Navidrome再生、Wallet・Supporter SBT・Community統合、Client Storage境界 |
 | [SPEC-USAGE-001 Playback Verification](/protocol/specs/playback-verification) | Usage / Privacy | 0.1.0 | Playback Event、重複防止、検証、Usage Snapshot、Challenge |
-| [SPEC-DISTRIBUTION-001 Creator Distribution](/protocol/specs/creator-distribution) | Distribution / Accounting | 0.1.0 | Revenue、User-Centric計算、Rights分割、保留、端数、Allocation |
+| [SPEC-DISTRIBUTION-001 Creator Distribution](/protocol/specs/creator-distribution) | Distribution / Accounting | 0.1.0 | Revenue、User-Centric計算、Rights分割、保留、Allocation、資金透明性照合 |
 
 すべてのDraftは、リポジトリ内の自動検証によって要件IDとInvariant IDの一意性、Global Invariant参照、Related Documentsの存在、MUST / MUST NOTとTest Requirementsの双方向対応、およびOpen Questionの安定ID・Decision owner・停止中ゲートを検査します。未決定事項は[Protocol Decision Queue](/protocol/open-questions)から確認できます。
 

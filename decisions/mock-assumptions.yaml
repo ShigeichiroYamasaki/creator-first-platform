@@ -36,7 +36,11 @@ assumptions:
       eight unpublished Release Drafts in per-tab Session Storage. Its Supporter and
       MockJPYC figures are fixed display fixtures; it never uploads media or evidence,
       verifies identity or rights, publishes a release, calculates distribution or
-      calls the Gateway, Wallet, Blockchain or an external service.
+      calls the Gateway, Wallet, Blockchain or an external service. The Treasury
+      Transparency fixture uses fixed MockJPYC period flows, asset locations and
+      purpose-or-obligation balances only to demonstrate two-stage reconciliation.
+      It reads no Contract, Wallet, bank, accounting or tax data and cannot authorize
+      distribution, payment or budget execution.
     expires_when: >-
       The owning Product, Security, Accessibility, Privacy, Rights and Protocol
       decision owners approve the first Account, Player, Wallet and Community profile.
@@ -48,3 +52,4 @@ assumptions:
       - Production use of the fixed Subscription, Rights, TTL, byte budget or SQLite choices
       - Claiming that a Test User is an ACTIVE Platform Account or verified person
       - Claiming that a Test Creator is verified, owns rights, has published a release or can receive payment
+      - Claiming that Treasury fixture values are real assets, revenue, liabilities, statutory accounts, tax results or authority to spend
