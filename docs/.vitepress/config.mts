@@ -339,6 +339,7 @@ export default defineConfig({
             text: 'CFP文書',
             items: [
               { text: 'CFP文書一覧', link: '/proposals/' },
+              { text: 'CFP文書・議事録管理', link: '/proposals/record-management' },
               { text: 'CFP-0002 初期サポーター1年未満ルール', link: '/proposals/CFP-0002-early-supporter-one-year-rule' }
             ]
           }
@@ -424,14 +425,21 @@ export default defineConfig({
             // 証拠グラフは本文だけに掲載して検索転送量を抑える。
             if (environment.relativePath === 'whitepaper/07-governance.md') {
               return searchableDocument.replace(
-                /<h3[^>]*id="cfp-0002による具体的シナリオ"[^>]*>[\s\S]*?(?=<h2|$)/,
+                /<h3[^>]*id="標準手続き"[^>]*>[\s\S]*?(?=<h2|$)/,
                 ''
               )
             }
 
             if (environment.relativePath === 'governance/index.md') {
               return searchableDocument.replace(
-                /<h2[^>]*id="実装順序"[^>]*>[\s\S]*?(?=<h2|$)/,
+                /<h2[^>]*id="議会ページの画面構成"[^>]*>[\s\S]*$/,
+                ''
+              )
+            }
+
+            if (environment.relativePath === 'proposals/index.md') {
+              return searchableDocument.replace(
+                /<h2[^>]*id="cfp-手続"[^>]*>[\s\S]*$/,
                 ''
               )
             }
@@ -458,6 +466,10 @@ export default defineConfig({
 
             if (environment.relativePath?.startsWith('adr/ADR-')) {
               return searchableDocument
+                .replace(
+                  /<h2[^>]*id="cfp文書・議事録管理"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  ''
+                )
                 .replace(
                   /<h2[^>]*id="[^"]*(?:alternatives-considered|検討した代替案)[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
                   ''

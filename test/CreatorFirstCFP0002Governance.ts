@@ -128,10 +128,10 @@ describe("CFP-0002 constitutional review, bicameral approval and governed deploy
       "docs/proposals/reviews/CFP-0002-legal-review.md",
     );
     const creatorDeliberationHash = await sourceHash(
-      "docs/proposals/deliberations/CFP-0002-creator-house.md",
+      "docs/proposals/records/CFP-0002/revision-0001/creator-house/minutes-001.md",
     );
     const userDeliberationHash = await sourceHash(
-      "docs/proposals/deliberations/CFP-0002-user-house.md",
+      "docs/proposals/records/CFP-0002/revision-0001/user-house/minutes-001.md",
     );
     await governor.write.recordPreVoteReview([
       1n,

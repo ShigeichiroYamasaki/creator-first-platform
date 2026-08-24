@@ -37,6 +37,8 @@ description: Sepolia上の二院制議会、二次投票、レビュー、タイ
 
 [CFP-0002](/proposals/CFP-0002-early-supporter-one-year-rule)について、Hardhat自動テストは次の順序を検証します。
 
+[CFP-0002 Revision 1の証拠索引](/proposals/records/CFP-0002/revision-0001/evidence-index)は、現在の議事録と議決が合成テストfixtureであり、正式な投票・デプロイ用文書ゲートには合格しないことを明示します。
+
 1. CFP本文、初期サポーター仕様、憲章適合性レビュー、法務レビューおよび各院熟議記録をハッシュ化する。
 2. 適合性審査が不合格なら熟議完了と投票を拒否する。
 3. 片方の院の熟議記録が欠ける場合も投票を拒否する。

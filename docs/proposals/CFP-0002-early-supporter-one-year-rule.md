@@ -225,7 +225,8 @@ qualifies == (
 テストネット用ガバナーとCREATE2デプロイファクトリーを用い、次をローカルHardhat試験として実装した。
 
 - [憲章適合性レビュー](./reviews/CFP-0002-charter-review.md)と[法務実行可能性レビュー](./reviews/CFP-0002-legal-review.md)の実ファイルハッシュを投票前証拠として登録する。
-- [音楽クリエータ院議会の合成熟議記録](./deliberations/CFP-0002-creator-house.md)と[ユーザ院議会の合成熟議記録](./deliberations/CFP-0002-user-house.md)を院別に登録する。
+- [音楽クリエータ院議会の合成議事録](./records/CFP-0002/revision-0001/creator-house/minutes-001.md)と[ユーザ院議会の合成議事録](./records/CFP-0002/revision-0001/user-house/minutes-001.md)を院別に登録する。
+- [CFP文書管理方式](./record-management.md)に従い、論点、議事録、院別議決および証拠索引を同じRevisionへ結合する。現在は未解決の重大論点とテストfixtureを含むため、本番投票・デプロイゲートには合格しない。
 - 適合性審査が不合格、またはどちらか一院の熟議記録がない場合、議員の投票をコントラクトが拒否する。
 - 両院が別々に定足数と賛成スコアを満たした後だけ、事後実装レビューとP2タイムロックへ進む。
 - 両院承認後、[CFP-0002コントラクト試験証跡](./reviews/CFP-0002-contract-test-evidence.md)に従い、対象ソース、生成物、テストスイート、試験報告および承認済みcalldataのハッシュを登録する。

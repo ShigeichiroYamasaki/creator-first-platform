@@ -209,6 +209,7 @@ UUPS プロキシの`UPGRADER_ROLE`、ポリシー activation、資金庫実行�
 
 - [ホワイトペーパー 7. ガバナンス](../whitepaper/07-governance.md)
 - [CFP制度](../proposals/index.md)
+- [CFP文書・議事録管理](../proposals/record-management.md)
 - [ADR-0001 ガバナンスモデル](../adr/ADR-0001-governance-model.md)
 - [ADR-0002 検証可能抽選](../adr/ADR-0002-verifiable-sortition.md)
 - [ADR-0016 Bicameral 二次ガバナンス](../adr/ADR-0016-bicameral-quadratic-governance.md)

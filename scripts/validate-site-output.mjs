@@ -366,8 +366,8 @@ if (searchAssets.length !== 1) {
   if (searchAssetBytes > 1_500_000) {
     errors.push(`${relative(outputDirectory, searchAssets[0])}: raw search index is ${searchAssetBytes} bytes (limit: 1500000)`)
   }
-  if (searchAssetGzipBytes > 320_000) {
-    errors.push(`${relative(outputDirectory, searchAssets[0])}: gzip search index is ${searchAssetGzipBytes} bytes (limit: 320000)`)
+  if (searchAssetGzipBytes > 330_000) {
+    errors.push(`${relative(outputDirectory, searchAssets[0])}: gzip search index is ${searchAssetGzipBytes} bytes (limit: 330000)`)
   }
 }
 

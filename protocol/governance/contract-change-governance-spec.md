@@ -15,6 +15,7 @@
 - ADR: `docs/adr/ADR-0001-governance-model.md`
 - ADR: `docs/adr/ADR-0002-verifiable-sortition.md`
 - ADR: `docs/adr/ADR-0016-bicameral-quadratic-governance.md`
+- CFP records: `docs/proposals/record-management.md`
 
 ### Related Specifications
 
@@ -146,6 +147,9 @@ Any non-final state → EXPIRED when its approved deadline elapses
 - **REQ-GOVERNANCE-036:** Before implementation review, queueing or deployment, every CFP contract operation MUST bind passing test evidence for the exact approved source, compiled artifact, test suite and calldata. Missing, failed or mismatched evidence MUST prevent progression to `IMPLEMENTATION_VERIFIED`.
 - **REQ-GOVERNANCE-037:** Before voting, every CFP contract operation MUST publish an executable candidate bundle that traces each normative requirement to test code, candidate source, expected behavior and execution intent, and both Houses MUST deliberate on the same bundle hashes.
 - **REQ-GOVERNANCE-038:** Human- or AI-assisted generation of specifications, tests or code MUST record the tool and version, input evidence hashes, generated artifact hashes and human review decision; the generation environment MUST NOT possess Timelock, deployment or production administration authority.
+- **REQ-GOVERNANCE-039:** Every CFP Revision MUST maintain a versioned evidence index that binds unique document IDs for issues, applicable reviews, separate Creator House and User House minutes and decisions, implementation evidence, Execution Manifest and execution evidence to the same CFP ID and Revision.
+- **REQ-GOVERNANCE-040:** An unresolved issue marked as blocking, missing final minutes or decision from either mandatory House, a test fixture, or unverified mandatory evidence MUST prevent voting activation, implementation verification and deployment authorization.
+- **REQ-GOVERNANCE-041:** Confirmed or hash-bound minutes and decisions MUST be append-only; a correction MUST preserve the original document ID and hash, identify approvers and create a new Proposal Revision whenever execution meaning changes.
 
 ### MUST NOT
 
@@ -284,6 +288,7 @@ This profile deliberately uses registrar-assigned public wallet membership and p
 - Integration tests for REQ-GOVERNANCE-009–016 bind a mock UUPS upgrade to its Specification and runtime code hash, reject every modified Manifest and verify Timelock-only authorization and emergency limits.
 - Privacy review for REQ-GOVERNANCE-002, REQ-GOVERNANCE-005, REQ-GOVERNANCE-018, REQ-GOVERNANCE-020, REQ-GOVERNANCE-022 and REQ-GOVERNANCE-026 verifies minimization, unlinkability goals and restricted mappings.
 - Integration tests for REQ-GOVERNANCE-033–038 reject failed or missing pre-vote review, either House's missing deliberation evidence, missing or failed contract tests and mismatched tested calldata, then prove that only the exact tested, jointly approved and timelocked deployment creates runtime code at the predicted address. Static governance validation checks candidate-bundle traceability and generation-authority separation until those attestations are implemented on-chain.
+- Document-management tests for REQ-GOVERNANCE-039–041 validate unique IDs, CFP path and Revision binding, mandatory minutes sections, evidence references, unresolved blocking issues, production-versus-fixture separation, final House records and verified evidence hashes.
 
 ## Acceptance Criteria
 
