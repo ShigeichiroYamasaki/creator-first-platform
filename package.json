@@ -13,6 +13,7 @@
     "contracts:compile": "hardhat compile",
     "contracts:test": "hardhat test nodejs",
     "contracts:deploy:sepolia": "hardhat ignition deploy ignition/modules/CreatorFirstTestnet.ts --network sepolia --deployment-id sepolia-creator-first-testnet",
+    "contracts:deploy:supporter-adapter:sepolia": "hardhat ignition deploy ignition/modules/SupporterRegistrationAdapterSepolia.ts --network sepolia --deployment-id sepolia-supporter-registration-adapter",
     "contracts:verify:sepolia": "node scripts/verify-sepolia-contracts.mjs",
     "testnet-demo:test": "node --test scripts/testnet-user-demo.test.mjs",
     "governance:test": "node --test scripts/testnet-governance-demo.test.mjs",

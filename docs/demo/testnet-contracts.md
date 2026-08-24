@@ -85,6 +85,14 @@ npx hardhat keystore set DEPLOYER_PRIVATE_KEY
 npm run contracts:deploy:sepolia
 ```
 
+既存公開SBTへサポータ登録アダプターだけを追加する場合は、総合モジュールではなく次の専用コマンドを使います。既定の接続先は公開済みSBTプロキシ`0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923`で、アダプターのデプロイと`RELAYER_ROLE`付与だけを実行します。
+
+```sh
+npm run contracts:deploy:supporter-adapter:sepolia
+```
+
+実行アカウントが既存SBTの`DEFAULT_ADMIN_ROLE`を失っている場合、役割付与は停止します。その場合は権限を持つ承認済み管理主体から別途付与し、エラーを迂回するために新しい管理鍵を追加しません。
+
 初回の非公開デモデプロイでは、Ignitionが全役割をデプロイ専用アカウントへBootstrapします。公開前に各コントラクトの`grantRole`で運用アカウントへ権限を付与し、動作確認後にBootstrap アカウントの不要役割を`revokeRole`で外します。`DEFAULT_ADMIN_ROLE`を先に失わないこと、`POLICY_ROLE`と`UPGRADER_ROLE`を同じ単独鍵へ残さないこと、本番ではマルチシグ／タイムロックを含む別のデプロイポリシーを採用することが必要です。
 
 `hardhat.config.ts`はチェーン IDを`11155111`へ固定するため、Infura Endpointが別ネットワークを返す場合は停止します。Ignitionのデプロイ Journalはローカル生成物としてGit対象外です。公開デモとして扱う前に、コントラクトアドレス、トランザクション、ソースコミット、Compiler、Constructor／Initializer引数、役割付与、Bootstrap 役割移管結果、プロキシ実装アドレスを別の公開デプロイ記録へ記録します。
