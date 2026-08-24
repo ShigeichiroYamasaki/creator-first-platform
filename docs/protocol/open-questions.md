@@ -26,6 +26,8 @@ description: 草案プロトコル仕様に残る未解決事項の責任主体�
 | [再生検証](/protocol/specs/playback-verification#open-questions) | イベント Schema、重複、検証ポリシー、不正レビュー、利用実績スナップショット、プライバシー | `OQ-USAGE-ORACLE-...` |
 | [音楽クリエーター分配](/protocol/specs/creator-distribution#open-questions) | 収益、控除、プール、ユーザ中心計算、権利保留、端数、説明 | `OQ-DISTRIBUTION-...` |
 | [コントラクト変更ガバナンス](/protocol/specs/governance-change#open-questions) | 議席、投票クレジット、定足数、投票秘密、変更区分、膠着、アイデンティティ、理由付き差戻し | `OQ-GOVERNANCE-...` |
+| [透明型ゼロ知識証明検証](/protocol/specs/transparent-zk-verification#open-questions) | 証明方式、mainnet経路、公開入力、秘密Witness処理 | `OQ-ZK-...` |
+| [本番サービスライフサイクル](/protocol/specs/production-service-lifecycle#open-questions) | 本番構成、決済、権利審査、コミュニティ、ガバナンス権限、段階公開 | `OQ-PLATFORM-...` |
 
 ## 決定責任者の責任分界
 

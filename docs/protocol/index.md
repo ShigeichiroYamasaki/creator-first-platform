@@ -8,7 +8,7 @@ Creator First Platform のプロトコル仕様は、ホワイトペーパー・
 
 プロトコル仕様は、人間向けの説明書であると同時に、AIエージェントが実装・テスト・レビューを行うための **実装契約**として利用します。
 
-アカウント・決済・資格証明・権利・ストリーミング・プレーヤー・利用実績・分配の10仕様を一つの利用経路として読む場合は、[エンドツーエンド最小縦断実装](/protocol/vertical-slice)を参照してください。コントラクト仕様変更を統治する11番目の仕様は、[SPEC-GOVERNANCE-001](/protocol/specs/governance-change)として独立させています。モック／テストネットでの作業分解とStage ゲートは[最小縦断実装実装計画](/protocol/implementation-plan)にまとめています。
+アカウント・決済・資格証明・権利・ストリーミング・プレーヤー・利用実績・分配の10仕様を一つの利用経路として読む場合は、[エンドツーエンド最小縦断実装](/protocol/vertical-slice)を参照してください。コントラクト仕様変更を統治する11番目の仕様は[SPEC-GOVERNANCE-001](/protocol/specs/governance-change)、透明型ゼロ知識証明の検証境界を定める12番目の仕様は[SPEC-ZK-001](/protocol/specs/transparent-zk-verification)です。これらをユーザ登録、音楽クリエーター登録、利用、コミュニティ、ガバナンスおよび分配の本番経路として束ねる13番目の横断仕様を[SPEC-PLATFORM-001](/protocol/specs/production-service-lifecycle)として定義しています。モック／テストネットでの作業分解と段階ゲートは[最小縦断実装実装計画](/protocol/implementation-plan)にまとめています。
 
 ::: warning 現在の状態: 草案
 公開中のプロトコル仕様は設計・レビュー段階です。本番サービスや資金を扱う承認済み仕様ではありません。実装開始前に未解決事項を解決し、法務・セキュリティ・ガバナンスの承認と版更新が必要です。
@@ -29,6 +29,8 @@ Creator First Platform のプロトコル仕様は、ホワイトペーパー・
 | [SPEC-USAGE-001 再生検証](/protocol/specs/playback-verification) | 利用実績 / プライバシー | 0.1.0 | 再生イベント、重複防止、検証、利用実績スナップショット、異議申立て |
 | [SPEC-DISTRIBUTION-001 音楽クリエーター分配](/protocol/specs/creator-distribution) | 分配 / 会計 | 0.1.0 | 収益、ユーザ中心計算、権利分割、保留、配分、資金透明性照合 |
 | [SPEC-GOVERNANCE-001 コントラクト変更ガバナンス](/protocol/specs/governance-change) | ガバナンス / コントラクト進化 | 0.1.0 | 二院制、二次投票、レビュー、マニフェスト、タイムロック、アップグレード |
+| [SPEC-ZK-001 透明型ゼロ知識証明検証](/protocol/specs/transparent-zk-verification) | ゼロ知識 / プライバシー / 検証 | 0.1.0 | 検証者プロファイル、証明エンベロープ、受付記録、テストネット／mainnet分離 |
+| [SPEC-PLATFORM-001 本番サービスライフサイクル](/protocol/specs/production-service-lifecycle) | プラットフォーム / 本番 / 横断制御 | 0.1.0 | ユーザ・音楽クリエーター登録、配信利用、コミュニティ、ガバナンス、分配の正本・障害・移行境界 |
 
 すべての草案は、リポジトリ内の自動検証によって要件IDと不変条件 IDの一意性、国際不変条件参照、関連文書の存在、MUST / MUST NOTとテスト要件の双方向対応、および未解決事項の安定ID・決定責任者・停止中ゲートを検査します。未決定事項は[プロトコル決定一覧](/protocol/open-questions)から確認できます。
 
@@ -217,7 +219,11 @@ protocol/governance/
 
 作品、音楽クリエーター、権利者、権利主張、検証済み権利、紛争状態を扱います。
 
-予定仕様:
+現在の草案:
+
+- [SPEC-ZK-001 透明型ゼロ知識証明検証](/protocol/specs/transparent-zk-verification)
+
+将来の用途別仕様:
 
 ```text
 protocol/rights/
@@ -315,7 +321,7 @@ Navidromeは適合可能なメディアアダプター例ですが、正規楽�
 
 ```text
 protocol/zk/
-├── zk-proof-interface-spec.md
+├── transparent-proof-verification-spec.md
 ├── usage-proof-spec.md
 ├── distribution-proof-spec.md
 ├── rights-proof-spec.md
@@ -329,6 +335,7 @@ protocol/zk/
 - ADR-0004 音楽クリエーター分配モデル
 - ADR-0005 利用実績オラクル
 - ADR-0006 ゼロ知識証明戦略
+- ADR-0017 透明型ゼロ知識証明のテストネット／本番境界
 
 ---
 

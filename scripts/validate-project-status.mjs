@@ -62,6 +62,7 @@ const root = pathArgument(arguments_, '--project-root', defaultRoot)
 const statusPath = pathArgument(arguments_, '--status-file', join(root, 'docs/status.md'), root)
 const adrDirectory = pathArgument(arguments_, '--adr-dir', join(root, 'docs/adr'), root)
 const protocolDirectory = pathArgument(arguments_, '--protocol-dir', join(root, 'protocol'), root)
+const deploymentManifestPath = pathArgument(arguments_, '--deployment-manifest', join(root, 'docs/public/testnet/deployment.json'), root)
 
 const errors = []
 const statusSource = await readFile(statusPath, 'utf8')
@@ -69,6 +70,14 @@ const adrFiles = (await filesMatching(adrDirectory, '.md'))
   .filter((file) => /ADR-\d{4}-.+\.md$/.test(file) && !/ \d+\.md$/.test(file))
 const specificationFiles = (await filesMatching(protocolDirectory, '-spec.md'))
   .filter((file) => !file.includes(`${join(protocolDirectory, 'templates')}/`))
+let deploymentManifest
+try {
+  deploymentManifest = JSON.parse(await readFile(deploymentManifestPath, 'utf8'))
+} catch (error) {
+  if (error.code !== 'ENOENT') {
+    errors.push(`${deploymentManifestPath}: invalid deployment manifest (${error.message})`)
+  }
+}
 
 const basisDate = statusSource.match(/> \*\*基準日:\s*(\d{4}-\d{2}-\d{2})\*\*/)?.[1]
 const parsedBasisDate = isoDate(basisDate)
@@ -148,6 +157,26 @@ if (!protocolRow) {
   }
   if (!new RegExp(`(?:^|\\D)${specificationFiles.length}仕様(?:\\D|$)`).test(protocolRow.evidence)) {
     errors.push(`docs/status.md: Protocol evidence must report ${specificationFiles.length}仕様`)
+  }
+}
+
+const governanceContractsPublished = Boolean(
+  deploymentManifest?.contracts?.governor && deploymentManifest?.contracts?.governedPolicy
+)
+if (governanceContractsPublished) {
+  const governanceRow = tableRow(statusSource, 'DAOガバナンス')
+  if (!governanceRow) {
+    errors.push('docs/status.md: missing DAOガバナンス maturity row for published governance contracts')
+  } else {
+    if (governanceRow.status.includes('公開デプロイ前')) {
+      errors.push('docs/status.md: DAOガバナンス must not say 公開デプロイ前 when governance contracts are published')
+    }
+    if (!governanceRow.status.includes('Sepolia') || !governanceRow.status.includes('デプロイ済み')) {
+      errors.push('docs/status.md: DAOガバナンス must report Sepolia deployment when governance contracts are published')
+    }
+    if (!governanceRow.evidence.includes('二院制') || !governanceRow.evidence.includes('デモポリシー')) {
+      errors.push('docs/status.md: DAOガバナンス evidence must identify the published 二院制ガバナー and デモポリシー')
+    }
   }
 }
 

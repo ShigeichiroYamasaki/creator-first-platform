@@ -1,6 +1,7 @@
 ---
 title: 最小縦断実装実装計画
 description: 草案プロトコルをモック・テストネット環境で検証する作業パッケージ、依存関係、成果物、Stage ゲート、終了証拠。
+search: false
 ---
 
 # 最小縦断実装実装計画
@@ -12,6 +13,8 @@ description: 草案プロトコルをモック・テストネット環境で検�
 ::: warning モック／テストネット限定の計画です
 本計画の完了だけでは、本番資金、実在する権利証憑、個人情報、税務資料または音楽クリエーターへの実送金を扱えません。テストネットトークンは金銭的価値や本番適格性を示さず、外部専門家レビューやスマートコントラクト監査を代替しません。
 :::
+
+本番系は本計画の環境を昇格させず、[ADR-0018](/adr/ADR-0018-production-service-architecture)と[SPEC-PLATFORM-001](/protocol/specs/production-service-lifecycle)に基づく独立した作業計画、鍵、データ、コントラクトおよび承認ゲートで構築する。
 
 ## 実装原則
 
@@ -170,7 +173,7 @@ flowchart TD
 
 **目的:** 再生イベントを重複なく検証し、privacy-safeな利用実績スナップショットを確定する。
 
-**対象仕様:** [SPEC-USAGE-001](/protocol/specs/playback-verification)
+**対象仕様:** [SPEC-USAGE-001](/protocol/specs/playback-verification)、[SPEC-ZK-001](/protocol/specs/transparent-zk-verification)
 
 **成果物:**
 
@@ -179,8 +182,11 @@ flowchart TD
 - duplicate relation、reason code、dispute、late-arrival処理
 - 期間 close、reconciliation、challenge、finalize、correct
 - deterministic aggregateとevent-set commitment
+- 透明型ZKの検証者プロファイル、公開入力拘束、受付ID、再実行防止、停止の統合モック
 
 **終了証拠:** 同一logical playbackの複数ソース・Retryが一度だけ算入され、公開成果物からユーザの詳細履歴を復元できない。
+
+**現在の部分実装:** `CreatorFirstTransparentZKRegistry`、交換可能な検証インターフェースおよび暗号学的ZKではないことを明示したモック検証者で、プロファイル登録、チェーン拘束受付ID、無効証明、再実行、廃止、停止をローカル検証する。利用実績パイプラインと実際の透明型証明方式は未接続であり、Sepolia公開マニフェストにも未掲載であるため、終了条件は未達である。
 
 ### IMP-008 分配エンジン
 

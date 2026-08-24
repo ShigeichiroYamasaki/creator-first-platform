@@ -219,16 +219,16 @@ flowchart LR
 
 を抑える。
 
-ただし、最初の最小縦断実装では、実際のHTTP 範囲、Seek、トランスコード、サブスクリプション認可および再生証跡を小さな構成で検証するため、ストリーミングゲートウェイがNavidromeの対応を逐次中継する。
+ただし、最初の最小縦断実装では、実際の範囲配信、シーク、音声変換、サブスクリプション認可および再生証跡を小さな構成で検証するため、ストリーミング認可ゲートウェイが交換可能な非公開メディア配信基盤の応答を逐次中継する。
 
 ```mermaid
 flowchart LR
     PLAYER[プレーヤー]
     GATEWAY[ストリーミングゲートウェイ]
-    NAVI[Navidrome]
+    MEDIA[非公開メディア配信基盤]
     VOLUME[読取専用音楽ボリューム]
 
-    PLAYER --> GATEWAY --> NAVI --> VOLUME
+    PLAYER --> GATEWAY --> MEDIA --> VOLUME
 ```
 
 このMVP構成では、音声全体をゲートウェイ Memoryへバッファせず、Backpressure、範囲対応およびクライアント Cancellationを維持する。
@@ -238,7 +238,7 @@ flowchart LR
 - 同時ストリーム数
 - ゲートウェイ egress帯域
 - 再生開始 Time p95 / p99
-- Navidrome同時Transcode数
+- 同時音声変換数
 - CPU、MemoryおよびTranscode キャッシュ
 - オリジン Errorおよびクライアント Abort率
 - 1 聴取 Hour当たりのRelay コスト
@@ -543,20 +543,20 @@ $$
 
 ---
 
-## 12.18 ZK/STARK インフラ
+## 12.18 透明型ゼロ知識証明インフラ
 
 ZK 証明生成は、通常のウェブ APIとは異なる計算負荷を持つ。
 
 ```mermaid
 flowchart LR
     EVENTS[検証済みイベント]
-    TRACE[実行トレース]
-    PROVER[STARK 証明者]
+    REPRESENT[回路・実行表現]
+    PROVER[ZK 証明者]
     PROOF[証明]
     STORE[証明ストレージ]
     CHAIN[検証者]
 
-    EVENTS --> TRACE --> PROVER --> PROOF
+    EVENTS --> REPRESENT --> PROVER --> PROOF
     PROOF --> STORE
     PROOF --> CHAIN
 ```
@@ -603,14 +603,14 @@ flowchart LR
 
 ## 12.20 段階的 ZK デプロイ
 
-MVPから完全なSTARK基盤を構築する必要はない。
+MVPから完全な透明型ゼロ知識証明基盤を構築する必要はない。
 
 ```mermaid
 flowchart LR
     P1[フェーズ 1<br/>監査可能 DB]
     P2[フェーズ 2<br/>マークルコミットメント]
     P3[フェーズ 3<br/>ZK 利用実績証明]
-    P4[フェーズ 4<br/>拡張可能 STARK インフラ]
+    P4[フェーズ 4<br/>拡張可能な透明型ZK基盤]
 
     P1 --> P2 --> P3 --> P4
 ```
@@ -1887,7 +1887,7 @@ flowchart TD
     VALID --> ANALYTICS[分析 / 集約]
 
     ANALYTICS --> ROOT[Merkle コミットメント]
-    ANALYTICS --> PROVER[ZK / STARK 証明者]
+    ANALYTICS --> PROVER[透明型ZK証明者]
 
     ROOT --> L2[ブロックチェーン / L2]
     PROVER --> L2
@@ -1960,7 +1960,7 @@ Creator First Platform のインフラは、
 - 音声はオブジェクトストレージ + CDNで配信する
 - 利用実績イベントは非同期処理する
 - 個別再生をオンチェーン化せずバッチ + コミットメント + 証明を利用する
-- ZK/STARKは段階導入する
+- 透明型ゼロ知識証明は段階導入する
 - ブロックチェーン処理を必要最小限にする
 - p50/p95/p99とSLOでUXを管理する
 - コスト / ユーザ、コスト / Play、コスト / 聴取 Hourを測る

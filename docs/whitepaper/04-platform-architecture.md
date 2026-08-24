@@ -98,6 +98,54 @@ flowchart TB
 
 すべてをブロックチェーン上へ置くのではなく、それぞれの目的に適した実装方式を選択する。
 
+### 4.2.1 本番サービスの六つの責任プレーン
+
+本番系は、テストネットの構成を接続先だけ変更して利用するのではなく、アカウント、鍵、データ、コントラクトおよび運用権限を分離して新規構築する。ユーザには一続きの体験を提供する一方、内部では次の責任プレーンを分ける。
+
+```mermaid
+flowchart TB
+    EXPERIENCE[体験<br/>プレーヤー・音楽クリエーターポータル・コミュニティ・議会]
+    ACCESS[アクセス<br/>API・BFF・ストリーミングゲートウェイ]
+    BUSINESS[業務<br/>アカウント・権利・購読・コミュニティ]
+    VERIFY[検証<br/>イベント・利用実績・インデクサー・照合]
+    PUBLIC[公開検証<br/>資格証明・資金庫・ガバナンス・証明検証]
+    CORPORATE[法人・運用<br/>契約・法務・会計税務・鍵・監視]
+
+    EXPERIENCE --> ACCESS --> BUSINESS
+    BUSINESS --> VERIFY
+    BUSINESS --> PUBLIC
+    VERIFY --> PUBLIC
+    CORPORATE --> BUSINESS
+    CORPORATE --> VERIFY
+    CORPORATE --> PUBLIC
+```
+
+アカウントはアカウントサービス、音楽クリエーター資格は音楽クリエーター審査サービス、配信権は権利登録台帳、購読は決済・購読サービス、コミュニティ会員資格はコミュニティサービス、分配債務と支払は分配台帳・法人会計を正本とする。ウォレット、SBTまたは一つのブロックチェーンイベントを、これらすべての正本として扱わない。
+
+本番の標準経路は、次のように責任境界を横断する。
+
+```mermaid
+flowchart LR
+    ACCOUNT[ユーザ登録]
+    CREATOR[音楽クリエーター審査]
+    RIGHTS[権利・作品審査]
+    CATALOG[公開カタログ]
+    SUB[JPYC等による購読]
+    PLAY[認可済み再生]
+    SUPPORT[支援・コミュニティ]
+    USAGE[検証済み利用実績]
+    DIST[分配・法人会計]
+    GOV[二院制ガバナンス]
+
+    ACCOUNT --> SUB --> PLAY --> USAGE --> DIST
+    ACCOUNT --> CREATOR --> RIGHTS --> CATALOG --> PLAY
+    ACCOUNT --> SUPPORT --> GOV
+    GOV --> RIGHTS
+    GOV --> DIST
+```
+
+詳細な正本、障害分離および本番成立条件は[ADR-0018](/adr/ADR-0018-production-service-architecture)と[SPEC-PLATFORM-001](/protocol/specs/production-service-lifecycle)で定義する。
+
 ---
 
 ## 4.3 クライアントレイヤー

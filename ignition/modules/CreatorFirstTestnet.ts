@@ -1,4 +1,5 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import { keccak256, stringToHex } from "viem";
 
 const ONE_TOKEN = 10n ** 18n;
 
@@ -17,6 +18,8 @@ export default buildModule("CreatorFirstTestnet", (m) => {
   const governanceRegistrar = deployer;
   const governanceReviewer = deployer;
   const governanceGuardian = deployer;
+  const proofPolicyManager = deployer;
+  const proofPauser = deployer;
 
   const initialMockSupply = m.getParameter(
     "initialMockSupply",
@@ -90,6 +93,23 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     30,
     100,
   ]);
+  const transparentZKMockVerifier = m.contract("CreatorFirstTransparentZKMockVerifier");
+  const transparentZKRegistry = m.contract("CreatorFirstTransparentZKRegistry", [
+    admin,
+    proofPolicyManager,
+    proofPauser,
+  ]);
+  const transparentZKMockProfileId = keccak256(
+    stringToHex("cfp.testnet.transparent-zk.mock.v1"),
+  );
+  const transparentZKMockProgramHash = keccak256(
+    stringToHex("cfp.testnet.usage-snapshot.mock-program.v1"),
+  );
+  m.call(transparentZKRegistry, "registerMockProfile", [
+    transparentZKMockProfileId,
+    transparentZKMockVerifier,
+    transparentZKMockProgramHash,
+  ]);
 
   return {
     mockJPYC,
@@ -101,5 +121,7 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     supporterSBT,
     bicameralGovernor,
     governedPolicy,
+    transparentZKMockVerifier,
+    transparentZKRegistry,
   };
 });

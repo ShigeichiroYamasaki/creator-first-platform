@@ -4,7 +4,7 @@
 **Version:** 0.1.0  
 **Protocol Domain:** usage / privacy  
 **Specification ID:** SPEC-USAGE-001  
-**Last Updated:** 2026-08-19
+**Last Updated:** 2026-08-24
 
 ## Related Documents
 
@@ -16,6 +16,7 @@
 - Whitepaper: `docs/whitepaper/10-security.md`
 - ADR: `docs/adr/ADR-0004-creator-distribution-model.md`
 - ADR: `docs/adr/ADR-0005-usage-oracle.md`
+- ADR: `docs/adr/ADR-0006-zero-knowledge-proof-strategy.md`
 - ADR: `docs/adr/ADR-0009-navidrome-streaming-gateway.md`
 
 ### Related Specifications
@@ -197,6 +198,7 @@ OPEN → CLOSING → CHALLENGE_WINDOW → FINALIZED
 - **REQ-USAGE-048:** Delivery Evidence consumed from SPEC-STREAMING-001 MUST bind Playback Session ID, Authorization Decision ID, Canonical Track ID, content version, Rights Snapshot version, authenticated producer, evidence schema, bounded range or byte summary and trusted timestamps.
 - **REQ-USAGE-049:** Verification MUST reject or hold an event when its Playback Session, Authorization Decision, content identity, Rights version or Delivery Evidence bindings conflict or cannot be verified.
 - **REQ-USAGE-050:** Verification MUST distinguish authorization, delivery start, byte delivery, client progress and Verified Usage as separate states and evidence claims.
+- **REQ-USAGE-052:** A Verification Policy that accepts a zero-knowledge proof MUST identify the proof system and version, statement or program, public inputs, cryptographic assumptions, verifier and setup model.
 
 ### MUST NOT
 
@@ -218,6 +220,7 @@ OPEN → CLOSING → CHALLENGE_WINDOW → FINALIZED
 - **REQ-USAGE-042:** Fraud review SHOULD use sampling, reviewer-quality checks and bias monitoring appropriate to Creator and User impact.
 - **REQ-USAGE-043:** Retention SHOULD minimize raw events while preserving commitments, aggregate inputs, policy versions and audit evidence needed for correction and dispute.
 - **REQ-USAGE-044:** Usage Consumers SHOULD verify snapshot integrity locally or through independently operated verification infrastructure.
+- **REQ-USAGE-053:** A zero-knowledge Usage Snapshot implementation SHOULD prefer a transparent proof system that requires no trusted setup unless measured security, verification cost or chain compatibility justifies a documented exception.
 
 ### MAY
 
@@ -343,6 +346,7 @@ Audit records MUST be tamper-evident and access controlled, with public summarie
 | REQ-USAGE-006–014 | Verification / duplicate / fraud | Only corroborated events verify; duplicate, disputed and automated-review paths remain explicit and reversible |
 | REQ-USAGE-015–023 | Period / property / authorization | Deterministic snapshots finalize once, bind exact inputs and use append-only correction |
 | REQ-USAGE-024–030 | Challenge / availability / privacy | Challenges are traceable; outages hold finalization; User and Creator views preserve privacy |
+| REQ-USAGE-052–053 | Zero-knowledge system governance | Proof metadata exposes assumptions and setup model; transparent systems are preferred unless an exception is justified |
 | REQ-USAGE-031–038 | Negative / boundary | Client, Wallet, disputed data and AI never become unauthorized usage, Rights or disciplinary authority |
 | REQ-USAGE-048–050 | Streaming evidence integration | Delivery evidence binds the exact authorization and content context while remaining distinct from Verified Usage |
 | REQ-USAGE-051 | Negative / adapter authority | No Media Adapter counter, log or response becomes the sole authority for Verified Usage |

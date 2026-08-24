@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url'
 
 const validator = fileURLToPath(new URL('./validate-project-status.mjs', import.meta.url))
 
-function statusPage({ adrCount = 2, adrStatus = 'Proposed', protocolCount = 2, protocolStatus = 'Draft 0.1.0', basisDate = '2026-08-19' } = {}) {
-  return [
+function statusPage({ adrCount = 2, adrStatus = 'Proposed', protocolCount = 2, protocolStatus = 'Draft 0.1.0', basisDate = '2026-08-19', governanceStatus, governanceEvidence = '二院制ガバナーとデモポリシー' } = {}) {
+  const rows = [
     '# 現在の状況',
     '',
     `> **基準日: ${basisDate}**`,
@@ -18,7 +18,9 @@ function statusPage({ adrCount = 2, adrStatus = 'Proposed', protocolCount = 2, p
     '| --- | --- | --- | --- |',
     `| ADR | ${adrStatus} | ${adrCount}件の設計判断案 | review |`,
     `| Protocol | ${protocolStatus} | Account等の${protocolCount}仕様 | review |`
-  ].join('\n')
+  ]
+  if (governanceStatus) rows.push(`| DAOガバナンス | ${governanceStatus} | ${governanceEvidence} | review |`)
+  return rows.join('\n')
 }
 
 function adr({ status = 'Proposed', date = '2026-08-19', lastUpdated = date } = {}) {
@@ -30,11 +32,12 @@ function specification({ status = 'Draft', version = '0.1.0', lastUpdated = '202
   return `# Specification\n\n**Status:** ${status}  \n**Version:** ${version}  \n**Last Updated:** ${lastUpdated}\n`
 }
 
-async function runValidator({ page = statusPage(), adrs = [adr(), adr()], specifications = [specification(), specification()] } = {}) {
+async function runValidator({ page = statusPage(), adrs = [adr(), adr()], specifications = [specification(), specification()], deploymentManifest } = {}) {
   const directory = await mkdtemp(join(tmpdir(), 'creator-first-status-'))
   try {
     const files = {
       'docs/status.md': page,
+      ...(deploymentManifest ? { 'docs/public/testnet/deployment.json': JSON.stringify(deploymentManifest) } : {}),
       ...Object.fromEntries(adrs.map((source, index) => [`docs/adr/ADR-${String(index + 1).padStart(4, '0')}-test.md`, source])),
       ...Object.fromEntries(specifications.map((source, index) => [`protocol/test/example-${index + 1}-spec.md`, source]))
     }
@@ -116,4 +119,21 @@ test('rejects a basis date older than a protocol update', async () => {
   })
   assert.equal(result.status, 1)
   assert.match(result.stderr, /basis date 2026-08-18 predates 2026-08-19/)
+})
+
+test('accepts a deployed governance status when governance contracts are published', async () => {
+  const result = await runValidator({
+    page: statusPage({ governanceStatus: 'Ethereum Sepoliaへ公開デプロイ済み、運用実証前' }),
+    deploymentManifest: { contracts: { governor: '0x1', governedPolicy: '0x2' } }
+  })
+  assert.equal(result.status, 0, result.stderr)
+})
+
+test('rejects a pre-deployment governance status when governance contracts are published', async () => {
+  const result = await runValidator({
+    page: statusPage({ governanceStatus: 'テストネット実装・公開デプロイ前' }),
+    deploymentManifest: { contracts: { governor: '0x1', governedPolicy: '0x2' } }
+  })
+  assert.equal(result.status, 1)
+  assert.match(result.stderr, /must not say 公開デプロイ前/)
 })

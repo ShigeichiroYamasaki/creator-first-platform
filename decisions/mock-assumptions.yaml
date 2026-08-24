@@ -3,6 +3,28 @@ status: DRAFT
 
 # Mock assumptions are explicit, bounded substitutes for unresolved decisions.
 assumptions:
+  - id: MOCK-ASSUMPTION-002
+    state: ACTIVE
+    scope:
+      - IMP-007
+      - IMP-010
+    source_questions:
+      - OQ-ZK-001
+      - OQ-ZK-002
+      - OQ-ZK-003
+    value: >-
+      The testnet transparent-ZK boundary uses a deterministic digest-comparison
+      verifier only to exercise verifier-profile registration, chain-bound receipt
+      identity, replay rejection, deprecation, pause and events. It provides no
+      zero-knowledge, soundness, Usage, Rights, eligibility or Distribution claim.
+    expires_when: >-
+      The approved transparent proof system, statement program, verifier, public
+      inputs, mainnet path and independent audits satisfy SPEC-ZK-001 mainnet acceptance.
+    prohibited_uses:
+      - Claiming cryptographic zero knowledge, proof soundness or independent audit
+      - Consuming a mock receipt for real Usage, Rights, eligibility, Distribution or funds
+      - Copying Sepolia profiles, keys, addresses, receipts or bootstrap roles to mainnet
+      - Presenting testnet integration success as production readiness
   - id: MOCK-ASSUMPTION-001
     state: ACTIVE
     scope:

@@ -6,7 +6,7 @@ description: 利用履歴や個人情報を公開せず、抽選・権利・利�
 
 **状態:** 提案
 **日付:** 2026-07-29
-**最終更新日:** 2026-08-20
+**最終更新日:** 2026-08-24
 
 ## 1. 背景
 
@@ -36,7 +36,7 @@ Creator First Platform は、音楽クリエーターとユーザの権利、利
 候補には、
 
 - zk-SNARK
-- zk-STARK
+- 透明型ゼロ知識証明（STARK、透明型SNARK等を含む）
 - Plonk系証明システム
 - Folding / Recursive 証明
 - その他の検証可能 Computation
@@ -180,8 +180,8 @@ Cryptographically 有効証明
 証明プログラム / Circuit
         ↓
 証明 Backend
-   ├── STARK
-   ├── SNARK
+   ├── 透明型ZK方式
+   ├── セットアップを伴うZK方式
    └── Future システム
         ↓
 標準検証 Interface
@@ -207,16 +207,16 @@ Cryptographically 有効証明
 
 ---
 
-## 6. 戦略的候補としてのzk-STARK
+## 6. 透明型ゼロ知識証明の優先評価
 
-Creator First Platformでは、特に利用実績オラクルおよび分配証明について **zk-STARKを戦略的な有力候補** とする。
+Creator First Platformでは、特に利用実績オラクルおよび分配証明について、信頼できるセットアップを必要としない**透明型ゼロ知識証明を優先的な評価対象**とする。
 
 理由は、
 
-- 透明 Setupを採用できる
-- 大量計算の検証に適する
-- Hash-based cryptographic assumptionsを中心に構成できる
-- Post-Quantum セキュリティを考慮した長期設計と整合しやすい
+- セットアップ時の秘密が安全に破棄されたことへの依存を避けられる
+- 大量計算、再帰または証明集約に適した複数方式を比較できる
+- 暗号仮定と検証手続きを公開できる
+- 将来の暗号方式移行を共通検証インターフェースで管理できる
 
 ことである。
 
@@ -227,14 +227,14 @@ Many 利用実績イベント
         ↓
 Large Computation
         ↓
-STARK 証明
+透明型ZK証明
         ↓
 公開検証
 ```
 
 という構造との相性がよい。
 
-ただし、本ADRはすべてのZKP用途についてzk-STARKを必須とするものではない。
+ただし、本ADRはすべてのZKP用途について透明型方式を無条件に必須とするものではない。証明サイズ、検証コストまたは対象チェーンの制約により別方式を採用する場合は、セットアップの信頼仮定と移行手続きを明示する。
 
 ---
 
@@ -249,12 +249,12 @@ zk-SNARKおよびPlonk系証明システムは、
 
 等の観点から有力な場合がある。
 
-特にスマートコントラクト上で頻繁に証明検証を行う用途では、STARK 証明を直接検証するよりSNARK系証明へ変換・集約するアーキテクチャが有利な可能性がある。
+特にスマートコントラクト上で頻繁に証明検証を行う用途では、透明型証明を直接検証するより小さい証明へ変換・集約するアーキテクチャが有利な可能性がある。
 
 したがって、
 
 ```text
-STARK Computation 証明
+透明型ZK計算証明
         ↓
 Recursive / Wrapped 証明
         ↓
@@ -301,7 +301,7 @@ Post-Quantum セキュリティが重要な長期データやプロトコルで�
 
 ただし、
 
-> STARKを採用すればプラットフォーム全体が自動的にPost-Quantum 安全なになる
+> 透明型ゼロ知識証明を採用すればプラットフォーム全体が自動的にPost-Quantum安全になる
 
 とはみなさない。
 
@@ -916,14 +916,18 @@ ADR-0005 利用実績オラクル ────┘
 - ADR-0003: 権利登録台帳
 - ADR-0004: 音楽クリエーター分配モデル
 - ADR-0005: 利用実績オラクル
+- ADR-0017: 透明型ゼロ知識証明のテストネット／本番境界
 
 ---
 
 ## 33. 後続仕様
 
-本ADRの採択後、少なくとも次の仕様を作成する。
+共通の検証境界は次の仕様として作成した。
 
-- `protocol/zk-proof-interface-spec.md`
+- `protocol/zk/transparent-proof-verification-spec.md`
+
+今後、必要に応じて次の用途別仕様を作成する。
+
 - `protocol/usage-proof-spec.md`
 - `protocol/distribution-proof-spec.md`
 - `protocol/rights-proof-spec.md`
@@ -931,7 +935,7 @@ ADR-0005 利用実績オラクル ────┘
 
 さらに、最初のZKP Prototypeについて証明システムを比較し、必要に応じて、
 
-- STARK implementation ADR
+- 証明方式実装ADR
 - Recursive proof ADR
 - オンチェーン verifier ADR
 

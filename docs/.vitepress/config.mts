@@ -286,6 +286,14 @@ export default defineConfig({
               {
                 text: 'ガバナンス変更（草案）',
                 link: '/protocol/specs/governance-change'
+              },
+              {
+                text: '透明型ゼロ知識証明検証（草案）',
+                link: '/protocol/specs/transparent-zk-verification'
+              },
+              {
+                text: '本番サービスライフサイクル（草案）',
+                link: '/protocol/specs/production-service-lifecycle'
               }
             ]
           }
@@ -309,7 +317,9 @@ export default defineConfig({
               { text: '0013 資金フローの透明性', link: '/adr/ADR-0013-treasury-flow-transparency' },
               { text: '0014 公開テストネットのユーザ体験経路', link: '/adr/ADR-0014-public-testnet-user-journey' },
               { text: '0015 公開テストネットの音楽クリエーター体験経路', link: '/adr/ADR-0015-public-testnet-creator-journey' },
-              { text: '0016 二院制ガバナンス', link: '/adr/ADR-0016-bicameral-quadratic-governance' }
+              { text: '0016 二院制ガバナンス', link: '/adr/ADR-0016-bicameral-quadratic-governance' },
+              { text: '0017 透明型ZKのテストネット／本番境界', link: '/adr/ADR-0017-transparent-zk-testnet-mainnet-boundary' },
+              { text: '0018 本番サービス全体アーキテクチャ', link: '/adr/ADR-0018-production-service-architecture' }
             ]
           }
         ],

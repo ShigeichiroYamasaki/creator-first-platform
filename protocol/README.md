@@ -50,6 +50,7 @@ Planned domains include:
 - zk
 - blockchain
 - security
+- platform
 
 ## Current Specifications
 
@@ -66,6 +67,8 @@ Planned domains include:
 | [SPEC-USAGE-001 Playback Event Verification and Usage Snapshot](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/usage/playback-verification-spec.md) | usage / privacy | Draft | 0.1.0 |
 | [SPEC-DISTRIBUTION-001 Creator Distribution Calculation and Allocation](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/distribution/creator-allocation-spec.md) | distribution / accounting | Draft | 0.1.0 |
 | [SPEC-GOVERNANCE-001 Contract Change Governance](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/governance/contract-change-governance-spec.md) | governance / voting / contract evolution | Draft | 0.1.0 |
+| [SPEC-ZK-001 Transparent Zero-Knowledge Proof Verification](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/zk/transparent-proof-verification-spec.md) | zk / privacy / verification | Draft | 0.1.0 |
+| [SPEC-PLATFORM-001 Production Service Lifecycle and Cross-Domain Orchestration](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/platform/production-service-lifecycle-spec.md) | platform / production / orchestration | Draft | 0.1.0 |
 
 ## Validation
 

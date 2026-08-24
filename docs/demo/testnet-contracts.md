@@ -1,11 +1,11 @@
 ---
 title: Sepolia スマートコントラクトデモ
-description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決済、サポーター SBT、音楽クリエーター登録台帳、二院制ガバナンスを検証する手順。
+description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決済、サポーター SBT、音楽クリエーター登録台帳、二院制ガバナンス、透明型ZK境界を検証する手順。
 ---
 
 # Sepolia スマートコントラクトデモ
 
-Hardhat 3とViemを使い、次のテストネット専用コントラクトをEthereum Sepoliaへデプロイしました。公開構成はソースコミット `b0bfcb73d453d970e0a5c1c432abb9abc6e0d341`で再現できます。
+Hardhat 3とViemを使い、公開済みのテストネット専用コントラクトをEthereum Sepoliaへデプロイしました。次の表には、公開済み構成に加えて、次回デプロイ対象としてローカル実装した透明型ZK境界も示します。現在の公開構成はソースコミット `b0bfcb73d453d970e0a5c1c432abb9abc6e0d341`で再現できます。
 
 | コントラクト | テストネット上の責務 | 本番境界 |
 | --- | --- | --- |
@@ -17,6 +17,10 @@ Hardhat 3とViemを使い、次のテストネット専用コントラクトをE
 | `CreatorFirstCreatorRegistry` | 仮名音楽クリエーターと作品／権利自己申告のsalt付きコミットメント、状態、イベントを記録する | 本人、権利、受取人、カタログ、配信許諾、分配または支払を承認しない |
 | `CreatorFirstBicameralGovernor` | 二院の独立採決、二次投票、レビュー証拠、変更区分別タイムロック、拘束済み実行データを管理する | 法的な会社機関決定、監査、憲法適合性判断、役員責任を代替しない |
 | `CreatorFirstGovernedPolicy` | ガバナーだけが更新できる無価値のデモ設定を保持する | 資金庫、SBT、プロキシまたは本番権限を操作しない |
+| `CreatorFirstTransparentZKMockVerifier` | 決定論的ダイジェスト比較で検証者接続だけを試す。暗号学的ZKではない | ゼロ知識性、健全性、利用実績、権利、資格または分配を証明しない |
+| `CreatorFirstTransparentZKRegistry` | モック検証者プロファイル、チェーン拘束受付ID、再実行拒否、廃止、停止を検証する | 本番検証者、監査済み証明プログラムまたはmainnet受付台帳ではない |
+
+透明型ZKの2コントラクトはローカル実装とIgnitionモジュールへの追加まで完了していますが、下記の公開Sepoliaマニフェストにはまだ含まれません。アドレスとデプロイトランザクションを公開記録へ追加するまでは公開デプロイ済みと扱いません。
 
 SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を拒否します。初期条件の`POLICY_ROLE`、実装更新の`UPGRADER_ROLE`、署名済み意思を送る`RELAYER_ROLE`を分離し、発行済み階層を後日のポリシー更新で書き換えません。
 
@@ -49,7 +53,7 @@ npm run contracts:compile
 npm run contracts:test
 ```
 
-テストは、MockJPYCの一回限りの自己取得と移転、決済／支出参照の重複拒否、EIP-712 nonceのreplay拒否、初期上限、ERC-5192、SBT移転拒否、一ウォレット一音楽クリエーター、コミットメント重複拒否、リリース自己申告と音楽クリエーター限定取消しを確認します。
+テストは、MockJPYCの一回限りの自己取得と移転、決済／支出参照の重複拒否、EIP-712 nonceのreplay拒否、初期上限、ERC-5192、SBT移転拒否、一ウォレット一音楽クリエーター、コミットメント重複拒否、リリース自己申告と音楽クリエーター限定取消しに加え、透明型ZK境界のプロファイル権限、チェーン拘束受付、無効モック証明、再実行、廃止および停止を確認します。
 
 ## InfuraとSepoliaの設定
 

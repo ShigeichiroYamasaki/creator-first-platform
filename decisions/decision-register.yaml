@@ -37,6 +37,12 @@ source_specifications:
   - id: SPEC-GOVERNANCE-001
     version: 0.1.0
     path: protocol/governance/contract-change-governance-spec.md
+  - id: SPEC-ZK-001
+    version: 0.1.0
+    path: protocol/zk/transparent-proof-verification-spec.md
+  - id: SPEC-PLATFORM-001
+    version: 0.1.0
+    path: protocol/platform/production-service-lifecycle-spec.md
 
 question_defaults:
   assignment: UNASSIGNED
