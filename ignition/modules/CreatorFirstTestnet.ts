@@ -77,6 +77,13 @@ export default buildModule("CreatorFirstTestnet", (m) => {
   const supporterSBT = m.contractAt("SupporterSBTUpgradeable", supporterProxy, {
     id: "SupporterSBTProxyInstance",
   });
+  const supporterRegistrationAdapter = m.contract("CreatorFirstSupporterRegistrationAdapter", [
+    supporterProxy,
+  ]);
+  const relayerRole = m.staticCall(supporterSBT, "RELAYER_ROLE");
+  m.call(supporterSBT, "grantRole", [relayerRole, supporterRegistrationAdapter], {
+    id: "GrantSupporterRegistrationAdapterRelayerRole",
+  });
   const bicameralGovernor = m.contract("CreatorFirstBicameralGovernor", [
     admin,
     governanceRegistrar,
@@ -126,6 +133,7 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     supporterImplementation,
     supporterProxy,
     supporterSBT,
+    supporterRegistrationAdapter,
     bicameralGovernor,
     governedPolicy,
     creatorRegistrationAdapter,

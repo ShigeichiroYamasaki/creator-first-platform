@@ -3,7 +3,18 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { createPublicClient, createWalletClient, custom, formatUnits, keccak256, toHex, type Address, type EIP1193Provider, type Hash } from 'viem'
 import { sepolia } from 'viem/chains'
-import { createTestToneWav, mockJpycAbi, SEPOLIA_CHAIN_ID, subscriptionAbi, validateDeploymentManifest } from './testnet-user-demo.js'
+import {
+  createSupporterTypedData,
+  createTestToneWav,
+  DEMO_SUPPORTER_CREATOR_ID,
+  hasActiveSupporterRegistration,
+  mockJpycAbi,
+  SEPOLIA_CHAIN_ID,
+  supporterRegistrationAdapterAbi,
+  supporterSbtAbi,
+  subscriptionAbi,
+  validateDeploymentManifest
+} from './testnet-user-demo.js'
 
 type DemoProfile = { registered: true; testUserId: string; displayName: string; state: 'TESTNET_DEMO_PROFILE'; createdAt: string }
 type DemoProvider = EIP1193Provider & {
@@ -16,7 +27,13 @@ type Deployment = {
   chainId: number
   networkName: string
   sourceCommit: string | null
-  contracts: { mockJpyc: Address | null; subscription: Address | null; treasury: Address | null; supporterSbt: Address | null }
+  contracts: {
+    mockJpyc: Address | null
+    subscription: Address | null
+    treasury: Address | null
+    supporterSbt: Address | null
+    supporterRegistrationAdapter?: Address | null
+  }
 }
 type Track = { id: string; title: string; artist: string; frequency: number; subscriberOnly: boolean }
 
@@ -44,6 +61,11 @@ const planEnabled = ref(false)
 const subscriptionActive = ref(false)
 const activeUntil = ref(0n)
 const lastTransaction = ref<Hash>()
+const lastSbtTransaction = ref<Hash>()
+const supporterTokenId = ref(0n)
+const supporterTier = ref(0)
+const supporterTokenUri = ref('')
+const supporterMessage = ref('プレーヤーから対象アーティストへのサポータ登録を開始できます。')
 const selectedTrack = ref(tracks[0])
 const toneUrls = new Map<string, string>()
 const audioElement = ref<HTMLAudioElement>()
@@ -57,10 +79,16 @@ const ready = computed(() => aliasValid.value && acceptedTerms.value && accepted
 const correctChain = computed(() => walletChainId.value === SEPOLIA_CHAIN_ID)
 const contractsReady = computed(() => Boolean(deployment.value?.active && deployment.value.contracts.mockJpyc && deployment.value.contracts.subscription))
 const chainActionsReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && contractsReady.value && !busyAction.value))
+const supporterRegistrationReady = computed(() => hasActiveSupporterRegistration(deployment.value))
+const supporterActionReady = computed(() => Boolean(
+  profile.value && walletAddress.value && correctChain.value && supporterRegistrationReady.value &&
+  supporterTokenId.value === 0n && !busyAction.value
+))
 const allowanceEnough = computed(() => planPrice.value > 0n && allowance.value >= planPrice.value)
 const balanceLabel = computed(() => `${formatUnits(balance.value, 18)} tJPYC`)
 const priceLabel = computed(() => planPrice.value ? `${formatUnits(planPrice.value, 18)} tJPYC` : '未取得')
 const canPlaySelected = computed(() => !selectedTrack.value.subscriberOnly || subscriptionActive.value)
+const supporterTierLabel = computed(() => ({ 0: '未登録', 1: '一般サポータ', 2: '初期サポータ' })[supporterTier.value] ?? '不明')
 
 function newTestUserId(): string {
   if (typeof crypto.randomUUID === 'function') return crypto.randomUUID()
@@ -93,6 +121,9 @@ function clearOnchainState(): void {
   planEnabled.value = false
   subscriptionActive.value = false
   activeUntil.value = 0n
+  supporterTokenId.value = 0n
+  supporterTier.value = 0
+  supporterTokenUri.value = ''
 }
 const handleAccountsChanged = async (value: Address[] | string): Promise<void> => {
   const accounts = Array.isArray(value) ? value : []
@@ -176,6 +207,33 @@ async function refreshOnchainState(force = false): Promise<void> {
   planEnabled.value = planValue[3]
   subscriptionActive.value = nextActive as boolean
   activeUntil.value = nextUntil as bigint
+  if (deployment.value?.contracts.supporterSbt) {
+    const supporterSbt = deployment.value.contracts.supporterSbt
+    const [nextTokenId, nextTier] = await Promise.all([
+      publicClient.readContract({
+        address: supporterSbt,
+        abi: supporterSbtAbi,
+        functionName: 'activeTokenOf',
+        args: [DEMO_SUPPORTER_CREATOR_ID, account]
+      }),
+      publicClient.readContract({
+        address: supporterSbt,
+        abi: supporterSbtAbi,
+        functionName: 'getSupporterTier',
+        args: [DEMO_SUPPORTER_CREATOR_ID, account]
+      })
+    ])
+    supporterTokenId.value = nextTokenId as bigint
+    supporterTier.value = Number(nextTier)
+    supporterTokenUri.value = supporterTokenId.value > 0n
+      ? await publicClient.readContract({
+          address: supporterSbt,
+          abi: supporterSbtAbi,
+          functionName: 'tokenURI',
+          args: [supporterTokenId.value]
+        }) as string
+      : ''
+  }
 }
 async function transact(action: string, submit: () => Promise<Hash>): Promise<void> {
   busyAction.value = action
@@ -212,6 +270,45 @@ async function subscribe(): Promise<void> {
     const { walletClient, subscription } = clients()
     return walletClient.writeContract({ address: subscription, abi: subscriptionAbi, functionName: 'subscribe', args: [paymentReference, planVersion.value] })
   })
+}
+async function registerAsSupporter(): Promise<void> {
+  if (!provider || !walletAddress.value || !deployment.value?.contracts.supporterSbt || !deployment.value.contracts.supporterRegistrationAdapter) return
+  busyAction.value = 'Supporter SBT'
+  lastSbtTransaction.value = undefined
+  try {
+    const { publicClient, walletClient } = clients()
+    const supporterSbt = deployment.value.contracts.supporterSbt
+    const adapter = deployment.value.contracts.supporterRegistrationAdapter
+    const [nonce, block] = await Promise.all([
+      publicClient.readContract({ address: supporterSbt, abi: supporterSbtAbi, functionName: 'nonces', args: [walletAddress.value] }),
+      publicClient.getBlock()
+    ])
+    const deadline = block.timestamp + 10n * 60n
+    const typedData = createSupporterTypedData({
+      supporterSbt,
+      holder: walletAddress.value,
+      nonce: nonce as bigint,
+      deadline
+    })
+    supporterMessage.value = 'Walletで公開・譲渡不能なSupporter SBTの意思表示に署名してください。'
+    const signature = await walletClient.signTypedData({ account: walletAddress.value, ...typedData })
+    const hash = await walletClient.writeContract({
+      account: walletAddress.value,
+      address: adapter,
+      abi: supporterRegistrationAdapterAbi,
+      functionName: 'registerSelf',
+      args: [DEMO_SUPPORTER_CREATOR_ID, nonce as bigint, deadline, typedData.message.consentVersion, signature]
+    })
+    lastSbtTransaction.value = hash
+    supporterMessage.value = 'SBT発行Transactionを送信しました。Sepoliaでの確定を待っています。'
+    const receipt = await publicClient.waitForTransactionReceipt({ hash })
+    if (receipt.status !== 'success') throw new Error('Supporter SBT発行Transactionがrevertしました。')
+    await refreshOnchainState(true)
+    if (supporterTokenId.value === 0n) throw new Error('Transactionは確定しましたが、有効なSBTを確認できません。')
+    supporterMessage.value = `${supporterTierLabel.value} SBT #${supporterTokenId.value}を取得しました。`
+  } catch (error) {
+    supporterMessage.value = error instanceof Error ? error.message : 'Supporter SBT登録に失敗しました。'
+  } finally { busyAction.value = '' }
 }
 async function selectTrack(track: Track): Promise<void> {
   selectedTrack.value = track
@@ -267,11 +364,11 @@ onBeforeUnmount(() => {
     <header class="journey-heading">
       <p class="kicker">Sepolia · mockJPYC · synthetic audio</p>
       <h2 id="testnet-journey-title">Test User Journey</h2>
-      <p>匿名Demo Profileの登録から、Wallet接続、test-only課金、Player操作までを順番に確認します。</p>
+      <p>匿名Demo Profileの登録から、Wallet接続、test-only課金、Player操作、Supporter SBT取得までを順番に確認します。</p>
       <p class="safety"><strong>重要:</strong> tJPYCは無価値・償還不可で、実在JPYCではありません。ETHはSepolia Gasにだけ使い、秘密鍵やSeed Phraseは入力しません。</p>
     </header>
     <ol class="steps" aria-label="Test User Journey steps">
-      <li :class="{ done: profile }">1. Profile</li><li :class="{ done: walletAddress && correctChain }">2. Wallet</li><li :class="{ done: subscriptionActive }">3. Subscription</li><li>4. Player</li>
+      <li :class="{ done: profile }">1. Profile</li><li :class="{ done: walletAddress && correctChain }">2. Wallet</li><li :class="{ done: subscriptionActive }">3. Subscription</li><li>4. Player</li><li :class="{ done: supporterTokenId > 0n }">5. SBT</li>
     </ol>
 
     <section class="panel" aria-labelledby="profile-title">
@@ -328,10 +425,28 @@ onBeforeUnmount(() => {
       <div class="actions"><button class="primary" type="button" :disabled="!canPlaySelected" @click="playSelected">再生</button><button class="secondary" type="button" @click="pauseSelected">一時停止</button></div>
       <p v-if="!canPlaySelected" class="notice">Subscriber TrackはSepolia上の有効なSubscriptionを確認後に解放されます。Preview Trackはいつでも操作できます。</p>
       <p aria-live="polite">{{ playerMessage }}</p>
+      <div class="supporter-action">
+        <h4>Synthetic Demo Artistのサポータになる</h4>
+        <p>この操作は支援の意思表示をSepolia上の公開・譲渡不能なSBTとして記録します。JPYCの移転、Token Approval、継続課金は含みません。</p>
+        <div class="status-grid">
+          <div><span>資格</span><strong>{{ supporterTierLabel }}</strong></div>
+          <div><span>Token ID</span><strong>{{ supporterTokenId || '未発行' }}</strong></div>
+        </div>
+        <p v-if="!supporterRegistrationReady" class="notice">公開デモ用登録アダプターはまだSepoliaへデプロイされていません。Contract Addressを公開マニフェストで検証できるまで、書込み操作は無効です。</p>
+        <div class="actions">
+          <button class="primary" type="button" :disabled="!supporterActionReady" @click="registerAsSupporter">
+            {{ supporterTokenId > 0n ? 'SBT取得済み' : busyAction === 'Supporter SBT' ? '署名・発行中…' : 'サポータになってSBTを得る' }}
+          </button>
+          <button class="secondary" type="button" :disabled="!walletAddress || !correctChain || !contractsReady || Boolean(busyAction)" @click="refreshOnchainState(true)">SBT状態を更新</button>
+        </div>
+        <p v-if="supporterTokenUri"><a :href="supporterTokenUri" target="_blank" rel="noopener noreferrer">SBTメタデータを確認</a></p>
+        <p v-if="lastSbtTransaction"><a :href="`https://sepolia.etherscan.io/tx/${lastSbtTransaction}`" target="_blank" rel="noopener noreferrer">SBT発行TransactionをSepolia Etherscanで確認</a></p>
+        <p aria-live="polite">{{ supporterMessage }}</p>
+      </div>
     </section>
   </section>
 </template>
 
 <style scoped>
-.testnet-journey{display:grid;gap:1.25rem;margin:1.75rem 0}.journey-heading,.panel{padding:clamp(1rem,3vw,1.6rem);border:1px solid var(--vp-c-divider);border-radius:16px;background:var(--vp-c-bg-soft)}.journey-heading h2,.panel h3{margin-top:.25rem;border:0}.kicker{margin:0;color:var(--vp-c-brand-1);font-size:.82rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.safety,.notice{padding:.8rem 1rem;border-left:4px solid var(--vp-c-warning-1);border-radius:6px;background:var(--vp-c-warning-soft)}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;padding:0;list-style:none}.steps li{padding:.65rem .4rem;border:1px solid var(--vp-c-divider);border-radius:999px;text-align:center;font-size:.85rem;font-weight:700}.steps li.done{border-color:var(--vp-c-brand-1);color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.registration,.profile-summary{display:grid;gap:.8rem}.registration>label,legend{font-weight:700}.registration input[type=text]{min-height:44px;padding:.65rem .8rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}fieldset{display:grid;gap:.65rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:10px}fieldset label{display:grid;grid-template-columns:1.2rem 1fr;gap:.6rem;align-items:start}input[type=checkbox]{width:1rem;height:1rem;margin-top:.25rem}.actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}button{min-height:44px;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;font:inherit;font-weight:700;cursor:pointer}button.primary{color:var(--vp-c-white);background:var(--vp-c-brand-1)}button.secondary{color:var(--vp-c-brand-1);background:transparent}button:disabled{cursor:not-allowed;opacity:.45}.badge{width:fit-content;padding:.25rem .55rem;border-radius:999px;font-size:.8rem;font-weight:700}.badge.success{color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.status-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}.status-grid>div{display:grid;gap:.2rem;padding:.75rem;border:1px solid var(--vp-c-divider);border-radius:10px;background:var(--vp-c-bg)}.status-grid span,.track-list span,.now-playing span{color:var(--vp-c-text-2);font-size:.85rem}.error{color:var(--vp-c-danger-1)}.track-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.track-list button{display:grid;gap:.2rem;text-align:left;color:var(--vp-c-text-1);background:var(--vp-c-bg);border-color:var(--vp-c-divider)}.track-list button.selected{border-color:var(--vp-c-brand-1);box-shadow:0 0 0 2px var(--vp-c-brand-soft)}.track-list small{color:var(--vp-c-brand-1)}.now-playing{display:flex;gap:.8rem;align-items:center;margin:1rem 0 .6rem}.now-playing>div{display:grid}.art{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;color:var(--vp-c-white);background:linear-gradient(135deg,var(--vp-c-brand-1),#7c3aed);font-size:1.4rem}audio{width:100%}code{overflow-wrap:anywhere}@media(max-width:640px){.steps,.status-grid,.track-list{grid-template-columns:1fr}.actions button{width:100%}}
+.testnet-journey{display:grid;gap:1.25rem;margin:1.75rem 0}.journey-heading,.panel{padding:clamp(1rem,3vw,1.6rem);border:1px solid var(--vp-c-divider);border-radius:16px;background:var(--vp-c-bg-soft)}.journey-heading h2,.panel h3{margin-top:.25rem;border:0}.kicker{margin:0;color:var(--vp-c-brand-1);font-size:.82rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.safety,.notice{padding:.8rem 1rem;border-left:4px solid var(--vp-c-warning-1);border-radius:6px;background:var(--vp-c-warning-soft)}.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;padding:0;list-style:none}.steps li{padding:.65rem .4rem;border:1px solid var(--vp-c-divider);border-radius:999px;text-align:center;font-size:.85rem;font-weight:700}.steps li.done{border-color:var(--vp-c-brand-1);color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.registration,.profile-summary{display:grid;gap:.8rem}.registration>label,legend{font-weight:700}.registration input[type=text]{min-height:44px;padding:.65rem .8rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}fieldset{display:grid;gap:.65rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:10px}fieldset label{display:grid;grid-template-columns:1.2rem 1fr;gap:.6rem;align-items:start}input[type=checkbox]{width:1rem;height:1rem;margin-top:.25rem}.actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}button{min-height:44px;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;font:inherit;font-weight:700;cursor:pointer}button.primary{color:var(--vp-c-white);background:var(--vp-c-brand-1)}button.secondary{color:var(--vp-c-brand-1);background:transparent}button:disabled{cursor:not-allowed;opacity:.45}.badge{width:fit-content;padding:.25rem .55rem;border-radius:999px;font-size:.8rem;font-weight:700}.badge.success{color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.status-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}.status-grid>div{display:grid;gap:.2rem;padding:.75rem;border:1px solid var(--vp-c-divider);border-radius:10px;background:var(--vp-c-bg)}.status-grid span,.track-list span,.now-playing span{color:var(--vp-c-text-2);font-size:.85rem}.error{color:var(--vp-c-danger-1)}.track-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.track-list button{display:grid;gap:.2rem;text-align:left;color:var(--vp-c-text-1);background:var(--vp-c-bg);border-color:var(--vp-c-divider)}.track-list button.selected{border-color:var(--vp-c-brand-1);box-shadow:0 0 0 2px var(--vp-c-brand-soft)}.track-list small{color:var(--vp-c-brand-1)}.now-playing{display:flex;gap:.8rem;align-items:center;margin:1rem 0 .6rem}.now-playing>div{display:grid}.art{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;color:var(--vp-c-white);background:linear-gradient(135deg,var(--vp-c-brand-1),#7c3aed);font-size:1.4rem}.supporter-action{margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--vp-c-divider)}.supporter-action h4{margin:.25rem 0;border:0}audio{width:100%}code{overflow-wrap:anywhere}@media(max-width:640px){.steps,.status-grid,.track-list{grid-template-columns:1fr}.actions button{width:100%}}
 </style>

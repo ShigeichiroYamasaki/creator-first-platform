@@ -1,6 +1,8 @@
-import { isAddress } from 'viem'
+import { isAddress, keccak256, stringToHex } from 'viem'
 
 export const SEPOLIA_CHAIN_ID = 11155111
+export const DEMO_SUPPORTER_CREATOR_ID = keccak256(stringToHex('creator:synthetic-demo-artist'))
+export const DEMO_SUPPORTER_CONSENT_VERSION = keccak256(stringToHex('supporter-demo-consent-v1'))
 
 export const mockJpycAbi = [
   {
@@ -78,6 +80,69 @@ export const subscriptionAbi = [
   }
 ]
 
+export const supporterSbtAbi = [
+  {
+    type: 'function', name: 'nonces', stateMutability: 'view',
+    inputs: [{ name: 'holder', type: 'address' }], outputs: [{ name: '', type: 'uint256' }]
+  },
+  {
+    type: 'function', name: 'activeTokenOf', stateMutability: 'view',
+    inputs: [{ name: 'creatorId', type: 'bytes32' }, { name: 'holder', type: 'address' }],
+    outputs: [{ name: '', type: 'uint256' }]
+  },
+  {
+    type: 'function', name: 'getSupporterTier', stateMutability: 'view',
+    inputs: [{ name: 'creatorId', type: 'bytes32' }, { name: 'holder', type: 'address' }],
+    outputs: [{ name: '', type: 'uint8' }]
+  },
+  {
+    type: 'function', name: 'tokenURI', stateMutability: 'view',
+    inputs: [{ name: 'tokenId', type: 'uint256' }], outputs: [{ name: '', type: 'string' }]
+  }
+]
+
+export const supporterRegistrationAdapterAbi = [
+  {
+    type: 'function', name: 'registerSelf', stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'creatorId', type: 'bytes32' },
+      { name: 'nonce', type: 'uint256' },
+      { name: 'deadline', type: 'uint256' },
+      { name: 'consentVersion', type: 'bytes32' },
+      { name: 'signature', type: 'bytes' }
+    ],
+    outputs: [{ name: 'tokenId', type: 'uint256' }, { name: 'tier', type: 'uint8' }]
+  }
+]
+
+export function createSupporterTypedData({ supporterSbt, holder, nonce, deadline }) {
+  return {
+    domain: {
+      name: 'Creator First Supporter SBT',
+      version: '1',
+      chainId: SEPOLIA_CHAIN_ID,
+      verifyingContract: supporterSbt
+    },
+    types: {
+      SupportIntent: [
+        { name: 'creatorId', type: 'bytes32' },
+        { name: 'holder', type: 'address' },
+        { name: 'nonce', type: 'uint256' },
+        { name: 'deadline', type: 'uint256' },
+        { name: 'consentVersion', type: 'bytes32' }
+      ]
+    },
+    primaryType: 'SupportIntent',
+    message: {
+      creatorId: DEMO_SUPPORTER_CREATOR_ID,
+      holder,
+      nonce,
+      deadline,
+      consentVersion: DEMO_SUPPORTER_CONSENT_VERSION
+    }
+  }
+}
+
 export const creatorRegistryAbi = [
   {
     type: 'function', name: 'creatorIdByAccount', stateMutability: 'view',
@@ -131,11 +196,26 @@ export function validateDeploymentManifest(value) {
   if (typeof value.sourceCommit !== 'string' || !/^[0-9a-f]{40}$/i.test(value.sourceCommit)) {
     throw new Error('Active deployment manifest must identify a full source commit.')
   }
+  if (
+    contracts.supporterRegistrationAdapter !== undefined &&
+    contracts.supporterRegistrationAdapter !== null &&
+    !hasValidAddress(contracts.supporterRegistrationAdapter)
+  ) {
+    throw new Error('Active deployment manifest contains an invalid supporter registration adapter address.')
+  }
   return { ...value, active: true }
 }
 
 export function hasActiveCreatorRegistry(manifest) {
   return Boolean(manifest?.active && hasValidAddress(manifest?.contracts?.creatorRegistry))
+}
+
+export function hasActiveSupporterRegistration(manifest) {
+  return Boolean(
+    manifest?.active &&
+    hasValidAddress(manifest?.contracts?.supporterSbt) &&
+    hasValidAddress(manifest?.contracts?.supporterRegistrationAdapter)
+  )
 }
 
 export function createTestToneWav(frequency, durationSeconds = 8, sampleRate = 8_000) {

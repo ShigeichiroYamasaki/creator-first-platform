@@ -11,6 +11,7 @@
     "subscription": "0x7bEeD194032a8D655cF72E61889896eef97F3d90",
     "treasury": "0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215",
     "supporterSbt": "0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923",
+    "supporterRegistrationAdapter": null,
     "creatorRegistry": "0x5676d34d7C41849311b99932d8272af58b63e6E9",
     "governor": "0xE8D4BB558A69736375D8D5e4a7349D38B22584b7",
     "governedPolicy": "0xE7891c8edFF943eB7f203A34d76f51b8157094F7"
