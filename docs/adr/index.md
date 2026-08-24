@@ -32,7 +32,7 @@ flowchart LR
 | :--------------------------------------------------------- | :----------------------------------- | :------- | :--------- | :----------- |
 | [ADR-0001](./ADR-0001-governance-model.md)                 | ガバナンスモデル                     | 提案 | 2026-07-27 | 2026-08-24   |
 | [ADR-0002](./ADR-0002-verifiable-sortition.md)             | 検証可能抽選                 | 提案 | 2026-07-29 | 2026-08-20   |
-| [ADR-0003](./ADR-0003-rights-registry.md)                  | 権利登録台帳                      | 提案 | 2026-07-29 | 2026-08-20   |
+| [ADR-0003](./ADR-0003-rights-registry.md)                  | 権利登録台帳                      | 提案 | 2026-07-29 | 2026-08-24   |
 | [ADR-0004](./ADR-0004-creator-distribution-model.md)       | 音楽クリエーター分配モデル           | 提案 | 2026-07-29 | 2026-08-20   |
 | [ADR-0005](./ADR-0005-usage-oracle.md)                     | 利用実績オラクル                         | 提案 | 2026-07-29 | 2026-08-20   |
 | [ADR-0006](./ADR-0006-zero-knowledge-proof-strategy.md)    | ゼロ知識証明戦略        | 提案 | 2026-07-29 | 2026-08-20   |
@@ -43,7 +43,7 @@ flowchart LR
 | [ADR-0011](./ADR-0011-integrated-player-client.md)         | 統合プレーヤークライアント             | 提案 | 2026-08-21 | 2026-08-23   |
 | [ADR-0013](./ADR-0013-treasury-flow-transparency.md)      | 資金庫フロー透明性参照モデル | 提案 | 2026-08-23 | 2026-08-23   |
 | [ADR-0014](./ADR-0014-public-testnet-user-journey.md)     | 公開テストネットユーザ利用フロー           | 提案 | 2026-08-23 | 2026-08-23   |
-| [ADR-0015](./ADR-0015-public-testnet-creator-journey.md)  | 公開テストネット音楽クリエーター利用フロー        | 提案 | 2026-08-23 | 2026-08-23   |
+| [ADR-0015](./ADR-0015-public-testnet-creator-journey.md)  | 公開テストネット音楽クリエーター利用フロー        | 提案 | 2026-08-23 | 2026-08-24   |
 | [ADR-0016](./ADR-0016-bicameral-quadratic-governance.md) | Bicameral 二次ガバナンス        | 提案 | 2026-08-24 | 2026-08-24   |
 
 各ADRは初回作成日の`Date`と、内容またはメタデータを最後に変更した`Last Updated`を分けて記録します。

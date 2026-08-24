@@ -70,6 +70,7 @@ function visibleDocumentation(markdown) {
     return line
       .replace(/`[^`]*`/g, '')
       .replaceAll('Creator First Platform', '')
+      .replaceAll('TuneCore Japan', '')
       .replaceAll('Remote-User', '');
   }).join('\n');
 }

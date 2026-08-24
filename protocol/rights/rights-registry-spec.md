@@ -4,7 +4,7 @@
 **Version:** 0.1.0  
 **Protocol Domain:** rights / content  
 **Specification ID:** SPEC-RIGHTS-001  
-**Last Updated:** 2026-08-19
+**Last Updated:** 2026-08-24
 
 ## Related Documents
 
@@ -46,6 +46,7 @@ This specification covers:
 - immutable history and exact Rights Snapshots;
 - public, restricted and on-chain data boundaries;
 - consumer behavior when Rights State is missing, disputed or stale.
+- reconciliation with External Music Rights Services while preserving contract scope, provenance and conflicts.
 
 ## Out of Scope
 
@@ -77,6 +78,7 @@ This specification covers:
 - **Rights Interest:** a reviewed representation of one party's scoped legal or contractual interest.
 - **Platform Permission:** the Platform's documented permission to perform a specified use; it is related to but not identical with ownership.
 - **Distribution Instruction:** a versioned instruction for allocating an amount after a Distribution Policy has calculated it; it MUST NOT silently redefine Legal Rights.
+- **External Music Rights Service:** a distribution, publishing, copyright-management, collective-management, label, identifier or reporting service as defined in the common glossary. A provider may perform more than one role, and each role and contract scope remains independently represented.
 - **Rights State:** the complete versioned set of Rights Interests, Platform Permissions, restrictions, disputes and Distribution Instructions applicable to a content object at a time.
 - **Rights Snapshot:** an immutable reference to the exact Rights State version consumed by another operation.
 
@@ -90,6 +92,8 @@ Common terms follow `protocol/glossary.md` and `protocol/conventions.md`.
 - Registry Operators can record an authorized outcome but cannot manufacture missing consent, evidence or authority.
 - Smart contracts can enforce a versioned Rights Snapshot but cannot determine contractual validity, authorship or ownership from code alone.
 - Restricted contracts, identity records and dispute evidence remain under Operating Company access controls.
+- A provider account, delivery report, identifier match or revenue report from an External Music Rights Service is evidence with a bounded source and contract scope, not conclusive proof of ownership or permission.
+- Distribution delegation, copyright-management delegation and ownership of a Recording or Work remain separate even when one provider offers all of those services.
 
 ## Inputs
 
@@ -119,6 +123,16 @@ Common terms follow `protocol/glossary.md` and `protocol/conventions.md`.
 - `evidence_references`
 - `contract_or_authority_reference` where applicable
 - `submitted_at`
+
+### External Rights-Service Record
+
+- `provider_id` and provider role;
+- `content_id`, external identifiers and provider record version;
+- contract or authority reference;
+- rights type, use, territory and effective period;
+- distribution, copyright-management and payout scopes represented separately;
+- retrieval time and source evidence;
+- conflict, termination, renewal and supersession status.
 
 ### Rights Review
 
@@ -185,7 +199,7 @@ SUSPENDED → ACTIVE | SUPERSEDED | REJECTED
 - **REQ-RIGHTS-020:** The registry MUST expose whether a required scope is complete, partial, disputed, expired, unavailable or not reviewed; absence MUST NOT be interpreted as permission.
 - **REQ-RIGHTS-021:** Restricted identity, contracts, signatures and dispute evidence MUST use access-controlled storage and integrity-protected references.
 - **REQ-RIGHTS-022:** Public records and commitments MUST minimize personal and confidential data while retaining enough identifiers to verify version and integrity.
-- **REQ-RIGHTS-023:** External rights-management data MUST retain source, retrieval time, license or authority, transformation and conflict provenance.
+- **REQ-RIGHTS-023:** External rights-management data MUST retain provider role, source, retrieval time, contract, license or authority scope, territory, effective period, transformation and conflict provenance; a provider offering both distribution and copyright management MUST have those scopes represented separately.
 - **REQ-RIGHTS-024:** Consumers MUST fail closed for the affected new use when the required Rights Snapshot, integrity evidence, applicable permission or current state cannot be verified.
 
 ### MUST NOT
@@ -206,7 +220,7 @@ SUSPENDED → ACTIVE | SUPERSEDED | REJECTED
 - **REQ-RIGHTS-035:** Claimants and affected Rights Holders SHOULD receive state-change and dispute notifications through verified private channels.
 - **REQ-RIGHTS-036:** Authorized parties SHOULD be able to inspect a human-readable explanation of the Rights State and the evidence scope without exposing restricted evidence publicly.
 - **REQ-RIGHTS-037:** Rights Snapshot serialization and hashing SHOULD be deterministic across conforming implementations.
-- **REQ-RIGHTS-038:** External-system reconciliation SHOULD detect missing, duplicated, stale and conflicting Rights records before activation.
+- **REQ-RIGHTS-038:** External-system reconciliation SHOULD detect missing, duplicated, stale and conflicting Rights records, including overlapping distribution mandates, copyright-management mandates, collection, payout or termination periods, before activation.
 
 ### MAY
 
@@ -358,5 +372,5 @@ Property and adversarial tests MUST include concurrent claims, duplicate identif
 - **OQ-RIGHTS-REGISTRY-004:** **Decision owner:** Operating Company / Legal and Rights Operations; **Blocks:** production claim verification; **Question:** Which body acts as Rights Authority and what independence or multi-party approval is required before full Protocol Governance exists?
 - **OQ-RIGHTS-REGISTRY-005:** **Decision owner:** Operating Company / Legal, Support and Rights Operations; **Blocks:** dispute launch; **Question:** What evidence threshold, response period, temporary hold and appeal process apply to each dispute type?
 - **OQ-RIGHTS-REGISTRY-006:** **Decision owner:** Protocol Governance / Rights Operations and Distribution Engineering; **Blocks:** Rights Snapshot consumer contract; **Question:** How are partial, unknown and disputed shares represented for catalog availability and later distribution?
-- **OQ-RIGHTS-REGISTRY-007:** **Decision owner:** Operating Company / Legal and External Partnerships; **Blocks:** external rights-system integration; **Question:** Which collective-management, publisher, label or identifier sources are authoritative enough for the first reconciliation adapter?
+- **OQ-RIGHTS-REGISTRY-007:** **Decision owner:** Operating Company / Legal and External Partnerships; **Blocks:** external rights-system integration; **Question:** Which collective-management, publisher, label, music-distribution, copyright-management or identifier sources, including any proposed TuneCore integration, are authoritative enough for the first reconciliation adapter, and which contractual scopes may be imported?
 - **OQ-RIGHTS-REGISTRY-008:** **Decision owner:** Operating Company / Product, Legal and Rights Operations; **Blocks:** existing-listener continuity policy; **Question:** When may existing access continue after a new dispute or suspension, and which new uses or distributions must stop immediately?

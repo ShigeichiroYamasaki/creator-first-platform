@@ -124,7 +124,21 @@ The temporary deliberative governance body composed of representatives selected 
 
 ## Creator
 
-A Participant substantially involved in the creation or production of Content distributed through the platform.
+A Participant who qualifies as an Artist-Direct Creator and is substantially involved in the creation or production of Content distributed through the platform.
+
+## Artist-Direct Creator
+
+An independent artist outside major-label direction who retains substantive decision authority over production, distribution, marketing and the artist-to-fan relationship, either personally or through an artist-controlled team.
+
+An Artist-Direct Creator MAY retain specialist production, distribution, publishing, copyright-management, marketing, accounting or legal services without losing this status, provided the artist retains authority to select the provider and define the contractual scope and activity direction.
+
+Creator registration or self-description does not by itself prove Artist-Direct Creator eligibility.
+
+## External Music Rights Service
+
+A distribution, publishing, copyright-management, collective-management, label, identifier or reporting service whose records or contracts may inform Rights review.
+
+Use of an External Music Rights Service does not by itself prove or disprove Rights Ownership, Platform Permission or Artist-Direct Creator eligibility.
 
 ## Rights Holder
 
