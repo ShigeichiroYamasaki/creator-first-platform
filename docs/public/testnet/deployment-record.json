@@ -4,7 +4,7 @@
   "network": "Ethereum Sepolia",
   "chainId": 11155111,
   "deployedAt": "2026-08-24",
-  "sourceCommit": "b0bfcb73d453d970e0a5c1c432abb9abc6e0d341",
+  "sourceCommit": "9d4bf406527b8bfdea076a91cd129b55e3c23925",
   "deploymentTool": "Hardhat Ignition 3.14.0",
   "compiler": {
     "version": "0.8.28",
@@ -39,6 +39,15 @@
       "transactionHash": "0x90c24620e4b659b63c36b5d1a368f0c337297330ac7da4733ea7bdd8e1b60232",
       "blockNumber": 11550090,
       "implementation": "0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66"
+    },
+    "supporterRegistrationAdapter": {
+      "address": "0xbd6887125F9b8e000CF5a0673D7fa2a29a70D292",
+      "transactionHash": "0x1fa54bb73260e13448f143b813e084ad7283ffb415b3e5a1140b93655da58a6b",
+      "blockNumber": 11557665,
+      "roleGrantTransactionHash": "0x0b3b3d54c796312e60629f57c4c22db7f3961a7bcf94cb91ef783a42f12f39a3",
+      "roleGrantBlockNumber": 11557670,
+      "sourceCommit": "9d4bf406527b8bfdea076a91cd129b55e3c23925",
+      "supporterSbt": "0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923"
     },
     "creatorRegistry": {
       "address": "0x5676d34d7C41849311b99932d8272af58b63e6E9",

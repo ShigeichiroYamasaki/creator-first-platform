@@ -24,7 +24,7 @@ Hardhat 3とViemを使い、公開済みのテストネット専用コントラ�
 | `CreatorFirstCFP0002DeploymentFactory` | 両院承認、レビュー、P2タイムロック後だけ固定saltでCFP-0002ポリシーをデプロイする | 本番デプロイヤー、正式な憲章・法務審査または監査を代替しない |
 | `CreatorFirstCFP0002EarlySupporterPolicy` | 初期登録から31,536,000秒未満という排他的時間条件を判定する | SBTを発行せず、配信、金銭、権利または議決権を付与しない |
 
-透明型ZKの2コントラクト、CFP-0002用アダプター／デプロイファクトリー、公開プレーヤー用サポータ登録アダプターはローカル実装とIgnitionモジュールへの追加まで完了していますが、下記の公開Sepoliaマニフェストにはまだ含まれません。CFP-0002ポリシーはガバナンス実行時にだけ作成されます。アドレス、役割付与、初期ポリシーとデプロイトランザクションを公開記録へ追加するまでは公開デプロイ済みと扱いません。
+透明型ZKの2コントラクトとCFP-0002用アダプター／デプロイファクトリーはローカル実装とIgnitionモジュールへの追加まで完了していますが、下記の公開Sepoliaマニフェストにはまだ含まれません。公開プレーヤー用サポータ登録アダプターはSepoliaへデプロイし、既存SBTへの`RELAYER_ROLE`付与まで検証済みです。CFP-0002ポリシーはガバナンス実行時にだけ作成されます。
 
 SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を拒否します。初期条件の`POLICY_ROLE`、実装更新の`UPGRADER_ROLE`、署名済み意思を送る`RELAYER_ROLE`を分離し、発行済み階層を後日のポリシー更新で書き換えません。
 
@@ -37,6 +37,7 @@ SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を�
 | CreatorFirstTreasury | [`0x57a9…4215`](https://sepolia.etherscan.io/address/0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215) |
 | SupporterSBT プロキシ | [`0x2D01…0923`](https://sepolia.etherscan.io/address/0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923) |
 | SupporterSBT 実装 | [`0x350a…7a66`](https://sepolia.etherscan.io/address/0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66) |
+| サポータ登録アダプター | [`0xbd68…D292`](https://sepolia.etherscan.io/address/0xbd6887125F9b8e000CF5a0673D7fa2a29a70D292) |
 | CreatorFirstCreatorRegistry | [`0x5676…e6E9`](https://sepolia.etherscan.io/address/0x5676d34d7C41849311b99932d8272af58b63e6E9) |
 | CreatorFirstBicameralGovernor | [`0xE8D4…84b7`](https://sepolia.etherscan.io/address/0xE8D4BB558A69736375D8D5e4a7349D38B22584b7) |
 | CreatorFirstGovernedPolicy | [`0xE789…94F7`](https://sepolia.etherscan.io/address/0xE7891c8edFF943eB7f203A34d76f51b8157094F7) |
