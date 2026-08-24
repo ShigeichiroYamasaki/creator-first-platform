@@ -83,6 +83,24 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
         bool cast;
     }
 
+    struct PreVoteReview {
+        bytes32 charterEvidenceHash;
+        bytes32 legalEvidenceHash;
+        bytes32 assessmentHash;
+        bool recorded;
+        bool passed;
+    }
+
+    struct ContractTestEvidence {
+        bytes32 sourceHash;
+        bytes32 artifactHash;
+        bytes32 testSuiteHash;
+        bytes32 testReportHash;
+        bytes32 testedCallDataHash;
+        bool recorded;
+        bool passed;
+    }
+
     uint256 public immutable allowedChainId;
     uint64 public immutable p1Delay;
     uint64 public immutable p2Delay;
@@ -99,6 +117,9 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
     mapping(uint256 proposalId => mapping(address member => Ballot ballot)) public ballots;
     mapping(uint256 proposalId => bytes32 evidenceHash) public constitutionalEvidenceHash;
     mapping(uint256 proposalId => bytes32 evidenceHash) public reviewEvidenceHash;
+    mapping(uint256 proposalId => PreVoteReview review) public preVoteReviews;
+    mapping(uint256 proposalId => ContractTestEvidence evidence) public contractTestEvidence;
+    mapping(uint256 proposalId => mapping(House house => bytes32 evidenceHash)) public deliberationEvidenceHash;
 
     error InvalidAddress();
     error InvalidConfiguration();
@@ -123,6 +144,14 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
     error WrongChain(uint256 expected, uint256 actual);
     error ExecutionFailed(bytes returnData);
     error FinalState(uint256 proposalId);
+    error PreVoteReviewMissing(uint256 proposalId);
+    error PreVoteReviewFailed(uint256 proposalId);
+    error PreVoteReviewAlreadyRecorded(uint256 proposalId);
+    error DeliberationEvidenceMissing(uint256 proposalId, House house);
+    error DeliberationAlreadyRecorded(uint256 proposalId, House house);
+    error ContractTestEvidenceMissing(uint256 proposalId);
+    error ContractTestFailed(uint256 proposalId);
+    error ContractTestEvidenceAlreadyRecorded(uint256 proposalId);
 
     event SessionCreated(
         uint256 indexed sessionId,
@@ -170,6 +199,27 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
     event ProposalQueued(uint256 indexed proposalId, uint64 executableAt, uint64 expiresAt);
     event ProposalExecuted(uint256 indexed proposalId, address indexed target, bytes32 indexed callDataHash);
     event ProposalCancelled(uint256 indexed proposalId, bytes32 indexed incidentHash);
+    event PreVoteReviewRecorded(
+        uint256 indexed proposalId,
+        bytes32 indexed charterEvidenceHash,
+        bytes32 indexed legalEvidenceHash,
+        bytes32 assessmentHash,
+        bool passed
+    );
+    event HouseDeliberationRecorded(
+        uint256 indexed proposalId,
+        House indexed house,
+        bytes32 indexed evidenceHash
+    );
+    event ContractTestEvidenceRecorded(
+        uint256 indexed proposalId,
+        bytes32 indexed sourceHash,
+        bytes32 indexed artifactHash,
+        bytes32 testSuiteHash,
+        bytes32 testReportHash,
+        bytes32 testedCallDataHash,
+        bool passed
+    );
 
     constructor(
         address admin,
@@ -304,6 +354,15 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
         if (block.timestamp < proposal.votingStartsAt || block.timestamp >= proposal.votingEndsAt) {
             revert VotingClosed(proposalId);
         }
+        PreVoteReview storage preVoteReview = preVoteReviews[proposalId];
+        if (!preVoteReview.recorded) revert PreVoteReviewMissing(proposalId);
+        if (!preVoteReview.passed) revert PreVoteReviewFailed(proposalId);
+        if (deliberationEvidenceHash[proposalId][House.CREATOR] == bytes32(0)) {
+            revert DeliberationEvidenceMissing(proposalId, House.CREATOR);
+        }
+        if (deliberationEvidenceHash[proposalId][House.USER] == bytes32(0)) {
+            revert DeliberationEvidenceMissing(proposalId, House.USER);
+        }
         if (intensity < -int8(MAX_INTENSITY) || intensity > int8(MAX_INTENSITY)) {
             revert InvalidIntensity(intensity);
         }
@@ -334,6 +393,53 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
         emit BallotCast(proposalId, proposal.sessionId, msg.sender, house, intensity, nextCost, nextSpent);
     }
 
+    function recordPreVoteReview(
+        uint256 proposalId,
+        bytes32 charterEvidenceHash,
+        bytes32 legalEvidenceHash,
+        bytes32 assessmentHash,
+        bool passed
+    ) external onlyRole(REVIEWER_ROLE) {
+        Proposal storage proposal = _proposal(proposalId);
+        if (block.timestamp >= proposal.votingStartsAt) revert VotingClosed(proposalId);
+        if (
+            charterEvidenceHash == bytes32(0) || legalEvidenceHash == bytes32(0)
+                || assessmentHash == bytes32(0)
+        ) revert InvalidHash();
+        PreVoteReview storage review = preVoteReviews[proposalId];
+        if (review.recorded) revert PreVoteReviewAlreadyRecorded(proposalId);
+        review.charterEvidenceHash = charterEvidenceHash;
+        review.legalEvidenceHash = legalEvidenceHash;
+        review.assessmentHash = assessmentHash;
+        review.recorded = true;
+        review.passed = passed;
+        emit PreVoteReviewRecorded(
+            proposalId,
+            charterEvidenceHash,
+            legalEvidenceHash,
+            assessmentHash,
+            passed
+        );
+    }
+
+    function recordHouseDeliberation(uint256 proposalId, House house, bytes32 evidenceHash)
+        external
+        onlyRole(REGISTRAR_ROLE)
+    {
+        Proposal storage proposal = _proposal(proposalId);
+        if (block.timestamp >= proposal.votingStartsAt) revert VotingClosed(proposalId);
+        PreVoteReview storage review = preVoteReviews[proposalId];
+        if (!review.recorded) revert PreVoteReviewMissing(proposalId);
+        if (!review.passed) revert PreVoteReviewFailed(proposalId);
+        if (house != House.CREATOR && house != House.USER) revert InvalidHouse();
+        if (evidenceHash == bytes32(0)) revert InvalidHash();
+        if (deliberationEvidenceHash[proposalId][house] != bytes32(0)) {
+            revert DeliberationAlreadyRecorded(proposalId, house);
+        }
+        deliberationEvidenceHash[proposalId][house] = evidenceHash;
+        emit HouseDeliberationRecorded(proposalId, house, evidenceHash);
+    }
+
     function finalizeProposal(uint256 proposalId) external {
         Proposal storage proposal = _proposal(proposalId);
         if (proposal.finalized || proposal.cancelled || proposal.executed) revert FinalState(proposalId);
@@ -362,6 +468,9 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
         }
         if (proposal.cancelled || proposal.executed || proposal.queued) revert FinalState(proposalId);
         if (evidenceHash == bytes32(0)) revert InvalidHash();
+        ContractTestEvidence storage testEvidence = contractTestEvidence[proposalId];
+        if (!testEvidence.recorded) revert ContractTestEvidenceMissing(proposalId);
+        if (!testEvidence.passed) revert ContractTestFailed(proposalId);
         if (
             proposal.changeClass == ChangeClass.P3_CONSTITUTIONAL
                 && constitutionalEvidenceHash[proposalId] == bytes32(0)
@@ -369,6 +478,47 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
         reviewEvidenceHash[proposalId] = evidenceHash;
         proposal.reviewed = true;
         emit ReviewRecorded(proposalId, evidenceHash);
+    }
+
+    function recordContractTestEvidence(
+        uint256 proposalId,
+        bytes32 sourceHash,
+        bytes32 artifactHash,
+        bytes32 testSuiteHash,
+        bytes32 testReportHash,
+        bytes32 testedCallDataHash,
+        bool passed
+    ) external onlyRole(REVIEWER_ROLE) {
+        Proposal storage proposal = _proposal(proposalId);
+        if (!proposal.finalized || !proposal.creatorApproved || !proposal.userApproved) {
+            revert BicameralApprovalMissing(proposalId);
+        }
+        if (proposal.cancelled || proposal.executed || proposal.queued || proposal.reviewed) {
+            revert FinalState(proposalId);
+        }
+        if (
+            sourceHash == bytes32(0) || artifactHash == bytes32(0) || testSuiteHash == bytes32(0)
+                || testReportHash == bytes32(0) || testedCallDataHash == bytes32(0)
+        ) revert InvalidHash();
+        if (testedCallDataHash != proposal.callDataHash) revert ManifestMismatch();
+        ContractTestEvidence storage evidence = contractTestEvidence[proposalId];
+        if (evidence.recorded) revert ContractTestEvidenceAlreadyRecorded(proposalId);
+        evidence.sourceHash = sourceHash;
+        evidence.artifactHash = artifactHash;
+        evidence.testSuiteHash = testSuiteHash;
+        evidence.testReportHash = testReportHash;
+        evidence.testedCallDataHash = testedCallDataHash;
+        evidence.recorded = true;
+        evidence.passed = passed;
+        emit ContractTestEvidenceRecorded(
+            proposalId,
+            sourceHash,
+            artifactHash,
+            testSuiteHash,
+            testReportHash,
+            testedCallDataHash,
+            passed
+        );
     }
 
     function recordConstitutionalEvidence(uint256 proposalId, bytes32 evidenceHash)

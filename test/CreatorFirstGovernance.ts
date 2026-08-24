@@ -67,6 +67,15 @@ describe("Creator-first testnet bicameral governance", async () => {
       votingStartsAt,
       votingEndsAt,
     ]);
+    await governor.write.recordPreVoteReview([
+      1n,
+      hash("charter-review:passed"),
+      hash("legal-review:passed"),
+      hash("pre-vote-assessment:passed"),
+      true,
+    ]);
+    await governor.write.recordHouseDeliberation([1n, 1, hash("creator-house-deliberation:1")]);
+    await governor.write.recordHouseDeliberation([1n, 2, hash("user-house-deliberation:1")]);
     return { governor, policy, callData, votingStartsAt, votingEndsAt, sessionEndsAt };
   }
 
@@ -78,6 +87,21 @@ describe("Creator-first testnet bicameral governance", async () => {
     await governor.write.castVote([proposalId, 1], { account: creatorB.account });
     await governor.write.castVote([proposalId, 2], { account: userA.account });
     await governor.write.castVote([proposalId, 1], { account: userB.account });
+  }
+
+  async function recordPassingContractTests(
+    governor: Awaited<ReturnType<typeof viem.deployContract>>,
+    callData: `0x${string}`,
+  ) {
+    await governor.write.recordContractTestEvidence([
+      1n,
+      hash("tested-source:1"),
+      hash("tested-artifact:1"),
+      hash("test-suite:1"),
+      hash("test-report:passed:1"),
+      keccak256(callData),
+      true,
+    ]);
   }
 
   it("keeps Houses separate and prevents economic or outsider voting", async () => {
@@ -118,6 +142,15 @@ describe("Creator-first testnet bicameral governance", async () => {
       votingStartsAt,
       sessionEndsAt - 1n,
     ]);
+    await governor.write.recordPreVoteReview([
+      2n,
+      hash("charter-review:passed:2"),
+      hash("legal-review:passed:2"),
+      hash("pre-vote-assessment:passed:2"),
+      true,
+    ]);
+    await governor.write.recordHouseDeliberation([2n, 1, hash("creator-house-deliberation:2")]);
+    await governor.write.recordHouseDeliberation([2n, 2, hash("user-house-deliberation:2")]);
     await networkHelpers.time.increaseTo(votingStartsAt);
 
     await governor.write.castVote([1n, 3], { account: creatorA.account });
@@ -141,6 +174,8 @@ describe("Creator-first testnet bicameral governance", async () => {
     assert.equal(await governor.read.proposalState([1n]), 5);
     await assert.rejects(policy.write.setDemoPolicy([45, 250], { account: outsider.account }));
 
+    await assert.rejects(governor.write.recordReview([1n, hash("legal-security-review:passed")]));
+    await recordPassingContractTests(governor, callData);
     await governor.write.recordReview([1n, hash("legal-security-review:passed")]);
     await governor.write.queueProposal([1n]);
     assert.equal(await governor.read.proposalState([1n]), 7);
@@ -163,7 +198,7 @@ describe("Creator-first testnet bicameral governance", async () => {
   });
 
   it("requires direct-community evidence before reviewing a constitutional change", async () => {
-    const { governor, votingStartsAt, votingEndsAt } = await deployFixture(2, 2, 3);
+    const { governor, callData, votingStartsAt, votingEndsAt } = await deployFixture(2, 2, 3);
     await networkHelpers.time.increaseTo(votingStartsAt);
     await castPassingBallots(governor);
     await networkHelpers.time.increaseTo(votingEndsAt);
@@ -172,6 +207,7 @@ describe("Creator-first testnet bicameral governance", async () => {
     await assert.rejects(governor.write.recordReview([1n, hash("constitutional-review")]))
     const evidence = hash("creator-and-user-community-referenda:passed")
     await governor.write.recordConstitutionalEvidence([1n, evidence])
+    await recordPassingContractTests(governor, callData)
     await governor.write.recordReview([1n, hash("constitutional-review")])
 
     assert.equal(await governor.read.constitutionalEvidenceHash([1n]), evidence)
@@ -185,6 +221,7 @@ describe("Creator-first testnet bicameral governance", async () => {
     await castPassingBallots(governor);
     await networkHelpers.time.increaseTo(votingEndsAt);
     await governor.write.finalizeProposal([1n]);
+    await recordPassingContractTests(governor, callData);
     await governor.write.recordReview([1n, hash("review:passed")]);
     await governor.write.queueProposal([1n]);
     await governor.write.cancelQueuedProposal([1n, hash("incident:testnet-001")]);

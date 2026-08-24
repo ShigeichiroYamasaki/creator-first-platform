@@ -93,6 +93,13 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     30,
     100,
   ]);
+  const creatorRegistrationAdapter = m.contract("CreatorFirstCreatorRegistrationAdapter", [
+    admin,
+    creatorRegistry,
+  ]);
+  const cfp0002DeploymentFactory = m.contract("CreatorFirstCFP0002DeploymentFactory", [
+    bicameralGovernor,
+  ]);
   const transparentZKMockVerifier = m.contract("CreatorFirstTransparentZKMockVerifier");
   const transparentZKRegistry = m.contract("CreatorFirstTransparentZKRegistry", [
     admin,
@@ -121,6 +128,8 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     supporterSBT,
     bicameralGovernor,
     governedPolicy,
+    creatorRegistrationAdapter,
+    cfp0002DeploymentFactory,
     transparentZKMockVerifier,
     transparentZKRegistry,
   };

@@ -106,8 +106,8 @@ Common terms follow `protocol/glossary.md` and `protocol/conventions.md`.
 ## State
 
 ```text
-DRAFT → REVIEW_READY → DELIBERATION → VOTING
-      → JOINT_APPROVED → IMPLEMENTATION_VERIFIED
+DRAFT → REVIEW_READY → CANDIDATE_VERIFIED → DELIBERATION → VOTING
+      → JOINT_APPROVED → CONTRACT_TESTED → IMPLEMENTATION_VERIFIED
       → TIMELOCKED → EXECUTED
 
 VOTING → REJECTED
@@ -140,6 +140,12 @@ Any non-final state → EXPIRED when its approved deadline elapses
 - **REQ-GOVERNANCE-018:** Proposal, membership, ballot, House Result, review, challenge, Timelock and execution records MUST preserve versioned provenance sufficient for an independent verifier to reproduce every public decision while minimizing personal data.
 - **REQ-GOVERNANCE-019:** Conflict-of-interest declarations, recusals, vacancies, replacements and abstentions MUST be recorded under the fixed Session Rule and reflected in quorum and result calculation.
 - **REQ-GOVERNANCE-020:** A challenge MUST bind its claimant eligibility or public-interest basis, challenged artifact, reason, evidence and deadline, and a pending material challenge MUST prevent execution until resolved or expired under the approved rule.
+- **REQ-GOVERNANCE-033:** Before voting, every Proposal Revision MUST bind a versioned Charter compatibility assessment and a scoped legal-executability assessment; a missing or failed mandatory assessment MUST prevent deliberation completion and ballot acceptance.
+- **REQ-GOVERNANCE-034:** Creator House and User House MUST each bind distinct deliberation evidence to the same immutable Proposal Revision before legislators of either House can vote.
+- **REQ-GOVERNANCE-035:** When an approved operation deploys a new contract, the Execution Manifest MUST bind the deployment factory, creation artifact, constructor inputs, deterministic salt or expected address, runtime-code expectation and proof that no deployment occurred before Joint Approval and Timelock execution.
+- **REQ-GOVERNANCE-036:** Before implementation review, queueing or deployment, every CFP contract operation MUST bind passing test evidence for the exact approved source, compiled artifact, test suite and calldata. Missing, failed or mismatched evidence MUST prevent progression to `IMPLEMENTATION_VERIFIED`.
+- **REQ-GOVERNANCE-037:** Before voting, every CFP contract operation MUST publish an executable candidate bundle that traces each normative requirement to test code, candidate source, expected behavior and execution intent, and both Houses MUST deliberate on the same bundle hashes.
+- **REQ-GOVERNANCE-038:** Human- or AI-assisted generation of specifications, tests or code MUST record the tool and version, input evidence hashes, generated artifact hashes and human review decision; the generation environment MUST NOT possess Timelock, deployment or production administration authority.
 
 ### MUST NOT
 
@@ -185,11 +191,13 @@ Any non-final state → EXPIRED when its approved deadline elapses
 | --- | --- | --- | --- | --- |
 | none | Proposer | complete CFP and immutable Revision | `DRAFT` | create no voting authority |
 | `DRAFT` | Registrar | structure, dependencies and review plan | `REVIEW_READY` | return actionable defects |
-| `REVIEW_READY` | both House facilitators | fixed Session, rules and hearing schedule | `DELIBERATION` | remain pending |
+| `REVIEW_READY` | Review and Engineering Authorities | passing pre-vote review, requirement-to-test traceability, candidate source, test and simulation evidence | `CANDIDATE_VERIFIED` | reasoned return or remediation |
+| `CANDIDATE_VERIFIED` | both House facilitators | fixed Revision hashes, Session, rules and hearing schedule | `DELIBERATION` | remain pending |
 | `DELIBERATION` | Bicameral Governor | voting window and frozen Revision | `VOTING` | reject mutable or incomplete input |
 | `VOTING` | each House | finality, quorum, accounting and challenges | House Result | do not infer the other House result |
 | `VOTING` | Bicameral Governor | both mandatory House Results pass | `JOINT_APPROVED` | `REJECTED` or remain pending |
-| `JOINT_APPROVED` | Review Authorities | class-specific review and exact Manifest | `IMPLEMENTATION_VERIFIED` | `REASONED_RETURN` or remediation |
+| `JOINT_APPROVED` | Test Authority | clean rebuild and exact-source test evidence pass for approved calldata | `CONTRACT_TESTED` | `REASONED_RETURN` or remediation |
+| `CONTRACT_TESTED` | Review Authorities | class-specific review and exact Manifest validation | `IMPLEMENTATION_VERIFIED` | `REASONED_RETURN` or remediation |
 | `IMPLEMENTATION_VERIFIED` | Timelock | exact operation and required delay | `TIMELOCKED` | queue nothing |
 | `TIMELOCKED` | Timelock | delay, expiry, no material challenge, preconditions | `EXECUTED` | preserve prior state and evidence |
 | `TIMELOCKED` | Emergency Guardian | enumerated incident authority | `SECURITY_CANCELLED` | deny any replacement execution |
@@ -206,6 +214,7 @@ commitBallot(proposal_id, house, commitment, nullifier)
 revealBallot(proposal_id, house, intensity, salt, proof)
 finalizeHouseResult(proposal_id, house)
 finalizeJointApproval(proposal_id)
+recordContractTestEvidence(proposal_id, source_hash, artifact_hash, test_suite_hash, test_report_hash, tested_calldata_hash, passed)
 recordReview(proposal_id, authority, decision, evidence_hash)
 bindExecutionManifest(proposal_id, manifest_hash)
 queueApprovedOperation(proposal_id, manifest)
@@ -259,7 +268,7 @@ getGovernanceAuditBundle(proposal_id)
 
 ## Observability and Audit
 
-The audit bundle records Session, membership roots, Proposal Revision, Rule Version, ballot commitments or proofs, House Results, challenges, reviews, Manifest, Timelock operation, execution receipt and resulting state hashes. Public dashboards distinguish proposed, approved, queued, executable, executed, returned, cancelled and expired states.
+The audit bundle records Session, membership roots, Proposal Revision, Rule Version, ballot commitments or proofs, House Results, challenges, exact-source contract test evidence, reviews, Manifest, Timelock operation, execution receipt and resulting state hashes. Public dashboards distinguish proposed, approved, test failed, tested, reviewed, queued, executable, executed, returned, cancelled and expired states.
 
 ## Testnet Implementation Profile
 
@@ -274,12 +283,14 @@ This profile deliberately uses registrar-assigned public wallet membership and p
 - Property tests for REQ-GOVERNANCE-003–007 generate members, signed intensities, ballot replacements, orderings and both House outcomes and prove budget conservation and bicameral independence.
 - Integration tests for REQ-GOVERNANCE-009–016 bind a mock UUPS upgrade to its Specification and runtime code hash, reject every modified Manifest and verify Timelock-only authorization and emergency limits.
 - Privacy review for REQ-GOVERNANCE-002, REQ-GOVERNANCE-005, REQ-GOVERNANCE-018, REQ-GOVERNANCE-020, REQ-GOVERNANCE-022 and REQ-GOVERNANCE-026 verifies minimization, unlinkability goals and restricted mappings.
+- Integration tests for REQ-GOVERNANCE-033–038 reject failed or missing pre-vote review, either House's missing deliberation evidence, missing or failed contract tests and mismatched tested calldata, then prove that only the exact tested, jointly approved and timelocked deployment creates runtime code at the predicted address. Static governance validation checks candidate-bundle traceability and generation-authority separation until those attestations are implemented on-chain.
 
 ## Acceptance Criteria
 
 - A deterministic test vector reproduces Voice Credit accounting and both House Results.
 - One failed or absent House makes Joint Approval and execution impossible.
 - A one-byte calldata or code-hash change after voting makes queueing or execution impossible.
+- Missing, failed or differently bound contract test evidence makes implementation review, queueing and deployment impossible.
 - Timelock is the only authorized caller for the protected test upgrade.
 - Emergency Guardian can cancel the queued test operation but cannot upgrade or transfer assets.
 - The public audit bundle links the CFP, Revision, Specification, votes, review, Manifest, transaction and resulting code hash.

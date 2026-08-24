@@ -328,7 +328,7 @@ export default defineConfig({
             text: '二院制ガバナンス',
             items: [
               { text: '議会・投票システム', link: '/governance/' },
-              { text: '音楽クリエーター中心提案', link: '/proposals/' },
+              { text: 'CFP文書', link: '/proposals/' },
               { text: 'ガバナンスプロトコル', link: '/protocol/specs/governance-change' },
               { text: '設計判断 ADR-0016', link: '/adr/ADR-0016-bicameral-quadratic-governance' }
             ]
@@ -336,8 +336,11 @@ export default defineConfig({
         ],
         '/proposals/': [
           {
-            text: '音楽クリエーター中心提案',
-            items: [{ text: 'CFP制度・一覧', link: '/proposals/' }]
+            text: 'CFP文書',
+            items: [
+              { text: 'CFP文書一覧', link: '/proposals/' },
+              { text: 'CFP-0002 初期サポーター1年未満ルール', link: '/proposals/CFP-0002-early-supporter-one-year-rule' }
+            ]
           }
         ]
       },
@@ -413,6 +416,22 @@ export default defineConfig({
             if (environment.relativePath === 'whitepaper/12-infrastructure-cost.md') {
               return searchableDocument.replace(
                 /<h2[^>]*id="_12-47-[^"]*"[^>]*>[\s\S]*$/,
+                ''
+              )
+            }
+
+            // CFP lifecycleの見出しと概要は検索可能に保ち、長いシナリオ表と
+            // 証拠グラフは本文だけに掲載して検索転送量を抑える。
+            if (environment.relativePath === 'whitepaper/07-governance.md') {
+              return searchableDocument.replace(
+                /<h3[^>]*id="cfp-0002による具体的シナリオ"[^>]*>[\s\S]*?(?=<h2|$)/,
+                ''
+              )
+            }
+
+            if (environment.relativePath === 'governance/index.md') {
+              return searchableDocument.replace(
+                /<h2[^>]*id="実装順序"[^>]*>[\s\S]*?(?=<h2|$)/,
                 ''
               )
             }
