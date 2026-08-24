@@ -16,6 +16,7 @@ function option(name, fallback) {
 
 const root = option('--project-root', defaultRoot)
 const workflowDirectory = option('--workflow-dir', join(root, '.github/workflows'))
+const dependabotPath = option('--dependabot-file', join(root, '.github/dependabot.yml'))
 const files = (await readdir(workflowDirectory))
   .filter((name) => name.endsWith('.yml') || name.endsWith('.yaml'))
   .map((name) => join(workflowDirectory, name))
@@ -23,6 +24,7 @@ const files = (await readdir(workflowDirectory))
 const errors = []
 let actionReferenceCount = 0
 let deploymentGateCount = 0
+let dependencyUpdateGateCount = 0
 
 for (const file of files) {
   const source = await readFile(file, 'utf8')
@@ -87,10 +89,23 @@ for (const [description, pattern] of pullRequestGates) {
   }
 }
 
+const dependabotSource = await readFile(dependabotPath, 'utf8')
+const dependencyUpdateGates = [
+  ['disable automatic rebases for npm update PRs', /package-ecosystem:\s*npm[\s\S]*?directory:\s*\/[\s\S]*?rebase-strategy:\s*disabled/],
+  ['defer markdown-it-mathjax3 major updates', /dependency-name:\s*["']?markdown-it-mathjax3["']?[\s\S]*?update-types:\s*\n\s+-\s*["']?version-update:semver-major["']?/]
+]
+
+for (const [description, pattern] of dependencyUpdateGates) {
+  dependencyUpdateGateCount += 1
+  if (!pattern.test(dependabotSource)) {
+    errors.push(`.github/dependabot.yml: Dependabot configuration must ${description}`)
+  }
+}
+
 if (errors.length) {
   console.error('Workflow validation failed:')
   for (const error of errors) console.error(`- ${error}`)
   process.exit(1)
 }
 
-console.log(`Workflow validation passed: ${files.length} workflow(s), ${actionReferenceCount} pinned action reference(s), ${deploymentGateCount} publication gate(s).`)
+console.log(`Workflow validation passed: ${files.length} workflow(s), ${actionReferenceCount} pinned action reference(s), ${deploymentGateCount} publication gate(s), ${dependencyUpdateGateCount} dependency update gate(s).`)

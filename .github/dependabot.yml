@@ -2,6 +2,9 @@ version: 2
 updates:
   - package-ecosystem: npm
     directory: /
+    # Conflicting update PRs otherwise trigger a Dependabot rebase job after
+    # every main-branch push. Review and rebase dependency PRs explicitly.
+    rebase-strategy: disabled
     schedule:
       interval: weekly
     groups:
@@ -12,6 +15,16 @@ updates:
           - "vue"
           - "mermaid"
           - "markdown-it-mathjax3"
+        update-types:
+          - minor
+          - patch
+    # 5.x expands the rendered MathJax output beyond the site's HTML budget.
+    # Keep compatible 4.x fixes automated; migrate major versions separately
+    # with output-size and rendering regression tests.
+    ignore:
+      - dependency-name: "markdown-it-mathjax3"
+        update-types:
+          - "version-update:semver-major"
     open-pull-requests-limit: 5
 
   - package-ecosystem: github-actions

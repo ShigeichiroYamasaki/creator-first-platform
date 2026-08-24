@@ -82,6 +82,21 @@ jobs:
 `
 }
 
+function dependabotConfiguration() {
+  return `version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    rebase-strategy: disabled
+    schedule:
+      interval: weekly
+    ignore:
+      - dependency-name: "markdown-it-mathjax3"
+        update-types:
+          - "version-update:semver-major"
+`
+}
+
 async function runValidator(transform = (files) => files) {
   const directory = await mkdtemp(join(tmpdir(), 'creator-first-workflows-'))
   const workflowDirectory = join(directory, '.github/workflows')
@@ -95,11 +110,14 @@ async function runValidator(transform = (files) => files) {
     for (const [name, source] of Object.entries(files)) {
       await writeFile(join(workflowDirectory, name), source, 'utf8')
     }
+    const dependabotPath = join(directory, '.github/dependabot.yml')
+    await writeFile(dependabotPath, dependabotConfiguration(), 'utf8')
 
     return spawnSync(process.execPath, [
       validator,
       '--project-root', directory,
-      '--workflow-dir', workflowDirectory
+      '--workflow-dir', workflowDirectory,
+      '--dependabot-file', dependabotPath
     ], { encoding: 'utf8' })
   } finally {
     await rm(directory, { recursive: true, force: true })
@@ -110,7 +128,7 @@ test('accepts pinned actions and all publication gates', async () => {
   const result = await runValidator()
 
   assert.equal(result.status, 0, result.stderr)
-  assert.match(result.stdout, /2 workflow\(s\), 7 pinned action reference\(s\), 15 publication gate\(s\)/)
+  assert.match(result.stdout, /2 workflow\(s\), 7 pinned action reference\(s\), 15 publication gate\(s\), 2 dependency update gate\(s\)/)
 })
 
 test('rejects an action tag instead of a full commit SHA', async () => {
@@ -161,4 +179,38 @@ test('rejects validation workflow without pull request trigger', async () => {
 
   assert.equal(result.status, 1)
   assert.match(result.stderr, /validation workflow must run for pull requests/)
+})
+
+test('rejects Dependabot npm updates with automatic rebasing enabled', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'creator-first-workflows-'))
+  const workflowDirectory = join(directory, '.github/workflows')
+  try {
+    await mkdir(workflowDirectory, { recursive: true })
+    await writeFile(join(workflowDirectory, 'deploy-pages.yml'), deployWorkflow(), 'utf8')
+    await writeFile(join(workflowDirectory, 'validate-docs.yml'), validationWorkflow(), 'utf8')
+    const dependabotPath = join(directory, '.github/dependabot.yml')
+    await writeFile(dependabotPath, dependabotConfiguration().replace('rebase-strategy: disabled', 'rebase-strategy: auto'), 'utf8')
+    const result = spawnSync(process.execPath, [validator, '--project-root', directory, '--workflow-dir', workflowDirectory, '--dependabot-file', dependabotPath], { encoding: 'utf8' })
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /must disable automatic rebases for npm update PRs/)
+  } finally {
+    await rm(directory, { recursive: true, force: true })
+  }
+})
+
+test('rejects Dependabot configuration that allows markdown-it-mathjax3 major updates', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'creator-first-workflows-'))
+  const workflowDirectory = join(directory, '.github/workflows')
+  try {
+    await mkdir(workflowDirectory, { recursive: true })
+    await writeFile(join(workflowDirectory, 'deploy-pages.yml'), deployWorkflow(), 'utf8')
+    await writeFile(join(workflowDirectory, 'validate-docs.yml'), validationWorkflow(), 'utf8')
+    const dependabotPath = join(directory, '.github/dependabot.yml')
+    await writeFile(dependabotPath, dependabotConfiguration().replace('"version-update:semver-major"', '"version-update:semver-minor"'), 'utf8')
+    const result = spawnSync(process.execPath, [validator, '--project-root', directory, '--workflow-dir', workflowDirectory, '--dependabot-file', dependabotPath], { encoding: 'utf8' })
+    assert.equal(result.status, 1)
+    assert.match(result.stderr, /must defer markdown-it-mathjax3 major updates/)
+  } finally {
+    await rm(directory, { recursive: true, force: true })
+  }
 })
