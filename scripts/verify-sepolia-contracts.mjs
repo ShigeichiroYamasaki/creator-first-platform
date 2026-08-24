@@ -10,12 +10,19 @@ assert.equal(manifest.status, 'active', 'Deployment manifest must be active')
 assert.equal(manifest.chainId, sepolia.id, 'Deployment manifest must target Ethereum Sepolia')
 assert.match(manifest.sourceCommit, /^[0-9a-f]{40}$/i, 'Deployment manifest must contain a full source commit')
 
-const addresses = Object.fromEntries(Object.entries(manifest.contracts).map(([key, value]) => [key, getAddress(value)]))
+const addresses = Object.fromEntries(
+  Object.entries(manifest.contracts)
+    .filter(([, value]) => typeof value === 'string')
+    .map(([key, value]) => [key, getAddress(value)])
+)
 assert.equal(deploymentRecord.sourceCommit, manifest.sourceCommit, 'Deployment record source commit mismatch')
 const implementation = getAddress(deploymentRecord.contracts.supporterSbtImplementation.address)
 const creatorRegistry = manifest.contracts.creatorRegistry ? getAddress(manifest.contracts.creatorRegistry) : undefined
 const governor = manifest.contracts.governor ? getAddress(manifest.contracts.governor) : undefined
 const governedPolicy = manifest.contracts.governedPolicy ? getAddress(manifest.contracts.governedPolicy) : undefined
+const supporterRegistrationAdapter = manifest.contracts.supporterRegistrationAdapter
+  ? getAddress(manifest.contracts.supporterRegistrationAdapter)
+  : undefined
 assert.equal(Boolean(governor), Boolean(governedPolicy), 'Governance manifest must publish governor and policy together')
 const rpcUrl = process.env.SEPOLIA_READ_RPC_URL ?? 'https://ethereum-sepolia-rpc.publicnode.com'
 const client = createPublicClient({ chain: sepolia, transport: http(rpcUrl) })
@@ -91,6 +98,33 @@ const storedImplementation = await client.getStorageAt({ address: addresses.supp
 assert.ok(storedImplementation, 'Supporter SBT proxy implementation slot is empty')
 assert.equal(getAddress(`0x${storedImplementation.slice(-40)}`), implementation)
 
+if (supporterRegistrationAdapter) {
+  const supporterAbi = parseAbi([
+    'function RELAYER_ROLE() view returns (bytes32)',
+    'function hasRole(bytes32 role, address account) view returns (bool)'
+  ])
+  const adapterAbi = parseAbi(['function supporterSbt() view returns (address)'])
+  const [adapterSbt, relayerRole] = await Promise.all([
+    client.readContract({
+      address: supporterRegistrationAdapter,
+      abi: adapterAbi,
+      functionName: 'supporterSbt'
+    }),
+    client.readContract({
+      address: addresses.supporterSbt,
+      abi: supporterAbi,
+      functionName: 'RELAYER_ROLE'
+    })
+  ])
+  assert.equal(getAddress(adapterSbt), addresses.supporterSbt, 'Supporter registration adapter targets another SBT')
+  assert.equal(await client.readContract({
+    address: addresses.supporterSbt,
+    abi: supporterAbi,
+    functionName: 'hasRole',
+    args: [relayerRole, supporterRegistrationAdapter]
+  }), true, 'Supporter registration adapter does not have RELAYER_ROLE')
+}
+
 console.log(`Sepolia deployment verified at source commit ${manifest.sourceCommit}:`)
 console.log(`- MockJPYC: ${addresses.mockJpyc}`)
 console.log(`- Subscription: ${addresses.subscription}`)
@@ -102,3 +136,4 @@ if (governor && governedPolicy) {
   console.log(`- Bicameral Governor: ${governor}`)
   console.log(`- Governed Demo Policy: ${governedPolicy}`)
 }
+if (supporterRegistrationAdapter) console.log(`- Supporter registration adapter: ${supporterRegistrationAdapter}`)
