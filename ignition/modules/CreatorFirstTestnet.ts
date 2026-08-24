@@ -14,6 +14,9 @@ export default buildModule("CreatorFirstTestnet", (m) => {
   const upgrader = deployer;
   const treasuryDisburser = deployer;
   const planManager = deployer;
+  const governanceRegistrar = deployer;
+  const governanceReviewer = deployer;
+  const governanceGuardian = deployer;
 
   const initialMockSupply = m.getParameter(
     "initialMockSupply",
@@ -29,6 +32,10 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     "earlyMetadataUri",
     "https://shigeichiroyamasaki.github.io/creator-first-platform/sbt/early-supporter.json",
   );
+  const governanceParameterDelay = m.getParameter("governanceParameterDelay", 60n);
+  const governanceUpgradeDelay = m.getParameter("governanceUpgradeDelay", 5n * 60n);
+  const governanceConstitutionalDelay = m.getParameter("governanceConstitutionalDelay", 15n * 60n);
+  const governanceExecutionWindow = m.getParameter("governanceExecutionWindow", 7n * 24n * 60n * 60n);
 
   const mockJPYC = m.contract("MockJPYC", [admin, initialMockSupply]);
   const treasury = m.contract("CreatorFirstTreasury", [
@@ -67,6 +74,22 @@ export default buildModule("CreatorFirstTestnet", (m) => {
   const supporterSBT = m.contractAt("SupporterSBTUpgradeable", supporterProxy, {
     id: "SupporterSBTProxyInstance",
   });
+  const bicameralGovernor = m.contract("CreatorFirstBicameralGovernor", [
+    admin,
+    governanceRegistrar,
+    governanceReviewer,
+    governanceGuardian,
+    11_155_111n,
+    governanceParameterDelay,
+    governanceUpgradeDelay,
+    governanceConstitutionalDelay,
+    governanceExecutionWindow,
+  ]);
+  const governedPolicy = m.contract("CreatorFirstGovernedPolicy", [
+    bicameralGovernor,
+    30,
+    100,
+  ]);
 
   return {
     mockJPYC,
@@ -76,5 +99,7 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     supporterImplementation,
     supporterProxy,
     supporterSBT,
+    bicameralGovernor,
+    governedPolicy,
   };
 });

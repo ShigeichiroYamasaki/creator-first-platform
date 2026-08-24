@@ -15,6 +15,8 @@
     "contracts:deploy:sepolia": "hardhat ignition deploy ignition/modules/CreatorFirstTestnet.ts --network sepolia --deployment-id sepolia-creator-first-testnet",
     "contracts:verify:sepolia": "node scripts/verify-sepolia-contracts.mjs",
     "testnet-demo:test": "node --test scripts/testnet-user-demo.test.mjs",
+    "governance:test": "node --test scripts/testnet-governance-demo.test.mjs",
+    "governance:validate": "node scripts/validate-governance.mjs",
     "player:seed": "node scripts/generate-player-test-audio.mjs",
     "player:dev": "npm run player:seed && vite --config apps/player/vite.config.ts --host 127.0.0.1",
     "player:dev:gateway": "VITE_GATEWAY_MODE=gateway VITE_GATEWAY_BASE=/api vite --config apps/player/vite.config.ts --host 127.0.0.1",
@@ -50,7 +52,7 @@
     "site:test": "node --test scripts/validate-site-output.test.mjs",
     "workflow:validate": "node scripts/validate-workflows.mjs",
     "workflow:test": "node --test scripts/validate-workflows.test.mjs",
-    "validate": "npm run contracts:compile && npm run contracts:test && npm run testnet-demo:test && npm run workflow:test && npm run workflow:validate && npm run community:test && npm run community:validate && npm run deployment:test && npm run protocol:test && npm run protocol:validate && npm run decisions:test && npm run decisions:validate && npm run status:test && npm run status:validate && npm run terminology:validate && npm run streaming:test && npm run streaming:validate && npm run gateway:test && npm run gateway:validate && npm run player:test && npm run player:build && npm run player:validate && npm run docs:build && npm run site:test && npm run site:validate"
+    "validate": "npm run contracts:compile && npm run contracts:test && npm run testnet-demo:test && npm run governance:test && npm run governance:validate && npm run workflow:test && npm run workflow:validate && npm run community:test && npm run community:validate && npm run deployment:test && npm run protocol:test && npm run protocol:validate && npm run decisions:test && npm run decisions:validate && npm run status:test && npm run status:validate && npm run terminology:validate && npm run streaming:test && npm run streaming:validate && npm run gateway:test && npm run gateway:validate && npm run player:test && npm run player:build && npm run player:validate && npm run docs:build && npm run site:test && npm run site:validate"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox-viem": "5.0.7",

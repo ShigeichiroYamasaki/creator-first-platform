@@ -261,6 +261,12 @@ getGovernanceAuditBundle(proposal_id)
 
 The audit bundle records Session, membership roots, Proposal Revision, Rule Version, ballot commitments or proofs, House Results, challenges, reviews, Manifest, Timelock operation, execution receipt and resulting state hashes. Public dashboards distinguish proposed, approved, queued, executable, executed, returned, cancelled and expired states.
 
+## Testnet Implementation Profile
+
+The first executable profile is implemented by `CreatorFirstBicameralGovernor` and the harmless `CreatorFirstGovernedPolicy` target. It validates session-bound equal Voice Credit, quadratic replacement accounting, separate Creator House and User House outcomes, exact calldata binding, review evidence, P3 referendum-evidence presence, class-based delay, execution expiry and guardian cancellation.
+
+This profile deliberately uses registrar-assigned public wallet membership and public ballots. A P3 proposal binds a referendum evidence hash but the referendum mechanism is not implemented. The profile does not claim production compliance with verifiable sortition, personhood, cross-session uniqueness, commit-reveal, zero-knowledge privacy, conflict and recusal handling, material challenges, Reasoned Return, audit approval or migration of production upgrade authority. The public UI MUST remain write-disabled until both governance addresses are present in the reviewed Sepolia deployment manifest.
+
 ## Test Requirements
 
 - REQ-GOVERNANCE-001–020: lifecycle tests cover fixed Sessions, unique membership, equal budgets, quadratic accounting, immutable revisions, separate House outcomes, review, Manifest, Timelock, emergency, return, conflicts, challenges and reproducible evidence.

@@ -5,6 +5,7 @@ import CreatorWorkspaceDemo from './CreatorWorkspaceDemo.vue'
 import DemoServiceChoices from './DemoServiceChoices.vue'
 import MermaidDiagram from './MermaidDiagram.vue'
 import TestUserRegistrationDemo from './TestUserRegistrationDemo.vue'
+import TestnetGovernanceDemo from './TestnetGovernanceDemo.vue'
 import TreasuryFlowDemo from './TreasuryFlowDemo.vue'
 import UserServiceDemo from './UserServiceDemo.vue'
 import './custom.css'
@@ -17,6 +18,7 @@ export default {
     app.component('DemoServiceChoices', DemoServiceChoices)
     app.component('MermaidDiagram', MermaidDiagram)
     app.component('TestUserRegistrationDemo', TestUserRegistrationDemo)
+    app.component('TestnetGovernanceDemo', TestnetGovernanceDemo)
     app.component('TestnetUserJourneyDemo', defineAsyncComponent(() => import('./TestnetUserJourneyDemo.vue')))
     app.component('TestnetCreatorJourneyDemo', defineAsyncComponent(() => import('./TestnetCreatorJourneyDemo.vue')))
     app.component('TreasuryFlowDemo', TreasuryFlowDemo)

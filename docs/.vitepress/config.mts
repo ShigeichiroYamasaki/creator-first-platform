@@ -197,6 +197,7 @@ export default defineConfig({
               { text: 'テスト音楽クリエーター登録デモ', link: '/demo/creator-registration' },
               { text: '音楽クリエーター作業画面デモ', link: '/demo/creator-workspace' },
               { text: '資金フロー可視化デモ', link: '/demo/treasury-dashboard' },
+              { text: 'テストネット版ガバナンス', link: '/demo/governance' },
               { text: 'Sepoliaスマートコントラクト', link: '/demo/testnet-contracts' },
               { text: 'ローカル音楽ストリーミング', link: '/demo/local-streaming' },
               { text: 'ローカルストリーミングゲートウェイ', link: '/demo/local-gateway' }

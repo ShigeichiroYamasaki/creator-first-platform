@@ -52,14 +52,16 @@ Gatewayを通した再生は、2つのTerminalで`npm run gateway:dev`と`npm ru
 
 ## Testnet Smart Contract
 
-Hardhat 3でMockJPYC、Subscription、Treasury、一般／Early Supporter SBT、および自己申告Commitmentだけを扱うCreator Registryをローカル検証できます。
+Hardhat 3でMockJPYC、サブスクリプション、資金庫、一般／初期サポーターSBT、自己申告コミットメントだけを扱う音楽クリエーター登録台帳、およびテストネット版二院制ガバナーをローカル検証できます。
 
 ```sh
 npm run contracts:compile
 npm run contracts:test
+npm run governance:test
+npm run governance:validate
 ```
 
-Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`の構成をEthereum Sepoliaへデプロイ済みです。`npm run contracts:verify:sepolia`で公開RPC上のBytecode、Contract接続、Plan、Proxy実装先およびCreator Registry Noticeを検証できます。Player／GatewayはContract Eventへ未接続です。Addressと安全境界は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
+ソースコミット`9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`までの構成をEthereum Sepoliaへデプロイ済みです。二院制ガバナーと無価値のデモポリシー実行対象は実装済みですが、公開Sepoliaデプロイにはまだ含まれません。`npm run contracts:verify:sepolia`は公開RPC上のバイトコード、コントラクト接続、プラン、プロキシ実装先、音楽クリエーター登録台帳の注意表示に加え、ガバナンスアドレス公開後はチェーン拘束、タイムロック順序、実行対象との接続も検証します。アドレスと安全境界は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
 
 ## 文書から実装まで
 

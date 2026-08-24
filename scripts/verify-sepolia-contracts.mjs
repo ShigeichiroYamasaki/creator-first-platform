@@ -14,6 +14,9 @@ const addresses = Object.fromEntries(Object.entries(manifest.contracts).map(([ke
 assert.equal(deploymentRecord.sourceCommit, manifest.sourceCommit, 'Deployment record source commit mismatch')
 const implementation = getAddress(deploymentRecord.contracts.supporterSbtImplementation.address)
 const creatorRegistry = manifest.contracts.creatorRegistry ? getAddress(manifest.contracts.creatorRegistry) : undefined
+const governor = manifest.contracts.governor ? getAddress(manifest.contracts.governor) : undefined
+const governedPolicy = manifest.contracts.governedPolicy ? getAddress(manifest.contracts.governedPolicy) : undefined
+assert.equal(Boolean(governor), Boolean(governedPolicy), 'Governance manifest must publish governor and policy together')
 const rpcUrl = process.env.SEPOLIA_READ_RPC_URL ?? 'https://ethereum-sepolia-rpc.publicnode.com'
 const client = createPublicClient({ chain: sepolia, transport: http(rpcUrl) })
 
@@ -29,6 +32,31 @@ if (creatorRegistry) {
     functionName: 'TESTNET_NOTICE'
   })
   assert.equal(registryNotice, 'TESTNET ONLY - NO IDENTITY, RIGHTS, PAYEE OR RELEASE VERIFICATION')
+}
+
+if (governor && governedPolicy) {
+  const governanceAbi = parseAbi([
+    'function allowedChainId() view returns (uint256)',
+    'function p1Delay() view returns (uint64)',
+    'function p2Delay() view returns (uint64)',
+    'function p3Delay() view returns (uint64)'
+  ])
+  const policyAbi = parseAbi([
+    'function governor() view returns (address)',
+    'function version() view returns (uint64)'
+  ])
+  const [allowedChainId, p1Delay, p2Delay, p3Delay, policyGovernor, policyVersion] = await Promise.all([
+    client.readContract({ address: governor, abi: governanceAbi, functionName: 'allowedChainId' }),
+    client.readContract({ address: governor, abi: governanceAbi, functionName: 'p1Delay' }),
+    client.readContract({ address: governor, abi: governanceAbi, functionName: 'p2Delay' }),
+    client.readContract({ address: governor, abi: governanceAbi, functionName: 'p3Delay' }),
+    client.readContract({ address: governedPolicy, abi: policyAbi, functionName: 'governor' }),
+    client.readContract({ address: governedPolicy, abi: policyAbi, functionName: 'version' })
+  ])
+  assert.equal(allowedChainId, BigInt(sepolia.id))
+  assert.ok(p1Delay > 0n && p2Delay >= p1Delay && p3Delay >= p2Delay, 'Governance delay ordering is invalid')
+  assert.equal(getAddress(policyGovernor), governor)
+  assert.equal(policyVersion, 1n)
 }
 
 const tokenAbi = parseAbi([
@@ -70,3 +98,7 @@ console.log(`- Treasury: ${addresses.treasury}`)
 console.log(`- SupporterSBT proxy: ${addresses.supporterSbt}`)
 console.log(`- SupporterSBT implementation: ${implementation}`)
 if (creatorRegistry) console.log(`- Creator Registry: ${creatorRegistry}`)
+if (governor && governedPolicy) {
+  console.log(`- Bicameral Governor: ${governor}`)
+  console.log(`- Governed Demo Policy: ${governedPolicy}`)
+}
