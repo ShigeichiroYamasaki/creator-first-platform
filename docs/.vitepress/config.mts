@@ -177,6 +177,7 @@ export default defineConfig({
         { text: 'Testnetデモ', link: '/demo/' },
         { text: '現在の状況', link: '/status' },
         { text: 'ホワイトペーパー', link: '/whitepaper/' },
+        { text: 'Governance', link: '/governance/' },
         { text: 'Protocol', link: '/protocol/' },
         { text: 'CFP', link: '/proposals/' },
         { text: 'ADR 一覧', link: '/adr/' }
@@ -279,6 +280,10 @@ export default defineConfig({
               {
                 text: 'Creator Distribution (Draft)',
                 link: '/protocol/specs/creator-distribution'
+              },
+              {
+                text: 'Governance Change (Draft)',
+                link: '/protocol/specs/governance-change'
               }
             ]
           }
@@ -299,7 +304,21 @@ export default defineConfig({
               { text: '0009 Navidrome / Streaming Gateway', link: '/adr/ADR-0009-navidrome-streaming-gateway' },
               { text: '0010 Early Supporter SBT', link: '/adr/ADR-0010-early-supporter-sbt-privileges' },
               { text: '0011 Integrated Player Client', link: '/adr/ADR-0011-integrated-player-client' },
-              { text: '0013 Treasury Flow Transparency', link: '/adr/ADR-0013-treasury-flow-transparency' }
+              { text: '0013 Treasury Flow Transparency', link: '/adr/ADR-0013-treasury-flow-transparency' },
+              { text: '0014 Public Testnet User Journey', link: '/adr/ADR-0014-public-testnet-user-journey' },
+              { text: '0015 Public Testnet Creator Journey', link: '/adr/ADR-0015-public-testnet-creator-journey' },
+              { text: '0016 Bicameral Governance', link: '/adr/ADR-0016-bicameral-quadratic-governance' }
+            ]
+          }
+        ],
+        '/governance/': [
+          {
+            text: '二院制ガバナンス',
+            items: [
+              { text: '議会・投票システム', link: '/governance/' },
+              { text: 'Creator First Proposal', link: '/proposals/' },
+              { text: 'Governance Protocol', link: '/protocol/specs/governance-change' },
+              { text: '設計判断 ADR-0016', link: '/adr/ADR-0016-bicameral-quadratic-governance' }
             ]
           }
         ],
@@ -374,6 +393,14 @@ export default defineConfig({
                 )
                 .replace(
                   /<h2[^>]*id="test-requirements"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  ''
+                )
+                .replace(
+                  /<h2[^>]*id="state-transitions"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  ''
+                )
+                .replace(
+                  /<h2[^>]*id="error-conditions"[^>]*>[\s\S]*?(?=<h2|$)/,
                   ''
                 )
             }

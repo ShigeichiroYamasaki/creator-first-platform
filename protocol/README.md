@@ -65,6 +65,7 @@ Planned domains include:
 | [SPEC-STREAMING-002 Player Client and Gateway Interaction](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/streaming/player-client-spec.md) | streaming / client | Draft | 0.1.0 |
 | [SPEC-USAGE-001 Playback Event Verification and Usage Snapshot](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/usage/playback-verification-spec.md) | usage / privacy | Draft | 0.1.0 |
 | [SPEC-DISTRIBUTION-001 Creator Distribution Calculation and Allocation](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/distribution/creator-allocation-spec.md) | distribution / accounting | Draft | 0.1.0 |
+| [SPEC-GOVERNANCE-001 Contract Change Governance](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/governance/contract-change-governance-spec.md) | governance / voting / contract evolution | Draft | 0.1.0 |
 
 ## Validation
 

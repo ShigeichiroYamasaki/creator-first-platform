@@ -100,6 +100,20 @@ The finalized set of Participants eligible for a specified governance selection 
 
 A temporary representative selected from an Eligible Community to participate in deliberative governance.
 
+## Governance Session
+
+A bounded term that fixes House membership commitments, voting rules, Voice Credit budget, deadlines and applicable change classes before voting begins.
+
+## Voice Credit
+
+Equal, session-bound and non-economic accounting capacity issued to Governance Members for quadratic ballots.
+
+Voice Credit MUST NOT be purchased, transferred, delegated, pooled, carried into another Governance Session or redeemed for economic value.
+
+## Execution Manifest
+
+The immutable binding between an approved Proposal Revision and its exact Chain ID, target, value, calldata, Specification, source, artifact and expected code or state hashes.
+
 ## Creator House
 
 The temporary deliberative governance body composed of representatives selected from the eligible Creator community.

@@ -396,6 +396,26 @@ Proposalには最低限、
 
 ---
 
+## 7.16.1 クアドラティック投票
+
+抽選された議員は、各会期に同量の譲渡不能なVoice Creditを受け取る。提案$p$へ強度$v$の票を投じる費用は$v^2$ Creditとし、複数提案への配分総額を会期予算以内に制限する。
+
+このVoice Creditは通貨やTokenではない。JPYC、株式、STO、SBT、収益、再生数または人気によって購入・増加できず、他者への譲渡、委任、次期繰越もできない。
+
+Quadratic Votingは、有限の予算で提案ごとの意思の強さを表すために利用する。ただしNet Scoreだけでは可決せず、Creator HouseとUser Houseがそれぞれ独立したQuorumとApproval Thresholdを満たさなければならない。
+
+具体的な議会画面、投票計算、変更区分、TimelockおよびContract境界は、[二院制議会・Governance](../governance/index.md)とProtocol Specificationで定義する。
+
+---
+
+## 7.16.2 Contract変更の拘束
+
+投票対象は説明文だけではなく、Proposal Revision、Specification hash、Chain ID、Target、calldata、Source Commit、ArtifactおよびCode hashを含むExecution Manifestへ接続する。
+
+投票開始後にこれらが変わった場合、同じ承認で実行せず、新しいRevisionとして再審議する。両院承認後も、変更区分に応じた法務・Security Review、Test、AuditおよびTimelockを経て、承認済みManifestだけを実行する。
+
+---
+
 ## 7.17 Protocol Specification
 
 Governanceが承認する対象は、原則としてSmart ContractのSource Codeそのものではなく、まず**Protocol Specification**である。
@@ -555,6 +575,8 @@ Creator HouseやUser Houseそのものを主権者とは定義しない。
 とすることができる。
 
 ただしDelegation Concentrationを監視し、少数者への政治力集中を防ぐ。
+
+このDelegation候補はCommunity Referendumまたは意見形成に関するものであり、抽選議員へ付与されたQuadratic VotingのVoice Creditは委任・譲渡できない。
 
 ---
 

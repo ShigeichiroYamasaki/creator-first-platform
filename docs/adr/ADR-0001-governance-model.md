@@ -6,7 +6,7 @@ description: CreatorとUserの抽選代表による二院制の熟議を、Proto
 
 **Status:** Proposed  
 **Date:** 2026-07-27
-**Last Updated:** 2026-08-20
+**Last Updated:** 2026-08-24
 
 ## Context
 
@@ -34,6 +34,8 @@ Governanceは二院制とし、
 
 Governance MemberはEligible Communityから
 検証可能な抽選によって選出する。
+
+各院内のProposal評価には、各議員へ同量の購入不能・譲渡不能なVoice Creditを付与するQuadratic Votingを採用する。重要変更は両院の票を合算せず、各院が独立したQuorumとApproval Thresholdを満たす必要がある。具体的なContract変更手続と実行境界はADR-0016およびGovernance Protocol Specificationで定義する。
 
 ## Alternatives Considered
 
@@ -78,3 +80,5 @@ Community Referendumを必要とする。
 - Whitepaper: Vision
 - Whitepaper: Governance
 - Whitepaper: Roadmap
+- ADR-0016: Bicameral Quadratic Governance for Contract Changes
+- Protocol: Contract Change Governance

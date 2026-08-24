@@ -28,7 +28,7 @@ flowchart LR
 
 | ADR                                                        | Design Decision                      | Status   | Date       | Last Updated |
 | :--------------------------------------------------------- | :----------------------------------- | :------- | :--------- | :----------- |
-| [ADR-0001](./ADR-0001-governance-model.md)                 | Governance Model                     | Proposed | 2026-07-27 | 2026-08-20   |
+| [ADR-0001](./ADR-0001-governance-model.md)                 | Governance Model                     | Proposed | 2026-07-27 | 2026-08-24   |
 | [ADR-0002](./ADR-0002-verifiable-sortition.md)             | Verifiable Sortition                 | Proposed | 2026-07-29 | 2026-08-20   |
 | [ADR-0003](./ADR-0003-rights-registry.md)                  | Rights Registry                      | Proposed | 2026-07-29 | 2026-08-20   |
 | [ADR-0004](./ADR-0004-creator-distribution-model.md)       | Creator Distribution Model           | Proposed | 2026-07-29 | 2026-08-20   |
@@ -42,5 +42,6 @@ flowchart LR
 | [ADR-0013](./ADR-0013-treasury-flow-transparency.md)      | Treasury Flow Transparency Read Model | Proposed | 2026-08-23 | 2026-08-23   |
 | [ADR-0014](./ADR-0014-public-testnet-user-journey.md)     | Public Testnet User Journey           | Proposed | 2026-08-23 | 2026-08-23   |
 | [ADR-0015](./ADR-0015-public-testnet-creator-journey.md)  | Public Testnet Creator Journey        | Proposed | 2026-08-23 | 2026-08-23   |
+| [ADR-0016](./ADR-0016-bicameral-quadratic-governance.md) | Bicameral Quadratic Governance        | Proposed | 2026-08-24 | 2026-08-24   |
 
 各ADRは初回作成日の`Date`と、内容またはメタデータを最後に変更した`Last Updated`を分けて記録します。

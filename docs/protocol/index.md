@@ -8,7 +8,7 @@ Creator First Platform の Protocol Specification は、Whitepaper・CFP・Gover
 
 Protocol Specification は、人間向けの説明書であると同時に、AIエージェントが実装・テスト・レビューを行うための **実装契約**として利用します。
 
-10仕様をAccount・Payment・Credential・Rights・Streaming・Player・Usage・Distributionの一つの経路として読む場合は、[End-to-End Vertical Slice](/protocol/vertical-slice)を参照してください。Mock／Testnetでの作業分解とStage Gateは[Vertical Slice Implementation Plan](/protocol/implementation-plan)にまとめています。
+Account・Payment・Credential・Rights・Streaming・Player・Usage・Distributionの10仕様を一つの利用経路として読む場合は、[End-to-End Vertical Slice](/protocol/vertical-slice)を参照してください。コントラクト仕様変更を統治する11番目の仕様は、[SPEC-GOVERNANCE-001](/protocol/specs/governance-change)として独立させています。Mock／Testnetでの作業分解とStage Gateは[Vertical Slice Implementation Plan](/protocol/implementation-plan)にまとめています。
 
 ::: warning 現在のStatus: Draft
 公開中のProtocol Specificationは設計・レビュー段階です。本番サービスや資金を扱う承認済み仕様ではありません。実装開始前にOpen Questionsを解決し、法務・セキュリティ・ガバナンスの承認とVersion更新が必要です。
@@ -28,6 +28,7 @@ Protocol Specification は、人間向けの説明書であると同時に、AI�
 | [SPEC-STREAMING-002 Player Client](/protocol/specs/player-client) | Streaming / Client | 0.1.0 | Gateway専用PWA、Navidrome再生、Wallet・Supporter SBT・Community統合、Client Storage境界 |
 | [SPEC-USAGE-001 Playback Verification](/protocol/specs/playback-verification) | Usage / Privacy | 0.1.0 | Playback Event、重複防止、検証、Usage Snapshot、Challenge |
 | [SPEC-DISTRIBUTION-001 Creator Distribution](/protocol/specs/creator-distribution) | Distribution / Accounting | 0.1.0 | Revenue、User-Centric計算、Rights分割、保留、Allocation、資金透明性照合 |
+| [SPEC-GOVERNANCE-001 Contract Change Governance](/protocol/specs/governance-change) | Governance / Contract Evolution | 0.1.0 | 二院制、Quadratic Vote、Review、Manifest、Timelock、Upgrade |
 
 すべてのDraftは、リポジトリ内の自動検証によって要件IDとInvariant IDの一意性、Global Invariant参照、Related Documentsの存在、MUST / MUST NOTとTest Requirementsの双方向対応、およびOpen Questionの安定ID・Decision owner・停止中ゲートを検査します。未決定事項は[Protocol Decision Queue](/protocol/open-questions)から確認できます。
 
@@ -188,11 +189,11 @@ Subscription Activation
 
 Creator / Userから抽選議会を形成し、熟議からProtocol Decisionへつなげる仕様です。
 
-予定仕様:
+現在のDraftと予定仕様:
 
 ```text
 protocol/governance/
-├── governance-spec.md
+├── contract-change-governance-spec.md # Draft v0.1.0
 ├── eligibility-spec.md
 ├── sortition-spec.md
 ├── deliberation-spec.md
@@ -200,12 +201,15 @@ protocol/governance/
 └── emergency-governance-spec.md
 ```
 
+[SPEC-GOVERNANCE-001 Contract Change Governance](/protocol/specs/governance-change)は、Creator HouseとUser Houseの独立承認、本人単位のQuadratic Voting、Execution Manifest、Review、TimelockおよびUpgrade権限を定義します。議会UIの設計は[二院制議会・Governance](/governance/)を参照してください。
+
 ### 関連ADR
 
 - ADR-0001 Governance Model
 - ADR-0002 Verifiable Sortition
 - ADR-0006 Zero-Knowledge Proof Strategy
 - ADR-0008 Account / Wallet / Identity Strategy
+- ADR-0016 Bicameral Quadratic Governance for Contract Changes
 
 ---
 

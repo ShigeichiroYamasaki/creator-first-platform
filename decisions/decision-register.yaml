@@ -34,6 +34,9 @@ source_specifications:
   - id: SPEC-DISTRIBUTION-001
     version: 0.1.0
     path: protocol/distribution/creator-allocation-spec.md
+  - id: SPEC-GOVERNANCE-001
+    version: 0.1.0
+    path: protocol/governance/contract-change-governance-spec.md
 
 question_defaults:
   assignment: UNASSIGNED

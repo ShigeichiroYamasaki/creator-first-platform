@@ -25,6 +25,7 @@ Draft Protocol Specificationに残るOpen Questionsは、実装者が暗黙に�
 | [Player Client](/protocol/specs/player-client#open-questions) | PWA基盤、Wallet統合順序、OSS再利用、Client Event、Codec・Accessibility、Community表示 | `OQ-PLAYER-...` |
 | [Playback Verification](/protocol/specs/playback-verification#open-questions) | Event Schema、重複、検証Policy、Fraud Review、Usage Snapshot、Privacy | `OQ-USAGE-ORACLE-...` |
 | [Creator Distribution](/protocol/specs/creator-distribution#open-questions) | Revenue、控除、Pool、User-Centric計算、Rights保留、端数、説明 | `OQ-DISTRIBUTION-...` |
+| [Contract Change Governance](/protocol/specs/governance-change#open-questions) | 議席、Voice Credit、Quorum、投票秘密、変更区分、Deadlock、Identity、Reasoned Return | `OQ-GOVERNANCE-...` |
 
 ## Decision ownerの責任分界
 

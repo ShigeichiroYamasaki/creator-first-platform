@@ -29,6 +29,15 @@ A lower-level Protocol Specification or implementation MUST NOT override these i
 - **INV-GOVERNANCE-003**  
   The same governance eligibility MUST NOT create more than one selection opportunity in the same sortition context.
 
+- **INV-GOVERNANCE-004**
+  Creator House and User House approval MUST be independently established for every change class that requires bicameral approval.
+
+- **INV-GOVERNANCE-005**
+  Governance approval MUST bind the exact immutable proposal revision, specification and executable operation; approval of one artifact MUST NOT authorize substitution of another.
+
+- **INV-GOVERNANCE-006**
+  Voice Credit MUST be equal within its House and Session and MUST NOT be purchased, transferred, delegated, pooled or redeemed for economic value.
+
 ## Privacy
 
 - **INV-PRIVACY-001**  
