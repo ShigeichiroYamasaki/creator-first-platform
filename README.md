@@ -61,7 +61,7 @@ npm run governance:test
 npm run governance:validate
 ```
 
-ソースコミット`9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`までの構成をEthereum Sepoliaへデプロイ済みです。二院制ガバナーと無価値のデモポリシー実行対象は実装済みですが、公開Sepoliaデプロイにはまだ含まれません。`npm run contracts:verify:sepolia`は公開RPC上のバイトコード、コントラクト接続、プラン、プロキシ実装先、音楽クリエーター登録台帳の注意表示に加え、ガバナンスアドレス公開後はチェーン拘束、タイムロック順序、実行対象との接続も検証します。アドレスと安全境界は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
+ソースコミット`b0bfcb73d453d970e0a5c1c432abb9abc6e0d341`までの構成をEthereum Sepoliaへデプロイ済みです。二院制ガバナーと無価値のデモポリシー実行対象も公開デプロイへ含まれます。`npm run contracts:verify:sepolia`は公開RPC上のバイトコード、コントラクト接続、プラン、プロキシ実装先、音楽クリエーター登録台帳の注意表示、ガバナンスのチェーン拘束、タイムロック順序および実行対象との接続を検証します。アドレスと安全境界は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
 
 ## 文書から実装まで
 

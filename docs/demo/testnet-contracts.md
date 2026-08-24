@@ -1,13 +1,11 @@
 ---
 title: Sepolia スマートコントラクトデモ
-description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決済、サポーター SBT、音楽クリエーター登録台帳を検証する手順。
+description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決済、サポーター SBT、音楽クリエーター登録台帳、二院制ガバナンスを検証する手順。
 ---
 
 # Sepolia スマートコントラクトデモ
 
-Hardhat 3とViemを使い、次のテストネット専用コントラクトをEthereum Sepoliaへデプロイしました。公開構成はソースコミット `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`で再現できます。
-
-二院制ガバナーとデモポリシー実行対象はリポジトリへ実装済みですが、このページに記載する既存デプロイにはまだ含まれません。[ガバナンスデモ](/demo/governance)は、両方のアドレスと新しいソースコミットが公開マニフェストへ登録されるまで書込みを無効にします。
+Hardhat 3とViemを使い、次のテストネット専用コントラクトをEthereum Sepoliaへデプロイしました。公開構成はソースコミット `b0bfcb73d453d970e0a5c1c432abb9abc6e0d341`で再現できます。
 
 | コントラクト | テストネット上の責務 | 本番境界 |
 | --- | --- | --- |
@@ -17,6 +15,8 @@ Hardhat 3とViemを使い、次のテストネット専用コントラクトをE
 | `SupporterSBTUpgradeable` | EIP-712 支援意思を検証し、一般／初期階層をコントラクト内で確定する | サブスクリプション、権利、STO、配当・収益請求権を表さない |
 | `SupporterSBTProxy` | ERC-1967 プロキシからUUPS実装を呼び出す | アップグレードは監査・タイムロック・複数承認を経る本番設計へ置換する |
 | `CreatorFirstCreatorRegistry` | 仮名音楽クリエーターと作品／権利自己申告のsalt付きコミットメント、状態、イベントを記録する | 本人、権利、受取人、カタログ、配信許諾、分配または支払を承認しない |
+| `CreatorFirstBicameralGovernor` | 二院の独立採決、二次投票、レビュー証拠、変更区分別タイムロック、拘束済み実行データを管理する | 法的な会社機関決定、監査、憲法適合性判断、役員責任を代替しない |
+| `CreatorFirstGovernedPolicy` | ガバナーだけが更新できる無価値のデモ設定を保持する | 資金庫、SBT、プロキシまたは本番権限を操作しない |
 
 SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を拒否します。初期条件の`POLICY_ROLE`、実装更新の`UPGRADER_ROLE`、署名済み意思を送る`RELAYER_ROLE`を分離し、発行済み階層を後日のポリシー更新で書き換えません。
 
@@ -30,8 +30,10 @@ SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を�
 | SupporterSBT プロキシ | [`0x2D01…0923`](https://sepolia.etherscan.io/address/0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923) |
 | SupporterSBT 実装 | [`0x350a…7a66`](https://sepolia.etherscan.io/address/0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66) |
 | CreatorFirstCreatorRegistry | [`0x5676…e6E9`](https://sepolia.etherscan.io/address/0x5676d34d7C41849311b99932d8272af58b63e6E9) |
+| CreatorFirstBicameralGovernor | [`0xE8D4…84b7`](https://sepolia.etherscan.io/address/0xE8D4BB558A69736375D8D5e4a7349D38B22584b7) |
+| CreatorFirstGovernedPolicy | [`0xE789…94F7`](https://sepolia.etherscan.io/address/0xE7891c8edFF943eB7f203A34d76f51b8157094F7) |
 
-チェーン IDは`11155111`です。[公開マニフェスト](/testnet/deployment.json)と[トランザクションを含むデプロイ記録](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Sepolia RPCからBytecode、MockJPYC 通知／主張額、サブスクリプションの資産／資金庫／計画、ERC-1967 実装スロットおよび音楽クリエーター登録台帳のテストネット通知を再検証します。
+チェーン IDは`11155111`です。[公開マニフェスト](/testnet/deployment.json)と[トランザクションを含むデプロイ記録](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Sepolia RPCからBytecode、MockJPYC 通知／主張額、サブスクリプションの資産／資金庫／計画、ERC-1967 実装スロット、音楽クリエーター登録台帳のテストネット通知、ガバナーのチェーン／タイムロック設定およびデモポリシーとの接続を再検証します。
 
 ```sh
 npm run contracts:verify:sepolia

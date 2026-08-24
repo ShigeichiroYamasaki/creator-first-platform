@@ -3,8 +3,8 @@
   "environment": "sepolia-demo",
   "network": "Ethereum Sepolia",
   "chainId": 11155111,
-  "deployedAt": "2026-08-23",
-  "sourceCommit": "9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7",
+  "deployedAt": "2026-08-24",
+  "sourceCommit": "b0bfcb73d453d970e0a5c1c432abb9abc6e0d341",
   "deploymentTool": "Hardhat Ignition 3.14.0",
   "compiler": {
     "version": "0.8.28",
@@ -45,6 +45,18 @@
       "transactionHash": "0x8f425ff6bfb41759c541e357045f2bd6b710ad775c089cfcf0b88edc9d8b3e3f",
       "blockNumber": 11550751,
       "sourceCommit": "9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7"
+    },
+    "governor": {
+      "address": "0xE8D4BB558A69736375D8D5e4a7349D38B22584b7",
+      "transactionHash": "0xe33463ff975ac80a916c59fb2aee8836e7b718636f6d53ba0beb2bb844a409e6",
+      "blockNumber": 11554023,
+      "sourceCommit": "b0bfcb73d453d970e0a5c1c432abb9abc6e0d341"
+    },
+    "governedPolicy": {
+      "address": "0xE7891c8edFF943eB7f203A34d76f51b8157094F7",
+      "transactionHash": "0xe8dd54dbb113869d52981db38255d7cde128afb9bcd30dd7b0e1bcb3d1735bd7",
+      "blockNumber": 11554028,
+      "sourceCommit": "b0bfcb73d453d970e0a5c1c432abb9abc6e0d341"
     }
   },
   "subscriptionPlan": {
@@ -61,5 +73,13 @@
     "explorerSourceCode": "pending",
     "independentAudit": "not-started"
   },
-  "operationalWarning": "All bootstrap roles remain assigned to the deployer. Separate operational roles before broader public testing."
+  "governanceConfiguration": {
+    "allowedChainId": 11155111,
+    "parameterDelaySeconds": 60,
+    "upgradeDelaySeconds": 300,
+    "constitutionalDelaySeconds": 900,
+    "executionWindowSeconds": 604800,
+    "governedPolicyInitialVersion": 1
+  },
+  "operationalWarning": "All bootstrap roles, including governance registrar, reviewer and guardian, remain assigned to the deployer. Separate operational roles before broader public testing."
 }
