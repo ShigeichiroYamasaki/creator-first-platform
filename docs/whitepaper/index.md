@@ -4,7 +4,9 @@ description: Creator First Platformの理念、権利、経済、ガバナンス
 
 # Creator First Platform Whitepaper
 
-Creator First Platformは、クリエイターの権利と持続可能な創作活動を中心に据えた音楽配信基盤です。
+本文の参加主体と議会名称は、[正規用語表](../terminology.md)に従います。
+
+Creator First Platformは、音楽クリエーターの権利と持続可能な創作活動を中心に据えた音楽配信基盤です。
 
 ## 現在の段階
 
@@ -20,7 +22,7 @@ Creator First Platformは、クリエイターの権利と持続可能な創作�
 2. 市場と課題
 3. 権利と資金の流れ
 4. プラットフォーム構成
-5. クリエイター登録
+5. 音楽クリエーター登録
 6. 経済モデル
 7. ガバナンス
 8. 発見とコミュニティ

@@ -1,5 +1,5 @@
 ---
-description: CreatorとUserの代表者を検証可能かつ操作耐性のある方法で抽選するSortition Protocolの設計案。
+description: 音楽クリエーターとユーザの代表者を検証可能かつ操作耐性のある方法で抽選するSortition Protocolの設計案。
 ---
 
 # ADR-0002: Verifiable Sortition
@@ -10,11 +10,11 @@ description: CreatorとUserの代表者を検証可能かつ操作耐性のあ�
 
 ## 1. Context
 
-Creator First Platform は、Creator と User を Protocol Governance の正統性の源泉とする。
+Creator First Platform は、音楽クリエーター と ユーザ を プロトコルガバナンス の正統性の源泉とする。
 
-ADR-0001 では、Creator / User Community から代表者を抽選し、
+ADR-0001 では、音楽クリエーター／ユーザコミュニティ から代表者を抽選し、
 
-> **Creator / User → 抽選議会 → 熟議 → Protocol Specification → Smart Contract → 自動執行**
+> **音楽クリエーター／ユーザ → 抽選議会 → 熟議 → プロトコル仕様 → スマートコントラクト → 自動執行**
 
 という Governance Model を採用する。
 
@@ -40,7 +40,7 @@ ADR-0001 では、Creator / User Community から代表者を抽選し、
 
 ## 2. Decision
 
-Creator First Platform は、Creator House および User House の代表者選出に **Verifiable Sortition** を採用する。
+Creator First Platform は、音楽クリエータ院議会 および ユーザ院議会 の代表者選出に **Verifiable Sortition** を採用する。
 
 抽選は、少なくとも次の性質を満たさなければならない。
 
@@ -75,30 +75,30 @@ Platform運営者、候補者、その他の参加者が抽選結果を恣意的
 各Houseについて、事前に定義されたEligibility Rulesを満たすCommunity Memberのみを対象とする。
 
 ```text
-Creator Community
+音楽クリエーターコミュニティ
         ↓
-Creator Eligibility
+音楽クリエーター適格性
         ↓
-Eligible Creator Set
+適格音楽クリエーター集合
         ↓
 Verifiable Sortition
         ↓
-Creator House
+音楽クリエータ院議会
 ```
 
 ```text
-User Community
+ユーザコミュニティ
         ↓
-User Eligibility
+ユーザ適格性
         ↓
-Eligible User Set
+適格ユーザ集合
         ↓
 Verifiable Sortition
         ↓
-User House
+ユーザ院議会
 ```
 
-Creator Eligibility と User Eligibility の詳細は別Specificationで定義する。
+音楽クリエーター適格性 と ユーザ適格性 の詳細は別Specificationで定義する。
 
 ---
 
@@ -115,18 +115,18 @@ Creator First Platform のSortitionはToken-weighted selectionを採用しない
 したがって、
 
 ```text
-100 JPYCを保有するUser
+100 JPYCを保有するユーザ
 ```
 
 と、
 
 ```text
-100,000 JPYCを保有するUser
+100,000 JPYCを保有するユーザ
 ```
 
 が同一のEligibility条件を満たしている場合、資産量を理由として後者の抽選確率を高くしない。
 
-同様にCreatorについても、人気、収益、再生回数等を直接的な抽選Weightとして使用しない。
+同様に音楽クリエーターについても、人気、収益、再生回数等を直接的な抽選Weightとして使用しない。
 
 これはGovernance PowerとEconomic Powerの集中を分離するためである。
 
@@ -136,7 +136,7 @@ Creator First Platform のSortitionはToken-weighted selectionを採用しない
 
 One Person / One Eligibilityを成立させるためには、単純なWallet Addressを抽選単位にしてはならない。
 
-一人のUserが、
+一人のユーザが、
 
 ```text
 Wallet A
@@ -224,7 +224,7 @@ Randomness Sourceの候補には、
 
 などがある。
 
-具体的なRandomness SourceはProtocol Specificationまたは別ADRで決定する。
+具体的なRandomness Sourceはプロトコル仕様または別ADRで決定する。
 
 ---
 
@@ -281,7 +281,7 @@ Same Result
 
 ## 10. Privacy
 
-VerifiabilityのためにCreator/Userの個人情報を公開してはならない。
+Verifiabilityのために音楽クリエーター／ユーザの個人情報を公開してはならない。
 
 特に、
 
@@ -371,7 +371,7 @@ Platform運営者による操作可能性を排除できないため採用しな
 
 ### Pure Direct Democracy
 
-すべての意思決定への全員参加は、参加負担と熟議品質の問題があるため、通常のProtocol Governanceには採用しない。
+すべての意思決定への全員参加は、参加負担と熟議品質の問題があるため、通常のプロトコルガバナンスには採用しない。
 
 ただし、憲章変更等の重大事項ではCommunity Referendumを併用する。
 
@@ -383,7 +383,7 @@ Platform運営者による操作可能性を排除できないため採用しな
 
 - Governance Powerの固定化を抑制できる
 - 資本量と政治的影響力を分離できる
-- 一般Creator/UserがGovernanceへ参加できる
+- 一般音楽クリエーター／ユーザがGovernanceへ参加できる
 - 抽選操作を第三者が検証できる
 - Platform運営者への信頼依存を低減できる
 - 抽選議会の正統性を技術的に補強できる
@@ -413,7 +413,7 @@ Sortition Systemは少なくとも次の攻撃を考慮する。
 - Collusion
 - Privacy Leakage
 
-具体的なThreat ModelはProtocol Specificationで定義する。
+具体的なThreat Modelはプロトコル仕様で定義する。
 
 ---
 

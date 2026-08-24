@@ -1,6 +1,6 @@
 ---
 title: ユーザ向けサービス
-description: Testnet Demoの利用者向け入口として、Test User登録と音楽サービス利用のテスト導線を分けて案内するページ。
+description: Testnet Demoのユーザ向け入口として、テストユーザ登録と音楽サービス利用のテスト導線を分けて案内するページ。
 ---
 
 # ユーザ向けサービス

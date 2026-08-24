@@ -7,10 +7,10 @@ description: Creator First Platformの公開文書、Draft仕様、未実装範�
 
 > **基準日: 2026-08-24**
 
-Creator First Platformは現在、**構想、公開文書、設計判断、Protocol Specificationを整備している段階**です。アプリケーションはローカルPlayback Slice（部分実装）と公開Test-only UIの段階であり、本ページは将来像と現在成立しているものを区別します。
+Creator First Platformは現在、**構想、公開文書、設計判断、プロトコル仕様を整備している段階**です。アプリケーションはローカルPlayback Slice（部分実装）と公開Test-only UIの段階であり、本ページは将来像と現在成立しているものを区別します。
 
 ::: warning サービスはまだ稼働していません
-本サイトは、音楽ストリーミング、JPYC等によるサブスクリプション決済、クリエイター分配、DAOガバナンスまたはSTOが現在利用・申込可能であることを示すものではありません。
+本サイトは、音楽ストリーミング、JPYC等によるサブスクリプション決済、音楽クリエーター分配、DAOガバナンスまたはSTOが現在利用・申込可能であることを示すものではありません。
 :::
 
 ## 成熟度一覧
@@ -21,9 +21,9 @@ Creator First Platformは現在、**構想、公開文書、設計判断、Proto
 | CFP | Draft | 提案プロセス案とCFP-0001 | 採択主体・手続・記録方式の確定 |
 | ADR | Proposed | 15件の設計判断案 | レビュー、採否決定、Status更新 |
 | Protocol | Draft 0.1.0 | Account、Wallet、Supporter Credential／Early Tier、決済、決済資産台帳、Rights、Streaming Authorization、Player、Usage、Distribution／資金透明性、Contract Change Governanceの11仕様 | Open Questions解決、法務・セキュリティ・ガバナンス承認 |
-| Testnetデモ | Public Testnet Journey部分稼働 | [Test User Journey](/demo/test-user-registration)のProfile／Wallet／mockJPYC／合成Playerと、[Test Creator Journey](/demo/creator-workspace)のProfile／Wallet／Creator・Release Commitment | 公開Wallet E2E確認、Gateway公開と認可接続、Creator BFF／Indexer、Relayer／Paymaster、Security Review |
-| アプリケーション | 公開Test User／Creator Journey＋ローカルPlayback Slice | [Navidrome Docker Server](/demo/local-streaming)、[Streaming Gateway Mock](/demo/local-gateway)、Test User Profile／Wallet／mockJPYC／合成Player UI、Test Creator Profile／Wallet／Creator・Release Commitment UI、[資金フロー可視化](/demo/treasury-dashboard)、Vue Player PWA、Delivery Evidence | Account lifecycle／Authenticator、Gas Sponsorship、Creator BFF、Media Ingest、Navidrome非公開Network、Contract Indexer、Rights／Credential／Treasury Read Model、Security Review |
-| Smart Contract | Ethereum Sepoliaへデプロイ済み、監査前 | [公開Address／Source Commit](/demo/testnet-contracts#公開deployment)、MockJPYC、Subscription、Treasury、一般／Early Supporter SBT、UUPS Proxy、Creator Registry、公開RPC検証 | Etherscan Source Verification、Role分離、Gateway／Creator BFF／Indexer接続、Threat Model、独立監査 |
+| Testnetデモ | 公開テストネット利用フロー部分稼働 | [テストユーザ利用フロー](/demo/test-user-registration)のProfile／Wallet／mockJPYC／合成Playerと、[テスト音楽クリエーター利用フロー](/demo/creator-workspace)のProfile／Wallet／音楽クリエーター・Release Commitment | 公開Wallet E2E確認、Gateway公開と認可接続、音楽クリエーターBFF／Indexer、Relayer／Paymaster、Security Review |
+| アプリケーション | 公開テストユーザ／音楽クリエーター利用フロー＋ローカルPlayback Slice | [Navidrome Docker Server](/demo/local-streaming)、[Streaming Gateway Mock](/demo/local-gateway)、テストユーザプロフィール／Wallet／mockJPYC／合成Player UI、テスト音楽クリエータープロフィール／Wallet／音楽クリエーター・Release Commitment UI、[資金フロー可視化](/demo/treasury-dashboard)、Vue Player PWA、Delivery Evidence | Account lifecycle／Authenticator、Gas Sponsorship、音楽クリエーターBFF、Media Ingest、Navidrome非公開Network、Contract Indexer、Rights／Credential／Treasury Read Model、Security Review |
+| スマートコントラクト | Ethereum Sepoliaへデプロイ済み、監査前 | [公開Address／Source Commit](/demo/testnet-contracts#公開deployment)、MockJPYC、Subscription、Treasury、一般／Early Supporter SBT、UUPS Proxy、音楽クリエーター登録台帳、公開RPC検証 | Etherscan Source Verification、Role分離、Gateway／音楽クリエーターBFF／Indexer接続、Threat Model、独立監査 |
 | ステーブルコイン決済 | 未提供 | 決済・資産審査のDraft仕様 | 対象商品・ネットワーク・取扱形態の法務／技術審査 |
 | DAOガバナンス | 未稼働 | [二院制議会・Quadratic Voting・Contract変更手続の設計](/governance/) | Community形成、適格性、抽選、投票・TimelockのTestnet実証、異議申立て |
 | STO | 未実施 | 資金調達手段としての検討事項 | 発行設計、法的分類、取扱事業者、開示、投資家保護の専門家確認 |
@@ -32,9 +32,9 @@ Creator First Platformは現在、**構想、公開文書、設計判断、Proto
 ## 現在公開している成果物
 
 - [Whitepaper](/whitepaper/)
-- [Creator First Proposal](/proposals/)
+- [音楽クリエーター中心提案](/proposals/)
 - [Architecture Decision Records](/adr/)
-- [Protocol Specification](/protocol/)
+- [プロトコル仕様](/protocol/)
 - [二院制議会・Governance](/governance/)
 - [Testnetデモ入口](/demo/)
 - [ローカル音楽ストリーミング手順](/demo/local-streaming)
@@ -45,19 +45,19 @@ Protocolの11仕様は公開して読める状態ですが、すべてDraftで�
 ## 現在公開・本番提供していないもの
 
 - 実音源を用いた公開環境でのアップロード、再生、検索またはレコメンド機能
-- 本番利用者アカウント、検証済みCreator登録またはRights Holder審査
+- 本番ユーザアカウント、検証済み音楽クリエーター登録または権利者審査
 - サブスクリプション契約または決済受付
 - JPYCその他のトークンの販売、交換、媒介または保管
-- クリエイター報酬の計算、支払または税務処理
+- 音楽クリエーター報酬の計算、支払または税務処理
 - Security Tokenの募集、売出し、勧誘または取扱い
 - DAOへの参加登録、投票、抽選議会または資金管理
-- 本番Smart Contract、監査済みコントラクトアドレスまたは公式ウォレット
+- 本番スマートコントラクト、監査済みコントラクトアドレスまたは公式ウォレット
 
 第三者が本プロジェクト名を用いて送金、秘密鍵・シードフレーズ、トークン購入または投資を求めても、本サイトの公開文書だけを根拠に応じないでください。セキュリティ上の問題は[Security Policy](https://github.com/ShigeichiroYamasaki/creator-first-platform/security/policy)を確認してください。
 
 ## 専門家確認が必要な領域
 
-次の事項は、文書やSmart Contractだけでは確定できません。
+次の事項は、文書やスマートコントラクトだけでは確定できません。
 
 - 著作権、著作隣接権、原盤権、実演家の権利と契約
 - 利用規約、プライバシーポリシー、個人情報、消費者保護
@@ -89,7 +89,7 @@ Protocolの11仕様は公開して読める状態ですが、すべてDraftで�
 - 文書や仕様のStatusまたはVersion
 - 実装、監査、テスト、デプロイの状態
 - 法人、契約、決済、STOまたはガバナンスの成立状態
-- 利用者またはCreatorが実際に利用できる機能
+- ユーザまたは音楽クリエーターが実際に利用できる機能
 - 重要な法務・セキュリティ上の前提
 
 将来の計画を「提供中」と表示せず、成立条件を満たした証拠へのリンクとともに状態を更新します。

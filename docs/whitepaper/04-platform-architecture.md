@@ -12,7 +12,7 @@ Creator First Platform は、単一のブロックチェーンアプリケーシ
 
 - 音源・メタデータ管理
 - ストリーミング配信
-- 利用者認証
+- ユーザ認証
 - 権利管理
 - 決済
 - 利用実績集計
@@ -31,14 +31,14 @@ Creator First Platform は、単一のブロックチェーンアプリケーシ
 
 ```mermaid
 flowchart TD
-    USER[Users / Listeners]
-    CREATOR[Creators / Rights Holders]
-    APP[Player / Creator Apps]
+    USER[ユーザ / Listeners]
+    CREATOR[音楽クリエーター／権利者]
+    APP[Player / 音楽クリエーターアプリ]
     CLOUD[Cloud Streaming Platform]
     ORACLE[Usage Oracle]
     RIGHTS[Rights Registry]
     GOV[Governance]
-    SC[Smart Contracts]
+    SC[スマートコントラクトs]
     CORP[Operating Corporation]
 
     USER --> APP
@@ -78,12 +78,12 @@ Creator First Platform は、大きく次の7つのレイヤーから構成す�
 
 ```mermaid
 flowchart TB
-    L1[1. Client Layer<br/>Player / Creator Portal]
+    L1[1. Client Layer<br/>Player / 音楽クリエーターポータル]
     L2[2. Streaming & Content Layer<br/>Storage / CDN / Metadata]
     L3[3. Identity & Rights Layer<br/>Identity / Rights Registry]
     L4[4. Usage Verification Layer<br/>Usage Oracle / Fraud Detection]
-    L5[5. Payment & Distribution Layer<br/>Payment / Smart Contracts]
-    L6[6. Governance Layer<br/>Creator House / User House]
+    L5[5. Payment & Distribution Layer<br/>Payment / スマートコントラクトs]
+    L6[6. Governance Layer<br/>音楽クリエータ院議会 / ユーザ院議会]
     L7[7. Corporate & Compliance Layer<br/>Contracts / Tax / Legal]
 
     L1 --> L2
@@ -102,13 +102,13 @@ flowchart TB
 
 ## 4.3 Client Layer
 
-Client Layer は、利用者とクリエイターが Creator First Platform に接するインターフェースである。
+Client Layer は、ユーザと音楽クリエーターが Creator First Platform に接するインターフェースである。
 
 主なクライアントとして、
 
 - 音楽プレーヤーアプリ
 - Webプレーヤー
-- クリエイターポータル
+- 音楽クリエーターポータル
 - ガバナンスポータル
 - 管理・権利確認画面
 
@@ -117,11 +117,11 @@ Client Layer は、利用者とクリエイターが Creator First Platform に�
 ```mermaid
 flowchart LR
     USER[Listener]
-    CREATOR[Creator]
+    CREATOR[音楽クリエーター]
     ADMIN[Operator]
 
     USER --> PLAYER[Music Player]
-    CREATOR --> PORTAL[Creator Portal]
+    CREATOR --> PORTAL[音楽クリエーターポータル]
     USER --> GOVUI[Governance UI]
     CREATOR --> GOVUI
     ADMIN --> ADMINUI[Admin / Rights UI]
@@ -132,7 +132,7 @@ flowchart LR
     ADMINUI --> API
 ```
 
-利用者にブロックチェーン操作を直接要求しないことを基本とする。
+ユーザにブロックチェーン操作を直接要求しないことを基本とする。
 
 ウォレット、ガス代、チェーン切替などを理解しなくても、一般的な音楽ストリーミングサービスと同等のUXで利用できることを目指す。
 
@@ -149,7 +149,7 @@ Creator First Platform では、
 - 再生制御
 - 推薦表示
 - プレイリスト
-- Creator Support
+- 音楽クリエーター支援
 - 利用イベント生成
 - Usage Oracle への情報提供
 
@@ -163,7 +163,7 @@ flowchart TD
     PLAYER --> STREAM[Streaming]
     PLAYER --> DISC[Discovery / Recommendation]
     PLAYER --> LIST[Playlist]
-    PLAYER --> SUPPORT[Creator Support]
+    PLAYER --> SUPPORT[音楽クリエーター支援]
     PLAYER --> EVENT[Playback Events]
 ```
 
@@ -304,8 +304,8 @@ flowchart LR
 
 Creator First Platform には複数種類の主体が存在する。
 
-- 一般利用者
-- クリエイター
+- 一般ユーザ
+- 音楽クリエーター
 - 権利者
 - 法人・レーベル
 - 運営スタッフ
@@ -318,8 +318,8 @@ flowchart TD
     ACCOUNT[Platform Account]
 
     ACCOUNT --> USER[Listener]
-    ACCOUNT --> CREATOR[Creator]
-    ACCOUNT --> RIGHTS[Rights Holder]
+    ACCOUNT --> CREATOR[音楽クリエーター]
+    ACCOUNT --> RIGHTS[権利者]
     ACCOUNT --> ORG[Organization]
 
     CREATOR --> KYC[Identity Verification]
@@ -327,17 +327,17 @@ flowchart TD
     ORG --> KYB[Organization Verification]
 ```
 
-一般の音楽利用者に過剰な本人確認を要求しない一方、金銭の受取や権利登録を行う主体については、必要な本人・法人確認を行う。
+一般の音楽ユーザに過剰な本人確認を要求しない一方、金銭の受取や権利登録を行う主体については、必要な本人・法人確認を行う。
 
 ---
 
 ## 4.9 Wallet Abstraction
 
-ブロックチェーンを利用する場合でも、ユーザーがウォレットを直接管理することを必須としない。
+ブロックチェーンを利用する場合でも、ユーザがウォレットを直接管理することを必須としない。
 
 ```mermaid
 flowchart LR
-    USER[User]
+    USER[ユーザ]
     UX[Normal App UX]
     WALLET[Wallet Abstraction]
     CHAIN[Blockchain]
@@ -367,7 +367,7 @@ Rights Registry は、権利情報をプラットフォーム全体から参照�
 
 ```mermaid
 flowchart TD
-    CREATOR[Creator]
+    CREATOR[音楽クリエーター]
     CORP[Corporation]
     CMO[CMO / Publisher / Label]
 
@@ -461,7 +461,7 @@ flowchart LR
     PRIVATE[Private Playback Data]
     PRIVATE --> ZK[ZK Circuit / Proof]
     ZK --> PUBLIC[Public Statement]
-    PUBLIC --> SC[Smart Contract Verification]
+    PUBLIC --> SC[スマートコントラクト Verification]
 ```
 
 公開する情報は例えば、
@@ -472,13 +472,13 @@ flowchart LR
 - コミットメント
 - Proof
 
-などに限定し、個々の利用者の再生履歴は公開しない。
+などに限定し、個々のユーザの再生履歴は公開しない。
 
 ---
 
 ## 4.14 Payment Layer
 
-利用者のサブスクリプション決済は、JPYC等の承認済みステーブルコインを使用する。Payment Layerは、Asset Registry、Payment Intent、Wallet Authorization、Settlement AdapterおよびFinality確認を分離し、ETH等のネイティブトークンをSubscription Priceとして扱わない。
+ユーザのサブスクリプション決済は、JPYC等の承認済みステーブルコインを使用する。Payment Layerは、Asset Registry、Payment Intent、Wallet Authorization、Settlement AdapterおよびFinality確認を分離し、ETH等のネイティブトークンをSubscription Priceとして扱わない。
 
 ```mermaid
 flowchart LR
@@ -495,7 +495,7 @@ flowchart LR
     RELAYER -->|Gas Sponsorship| CHAIN
 ```
 
-RelayerまたはPaymasterは利用者のGas操作を抽象化できるが、料金を支払ったことのSource of Truthにはならない。指定されたAsset、Chain、Contract、Amount、WalletおよびPayment Intentに一致するTransferがFinality条件を満たした場合だけSubscriptionを有効化する。
+RelayerまたはPaymasterはユーザのGas操作を抽象化できるが、料金を支払ったことのSource of Truthにはならない。指定されたAsset、Chain、Contract、Amount、WalletおよびPayment Intentに一致するTransferがFinality条件を満たした場合だけSubscriptionを有効化する。
 
 テスト系では実在JPYCと交換できず金銭的価値を持たない`MockJPYC`を用い、本番系では具体的なJPYC商品・発行者・Contract Address・Networkを法務、技術およびSecurity審査後にAsset Registryへ登録する。
 
@@ -517,7 +517,7 @@ flowchart TD
     POOL --> GROWTH[Growth Pool]
     POOL --> OPS[Operation Pool]
 
-    USAGE --> SC[Smart Contracts]
+    USAGE --> SC[スマートコントラクトs]
     GROWTH --> SC
 ```
 
@@ -525,9 +525,9 @@ flowchart TD
 
 ---
 
-## 4.16 Smart Contract Layer
+## 4.16 スマートコントラクト Layer
 
-Smart Contract Layer は Creator First Platform における検証可能な経済ルールを実行する。
+スマートコントラクト Layer は Creator First Platform における検証可能な経済ルールを実行する。
 
 主なコントラクト群として、将来的に次を想定する。
 
@@ -563,8 +563,8 @@ flowchart TD
 Creator First Platform のガバナンスは、単一のトークン投票ではなく、
 
 - Constitution
-- Creator House
-- User House
+- 音楽クリエータ院議会
+- ユーザ院議会
 - Corporate Responsibility
 
 を組み合わせる。
@@ -573,14 +573,14 @@ Creator First Platform のガバナンスは、単一のトークン投票では
 flowchart TD
     CONST[Constitution]
 
-    CONST --> CH[Creator House]
-    CONST --> UH[User House]
+    CONST --> CH[音楽クリエータ院議会]
+    CONST --> UH[ユーザ院議会]
 
     CH --> DEC[Protocol Decision]
     UH --> DEC
 
     DEC --> TIME[Timelock / Review]
-    TIME --> CODE[Smart Contract Upgrade]
+    TIME --> CODE[スマートコントラクト Upgrade]
 
     CORP[Corporation] --> LEGAL[Legal Compliance]
     LEGAL --> TIME
@@ -637,7 +637,7 @@ flowchart LR
     ADMIN --> EMERGENCY[Emergency Controls]
 
     EMERGENCY --> REVIEW[Governance / Audit]
-    REVIEW --> SC[Smart Contracts]
+    REVIEW --> SC[スマートコントラクトs]
 ```
 
 緊急停止などが必要な場合でも、権限・条件・履歴を明確化する。
@@ -708,7 +708,7 @@ flowchart TD
 特に、
 
 - 秘密鍵
-- クリエイター本人情報
+- 音楽クリエーター本人情報
 - 契約情報
 - 決済情報
 - 生の利用履歴
@@ -742,7 +742,7 @@ flowchart LR
 - 高騰する手数料
 - コントラクト更新
 
-などが直接ユーザーの音楽体験を停止させない。
+などが直接ユーザの音楽体験を停止させない。
 
 ---
 
@@ -771,7 +771,7 @@ flowchart TD
     REQUIRE --> SEC[Security]
     REQUIRE --> COST[Cost]
     REQUIRE --> SCALE[Scalability]
-    REQUIRE --> UX[User Experience]
+    REQUIRE --> UX[ユーザ体験]
     REQUIRE --> ECOSYSTEM[Ecosystem]
 
     SEC --> SELECT[Chain Selection]
@@ -792,7 +792,7 @@ EVM互換チェーンを有力候補とするが、ホワイトペーパー段�
 ```mermaid
 flowchart LR
     P1[Phase 1<br/>Conventional DSP + Auditability]
-    P2[Phase 2<br/>Smart Contract Distribution]
+    P2[Phase 2<br/>スマートコントラクト Distribution]
     P3[Phase 3<br/>Usage Oracle / ZK]
     P4[Phase 4<br/>DAO Governance]
 
@@ -802,7 +802,7 @@ flowchart LR
 ### Phase 1
 
 - 音楽配信
-- クリエイター登録
+- 音楽クリエーター登録
 - Rights Registry
 - 利用実績
 - 法人による分配
@@ -822,9 +822,9 @@ flowchart LR
 
 ### Phase 4
 
-- Creator House
-- User House
-- Protocol Governance
+- 音楽クリエータ院議会
+- ユーザ院議会
+- プロトコルガバナンス
 
 という段階的導入を想定する。
 
@@ -836,13 +836,13 @@ Creator First Platform の基本的な処理を、一つの流れとして示す
 
 ```mermaid
 sequenceDiagram
-    participant C as Creator
+    participant C as 音楽クリエーター
     participant Corp as Corporation
     participant R as Rights Registry
     participant S as Streaming Platform
     participant U as Listener
     participant O as Usage Oracle
-    participant SC as Smart Contract
+    participant SC as スマートコントラクト
 
     C->>Corp: Rights declaration / contract
     Corp->>R: Register verified rights
@@ -902,17 +902,17 @@ Creator First Platform の技術構成は、次の原則に従う。
 
 Creator First Platform の技術設計は、
 
-> **ブロックチェーンを中心にサービスを作るのではなく、Creator First の制度を実現するために必要な技術を組み合わせる**
+> **ブロックチェーンを中心にサービスを作るのではなく、音楽クリエーター中心 の制度を実現するために必要な技術を組み合わせる**
 
 ことを基本とする。
 
 ```mermaid
 flowchart LR
-    USER[User Experience]
+    USER[ユーザ体験]
     CLOUD[Cloud Streaming]
     RIGHTS[Rights]
     ORACLE[Usage Verification]
-    CHAIN[Smart Contracts]
+    CHAIN[スマートコントラクトs]
     GOV[Governance]
     CORP[Corporate Responsibility]
 

@@ -10,7 +10,7 @@ description: Draft ProtocolをMock・Testnet環境で検証するWork Package、
 各Work Packageを開始する場合は、[`Implementation Work Package` Issue Form](https://github.com/ShigeichiroYamasaki/creator-first-platform/issues/new?template=implementation-work-package.yml)を使用し、仕様・判断・成果物・障害試験・終了証拠をIssue作成時に固定します。
 
 ::: warning Mock／Testnet限定の計画です
-本計画の完了だけでは、本番資金、実在するRights証憑、個人情報、税務資料またはCreatorへの実送金を扱えません。Testnet Tokenは金銭的価値や本番適格性を示さず、外部専門家レビューやSmart Contract監査を代替しません。
+本計画の完了だけでは、本番資金、実在するRights証憑、個人情報、税務資料または音楽クリエーターへの実送金を扱えません。Testnet Tokenは金銭的価値や本番適格性を示さず、外部専門家レビューやスマートコントラクト監査を代替しません。
 :::
 
 ## 実装原則
@@ -20,7 +20,7 @@ description: Draft ProtocolをMock・Testnet環境で検証するWork Package、
 - 金額は資産の最小単位を整数で扱い、浮動小数点を使用しない。
 - 外部依存、Queue、Callback、RPCは重複・遅延・順不同・停止を前提とする。
 - 実在する個人情報、契約書、税務情報、秘密鍵をFixtureへ入れない。
-- Smart Contractを法的判断、Rights判断、Usage判断、税務判断の主体にしない。
+- スマートコントラクトを法的判断、Rights判断、Usage判断、税務判断の主体にしない。
 - 正常系だけでなく、fail closed、回復、監査、訂正、切り戻しを成果物に含める。
 
 ## 依存関係
@@ -70,7 +70,7 @@ flowchart TD
 - MVPを停止している`OQ-...` IDの一覧と依存Work Package
 - 各Decision ownerとなる実在の担当者または機関
 - Mock専用の仮定と、本番前に再決定が必要な項目のRegister
-- 採用された判断へのCFP、Governance DecisionまたはADR参照
+- 採用された判断へのCFP、ガバナンス決定またはADR参照
 - 法務・Rights・税務・プライバシー・セキュリティのレビュー条件
 
 **終了証拠:** 各Work Packageが、未決定事項をコード定数へ埋め込まず、参照するDecision IDまたはMock Assumption IDを持つ。
@@ -124,7 +124,7 @@ flowchart TD
 - Native Gas支払だけではSubscriptionを有効化しないNegative fixture
 - Payment ReferenceからMock Revenue entryへの一回限りの連携
 
-**終了証拠:** `ACTIVE`でないAssetや`FINALIZED`でないPaymentからSubscriptionが有効にならず、同じPaymentが二重有効化されない。利用者がTest ETHを持たなくてもRelayer経由でMockJPYC Paymentを完了できる一方、Relayer受付またはGas支払だけでは有効化されない。
+**終了証拠:** `ACTIVE`でないAssetや`FINALIZED`でないPaymentからSubscriptionが有効にならず、同じPaymentが二重有効化されない。ユーザがTest ETHを持たなくてもRelayer経由でMockJPYC Paymentを完了できる一方、Relayer受付またはGas支払だけでは有効化されない。
 
 ### IMP-005 Rights Registry Mock
 
@@ -140,7 +140,7 @@ flowchart TD
 - Restricted Evidence Storeのinterfaceと公開commitment
 - incomplete、overlapping、disputed shareのfixture
 
-**終了証拠:** Creator登録、Uploader、WalletまたはfingerprintだけではRightsが有効にならず、過去のRights Snapshotを再現できる。
+**終了証拠:** 音楽クリエーター登録、Uploader、WalletまたはfingerprintだけではRightsが有効にならず、過去のRights Snapshotを再現できる。
 
 ### IMP-006 Streaming Gateway Mock
 
@@ -148,7 +148,7 @@ flowchart TD
 
 **対象仕様:** [SPEC-ACCOUNT-004](/protocol/specs/early-supporter-credential)、[SPEC-STREAMING-001](/protocol/specs/playback-authorization)
 
-**現在の部分実装:** 固定Mock Subscription／Rights、短命Playback Session、Owner Binding、単一Range、Concurrency Lease、SQLite Delivery Evidence、月間Byte Budget、File Adapter、明示Mapping型Navidrome Adapter、EIP-712 Support Intent、Mock Credential状態およびCommunity Capabilityを実装済みである。別レイヤーでは、Hardhat 3による一回限りのPublic Test Faucet付きMockJPYC、Subscription、Treasury、一般／Early Supporter SBT、UUPS Proxyおよび自己申告Commitment限定のCreator RegistryをEthereum Sepoliaへデプロイした。GitHub PagesのTest User JourneyはmockJPYC Subscriptionと合成Player、Test Creator JourneyはSepolia WalletとCreator／Release Commitmentを統合する。ただしRelayer、Contract Indexer、Gateway接続、Creator BFF、Recovery、Rights Review、Reorganization-aware Read Model、Client Playback Event、Playback Verification handoff、非公開Cloud Networkおよび障害Fixture一式は未実装であり、IMP-006の終了条件は未達である。
+**現在の部分実装:** 固定Mock Subscription／Rights、短命Playback Session、Owner Binding、単一Range、Concurrency Lease、SQLite Delivery Evidence、月間Byte Budget、File Adapter、明示Mapping型Navidrome Adapter、EIP-712 Support Intent、Mock Credential状態およびCommunity Capabilityを実装済みである。別レイヤーでは、Hardhat 3による一回限りのPublic Test Faucet付きMockJPYC、Subscription、Treasury、一般／Early Supporter SBT、UUPS Proxyおよび自己申告Commitment限定の音楽クリエーター登録台帳をEthereum Sepoliaへデプロイした。GitHub Pagesのテストユーザ利用フローはmockJPYC Subscriptionと合成Player、テスト音楽クリエーター利用フローはSepolia Walletと音楽クリエーター／Release Commitmentを統合する。ただしRelayer、Contract Indexer、Gateway接続、音楽クリエーターBFF、Recovery、Rights Review、Reorganization-aware Read Model、Client Playback Event、Playback Verification handoff、非公開Cloud Networkおよび障害Fixture一式は未実装であり、IMP-006の終了条件は未達である。
 
 **成果物:**
 
@@ -157,14 +157,14 @@ flowchart TD
 - 同意済みDemo SBTの発行、Transfer拒否、Revocation、Wallet回復およびreorganization-aware Credential Read Model
 - Consent、Qualification、Credential Deployment、Mint、NonceおよびExpiryへBoundしたSBT Relayer fixture
 - 任意の確定済みMockJPYC Payment Qualificationと、誤Asset・誤Chain・未確定・重複PaymentのNegative fixture
-- Creator Scope、Credential Status、Privilege Policy Versionを固定し、SubscriptionとRightsを置き換えないPolicy evaluator
+- 音楽クリエーター対象範囲、Credential Status、Privilege Policy Versionを固定し、SubscriptionとRightsを置き換えないPolicy evaluator
 - Canonical Track IDとMock Navidrome Media IDのversioned mapping
 - `Remote-User`等のClient supplied trusted header除去
 - Range、Seek、Reconnect、Cancellation、BackpressureのStreaming Adapter
 - idempotentなDelivery EvidenceとUsage handoff
 - Subscription取消し、Credential失効、Wallet Link制限、Privilege停止、Rights停止、stale Read Model、adapter outageのfailure fixture
 
-**終了証拠:** Public routeまたは偽造headerからMedia Adapterを迂回できず、SBT単独でSubscriptionまたはRightsを代替できず、Playback Sessionが別Account・Credential・Privilege・Track・Rights・Planへ拡張されず、Adapter交換後もCanonical IDとEvidence semanticsが同一である。利用者はTest ETHなしでSBTを受領できるが、Gas SponsorshipだけではQualificationまたはCredentialを作れない。
+**終了証拠:** Public routeまたは偽造headerからMedia Adapterを迂回できず、SBT単独でSubscriptionまたはRightsを代替できず、Playback Sessionが別Account・Credential・Privilege・Track・Rights・Planへ拡張されず、Adapter交換後もCanonical IDとEvidence semanticsが同一である。ユーザはTest ETHなしでSBTを受領できるが、Gas SponsorshipだけではQualificationまたはCredentialを作れない。
 
 ### IMP-007 Usage Pipeline Mock
 
@@ -180,7 +180,7 @@ flowchart TD
 - Period close、reconciliation、challenge、finalize、correct
 - deterministic aggregateとevent-set commitment
 
-**終了証拠:** 同一logical playbackの複数Source・Retryが一度だけ算入され、公開ArtifactからUserの詳細履歴を復元できない。
+**終了証拠:** 同一logical playbackの複数Source・Retryが一度だけ算入され、公開Artifactからユーザの詳細履歴を復元できない。
 
 ### IMP-008 Distribution Engine
 
@@ -191,10 +191,10 @@ flowchart TD
 **成果物:**
 
 - Mock Revenue Snapshotとdeduction／pool reconciliation
-- User-Centric Content Allocation
+- ユーザ中心 Content Allocation
 - Rights-aware Recipient Allocation
 - Held、Carry、Residual、minimum-payout処理
-- canonical result、commitment、Creator explanation
+- canonical result、commitment、音楽クリエーター向け説明
 - independent reference calculatorまたはGolden Fixture evaluator
 
 **終了証拠:** 入力順序を変えても同じ結果となり、Revenueの全単位がDeduction、Pool、Recipient、Hold、CarryまたはResidualへ一致する。
@@ -214,7 +214,7 @@ flowchart TD
 **終了証拠:** timeoutやduplicate responseが二重Settlement effectを作らず、失敗してもRecipient Allocationが消滅しない。
 
 ::: info Settlement Execution仕様は別途必要です
-このStubは実送金、custody、KYC、税務、制裁、Wallet変更、鍵管理またはSmart Contractを承認するものではありません。本番へ進む前に専用Specificationと専門家レビューが必要です。
+このStubは実送金、custody、KYC、税務、制裁、Wallet変更、鍵管理またはスマートコントラクトを承認するものではありません。本番へ進む前に専用Specificationと専門家レビューが必要です。
 :::
 
 ### IMP-010 End-to-End Harness
@@ -252,16 +252,16 @@ flowchart TD
 | --- | --- | --- | --- |
 | G0 Decision Ready | IMP-001 | Blocking OQ、owner、Mock assumption、review条件 | 本番判断済みと表示すること |
 | G1 Contract Ready | IMP-002 | Schema、canonical fixture、compatibility test | API／DB／Chainを固定すること |
-| G2 Payment Slice | IMP-003–004 | Account・Wallet・Mock Paymentの障害試験 | 実Tokenや利用者資金を受けること |
+| G2 Payment Slice | IMP-003–004 | Account・Wallet・Mock Paymentの障害試験 | 実Tokenやユーザ資金を受けること |
 | G3 Playback Slice | IMP-005–007 | Rights・Playback Authorization・Usage Evidenceの迂回防止と照合 | 実在Rightsや一般公開配信を扱うこと |
-| G4 Creator Slice | IMP-008–010 | Distribution・Settlement Stub・一括Scenarioの完全照合 | 実在Creator報酬や本番Settlementを扱うこと |
+| G4 音楽クリエーター部分実装 | IMP-008–010 | Distribution・Settlement Stub・一括Scenarioの完全照合 | 実在音楽クリエーター報酬や本番Settlementを扱うこと |
 | G5 Review Ready | IMP-011 | threat／privacy／operations evidence | 監査済み・適法・本番Readyと主張すること |
 
 ## Testnetデモから本番系への移行
 
 IMP-001–011は、[Testnetデモ](/demo/)を成立させるMock／Testnet Work Packageです。G5を通過しても本番実装の開始を自動承認しません。
 
-本番系は、TestnetデモのNetwork、Contract Address、Source Commit、Artifact lineage、失敗試験を公開し、Blocking Decisionの解決、専門家レビュー、独立Security Review、Smart Contract監査、本番用の鍵・権限・インフラ・契約・監視・復旧設計を別Gateで承認した後に実装します。Testnet用の鍵、Token、Contract、Rights Fixtureまたは管理権限を本番へ流用してはなりません。
+本番系は、TestnetデモのNetwork、Contract Address、Source Commit、Artifact lineage、失敗試験を公開し、Blocking Decisionの解決、専門家レビュー、独立Security Review、スマートコントラクト監査、本番用の鍵・権限・インフラ・契約・監視・復旧設計を別Gateで承認した後に実装します。Testnet用の鍵、Token、Contract、Rights Fixtureまたは管理権限を本番へ流用してはなりません。
 
 ## End-to-End Test Matrix
 
@@ -279,7 +279,7 @@ IMP-001–011は、[Testnetデモ](/demo/)を成立させるMock／Testnet Work 
 | Arithmetic boundary | 最大値、1 unit、割り切れないshare | overflowなし、Residualを完全記録 |
 | Settlement timeout | submit後に応答喪失 | retryしてもeffectは一度、Allocation維持 |
 | Correction | Finalization後に承認済み訂正 | 旧Version不変、新Versionとdeltaを記録 |
-| Privacy probe | 公開ArtifactとCreator viewを結合 | User-level履歴・Identityを復元できない |
+| Privacy probe | 公開Artifactと音楽クリエーター向け表示を結合 | ユーザ-level履歴・Identityを復元できない |
 
 ## 実装開始前に必要な選択
 
@@ -299,4 +299,4 @@ IMP-001–011は、[Testnetデモ](/demo/)を成立させるMock／Testnet Work 
 - Scope変更は該当`IMP-...`と上位Decision／Specificationを同時に更新する。
 - 完了はPull Request、テスト結果、生成Artifact、review recordへのリンクで証明する。
 - 一部のMockが動くだけで、Statusを「サービス稼働」「決済提供」「分配実施」へ変更しない。
-- 本番前には、専門家レビュー、独立Security Review、Smart Contract監査、運用訓練、公開後検証を別Gateとして追加する。
+- 本番前には、専門家レビュー、独立Security Review、スマートコントラクト監査、運用訓練、公開後検証を別Gateとして追加する。

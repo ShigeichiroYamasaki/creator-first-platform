@@ -10,13 +10,13 @@ description: 決済、権利、利用証明、分配、ガバナンスを支え�
 
 ## 1. Context
 
-Creator First Platform は、Creator / Userを中心とするGovernance、Rights Registry、Usage Oracle、Creator Distribution、Zero-Knowledge Proofを組み合わせたコンテンツ配信Protocolを構築する。
+Creator First Platform は、音楽クリエーター／ユーザを中心とするGovernance、Rights Registry、Usage Oracle、音楽クリエーター分配、Zero-Knowledge Proofを組み合わせたコンテンツ配信Protocolを構築する。
 
 これまでのADRでは、
 
 - ADR-0002 Verifiable Sortition
 - ADR-0003 Rights Registry
-- ADR-0004 Creator Distribution Model
+- ADR-0004 音楽クリエーター分配 Model
 - ADR-0005 Usage Oracle
 - ADR-0006 Zero-Knowledge Proof Strategy
 
@@ -25,7 +25,7 @@ Creator First Platform は、Creator / Userを中心とするGovernance、Rights
 これらを実装するには、少なくとも次のBlockchain機能が必要となる。
 
 - Stablecoinによる決済
-- Creator / Rights Holderへの分配
+- 音楽クリエーター／権利者への分配
 - Distribution Commitmentの記録
 - Governance Resultの確定
 - Rights State CommitmentのAnchor
@@ -63,7 +63,7 @@ Creator First Platform は、**Ethereum-compatible L2をPrimary Execution Layer�
 
 ```mermaid
 flowchart TD
-    APP[Creator / User Applications]
+    APP[音楽クリエーター／ユーザアプリ]
     OFF[Off-chain Services]
     PROOF[Proof / Commitment Layer]
     L2[Ethereum-compatible L2]
@@ -99,7 +99,7 @@ Blockchainは主として、
 Blockchainは原則として、
 
 - Raw Playback Events
-- User Viewing History
+- ユーザ閲覧 History
 - Personal Information
 - Contract Documents
 - Audio Files
@@ -138,14 +138,14 @@ flowchart TD
 Creator First Platformでは、
 
 - Subscription Settlement
-- Creator Distribution
+- 音楽クリエーター分配
 - Rights-related State Update
 - Governance Execution
 - Proof Verification
 
 等のBlockchain Transactionが発生する。
 
-Ethereum L1だけでこれらを処理すると、Transaction CostやThroughputがUser ExperienceとDistribution Efficiencyへ影響する可能性がある。
+Ethereum L1だけでこれらを処理すると、Transaction CostやThroughputがユーザ体験とDistribution Efficiencyへ影響する可能性がある。
 
 そのため通常のProtocol ExecutionはL2で行い、L1はSecurity / Settlement Anchorとして利用する。
 
@@ -158,7 +158,7 @@ Primary L2は原則としてEthereum-compatibleであることを重視する。
 理由は、
 
 - Solidity ecosystem
-- Smart Contract tooling
+- スマートコントラクト tooling
 - Wallet ecosystem
 - Stablecoin integration
 - Security tooling
@@ -178,7 +178,7 @@ Primary L2は少なくとも次の基準で評価する。
 | Criterion | Description |
 |---|---|
 | Security | L1依存関係、Proof System、Upgrade Risk |
-| Cost | User payment、distribution、proof verification cost |
+| Cost | ユーザ支払、distribution、proof verification cost |
 | Finality | Settlement確定までの時間 |
 | Availability | Network / Sequencer availability |
 | Data Availability | Transaction dataの検証可能性 |
@@ -198,7 +198,7 @@ Primary L2は少なくとも次の基準で評価する。
 
 ## 8. No Chain-specific Business Logic
 
-Creator Distribution、Rights Model、Usage Verification等のProtocol Ruleを特定Chain固有機能に直接依存させない。
+音楽クリエーター分配、Rights Model、Usage Verification等のProtocol Ruleを特定Chain固有機能に直接依存させない。
 
 例えば、
 
@@ -207,20 +207,20 @@ Distribution Policy
       ↓
 Chain-independent Specification
       ↓
-Smart Contract Implementation
+スマートコントラクト Implementation
       ↓
 Selected L2
 ```
 
 とする。
 
-Chain変更時にもProtocol Specificationの意味が維持されることを目標とする。
+Chain変更時にもプロトコル仕様の意味が維持されることを目標とする。
 
 ---
 
 ## 9. Stablecoin Settlement
 
-SubscriptionおよびCreator Distributionには、法的・技術的要件を満たすJPYC等のStablecoinを使用する。ETH等のネイティブトークンはGasまたはNetwork Feeの精算にだけ使用し、Subscription PriceまたはCreator Distribution Assetとして暗黙に採用しない。
+Subscriptionおよび音楽クリエーター分配には、法的・技術的要件を満たすJPYC等のStablecoinを使用する。ETH等のネイティブトークンはGasまたはNetwork Feeの精算にだけ使用し、Subscription Priceまたは音楽クリエーター分配 Assetとして暗黙に採用しない。
 
 JPYCは重要な候補であるが、Protocol Coreを特定Stablecoin Contract Addressへ固定しない。
 
@@ -248,9 +248,9 @@ Settlement Asset Registryを設け、
 
 Testnetでは、金銭的価値、償還請求権または実在JPYCとの交換可能性を持たない`MockJPYC`だけをDemo SubscriptionのSettlement Assetとして承認する。Mainnet JPYCとTest Tokenは異なるAsset ID、Contract Address、Networkおよび表示を持たなければならない。
 
-最初のSmart Contract開発Profileは、Hardhat 3、Viem、Infura RPCおよびEthereum Sepolia（Chain ID `11155111`）とする。これはTestnet ToolingとEVM上のContract境界を検証する選択であり、本番ChainまたはPrimary L2の決定ではない。SepoliaではETHをGasにだけ使用し、SubscriptionとTreasuryのTest Assetには無価値・償還不可の`MockJPYC`だけを使用する。
+最初のスマートコントラクト開発Profileは、Hardhat 3、Viem、Infura RPCおよびEthereum Sepolia（Chain ID `11155111`）とする。これはTestnet ToolingとEVM上のContract境界を検証する選択であり、本番ChainまたはPrimary L2の決定ではない。SepoliaではETHをGasにだけ使用し、SubscriptionとTreasuryのTest Assetには無価値・償還不可の`MockJPYC`だけを使用する。
 
-2026-08-23時点で、`MockJPYC`、Subscription、Test Treasury、一般／Early Supporter SBT、ERC-1967／UUPS Proxy、Creator RegistryおよびIgnition ModuleをRepositoryへ実装し、公開構成Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`をEthereum Sepoliaへデプロイした。公開RPCでBytecode、Contract接続、Plan、Proxy実装先およびCreator Registry Noticeを検証済みである。Etherscan Source Verification、Role分離、Indexer／Gateway接続、Threat Modelおよび独立監査は未完了である。
+2026-08-23時点で、`MockJPYC`、Subscription、Test Treasury、一般／Early Supporter SBT、ERC-1967／UUPS Proxy、音楽クリエーター登録台帳およびIgnition ModuleをRepositoryへ実装し、公開構成Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`をEthereum Sepoliaへデプロイした。公開RPCでBytecode、Contract接続、Plan、Proxy実装先および音楽クリエーター登録台帳 Noticeを検証済みである。Etherscan Source Verification、Role分離、Indexer／Gateway接続、Threat Modelおよび独立監査は未完了である。
 
 ---
 
@@ -264,19 +264,19 @@ Amount + Asset Identifier
 
 を扱う。
 
-これにより、将来Settlement Assetが追加・変更された場合でもCreator Distribution Logic自体を変更しない構造を目指す。
+これにより、将来Settlement Assetが追加・変更された場合でも音楽クリエーター分配 Logic自体を変更しない構造を目指す。
 
 ただし異なるStablecoin間の価値同等性をProtocolが自動的に仮定してはならない。
 
 ---
 
-## 11. Smart Contract Scope
+## 11. スマートコントラクト Scope
 
-Smart Contractは主として、
+スマートコントラクトは主として、
 
 - Subscription Settlement
 - Distribution Escrow
-- Creator / Rights Holder Payment
+- 音楽クリエーター／権利者 Payment
 - Governance-approved Parameter Activation
 - Commitment Registry
 - Proof Verification
@@ -284,7 +284,7 @@ Smart Contractは主として、
 
 等を担当する。
 
-Smart Contract自身が、
+スマートコントラクト自身が、
 
 - Raw Usage Validation
 - Copyright Legal Judgment
@@ -366,7 +366,7 @@ Proof SystemとL2の選択を過度に結合しない。
 
 ## 15. Distribution Settlement
 
-ADR-0004 Creator Distribution ModelによるDistribution ResultをL2上でSettlementする。
+ADR-0004 音楽クリエーター分配 ModelによるDistribution ResultをL2上でSettlementする。
 
 概念的には、
 
@@ -379,7 +379,7 @@ flowchart LR
     ENGINE[Distribution Engine]
     ROOT[Distribution Root]
     CONTRACT[L2 Distribution Contract]
-    PAY[Creator / Rights Holder]
+    PAY[音楽クリエーター／権利者]
 
     REV --> ENGINE
     USAGE --> ENGINE
@@ -394,7 +394,7 @@ flowchart LR
 
 ## 16. Claim-based Distribution
 
-多数のCreator / Rights Holderへの分配では、
+多数の音楽クリエーター／権利者への分配では、
 
 ```text
 Distribution Result
@@ -412,7 +412,7 @@ Payment
 
 これによりPlatform側が全Recipientへの個別Transactionを送信する必要を減らせる。
 
-ただし、User Experienceや未請求残高の扱いはDistribution Specificationで定義する。
+ただし、ユーザ体験や未請求残高の扱いはDistribution Specificationで定義する。
 
 ---
 
@@ -449,7 +449,7 @@ Primary L2選択時には、
 
 等を評価する。
 
-Sequencer停止によってCreatorの確定済み資産が永久に失われる設計を許容しない。
+Sequencer停止によって音楽クリエーターの確定済み資産が永久に失われる設計を許容しない。
 
 ---
 
@@ -461,10 +461,10 @@ Creator First Platformは不要なCross-chain Transferを最小化する。
 
 ```text
 Preferred:
-User → Primary L2 → Creator
+ユーザ → Primary L2 → 音楽クリエーター
 
 Avoid where unnecessary:
-User → Chain A → Bridge → Chain B → Bridge → Chain C
+ユーザ → Chain A → Bridge → Chain B → Bridge → Chain C
 ```
 
 Native / Canonical Bridgeを優先的に評価し、第三者Bridgeへの依存をProtocol Coreへ組み込まない。
@@ -521,7 +521,7 @@ Canonical Stateの所在は将来のCross-chain ADRで定義する。
 
 ## 22. Upgradeability
 
-Smart Contract Upgradeは必要最小限にする。
+スマートコントラクト Upgradeは必要最小限にする。
 
 Upgrade可能なContractを利用する場合、
 
@@ -535,7 +535,7 @@ Upgrade可能なContractを利用する場合、
 を明示する。
 
 ```text
-Governance Decision
+ガバナンス決定
       ↓
 Timelock
       ↓
@@ -544,13 +544,13 @@ Upgrade
 Public Verification
 ```
 
-Platform運営者の単独KeyだけでCreator Distribution Logicを変更できる構造を最終形としない。
+Platform運営者の単独Keyだけで音楽クリエーター分配 Logicを変更できる構造を最終形としない。
 
 ---
 
 ## 23. Emergency Controls
 
-重大なSmart Contract Vulnerability等に備えてEmergency Pauseを設けることができる。
+重大なスマートコントラクト Vulnerability等に備えてEmergency Pauseを設けることができる。
 
 ただしEmergency Authorityは、
 
@@ -611,7 +611,7 @@ Creator First Platformが検証に必要なProtocol Dataを、特定Operatorだ�
 
 ## 26. Finality
 
-Creator DistributionやGovernance Executionでは、Transaction InclusionとEconomic Finalityを区別する。
+音楽クリエーター分配やGovernance Executionでは、Transaction InclusionとEconomic Finalityを区別する。
 
 Applicationは、
 
@@ -624,7 +624,7 @@ Finalized
 
 等の状態を扱えるようにする。
 
-Creatorへ「確定済み」と表示した支払いが通常のChain Reorganization等で容易に消失することを避ける。
+音楽クリエーターへ「確定済み」と表示した支払いが通常のChain Reorganization等で容易に消失することを避ける。
 
 ---
 
@@ -667,7 +667,7 @@ Blockchainが動いていることだけでPlatformが正常とは判断しな�
 
 ## 29. Cost Strategy
 
-Blockchain CostはCreator Distributionを圧迫しないよう管理する。
+Blockchain Costは音楽クリエーター分配を圧迫しないよう管理する。
 
 主なCost Driverは、
 
@@ -696,9 +696,9 @@ L2
 
 ---
 
-## 30. User Experience
+## 30. ユーザ体験
 
-一般Userが、
+一般ユーザが、
 
 - Gas Tokenの取得
 - Network Switching
@@ -707,17 +707,17 @@ L2
 
 等を意識しなくてもPlatformを利用できることを目標とする。
 
-Account Abstraction、Relayer、Paymaster、Gas Sponsorship、Bundling等を利用できる。利用者が確認する支払額はJPYC等の承認済みSettlement Assetで固定し、Sponsorが支払うNative FeeをSubscription Paymentとして記録しない。具体方式とSponsorship PolicyはADR-0008および各Deployment Policyで決定する。
+Account Abstraction、Relayer、Paymaster、Gas Sponsorship、Bundling等を利用できる。ユーザが確認する支払額はJPYC等の承認済みSettlement Assetで固定し、Sponsorが支払うNative FeeをSubscription Paymentとして記録しない。具体方式とSponsorship PolicyはADR-0008および各Deployment Policyで決定する。
 
-BlockchainはUser Experienceを複雑化する目的で導入しない。
+Blockchainはユーザ体験を複雑化する目的で導入しない。
 
 ---
 
-## 31. Creator Experience
+## 31. 音楽クリエーター体験
 
-CreatorもBlockchainの専門知識を前提としない。
+音楽クリエーターもBlockchainの専門知識を前提としない。
 
-Creatorは、
+音楽クリエーターは、
 
 ```text
 Register
@@ -745,7 +745,7 @@ ADR-0001およびADR-0002で決定されたGovernance Processの結果を、
 するInfrastructureとして利用する。
 
 ```text
-Creator / User
+音楽クリエーター／ユーザ
       ↓
 Sortition + Deliberation
       ↓
@@ -822,7 +822,7 @@ Raw Playback HistoryをPublic Blockchainへ保存してはならない。
 
 ### Invariant 3
 
-Creator Distribution Policyを特定L2固有仕様だけで定義してはならない。
+音楽クリエーター分配 Policyを特定L2固有仕様だけで定義してはならない。
 
 ### Invariant 4
 
@@ -866,7 +866,7 @@ Protocolに最適化できるが、Validator Network、Security、Bridge、Walle
 
 ### Multi-chain from Launch
 
-可用性やUser Reachを拡大できる可能性があるが、State Consistency、Bridge Risk、Operational Complexityが大きいため採用しない。
+可用性やユーザ到達範囲を拡大できる可能性があるが、State Consistency、Bridge Risk、Operational Complexityが大きいため採用しない。
 
 ### Store Everything On-chain
 
@@ -880,7 +880,7 @@ Protocolに最適化できるが、Validator Network、Security、Bridge、Walle
 
 - Ethereum ecosystemを活用できる
 - L1のみよりCostを抑えやすい
-- Stablecoin SettlementとSmart Contract Distributionを統合しやすい
+- Stablecoin Settlementとスマートコントラクト Distributionを統合しやすい
 - ZKP Verificationとの接続が可能
 - Raw UsageをOff-chainに維持できる
 - Protocolを特定L2から一定程度分離できる
@@ -892,7 +892,7 @@ Protocolに最適化できるが、Validator Network、Security、Bridge、Walle
 - Sequencer Riskがある
 - Bridge Riskを管理する必要がある
 - L1 / L2 Finalityの違いを扱う必要がある
-- Smart Contract Upgrade Securityが必要になる
+- スマートコントラクト Upgrade Securityが必要になる
 - Chain Migration Strategyが必要になる
 - Infrastructure Monitoringが複雑になる
 
@@ -902,7 +902,7 @@ Protocolに最適化できるが、Validator Network、Security、Bridge、Walle
 
 Blockchain / L2 Layerは少なくとも次のリスクを考慮する。
 
-- Smart Contract Vulnerability
+- スマートコントラクト Vulnerability
 - Upgrade Key Compromise
 - Treasury Key Compromise
 - Sequencer Failure
@@ -926,7 +926,7 @@ Blockchain / L2 Layerは少なくとも次のリスクを考慮する。
 
 ADR-0003 Rights RegistryはRights StateのCommitmentをBlockchainへAnchorできる。
 
-ADR-0004 Creator Distribution ModelはDistribution ResultをL2でSettlementする。
+ADR-0004 音楽クリエーター分配 ModelはDistribution ResultをL2でSettlementする。
 
 ADR-0005 Usage OracleはVerified Usage Snapshot / ProofをL2へ提供する。
 
@@ -958,7 +958,7 @@ ZK Proof Strategy ────────┘
 - Whitepaper: Security
 - Whitepaper: Infrastructure / Cost
 - ADR-0003: Rights Registry
-- ADR-0004: Creator Distribution Model
+- ADR-0004: 音楽クリエーター分配 Model
 - ADR-0005: Usage Oracle
 - ADR-0006: Zero-Knowledge Proof Strategy
 

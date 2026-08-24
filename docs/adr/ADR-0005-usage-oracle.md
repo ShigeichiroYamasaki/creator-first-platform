@@ -10,13 +10,13 @@ description: 再生イベントを検証・集計し、プライバシーを保�
 
 ## 1. Context
 
-Creator First Platform は、Subscription Revenue を Creator および Rights Holder へ透明かつ検証可能に分配することを目標とする。
+Creator First Platform は、Subscription Revenue を 音楽クリエーター および 権利者 へ透明かつ検証可能に分配することを目標とする。
 
-ADR-0004 Creator Distribution Model では、Creator Distribution の基礎として **Verified Usage** を使用することを決定した。
+ADR-0004 音楽クリエーター分配 Model では、音楽クリエーター分配 の基礎として **Verified Usage** を使用することを決定した。
 
-しかし、Smart Contract はそれ自体では、
+しかし、スマートコントラクト はそれ自体では、
 
-- User が実際に楽曲を再生したか
+- ユーザ が実際に楽曲を再生したか
 - どの作品を利用したか
 - どの程度利用したか
 - Playback Event が重複・偽造されていないか
@@ -27,7 +27,7 @@ ADR-0004 Creator Distribution Model では、Creator Distribution の基礎と�
 
 一方、すべての Playback Event を Public Blockchain に記録すると、
 
-- User の視聴履歴が公開される
+- ユーザ の視聴履歴が公開される
 - Transaction Cost が大きくなる
 - Scalability が低下する
 - 大量の利用イベントを処理できない
@@ -41,7 +41,7 @@ ADR-0004 Creator Distribution Model では、Creator Distribution の基礎と�
 
 ## 2. Decision
 
-Creator First Platform は、利用実績を Creator Distribution へ接続するために **Usage Oracle** を設ける。
+Creator First Platform は、利用実績を 音楽クリエーター分配 へ接続するために **Usage Oracle** を設ける。
 
 Usage Oracle は、
 
@@ -72,10 +72,10 @@ Usage Oracle は、利用実績に関する事実をProtocolへ提供する。
 
 ただし、Usage Oracle自身が、
 
-- Creator Distribution Policyを決定する
+- 音楽クリエーター分配 Policyを決定する
 - Rights Ownershipを決定する
-- Creatorの価値を評価する
-- Governance Decisionを行う
+- 音楽クリエーターの価値を評価する
+- ガバナンス決定を行う
 - 法的権利を判断する
 
 ことはない。
@@ -120,7 +120,7 @@ PlaybackEvent
 
 等を含む。
 
-ただし、具体的なEvent SchemaはProtocol Specificationで定義する。
+ただし、具体的なEvent Schemaはプロトコル仕様で定義する。
 
 個人情報や不要なDevice Fingerprintを収集することを前提としない。
 
@@ -157,7 +157,7 @@ Playback Eventは、少なくともPlatform上の有効なSessionまたはCreden
 概念的には、
 
 ```text
-User / Credential
+ユーザ / Credential
       ↓
 Authenticated Session
       ↓
@@ -258,12 +258,12 @@ ClientはEvidence Sourceの一つであり、最終的なAuthorityではない�
 
 ## 10. Privacy by Design
 
-Usage Oracle はUserの音楽利用履歴を扱うため、Privacyを主要な設計要件とする。
+Usage Oracle はユーザの音楽利用履歴を扱うため、Privacyを主要な設計要件とする。
 
 特に、
 
 ```text
-User X listened to Artist Y at time T
+ユーザX listened to Artist Y at time T
 ```
 
 という情報をPublic Blockchainへ直接記録してはならない。
@@ -297,7 +297,7 @@ Creator First Platform は、Usage Verificationの将来的な主要技術とし
 
 目的は、
 
-> **個々のUserの視聴履歴を公開せず、Distributionに使用したUsage AggregateがProtocol Ruleに従って計算されたことを検証する**
+> **個々のユーザの視聴履歴を公開せず、Distributionに使用したUsage AggregateがProtocol Ruleに従って計算されたことを検証する**
 
 ことである。
 
@@ -306,7 +306,7 @@ Creator First Platform は、Usage Verificationの将来的な主要技術とし
 ```text
 Private Inputs
 ├── Playback Events
-├── User / Session Credentials
+├── ユーザ / Session Credentials
 └── Validation Data
 
 Public Inputs
@@ -369,7 +369,7 @@ Distribution Engineは個々のPlayback Eventを直接処理するのではな�
 ```text
 Verified Playback Events
           ↓
-Content / User Aggregation
+Content / ユーザ集約
           ↓
 Usage Snapshot
           ↓
@@ -378,7 +378,7 @@ Distribution Engine
 
 とする。
 
-User-Centric Distributionのために必要な粒度は維持するが、Public LayerへUser単位の詳細履歴を公開しない。
+ユーザ中心分配のために必要な粒度は維持するが、Public Layerへユーザ単位の詳細履歴を公開しない。
 
 ---
 
@@ -430,7 +430,7 @@ $$
 
 のようなCommitmentを使用できる。
 
-具体的なCommitment SchemeはProtocol Specificationで決定する。
+具体的なCommitment Schemeはプロトコル仕様で決定する。
 
 Commitmentは、
 
@@ -473,7 +473,7 @@ Finalized Usage SnapshotをPlatform運営者が理由なく変更してはなら
 
 ## 18. Challenge Mechanism
 
-Creator、User、Auditor等がUsage Aggregateの異常を指摘できる仕組みを設けることができる。
+音楽クリエーター、ユーザ、Auditor等がUsage Aggregateの異常を指摘できる仕組みを設けることができる。
 
 Challenge対象には、
 
@@ -486,7 +486,7 @@ Challenge対象には、
 
 等を含む。
 
-Challenge Processの詳細はGovernanceおよびProtocol Specificationで定義する。
+Challenge Processの詳細はGovernanceおよびプロトコル仕様で定義する。
 
 ---
 
@@ -526,7 +526,7 @@ AIはUsage Oracleにおいて、
 
 等を支援できる。
 
-しかしAI Modelの出力だけでCreatorへの分配を不可逆的に停止してはならない。
+しかしAI Modelの出力だけで音楽クリエーターへの分配を不可逆的に停止してはならない。
 
 AIによる判定には、
 
@@ -577,8 +577,8 @@ Cryptographically Verifiable Usage Oracle
 Usage Oracleが一時停止しても、
 
 - Rights Registry
-- User Account
-- Creator Account
+- ユーザアカウント
+- 音楽クリエーターアカウント
 - 過去の確定Distribution
 
 が破壊されてはならない。
@@ -607,11 +607,11 @@ Raw Dataを削除した後でも、必要なCommitment、Aggregate、Proof、Aud
 
 ---
 
-## 24. User Transparency
+## 24. ユーザ透明性
 
-Userは可能な範囲で、自身の利用がDistributionへ反映されたか確認できる仕組みを持つ。
+ユーザは可能な範囲で、自身の利用がDistributionへ反映されたか確認できる仕組みを持つ。
 
-ただし他Userの詳細な利用履歴へアクセスできてはならない。
+ただし他ユーザの詳細な利用履歴へアクセスできてはならない。
 
 例えば、
 
@@ -629,9 +629,9 @@ Verified
 
 ---
 
-## 25. Creator Transparency
+## 25. 音楽クリエーター向け透明性
 
-Creatorは、自身の作品についてDistributionへ使用されたAggregate Usageを確認できる。
+音楽クリエーターは、自身の作品についてDistributionへ使用されたAggregate Usageを確認できる。
 
 例えば、
 
@@ -645,7 +645,7 @@ Distribution Reference
 
 等を提供できる。
 
-ただし、Creatorが個々のUserの視聴履歴を特定できる情報は原則として提供しない。
+ただし、音楽クリエーターが個々のユーザの視聴履歴を特定できる情報は原則として提供しない。
 
 ---
 
@@ -680,16 +680,16 @@ flowchart LR
 
 ---
 
-## 27. Relationship to Creator Distribution
+## 27. Relationship to 音楽クリエーター分配
 
-ADR-0004 Creator Distribution Modelは、Usage Oracleから提供されるVerified Usage Snapshotを使用する。
+ADR-0004 音楽クリエーター分配 Modelは、Usage Oracleから提供されるVerified Usage Snapshotを使用する。
 
 ```text
 Usage Oracle
       ↓
 Verified Usage Snapshot
       ↓
-Creator Distribution Model
+音楽クリエーター分配 Model
       +
 Rights Registry
       +
@@ -702,9 +702,9 @@ Distribution Engineが未確定Raw Eventを直接使用してはならない。
 
 ---
 
-## 28. Smart Contract Relationship
+## 28. スマートコントラクト Relationship
 
-Smart Contractは個々のPlayback Eventを処理しない。
+スマートコントラクトは個々のPlayback Eventを処理しない。
 
 Usage Oracleから得られる、
 
@@ -723,7 +723,7 @@ flowchart LR
     PROOF[Aggregate + Proof]
     ENGINE[Distribution Engine]
     ROOT[Distribution Commitment]
-    CONTRACT[Smart Contract]
+    CONTRACT[スマートコントラクト]
 
     EVENTS --> ORACLE --> PROOF --> ENGINE --> ROOT --> CONTRACT
 ```
@@ -734,7 +734,7 @@ flowchart LR
 
 ### Invariant 1
 
-未検証Playback Eventを通常のCreator Distributionへ使用してはならない。
+未検証Playback Eventを通常の音楽クリエーター分配へ使用してはならない。
 
 ### Invariant 2
 
@@ -746,7 +746,7 @@ Finalized Usage Snapshotは監査履歴なしに変更してはならない。
 
 ### Invariant 4
 
-Userの詳細な視聴履歴をPublic Blockchainへ直接記録してはならない。
+ユーザの詳細な視聴履歴をPublic Blockchainへ直接記録してはならない。
 
 ### Invariant 5
 
@@ -770,7 +770,7 @@ AI Fraud Detectionの出力だけを根拠として不可逆的な分配剥奪�
 
 ### Fully Trusted Central Oracle
 
-Platform Serverが再生回数を集計し、その数値を無条件にSmart Contractへ渡す。
+Platform Serverが再生回数を集計し、その数値を無条件にスマートコントラクトへ渡す。
 
 MVPでは一部利用可能だが、長期的なTrust Modelとしては採用しない。
 
@@ -786,9 +786,9 @@ Player Appの自己申告のみを利用する。
 
 改ざん・Bot・Replayへの耐性が不足するため採用しない。
 
-### Public User-level Usage Ledger
+### Public ユーザ-level Usage Ledger
 
-Userごとの利用履歴を公開Ledgerへ保存する。
+ユーザごとの利用履歴を公開Ledgerへ保存する。
 
 Privacy上の問題が大きいため採用しない。
 
@@ -804,9 +804,9 @@ AIがPlaybackの正当性を判定し、その出力を最終結果とする。
 
 ### Positive
 
-- Creator Distributionの利用根拠を検証可能にできる
+- 音楽クリエーター分配の利用根拠を検証可能にできる
 - Raw PlaybackをBlockchainへ保存せずに済む
-- User Privacyを保護しやすい
+- ユーザプライバシーを保護しやすい
 - Fraud Detectionを組み込める
 - Distribution Periodごとの監査が可能になる
 - ZK Proofによる将来的なTrust Minimizationが可能になる
@@ -857,9 +857,9 @@ ADR-0002はVerifiable Sortitionを定義する。
 
 ADR-0003はRights Registryを定義する。
 
-ADR-0004はCreator Distribution Modelを定義する。
+ADR-0004は音楽クリエーター分配 Modelを定義する。
 
-ADR-0005は、実世界・Player App上の利用イベントを検証可能なUsage情報へ変換し、Creator Distributionへ提供するOracle Layerを定義する。
+ADR-0005は、実世界・Player App上の利用イベントを検証可能なUsage情報へ変換し、音楽クリエーター分配へ提供するOracle Layerを定義する。
 
 ```text
 Player App
@@ -868,7 +868,7 @@ ADR-0005 Usage Oracle
     ↓
 Verified Usage
     ↓
-ADR-0004 Creator Distribution Model
+ADR-0004 音楽クリエーター分配 Model
     +
 ADR-0003 Rights Registry
     ↓
@@ -887,7 +887,7 @@ Distribution
 - Whitepaper: Security
 - Whitepaper: Infrastructure / Cost
 - ADR-0003: Rights Registry
-- ADR-0004: Creator Distribution Model
+- ADR-0004: 音楽クリエーター分配 Model
 
 ---
 

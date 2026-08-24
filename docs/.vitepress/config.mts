@@ -176,6 +176,7 @@ export default defineConfig({
         { text: 'ホーム', link: '/' },
         { text: 'Testnetデモ', link: '/demo/' },
         { text: '現在の状況', link: '/status' },
+        { text: '用語表', link: '/terminology' },
         { text: 'ホワイトペーパー', link: '/whitepaper/' },
         { text: 'Governance', link: '/governance/' },
         { text: 'Protocol', link: '/protocol/' },
@@ -384,9 +385,20 @@ export default defineConfig({
               /<h3[^>]*id="supporter-early-supporter-sbtの表示例"[^>]*>[\s\S]*?(?=<h3|<h2|$)/,
               ''
             )
+            const searchableDocument = environment.relativePath === 'whitepaper/11-legal-sto-tax.md'
+              ? withoutCredentialArtwork
+                .replace(
+                  /<h2[^>]*id="_11-19-株主ガバナンスとプロトコルガバナンス"[^>]*>[\s\S]*?(?=<h2[^>]*id="_11-22-|$)/,
+                  ''
+                )
+                .replace(
+                  /<h2[^>]*id="_11-44-責任分担"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  ''
+                )
+              : withoutCredentialArtwork
 
             if (environment.relativePath?.startsWith('protocol/specs/')) {
-              return withoutCredentialArtwork
+              return searchableDocument
                 .replace(
                   /<h2[^>]*id="interfaces"[^>]*>[\s\S]*?(?=<h2|$)/,
                   ''
@@ -406,7 +418,7 @@ export default defineConfig({
             }
 
             if (environment.relativePath?.startsWith('adr/ADR-')) {
-              return withoutCredentialArtwork
+              return searchableDocument
                 .replace(
                   /<h2[^>]*id="[^"]*alternatives-considered[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
                   ''
@@ -421,7 +433,7 @@ export default defineConfig({
                 )
             }
 
-            return withoutCredentialArtwork
+            return searchableDocument
           },
           translations: {
             button: {

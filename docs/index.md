@@ -1,10 +1,10 @@
 ---
 layout: home
-description: CreatorとUserの共同統治、権利管理、検証可能な分配を設計するクリエイターファースト音楽プラットフォーム構想。
+description: 音楽クリエーターとユーザの共同統治、権利管理、検証可能な分配を設計する音楽クリエーターファースト音楽プラットフォーム構想。
 
 hero:
   name: "Creator First Platform"
-  text: "Creator と User が共同で統治する音楽プラットフォーム"
+  text: "音楽クリエーター と ユーザ が共同で統治する音楽プラットフォーム"
   actions:
     - theme: brand
       text: Testnetデモを開く
@@ -38,19 +38,19 @@ features:
     details: Creator First Platform の理念、権利、経済、技術、ガバナンス、法務、セキュリティ、インフラ、ロードマップをまとめた基本文書です。
     link: /whitepaper/01-vision
 
-  - title: Creator First Proposal
-    details: Creator と User が Platform の制度や Protocol の変更・拡張を提案し、議論と熟議につなげる公開提案制度です。
+  - title: 音楽クリエーター中心提案
+    details: 音楽クリエーター と ユーザ が Platform の制度や Protocol の変更・拡張を提案し、議論と熟議につなげる公開提案制度です。
     link: /proposals/
 
   - title: Governance
-    details: Creator House と User House を抽選代表によって構成し、熟議を経て Protocol Specification を形成する統治モデルです。
+    details: 音楽クリエータ院議会 と ユーザ院議会 を抽選代表によって構成し、熟議を経て プロトコル仕様 を形成する統治モデルです。
     link: /whitepaper/07-governance
 
   - title: ADR一覧
-    details: Architecture Decision Record として、重要な設計判断、その理由、代替案、影響を記録し、Protocol Specification と実装へ接続します。
+    details: Architecture Decision Record として、重要な設計判断、その理由、代替案、影響を記録し、プロトコル仕様 と実装へ接続します。
     link: /adr/
 
-  - title: Protocol Specification
+  - title: プロトコル仕様
     details: ADRで決定された設計を、Codexや開発者が実装できる要件、不変条件、インターフェース、エラー条件、テスト条件へ落とし込んだ仕様です。
     link: /protocol/
 ---
@@ -70,7 +70,7 @@ features:
 
 <div class="document-meta__row">
   <span class="document-meta__label">Revision Date</span>
-  <span>2026-08-23</span>
+  <span>2026-08-24</span>
 </div>
 
 <div class="document-meta__row">
@@ -81,31 +81,31 @@ features:
 </div>
 
 ::: warning 現在は設計・文書化段階です
-本サイトは、稼働中の本番音楽配信サービス、決済サービス、DAOまたはSTOの案内ではありません。Protocol SpecificationはDraftであり、Testnetデモも現在準備中です。法務・金融・税務上の記述は個別案件への専門的助言ではありません。詳しくは[現在の状況](/status)と[Testnetデモ](/demo/)を確認してください。
+本サイトは、稼働中の本番音楽配信サービス、決済サービス、DAOまたはSTOの案内ではありません。プロトコル仕様はDraftであり、Testnetデモも現在準備中です。法務・金融・税務上の記述は個別案件への専門的助言ではありません。詳しくは[現在の状況](/status)と[Testnetデモ](/demo/)を確認してください。
 :::
 
 ## Creator First Platform
 
 Creator First Platform は、音楽を中心とするデジタルコンテンツの流通において、  
-**Creator の権利と持続可能な活動、User の自由で豊かな利用体験、公正で検証可能なエコシステム**を中心に据えるプラットフォームです。
+**音楽クリエーター の権利と持続可能な活動、ユーザ の自由で豊かな利用体験、公正で検証可能なエコシステム**を中心に据えるプラットフォームです。
 
 ---
 
-## Creator / User が Protocol を統治する
+## 音楽クリエーター／ユーザ が Protocol を統治する
 
 Creator First Platform の Governance は、単純な Token Voting ではありません。
 
-> **Creator/User → 抽選議会 → 熟議 → Protocol Specification → Smart Contract → 自動執行**
+> **音楽クリエーター／ユーザ → 抽選議会 → 熟議 → プロトコル仕様 → スマートコントラクト → 自動執行**
 
 ```mermaid
 flowchart LR
-    CU[Creator / User]
+    CU[音楽クリエーター／ユーザ]
     ELIGIBLE[Eligible Community]
     SORT[Verifiable Sortition]
-    HOUSE[Creator House / User House]
+    HOUSE[音楽クリエータ院議会 / ユーザ院議会]
     DELIB[Deliberation]
-    SPEC[Protocol Specification]
-    CODE[Verified Smart Contract]
+    SPEC[プロトコル仕様]
+    CODE[Verified スマートコントラクト]
     EXEC[Automatic Execution]
 
     CU --> ELIGIBLE --> SORT --> HOUSE --> DELIB --> SPEC --> CODE --> EXEC
@@ -121,9 +121,9 @@ Whitepaper は、Creator First Platform の現時点における基本設計を�
 
 ---
 
-## Creator First Proposals
+## 音楽クリエーター中心提案s
 
-**Creator First Proposal（CFP）** は、Creator First Platform の制度、経済モデル、技術、Governance、Protocol などについて、変更や新しい仕組みを提案するための公開提案制度です。
+**音楽クリエーター中心提案（CFP）** は、Creator First Platform の制度、経済モデル、技術、Governance、Protocol などについて、変更や新しい仕組みを提案するための公開提案制度です。
 
 Whitepaper が、
 
@@ -156,9 +156,9 @@ ADR は、Whitepaper や CFP と実装コードの間をつなぐ **設計判断
 flowchart LR
     WP[Whitepaper]
     CFP[CFP]
-    GOV[Governance Decision]
+    GOV[ガバナンス決定]
     ADR[ADR]
-    SPEC[Protocol Specification]
+    SPEC[プロトコル仕様]
     ISSUE[GitHub Issue]
     CODE[Implementation]
 
@@ -169,9 +169,9 @@ flowchart LR
 
 ---
 
-## Protocol Specification
+## プロトコル仕様
 
-Protocol Specification は、ADRで採用された設計を、**Codexや開発者がそのまま実装作業へつなげられる仕様**へ変換する文書です。
+プロトコル仕様 は、ADRで採用された設計を、**Codexや開発者がそのまま実装作業へつなげられる仕様**へ変換する文書です。
 
 Protocol では、例えば次の内容を定義します。
 
@@ -191,7 +191,7 @@ Protocol では、例えば次の内容を定義します。
 ```mermaid
 flowchart LR
     ADR[ADR]
-    SPEC[Protocol Specification]
+    SPEC[プロトコル仕様]
     ISSUE[GitHub Issue]
     AI[Codex]
     CODE[Code + Tests]
@@ -200,9 +200,9 @@ flowchart LR
     ADR --> SPEC --> ISSUE --> AI --> CODE --> PR
 ```
 
-Protocol Specification を、人間とAIエージェントの間の **実装契約**として利用します。
+プロトコル仕様 を、人間とAIエージェントの間の **実装契約**として利用します。
 
-[Protocol Specification を見る →](/protocol/)
+[プロトコル仕様 を見る →](/protocol/)
 
 ---
 
@@ -216,7 +216,7 @@ flowchart TD
     TOP --> CFP[CFP]
     TOP --> GOV[Governance]
     TOP --> ADR[ADR一覧]
-    TOP --> PROTOCOL[Protocol Specification]
+    TOP --> PROTOCOL[プロトコル仕様]
 
     WP --> CURRENT[現在の基本設計]
     CFP --> CHANGE[変更・拡張の提案]
@@ -235,13 +235,13 @@ flowchart TD
 
 ### Governance
 
-**どの提案を採用するか**を Creator / User の正統なプロセスで決定します。
+**どの提案を採用するか**を 音楽クリエーター／ユーザ の正統なプロセスで決定します。
 
 ### ADR一覧
 
 **なぜその設計を採用したのか**を記録します。
 
-### Protocol Specification
+### プロトコル仕様
 
 **何を、どの条件で実装するか**を定義し、GitHub Issue と Codex に接続します。
 
@@ -256,7 +256,7 @@ flowchart LR
     CFP[CFP]
     GOV[Governance]
     ADR[ADR]
-    SPEC[Protocol Specification]
+    SPEC[プロトコル仕様]
     ISSUE[GitHub Issue]
     AI[Codex]
     CODE[Code + Tests]
@@ -287,17 +287,17 @@ flowchart LR
 
 ## 目指すもの
 
-Creator と User が Platform の構成主体となり、
+音楽クリエーター と ユーザ が Platform の構成主体となり、
 
 - 価値を創る
 - 音楽を利用する
-- 新しい Creator を発見する
-- Creator を支援する
+- 新しい 音楽クリエーター を発見する
+- 音楽クリエーター を支援する
 - Platform のルール形成に参加する
 
 ことができる環境を作ります。
 
-**Creator First Platform は、音楽を出発点として、企業・Creator・User・Code の関係を再設計するプロジェクトです。**
+**Creator First Platform は、音楽を出発点として、企業・音楽クリエーター・ユーザ・Code の関係を再設計するプロジェクトです。**
 
 <div class="site-copyright">
   © 2026 Creator First Platform

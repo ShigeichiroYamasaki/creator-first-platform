@@ -12,7 +12,7 @@ description: Navidromeを交換可能なメディアサーバーとして利用�
 
 ## 1. Context
 
-Creator First Platform は、Stablecoin Subscription、Rights Registry、Usage Verification、Creator Distributionを、実際の音楽ストリーミングへ接続する必要がある。
+Creator First Platform は、Stablecoin Subscription、Rights Registry、Usage Verification、音楽クリエーター分配を、実際の音楽ストリーミングへ接続する必要がある。
 
 一方、次の処理を一つのサービスへ集中させると、責任境界が不明確になる。
 
@@ -24,7 +24,7 @@ Creator First Platform は、Stablecoin Subscription、Rights Registry、Usage V
 - Playback Evidenceの生成
 - 分配対象となるValid Usageの確定
 
-Navidromeは音楽ライブラリとストリーミングの実装を早期に検証するために有用だが、Subscription、Rights、法的な利用実績またはCreator DistributionのSource of Truthではない。
+Navidromeは音楽ライブラリとストリーミングの実装を早期に検証するために有用だが、Subscription、Rights、法的な利用実績または音楽クリエーター分配のSource of Truthではない。
 
 また、音楽再生ごとにBlockchain RPCへ同期問い合わせを行うと、再生開始遅延と外部依存障害がCritical Pathへ入る。
 
@@ -32,9 +32,9 @@ Navidromeは音楽ライブラリとストリーミングの実装を早期に�
 
 Creator First Platform は、初期実装において次の構成を採用候補とする。
 
-> **Navidromeは非公開のMedia Serverとし、Creator First Streaming Authorization Gatewayを唯一の公開再生境界とする。**
+> **Navidromeは非公開のMedia Serverとし、音楽クリエーター中心 Streaming Authorization Gatewayを唯一の公開再生境界とする。**
 
-Navidrome固有のTopology、認証、Network分離、Adapter、配信、Evidence、Scale Triggerおよび置換条件は、本ADRと関連Protocol Specificationを技術的な記録先とする。Whitepaperは製品固有の実装詳細を持たず、技術選択を交換可能に保つ。
+Navidrome固有のTopology、認証、Network分離、Adapter、配信、Evidence、Scale Triggerおよび置換条件は、本ADRと関連プロトコル仕様を技術的な記録先とする。Whitepaperは製品固有の実装詳細を持たず、技術選択を交換可能に保つ。
 
 ```mermaid
 flowchart LR
@@ -45,7 +45,7 @@ flowchart LR
     NAVI[Navidrome]
     MUSIC[Read-only Music Volume]
     EVENTS[Playback Evidence Pipeline]
-    CHAIN[Smart Contracts]
+    CHAIN[スマートコントラクトs]
     RELAYER[Payment / SBT Relayer]
 
     PLAYER --> EDGE --> GATEWAY
@@ -88,9 +88,9 @@ Gatewayは次を担当する。
 - Server-side Playback Evidenceの生成
 - Client supplied authentication headerの除去
 
-### Smart Contracts
+### スマートコントラクトs
 
-Smart Contractは次を担当する。
+スマートコントラクトは次を担当する。
 
 - Subscriptionの成立、更新、取消しおよび期限
 - JPYC等の承認済みSettlement AssetによるPayment Event
@@ -98,7 +98,7 @@ Smart Contractは次を担当する。
 - Settlement Assetの許可状態
 - Versioned Rights StateのCommitment
 - Usage RootおよびDistribution Root
-- Creator / Rights HolderによるClaim
+- 音楽クリエーター／権利者によるClaim
 
 ### Operating Corporation
 
@@ -146,7 +146,7 @@ Navidrome Externalized Authenticationを利用する場合、Gatewayが生成し
 - Gateway以外をNavidromeのTrusted Sourceにしない
 - NavidromeのPublic ShareおよびDownloadを無効化する
 - Navidrome固有のCookie、PasswordまたはAuthorizationをClientへ返さない
-- 初期Admin Userを管理された手順で作成する
+- 初期Admin ユーザを管理された手順で作成する
 
 Navidromeの外部認証はTrusted ProxyからのHeaderを信頼するため、Network IsolationとHeader Sanitizationを一つのControlとして扱う。
 
@@ -186,7 +186,7 @@ Sessionは少なくとも次をBindingする。
 
 - Platform Account ID
 - Pseudonymous Navidrome Username
-- Creator First Track ID
+- 音楽クリエーター中心 Track ID
 - Navidrome Media ID
 - Subscription ID / Plan ID
 - Rights Version
@@ -232,10 +232,10 @@ Read Modelはchain ID、block number、block hash、transaction hash、log index
 
 ## 10. Track Identity and Catalog Mapping
 
-Creator First Track IDをCanonical Identifierとし、Navidrome IDを交換可能なAdapter Identifierとして扱う。
+音楽クリエーター中心 Track IDをCanonical Identifierとし、Navidrome IDを交換可能なAdapter Identifierとして扱う。
 
 ```text
-Creator First Track ID
+音楽クリエーター中心 Track ID
     -> Catalog Mapping
     -> Navidrome Media ID
     -> Read-only Audio File
@@ -262,7 +262,7 @@ stateDiagram-v2
     Authorized --> Expired
 ```
 
-NavidromeのPlay CountまたはScrobbleだけをCreator Distributionの根拠にしない。
+NavidromeのPlay CountまたはScrobbleだけを音楽クリエーター分配の根拠にしない。
 
 ## 12. Deployment Topology
 
@@ -312,12 +312,12 @@ cloudflared
 - Navidromeの同時Transcodeは最大1本とし、Client切断時のTranscode Cancellationを有効にする
 - プレゼン成立条件は同時Direct Play 1〜3本を目標とし、実測値を記録する
 
-#### Gateway and Smart Contract Boundary
+#### Gateway and スマートコントラクト Boundary
 
 Gatewayを唯一のPublic Application Boundaryとし、NavidromeのPort、Credential、Internal APIおよびMedia IDをClientへ公開しない。
 
 - Wallet認証はnonce、domain、URI、Chain ID、有効期限を検証するSIWEを使用する
-- 利用者が認識するSubscription PriceとPayment Intentは`MockJPYC`建てとし、Test ETHを支払資産として受け付けない
+- ユーザが認識するSubscription PriceとPayment Intentは`MockJPYC`建てとし、Test ETHを支払資産として受け付けない
 - Gatewayは署名済みPayment Authorizationを検証してRelayerへ渡せるが、Relayer受付またはGas支払だけでSubscriptionを有効化しない
 - `DemoSubscription`は一致する`MockJPYC` TransferがFinality条件を満たした後だけ有効化する
 - 明示的なSBT受領同意とQualificationを確認した後だけ、RelayerがEarly Supporter SBT発行Transactionを送信できる
@@ -331,7 +331,7 @@ Base SepoliaのTest Contractは少なくとも次を分離する。
 
 - `MockJPYC`: 金銭的価値、償還請求権または実在JPYCとの交換可能性を持たないTest Token
 - `DemoSubscription`: Wallet、Plan、開始時刻、有効期限および取消状態
-- `DemoRightsRegistry`: Creator First Track ID、公開状態、Rights Versionおよび停止状態
+- `DemoRightsRegistry`: 音楽クリエーター中心 Track ID、公開状態、Rights Versionおよび停止状態
 - `DemoEarlySupporterSBT`: 譲渡不能、失効可能かつ金銭的権利を持たないTest Credential
 
 最初の公開Contract JourneyのChain IDはEthereum Sepoliaの`11155111`とし、Contract Address、Deployment Transaction、ABI、Source Commitおよび使用RPCをデモ画面へ表示する。ADR-0007で将来のPrimary L2を決定した後は、Environmentごとに別ManifestとAsset Registry Entryを使用する。Test ETHはGasにだけ使用し、料金表示、Payment Intent、Subscription RevenueまたはSBT資格額に使用しない。Mainnet Asset、本番Wallet、本番秘密鍵、実在Subscription、実在Rights、未公開音源または個人情報をTest環境へ投入しない。Deployer KeyとRelayer KeyはRepositoryへCommitせず、用途と権限を分離し、可能な限りVMへ常置しない。
@@ -352,7 +352,7 @@ Base SepoliaのTest Contractは少なくとも次を分離する。
 10. 700 MiB警告と800 MiB新規Session停止の自動Test
 11. e2-microでOOMを発生させず、同時Direct Play 1〜3本と最大1 Transcodeの測定結果を保存すること
 12. `MockJPYC`の正しいAsset、Amount、ChainおよびPayment IntentだけがSubscriptionを有効化し、Test ETH、誤Asset、未確定または重複Paymentが有効化しないこと
-13. 利用者がTest ETHを保持しなくてもRelayer経由でPaymentとSBT発行を操作でき、Gas支払がSubscription Paymentとして記録されないこと
+13. ユーザがTest ETHを保持しなくてもRelayer経由でPaymentとSBT発行を操作でき、Gas支払がSubscription Paymentとして記録されないこと
 14. 明示的同意とQualificationがある場合だけDemo SBTを一回発行し、Transfer、重複発行、失効後の特権およびSBT単独での通常再生を拒否すること
 
 ### 12.3 Production Candidate Topology
@@ -391,11 +391,11 @@ CaddyからNavidromeへ直接到達できないNetwork Policyとする。Navidro
 
 SubscriptionとRights Enforcementを迂回できる経路が生じるため採用しない。
 
-### NavidromeのUser / Library権限だけでPlanを表現する
+### Navidromeのユーザ / Library権限だけでPlanを表現する
 
 Library単位の制御は補助的に利用できるが、楽曲ごとのRights Version、Territory、License WindowおよびOn-chain Subscriptionを十分に表現できないため、唯一のPolicy Engineにはしない。
 
-### 再生ごとにSmart Contractを直接読む
+### 再生ごとにスマートコントラクトを直接読む
 
 RPC latency、Rate Limit、Chain障害をPlayback Critical Pathへ入れるため採用しない。
 

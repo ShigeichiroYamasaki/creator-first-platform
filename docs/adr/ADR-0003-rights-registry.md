@@ -10,7 +10,7 @@ description: 楽曲、権利者、権利種別、持分、許諾範囲、証憑�
 
 ## 1. Context
 
-Creator First Platform は、音楽を中心とするコンテンツ配信において、Creator の権利と利益を優先し、利用実績に基づく透明で検証可能な分配を実現することを目標とする。
+Creator First Platform は、音楽を中心とするコンテンツ配信において、音楽クリエーター の権利と利益を優先し、利用実績に基づく透明で検証可能な分配を実現することを目標とする。
 
 このためには、Platform が扱う各作品について、
 
@@ -23,7 +23,7 @@ Creator First Platform は、音楽を中心とするコンテンツ配信にお
 
 を追跡可能にする必要がある。
 
-しかし、音楽に関する権利は単純な「Creator = Owner」では表現できない。
+しかし、音楽に関する権利は単純な「音楽クリエーター = Owner」では表現できない。
 
 一つの楽曲には、例えば、
 
@@ -69,7 +69,7 @@ flowchart LR
 Rights Registry は、少なくとも次の情報を論理的に管理する。
 
 - Content Identifier
-- Rights Holder Identifier
+- 権利者 Identifier
 - Rights Type
 - Rights Share
 - Territory
@@ -152,7 +152,7 @@ flowchart TD
 
 ## 5. Rights Claims
 
-Rights Holder は、自身が保有または管理すると主張する権利について Rights Claim を提出できる。
+権利者 は、自身が保有または管理すると主張する権利について Rights Claim を提出できる。
 
 Rights Claim は少なくとも、
 
@@ -183,12 +183,12 @@ Verified / Rejected / Disputed
 
 ## 6. Verification
 
-Creator First Platform は、Creator Registration と Rights Registration を分離する。
+Creator First Platform は、音楽クリエーター登録 と Rights Registration を分離する。
 
-CreatorとしてPlatformへ登録済みであっても、そのCreatorが任意の作品の権利者であることを意味しない。
+音楽クリエーターとしてPlatformへ登録済みであっても、その音楽クリエーターが任意の作品の権利者であることを意味しない。
 
 ```text
-Creator Registration
+音楽クリエーター登録
         ≠
 Rights Verification
 ```
@@ -200,7 +200,7 @@ Rights Verification では、必要に応じて、
 - ISRC / ISWC 等の識別情報
 - 出版・原盤情報
 - 権利管理事業者等から得られる情報
-- Rights Holder による署名
+- 権利者 による署名
 - その他の検証可能な証拠
 
 を利用する。
@@ -235,9 +235,9 @@ Rights TypeはProtocol上でVersion管理し、将来的な権利種別の追加
 
 ## 8. Fractional Rights
 
-一つの権利を複数のRights Holderが共有する場合を扱う。
+一つの権利を複数の権利者が共有する場合を扱う。
 
-権利種別 $r$ に対する各Rights HolderのShareを $s_i$ とすると、原則として、
+権利種別 $r$ に対する各権利者のShareを $s_i$ とすると、原則として、
 
 $$
 0 \leq s_i \leq 1
@@ -277,8 +277,8 @@ Platform Revenue Distribution Share
 
 契約によって、
 
-- Rights Holder
-- Creator
+- 権利者
+- 音楽クリエーター
 - Publisher
 - Label
 - Distributor
@@ -550,7 +550,7 @@ Rights RegistryのProtocol RulesはGovernance対象とする。
 - Required Proof
 - External Registry Integration
 
-等の変更は、Protocol SpecificationおよびGovernance Processに従う。
+等の変更は、プロトコル仕様およびGovernance Processに従う。
 
 ただしGovernanceは、
 
@@ -562,9 +562,9 @@ Rights RegistryのProtocol RulesはGovernance対象とする。
 
 ---
 
-## 18. Smart Contract Relationship
+## 18. スマートコントラクト Relationship
 
-Smart ContractはRights RegistryのVerified Stateを利用して分配等を実行できる。
+スマートコントラクトはRights RegistryのVerified Stateを利用して分配等を実行できる。
 
 概念的には、
 
@@ -584,9 +584,9 @@ flowchart LR
     DIST --> PAY
 ```
 
-ただし、Smart ContractがRights Registryの唯一のSource of Truthになるとは限らない。
+ただし、スマートコントラクトがRights Registryの唯一のSource of Truthになるとは限らない。
 
-法的情報、契約、個人情報等はOff-chainで管理し、Smart Contractには実行に必要なVerified StateまたはCommitmentのみを提供する。
+法的情報、契約、個人情報等はOff-chainで管理し、スマートコントラクトには実行に必要なVerified StateまたはCommitmentのみを提供する。
 
 ---
 
@@ -616,7 +616,7 @@ Public Blockchainに不要な個人情報または機密契約情報を保存し
 
 ### Invariant 6
 
-Creator RegistrationだけをRights Ownershipの証明として扱ってはならない。
+音楽クリエーター登録だけをRights Ownershipの証明として扱ってはならない。
 
 ### Invariant 7
 
@@ -626,9 +626,9 @@ Rights Registryへの登録そのものを、法的権利を創設する行為�
 
 ## 20. Alternatives Considered
 
-### Creator = Owner Model
+### 音楽クリエーター = Owner Model
 
-Creator登録者を自動的に全権利のOwnerとする方式。
+音楽クリエーター登録者を自動的に全権利のOwnerとする方式。
 
 音楽の複雑な権利構造を表現できないため採用しない。
 
@@ -656,13 +656,13 @@ Platform運営者だけが変更可能な通常のDatabaseのみをSource of Tru
 
 ### Positive
 
-- Creatorの権利を明示的に扱える
+- 音楽クリエーターの権利を明示的に扱える
 - 複数権利者・複数Rights Typeを表現できる
 - 利用実績から分配までを追跡しやすくなる
 - Rights ClaimとVerified Rightsを区別できる
 - 紛争中の誤分配を抑制できる
 - 権利変更履歴を監査できる
-- Smart Contractによる分配と法的権利管理を接続できる
+- スマートコントラクトによる分配と法的権利管理を接続できる
 
 ### Negative
 
@@ -699,7 +699,7 @@ Rights Registryは少なくとも次のリスクを考慮する。
 
 ADR-0001はGovernance Architectureを定義する。
 
-ADR-0002はGovernance MemberのVerifiable Sortitionを定義する。
+ADR-0002はガバナンス議員のVerifiable Sortitionを定義する。
 
 ADR-0003は、Creator First Platformが扱う作品と権利関係をどのように記録し、検証し、分配システムへ接続するかを定義する。
 
@@ -708,7 +708,7 @@ ADR-0001 Governance Model
 ADR-0002 Verifiable Sortition
 ADR-0003 Rights Registry
             ↓
-Protocol Specifications
+プロトコル仕様s
             ↓
 Implementation
 ```
@@ -719,7 +719,7 @@ Implementation
 
 - Whitepaper: Vision
 - Whitepaper: Rights and Funds
-- Whitepaper: Creator Registration
+- Whitepaper: 音楽クリエーター登録
 - Whitepaper: Economic Model
 - Whitepaper: Governance
 - Whitepaper: Technology

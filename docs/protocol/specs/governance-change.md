@@ -1,6 +1,6 @@
 ---
 title: SPEC-GOVERNANCE-001 Contract Change Governance
-description: 二院制Quadratic VotingからSmart Contract変更のTimelock実行までを定義するDraft Protocol Specification
+description: 二院制Quadratic Votingからスマートコントラクト変更のTimelock実行までを定義するDraft プロトコル仕様
 editLink: false
 ---
 

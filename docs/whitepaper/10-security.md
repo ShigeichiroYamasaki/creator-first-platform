@@ -13,9 +13,9 @@ Creator First Platform は、音楽配信サービス、権利管理、収益分
 保護すべきものには、
 
 - 音源と未公開コンテンツ
-- 利用者アカウント
+- ユーザアカウント
 - 再生履歴とプライバシー
-- クリエイターの本人・権利情報
+- 音楽クリエーターの本人・権利情報
 - 売上と分配資金
 - スマートコントラクト
 - Usage Oracle
@@ -29,12 +29,12 @@ Creator First Platform は、音楽配信サービス、権利管理、収益分
 flowchart TD
     PLATFORM[Creator First Platform]
 
-    PLATFORM --> USER[Users]
-    PLATFORM --> CREATOR[Creators]
+    PLATFORM --> USER[ユーザ]
+    PLATFORM --> CREATOR[音楽クリエーター]
     PLATFORM --> CONTENT[Content]
     PLATFORM --> DATA[Usage / Personal Data]
     PLATFORM --> MONEY[Funds]
-    PLATFORM --> CONTRACT[Smart Contracts]
+    PLATFORM --> CONTRACT[スマートコントラクトs]
     PLATFORM --> GOV[Governance]
 ```
 
@@ -89,8 +89,8 @@ flowchart TD
     ATTACKER --> EXT[External Attacker]
     ATTACKER --> BOT[Bot / Fraud Operator]
     ATTACKER --> INSIDER[Insider]
-    ATTACKER --> MALCREATOR[Malicious Creator]
-    ATTACKER --> MALUSER[Malicious User]
+    ATTACKER --> MALCREATOR[Malicious 音楽クリエーター]
+    ATTACKER --> MALUSER[Malicious ユーザ]
     ATTACKER --> SUPPLY[Supply-chain Attacker]
     ATTACKER --> GOVATTACK[Governance Attacker]
 ```
@@ -144,14 +144,14 @@ flowchart LR
 
 ## 10.5 Identity と Authentication
 
-利用者、クリエイター、運営者では必要な本人確認レベルが異なる。
+ユーザ、音楽クリエーター、運営者では必要な本人確認レベルが異なる。
 
 ```mermaid
 flowchart TD
     ID[Identity]
 
     ID --> USER[Listener]
-    ID --> CREATOR[Creator]
+    ID --> CREATOR[音楽クリエーター]
     ID --> ADMIN[Operator]
 
     USER --> UAUTH[Low-friction Authentication]
@@ -159,11 +159,11 @@ flowchart TD
     ADMIN --> STRONG[Strong Authentication]
 ```
 
-通常利用者には過剰な本人確認を要求しない。
+通常ユーザには過剰な本人確認を要求しない。
 
 一方、
 
-- クリエイター登録
+- 音楽クリエーター登録
 - 分配先変更
 - 運営管理
 - Treasury操作
@@ -189,9 +189,9 @@ flowchart TD
 
 ---
 
-## 10.7 Creator Identity
+## 10.7 音楽クリエーター本人性
 
-クリエイターへの分配が発生する以上、
+音楽クリエーターへの分配が発生する以上、
 
 > **「誰が作品をアップロードしたか」だけでなく、「その人物・組織が分配を受ける権限を持つか」**
 
@@ -199,10 +199,10 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    APPLY[Creator Application]
+    APPLY[音楽クリエーターアプリ]
     ID[Identity Verification]
     RIGHTS[Rights Verification]
-    ACCOUNT[Creator Account]
+    ACCOUNT[音楽クリエーターアカウント]
     PAYOUT[Payout Eligibility]
 
     APPLY --> ID --> RIGHTS --> ACCOUNT --> PAYOUT
@@ -267,7 +267,7 @@ flowchart LR
 
 ## 10.10 音源の保護
 
-音楽ストリーミングでは、利用者端末で最終的に音声を再生する以上、完全なコピー防止は不可能である。
+音楽ストリーミングでは、ユーザ端末で最終的に音声を再生する以上、完全なコピー防止は不可能である。
 
 したがって、
 
@@ -323,7 +323,7 @@ DRMは、
 
 には利用できるが、権利侵害を完全に防止する技術ではない。
 
-ユーザー体験、対応端末、運用コストとのバランスで判断する。
+ユーザ体験、対応端末、運用コストとのバランスで判断する。
 
 ---
 
@@ -469,7 +469,7 @@ flowchart LR
 
 ## 10.17 AI不正検出の限界
 
-AIモデルが「不正」と判定しただけで、自動的にクリエイターの資金を永久没収する設計にはしない。
+AIモデルが「不正」と判定しただけで、自動的に音楽クリエーターの資金を永久没収する設計にはしない。
 
 重大な措置では、
 
@@ -494,7 +494,7 @@ flowchart LR
     VALID[Validation]
     AGG[Aggregation]
     ORACLE[Usage Oracle]
-    SC[Smart Contract]
+    SC[スマートコントラクト]
 
     EVENTS --> VALID --> AGG --> ORACLE --> SC
 ```
@@ -661,7 +661,7 @@ Proverを「信頼不要」ではなく、
 
 ---
 
-## 10.25 Smart Contract Security
+## 10.25 スマートコントラクト Security
 
 スマートコントラクトは一度デプロイすると、通常のWebアプリより修正が困難である。
 
@@ -693,7 +693,7 @@ flowchart LR
 
 ---
 
-## 10.26 Smart Contract Invariants
+## 10.26 スマートコントラクト Invariants
 
 重要な性質をInvariantとして定義する。
 
@@ -767,7 +767,7 @@ flowchart LR
     APPROVE --> TIME --> OBSERVE --> EXEC
 ```
 
-これにより、利用者、クリエイター、監査者が変更内容を確認する時間を確保する。
+これにより、ユーザ、音楽クリエーター、監査者が変更内容を確認する時間を確保する。
 
 ---
 
@@ -858,7 +858,7 @@ flowchart TD
 
 ## 10.35 Sybil Attack
 
-User Houseでは、一人が大量のアカウントを作成して投票する攻撃を考慮する。
+ユーザ院議会では、一人が大量のアカウントを作成して投票する攻撃を考慮する。
 
 ```mermaid
 flowchart LR
@@ -884,11 +884,11 @@ flowchart LR
 
 ---
 
-## 10.36 Creator House の乗っ取り
+## 10.36 音楽クリエータ院議会 の乗っ取り
 
-Creator Houseでも、偽クリエイター登録や一組織による多数アカウント取得を防ぐ必要がある。
+音楽クリエータ院議会でも、偽音楽クリエーター登録や一組織による多数アカウント取得を防ぐ必要がある。
 
-Creator Eligibilityを、
+音楽クリエーター適格性を、
 
 - 本人確認
 - 権利確認
@@ -1113,7 +1113,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    USER[User]
+    USER[ユーザ]
     ID[Identity Data]
     PSEUDO[Pseudonymous ID]
     USAGE[Usage System]
@@ -1239,7 +1239,7 @@ flowchart LR
 - 連絡経路
 - 停止権限
 - 法務対応
-- 利用者通知
+- ユーザ通知
 - 復旧手順
 
 を定義する。
@@ -1255,7 +1255,7 @@ flowchart LR
 - インシデント対応
 - 個人情報保護
 - 権利者対応
-- 利用者対応
+- ユーザ対応
 - 法令上必要な報告
 - ベンダー管理
 
@@ -1267,7 +1267,7 @@ flowchart LR
     CORP[Operating Corporation]
     TECH[Technical Response]
     LEGAL[Legal Response]
-    USERS[User / Creator Communication]
+    USERS[ユーザ / 音楽クリエーターCommunication]
 
     INCIDENT --> CORP
     CORP --> TECH
@@ -1301,7 +1301,7 @@ flowchart LR
 flowchart TD
     AUDIT[Security Audit]
 
-    AUDIT --> CONTRACT[Smart Contracts]
+    AUDIT --> CONTRACT[スマートコントラクトs]
     AUDIT --> ZK[ZK Programs]
     AUDIT --> CLOUD[Cloud]
     AUDIT --> APP[Applications]
@@ -1422,7 +1422,7 @@ flowchart LR
 
 ### Phase 3
 
-- Smart Contract Audit
+- スマートコントラクト Audit
 - ZK Audit
 - Penetration Test
 - Bug Bounty
@@ -1467,8 +1467,8 @@ flowchart LR
 flowchart TD
     CONST[3つの憲章]
 
-    CONST --> CREATOR[Creator Rights / Sustainability]
-    CONST --> USER[User Autonomy / Privacy]
+    CONST --> CREATOR[音楽クリエーターの権利 / Sustainability]
+    CONST --> USER[ユーザの自律性 / Privacy]
     CONST --> FAIR[Fair Ecosystem]
 
     CREATOR --> SECURITY[Security]
@@ -1476,9 +1476,9 @@ flowchart TD
     FAIR --> SECURITY
 ```
 
-クリエイターの分配資金が盗まれれば Creator First は成立しない。
+音楽クリエーターの分配資金が盗まれれば 音楽クリエーター中心 は成立しない。
 
-利用者の再生履歴が無制限に公開されれば User Autonomy は成立しない。
+ユーザの再生履歴が無制限に公開されれば ユーザの自律性 は成立しない。
 
 Botが推薦やガバナンスを支配すれば Fair Ecosystem は成立しない。
 
@@ -1488,8 +1488,8 @@ Botが推薦やガバナンスを支配すれば Fair Ecosystem は成立しな�
 
 ```mermaid
 flowchart TD
-    USER[Users]
-    CREATOR[Creators]
+    USER[ユーザ]
+    CREATOR[音楽クリエーター]
 
     USER --> EDGE[Edge Security]
     CREATOR --> EDGE
@@ -1502,7 +1502,7 @@ flowchart TD
     USAGE --> FRAUD[Fraud Detection]
     USAGE --> ZK[ZK Proof]
 
-    ZK --> CONTRACT[Smart Contracts]
+    ZK --> CONTRACT[スマートコントラクトs]
     CONTRACT --> TREASURY[Treasury]
 
     GOV[Governance Security] --> CONTRACT
@@ -1547,12 +1547,12 @@ flowchart LR
 
 特に重要なのは、
 
-- 利用者データの最小化
-- クリエイターと権利者の本人・権利確認
+- ユーザデータの最小化
+- 音楽クリエーターと権利者の本人・権利確認
 - Playback Fraud対策
 - Usage Oracleの検証可能性
 - ZK Proof Programの監査
-- Smart Contract Invariant
+- スマートコントラクト Invariant
 - Treasuryと秘密鍵の分散管理
 - ガバナンス攻撃への耐性
 - Supply Chain Security

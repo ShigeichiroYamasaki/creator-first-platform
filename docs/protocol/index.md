@@ -1,17 +1,17 @@
 ---
-description: WhitepaperとADRの設計判断を、要件・不変条件・テスト条件へ変換するDraft Protocol Specificationの入口。
+description: WhitepaperとADRの設計判断を、要件・不変条件・テスト条件へ変換するDraft プロトコル仕様の入口。
 ---
 
-# Protocol Specification
+# プロトコル仕様
 
-Creator First Platform の Protocol Specification は、Whitepaper・CFP・Governance Decision・ADR で確定した設計を、**Codexや開発者が実装可能な要件へ変換するための文書群**です。
+Creator First Platform の プロトコル仕様 は、Whitepaper・CFP・ガバナンス決定・ADR で確定した設計を、**Codexや開発者が実装可能な要件へ変換するための文書群**です。
 
-Protocol Specification は、人間向けの説明書であると同時に、AIエージェントが実装・テスト・レビューを行うための **実装契約**として利用します。
+プロトコル仕様 は、人間向けの説明書であると同時に、AIエージェントが実装・テスト・レビューを行うための **実装契約**として利用します。
 
 Account・Payment・Credential・Rights・Streaming・Player・Usage・Distributionの10仕様を一つの利用経路として読む場合は、[End-to-End Vertical Slice](/protocol/vertical-slice)を参照してください。コントラクト仕様変更を統治する11番目の仕様は、[SPEC-GOVERNANCE-001](/protocol/specs/governance-change)として独立させています。Mock／Testnetでの作業分解とStage Gateは[Vertical Slice Implementation Plan](/protocol/implementation-plan)にまとめています。
 
 ::: warning 現在のStatus: Draft
-公開中のProtocol Specificationは設計・レビュー段階です。本番サービスや資金を扱う承認済み仕様ではありません。実装開始前にOpen Questionsを解決し、法務・セキュリティ・ガバナンスの承認とVersion更新が必要です。
+公開中のプロトコル仕様は設計・レビュー段階です。本番サービスや資金を扱う承認済み仕様ではありません。実装開始前にOpen Questionsを解決し、法務・セキュリティ・ガバナンスの承認とVersion更新が必要です。
 :::
 
 ## 現在のDraft
@@ -27,7 +27,7 @@ Account・Payment・Credential・Rights・Streaming・Player・Usage・Distribut
 | [SPEC-STREAMING-001 Playback Authorization](/protocol/specs/playback-authorization) | Streaming / Authorization | 0.1.0 | Subscription・Credential特権・Rights認可、Playback Session、Media Adapter、Delivery Evidence |
 | [SPEC-STREAMING-002 Player Client](/protocol/specs/player-client) | Streaming / Client | 0.1.0 | Gateway専用PWA、Navidrome再生、Wallet・Supporter SBT・Community統合、Client Storage境界 |
 | [SPEC-USAGE-001 Playback Verification](/protocol/specs/playback-verification) | Usage / Privacy | 0.1.0 | Playback Event、重複防止、検証、Usage Snapshot、Challenge |
-| [SPEC-DISTRIBUTION-001 Creator Distribution](/protocol/specs/creator-distribution) | Distribution / Accounting | 0.1.0 | Revenue、User-Centric計算、Rights分割、保留、Allocation、資金透明性照合 |
+| [SPEC-DISTRIBUTION-001 音楽クリエーター分配](/protocol/specs/creator-distribution) | Distribution / Accounting | 0.1.0 | Revenue、ユーザ中心計算、Rights分割、保留、Allocation、資金透明性照合 |
 | [SPEC-GOVERNANCE-001 Contract Change Governance](/protocol/specs/governance-change) | Governance / Contract Evolution | 0.1.0 | 二院制、Quadratic Vote、Review、Manifest、Timelock、Upgrade |
 
 すべてのDraftは、リポジトリ内の自動検証によって要件IDとInvariant IDの一意性、Global Invariant参照、Related Documentsの存在、MUST / MUST NOTとTest Requirementsの双方向対応、およびOpen Questionの安定ID・Decision owner・停止中ゲートを検査します。未決定事項は[Protocol Decision Queue](/protocol/open-questions)から確認できます。
@@ -40,9 +40,9 @@ Account・Payment・Credential・Rights・Streaming・Player・Usage・Distribut
 flowchart LR
     WP[Whitepaper]
     CFP[CFP]
-    GOV[Governance Decision]
+    GOV[ガバナンス決定]
     ADR[ADR]
-    SPEC[Protocol Specification]
+    SPEC[プロトコル仕様]
     ISSUE[GitHub Issue]
     AI[Codex]
     CODE[Code + Tests]
@@ -57,9 +57,9 @@ flowchart LR
 | --- | --- |
 | Whitepaper | 何を目指すか、Platformの基本原則 |
 | CFP | 何を変更・拡張したいか |
-| Governance Decision | 何を採用するか |
+| ガバナンス決定 | 何を採用するか |
 | ADR | なぜその設計を採用したか |
-| Protocol Specification | 何を、どの条件で実装するか |
+| プロトコル仕様 | 何を、どの条件で実装するか |
 | GitHub Issue | 今回実装する具体的作業 |
 | Code / Tests | 仕様を満たす実装 |
 
@@ -74,16 +74,16 @@ Three Charters
       ↓
 Whitepaper
       ↓
-Accepted CFP / Governance Decision
+Accepted CFP / ガバナンス決定
       ↓
 ADR
       ↓
-Protocol Specification
+プロトコル仕様
       ↓
 Implementation
 ```
 
-実装コードと承認済みProtocol Specificationが矛盾する場合、原則としてSpecificationを正とします。
+実装コードと承認済みプロトコル仕様が矛盾する場合、原則としてSpecificationを正とします。
 
 ---
 
@@ -93,7 +93,7 @@ Protocol全体で共通して参照する文書です。
 
 ### [README](/protocol/foundation/overview)
 
-Protocol Specification全体の目的、文書階層、AIエージェント向けルールを定義します。
+プロトコル仕様全体の目的、文書階層、AIエージェント向けルールを定義します。
 
 文書階層、開発フロー、仕様一覧、AIエージェント向けルールを公開しています。
 
@@ -105,7 +105,7 @@ MUST / MUST NOT / SHOULD / MAY、Identifier、Timestamp、Token Amount、Error C
 
 ### [Glossary](/protocol/foundation/glossary)
 
-User、Creator、Rights Holder、Wallet、Governance Member、Usage Event等の用語を統一します。
+ユーザ、音楽クリエーター、権利者、Wallet、ガバナンス議員、Usage Event等の用語を統一します。
 
 Participant、Account、Wallet、Rights、Payment等の共通語彙を公開しています。
 
@@ -119,11 +119,11 @@ Platform全体で破ってはいけない不変条件を定義します。
 
 ## Protocol Domains
 
-Protocol Specificationはドメイン単位に整理します。
+プロトコル仕様はドメイン単位に整理します。
 
 ```mermaid
 flowchart TD
-    PROTOCOL[Protocol Specification]
+    PROTOCOL[プロトコル仕様]
 
     PROTOCOL --> ACCOUNT[Account]
     PROTOCOL --> GOV[Governance]
@@ -187,7 +187,7 @@ Subscription Activation
 
 ## Governance
 
-Creator / Userから抽選議会を形成し、熟議からProtocol Decisionへつなげる仕様です。
+音楽クリエーター／ユーザから抽選議会を形成し、熟議からProtocol Decisionへつなげる仕様です。
 
 現在のDraftと予定仕様:
 
@@ -201,7 +201,7 @@ protocol/governance/
 └── emergency-governance-spec.md
 ```
 
-[SPEC-GOVERNANCE-001 Contract Change Governance](/protocol/specs/governance-change)は、Creator HouseとUser Houseの独立承認、本人単位のQuadratic Voting、Execution Manifest、Review、TimelockおよびUpgrade権限を定義します。議会UIの設計は[二院制議会・Governance](/governance/)を参照してください。
+[SPEC-GOVERNANCE-001 Contract Change Governance](/protocol/specs/governance-change)は、音楽クリエータ院議会とユーザ院議会の独立承認、本人単位のQuadratic Voting、Execution Manifest、Review、TimelockおよびUpgrade権限を定義します。議会UIの設計は[二院制議会・Governance](/governance/)を参照してください。
 
 ### 関連ADR
 
@@ -215,7 +215,7 @@ protocol/governance/
 
 ## Rights
 
-作品、Creator、Rights Holder、Rights Claim、Verified Rights、紛争状態を扱います。
+作品、音楽クリエーター、権利者、Rights Claim、Verified Rights、紛争状態を扱います。
 
 予定仕様:
 
@@ -236,7 +236,7 @@ protocol/rights/
 
 ## Distribution
 
-Subscription RevenueをVerified UsageとRights Stateに基づいてCreator / Rights Holderへ分配する仕様です。
+Subscription RevenueをVerified UsageとRights Stateに基づいて音楽クリエーター／権利者へ分配する仕様です。
 
 予定仕様:
 
@@ -251,7 +251,7 @@ protocol/distribution/
 ### 関連ADR
 
 - ADR-0003 Rights Registry
-- ADR-0004 Creator Distribution Model
+- ADR-0004 音楽クリエーター分配 Model
 - ADR-0005 Usage Oracle
 - ADR-0007 Blockchain / L2 Strategy
 
@@ -326,7 +326,7 @@ protocol/zk/
 
 - ADR-0002 Verifiable Sortition
 - ADR-0003 Rights Registry
-- ADR-0004 Creator Distribution Model
+- ADR-0004 音楽クリエーター分配 Model
 - ADR-0005 Usage Oracle
 - ADR-0006 Zero-Knowledge Proof Strategy
 
@@ -338,7 +338,7 @@ protocol/zk/
 
 - [SPEC-BLOCKCHAIN-001 Approved Settlement Asset Registry](/protocol/specs/settlement-asset-registry)
 
-Smart Contract、Stablecoin Settlement、L2 Integration、Upgrade、Chain State等を定義します。
+スマートコントラクト、Stablecoin Settlement、L2 Integration、Upgrade、Chain State等を定義します。
 
 予定仕様:
 
@@ -354,7 +354,7 @@ protocol/blockchain/
 
 ### 関連ADR
 
-- ADR-0004 Creator Distribution Model
+- ADR-0004 音楽クリエーター分配 Model
 - ADR-0006 Zero-Knowledge Proof Strategy
 - ADR-0007 Blockchain / L2 Strategy
 - ADR-0008 Account / Wallet / Identity Strategy
@@ -381,7 +381,7 @@ protocol/security/
 
 ## Specification Format
 
-各Protocol Specificationは共通テンプレートに従います。
+各プロトコル仕様は共通テンプレートに従います。
 
 ```text
 protocol/templates/protocol-spec-template.md
@@ -426,11 +426,11 @@ Open Questions
 
 ## AI / Codex Development Flow
 
-Protocol Specificationから直接mainブランチへ実装を反映しません。
+プロトコル仕様から直接mainブランチへ実装を反映しません。
 
 ```mermaid
 flowchart LR
-    SPEC[Protocol Specification]
+    SPEC[プロトコル仕様]
     ISSUE[GitHub Issue]
     CODEX[Codex]
     BRANCH[Feature Branch]
@@ -446,7 +446,7 @@ Codexには、まず関連する
 
 1. `AGENTS.md`
 2. ADR
-3. Protocol Specification
+3. プロトコル仕様
 4. Existing Code
 5. Existing Tests
 
@@ -540,7 +540,7 @@ flowchart TD
 
 ## 実装原則
 
-Protocol Specificationは単なる参考文書ではありません。
+プロトコル仕様は単なる参考文書ではありません。
 
 実装では、
 

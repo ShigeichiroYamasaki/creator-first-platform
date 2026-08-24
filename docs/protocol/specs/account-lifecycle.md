@@ -1,6 +1,6 @@
 ---
 title: SPEC-ACCOUNT-003 Account Lifecycle
-description: Account登録、認証、Session、Recovery、停止・閉鎖のDraft Protocol Specification
+description: Account登録、認証、Session、Recovery、停止・閉鎖のDraft プロトコル仕様
 editLink: false
 ---
 

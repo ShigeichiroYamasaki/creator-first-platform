@@ -1,9 +1,9 @@
 ---
-title: ADR-0014 Public Testnet User Journey
-description: GitHub Pages上でTest User登録、Sepolia Wallet、MockJPYC Subscription、合成Playerを安全に統合する技術判断。
+title: ADR-0014 公開テストネットユーザ利用フロー
+description: GitHub Pages上でテストユーザ登録、Sepolia Wallet、MockJPYC Subscription、合成Playerを安全に統合する技術判断。
 ---
 
-# ADR-0014: Public Testnet User Journey
+# ADR-0014: 公開テストネットユーザ利用フロー
 
 **Status:** Proposed
 
@@ -13,15 +13,15 @@ description: GitHub Pages上でTest User登録、Sepolia Wallet、MockJPYC Subsc
 
 ## Context
 
-Test User登録デモは、当初AliasとNoticeを現在のTabのSession Storageへ保存するだけのBrowser Fixtureだった。この構成はPrivacy境界の確認には適するが、利用者がCreator First Platformの中心的な流れであるWallet接続、Stablecoin建てSubscriptionおよび音楽Player操作を連続して検証できない。
+テストユーザ登録デモは、当初AliasとNoticeを現在のTabのSession Storageへ保存するだけのBrowser Fixtureだった。この構成はPrivacy境界の確認には適するが、ユーザがCreator First Platformの中心的な流れであるWallet接続、Stablecoin建てSubscriptionおよび音楽Player操作を連続して検証できない。
 
-一方、GitHub Pagesは静的Hostingであり、秘密鍵、Relayer Credential、Server Sessionまたは保護音源を保持できない。設計時点ではSepolia Contractが未デプロイであり、任意Contract Addressを利用者が入力できるUIや、未検証AddressへTransactionを送るUIを公開すると、誤Chain、偽Token、Phishingおよび本番資産の誤使用につながる。
+一方、GitHub Pagesは静的Hostingであり、秘密鍵、Relayer Credential、Server Sessionまたは保護音源を保持できない。設計時点ではSepolia Contractが未デプロイであり、任意Contract Addressをユーザが入力できるUIや、未検証AddressへTransactionを送るUIを公開すると、誤Chain、偽Token、Phishingおよび本番資産の誤使用につながる。
 
-また、Test User Profile、Wallet Address、Subscription、Streaming Authorizationは異なる責任を持つ。UI上で一続きに見せても、Alias登録だけをAccount、本人確認または再生権限として扱ってはならない。
+また、テストユーザプロフィール、Wallet Address、Subscription、Streaming Authorizationは異なる責任を持つ。UI上で一続きに見せても、Alias登録だけをAccount、本人確認または再生権限として扱ってはならない。
 
 ## Decision
 
-GitHub Pages上のTest Userデモを、次の4段階からなる **Public Testnet User Journey** として実装する。
+GitHub Pages上のテストユーザデモを、次の4段階からなる **公開テストネットユーザ利用フロー** として実装する。
 
 ```mermaid
 flowchart LR
@@ -42,14 +42,14 @@ flowchart LR
 
 ### 1. Test ProfileはWalletおよびIdentityから分離する
 
-- AliasとランダムなTest User IDだけを現在のTabのSession Storageへ保存する。
+- AliasとランダムなテストユーザIDだけを現在のTabのSession Storageへ保存する。
 - 実名、Email、電話番号、Password、秘密鍵、Seed PhraseまたはWallet Addressの入力欄を設けない。
 - Profile登録はPlatform Account、Authentication、Wallet Link、本人確認、Subscription、SBTまたはStreaming Authorizationを成立させない。
 - Profile削除はTab-local Dataだけを削除し、Wallet接続履歴やBlockchain Transactionが削除されるとは表示しない。
 
 ### 2. Wallet接続は明示操作とし、Sepoliaへ固定する
 
-- BrowserのEIP-1193 Providerを、利用者が「Walletを接続」を押した場合だけ呼び出す。
+- BrowserのEIP-1193 Providerを、ユーザが「Walletを接続」を押した場合だけ呼び出す。
 - Chain IDはEthereum Sepoliaの`11155111`だけを受け入れる。
 - Network切替には`wallet_switchEthereumChain`を使い、任意RPC URLまたは未知のChainを追加しない。
 - AccountまたはChain変更Eventを監視し、Address変更時は状態を再取得し、Sepolia以外へ移動した時は残高、Allowance、PlanおよびSubscription状態を消去して書込みと限定Trackを停止する。
@@ -65,7 +65,7 @@ flowchart LR
 - MockJPYC、Subscription、Treasury、Supporter SBTの全Addressが有効な非Zero Addressである
 - `sourceCommit`が完全な40桁Commit Hashである
 
-`not-deployed`、取得失敗、不明Schema、誤Chain、不正Addressまたは不正Commitではfail closedとする。利用者がContract Addressを手入力してこの制御を迂回する機能は設けない。
+`not-deployed`、取得失敗、不明Schema、誤Chain、不正Addressまたは不正Commitではfail closedとする。ユーザがContract Addressを手入力してこの制御を迂回する機能は設けない。
 
 Manifestを`active`へ変更する前に、対象CommitからのDeployment、Contract Verification、Role、Plan、Test Asset NoticeおよびAddress対応をReviewする。Manifestは発見のための公開情報であり、それ自体をOn-chain状態の正本にはしない。
 
@@ -75,11 +75,11 @@ Manifestを`active`へ変更する前に、対象CommitからのDeployment、Con
 - 各AddressはPublic `claim()`から一回だけ`2,000 tJPYC`を取得できる。既存のRole限定`faucet()`は管理・Fixture用途として分離する。
 - Public FaucetはTestnet専用であり、Sybil-resistantな配布、本人単位の上限または経済価値の配布を目的としない。
 - Clientは現在のPlan価格とVersionをContractから読み、Subscription ContractへPlan価格と同額だけApproveする。無制限Approveを要求しない。
-- SubscriptionごとにTest User IDと時刻から一意なPayment Referenceを生成し、Walletへ署名対象Transactionを個別表示する。
+- SubscriptionごとにテストユーザIDと時刻から一意なPayment Referenceを生成し、Walletへ署名対象Transactionを個別表示する。
 - Subscription価格は`tJPYC`で表示する。Sepolia ETHはNetwork Gasだけであり、料金、売上、寄附またはJPYC相当額として扱わない。
 - Transaction Hashの生成だけでは成功とせず、Receiptが`success`になった後に残高、Allowance、Planおよび`isActive`を再取得する。
 
-現行Journeyは利用者Walletから直接Transactionを送るため、Sepolia ETHをGasとして必要とする。これはADR-0008およびProtocolが目標とするRelayer／PaymasterによるGas Sponsored Flowの完成形ではない。Gas Sponsorshipが実装されるまで、公開Demoはこの制約を明示する。
+現行JourneyはユーザWalletから直接Transactionを送るため、Sepolia ETHをGasとして必要とする。これはADR-0008およびProtocolが目標とするRelayer／PaymasterによるGas Sponsored Flowの完成形ではない。Gas Sponsorshipが実装されるまで、公開Demoはこの制約を明示する。
 
 ### 5. Playerは合成PreviewとUI Gateに限定する
 
@@ -94,7 +94,7 @@ Manifestを`active`へ変更する前に、対象CommitからのDeployment、Con
 - Mainnet、実在JPYC、本番Wallet、本番資金および秘密情報の利用を求めない。
 - Walletを自動接続せず、秘密鍵またはSeed Phraseを受信・保存しない。
 - Contract書込みは検証済みManifest、Sepolia、明示Wallet操作がすべて成立した場合だけ許可する。
-- `approve`、`claim`、`subscribe`を一つの不透明な操作にまとめず、利用者がWalletで個別確認できるようにする。
+- `approve`、`claim`、`subscribe`を一つの不透明な操作にまとめず、ユーザがWalletで個別確認できるようにする。
 - AliasはOff-chainのTab-local Data、Wallet AddressとTransactionはPublic Chain Dataとして別のPrivacy Noticeを表示する。
 - Client表示、Session Storage、Transaction HashまたはPending ReceiptをGateway認可に利用しない。
 
@@ -112,7 +112,7 @@ Manifestを`active`へ変更する前に、対象CommitからのDeployment、Con
 
 - GitHub PagesだけではRelayer、Rate Limit、Abuse Control、Authenticator、Gateway Cookie Sessionまたは保護Streamingを提供できない。
 - 一Address一回のFaucetはSybil対策ではなく、Testnet Tokenの供給制限として弱い。
-- Direct Wallet Transactionは利用者にSepolia ETHと複数回のWallet確認を要求する。
+- Direct Wallet TransactionはユーザにSepolia ETHと複数回のWallet確認を要求する。
 - On-chain RPC障害、Wallet実装差およびTestnet CongestionがDemo体験へ影響する。
 - Subscriber TrackのUI Gateは本番認可の証拠にならず、別途Gateway／Indexer統合が必要になる。
 
@@ -122,7 +122,7 @@ Manifestを`active`へ変更する前に、対象CommitからのDeployment、Con
 
 Privacy Noticeの確認には十分だが、決済とPlayerを含むVertical SliceのUXを検証できないため、登録前の一部機能としてのみ残す。
 
-### Contract Addressを利用者に入力させる
+### Contract Addressをユーザに入力させる
 
 Phishing、誤Chainおよび偽TokenへのTransactionを公式UIから誘導し得るため採用しない。
 
@@ -143,7 +143,7 @@ Rights、Credential、Media IDおよびStreaming Authorization境界を迂回す
 1. Profile登録前にWallet操作が有効にならず、Profile登録だけでは課金または限定Trackが有効にならない。
 2. Sepolia以外、無効Manifest、未デプロイ、不正Addressまたは不正Source Commitでは全Contract書込みが無効になる。
 3. WalletのAccount／Chain変更で古い残高、Allowance、Subscriptionおよび限定Track資格を使用しない。
-4. Public `claim()`は各Addressで一回だけ成功し、固定`2,000 tJPYC`以外を利用者が指定できない。
+4. Public `claim()`は各Addressで一回だけ成功し、固定`2,000 tJPYC`以外をユーザが指定できない。
 5. Approve額が現在のPlan価格と一致し、無制限Approveを要求しない。
 6. Receipt成功後だけSubscription状態を再取得し、PendingまたはFailed Transactionを有効と表示しない。
 7. PreviewはContract未デプロイでも操作でき、Subscriber Trackは確定済みActive Subscriptionなしでは再生できない。
@@ -153,7 +153,7 @@ Rights、Credential、Media IDおよびStreaming Authorization境界を迂回す
 
 ## Implementation Status
 
-2026-08-23時点で、Journey UI、Manifest検証、合成Player、一回限りのMockJPYC `claim()`、Contract Testおよび公開Site TestをRepositoryへ実装済みである。公開構成Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`をEthereum Sepoliaへデプロイし、Manifestを`active`へ更新した。公開RPCでBytecode、MockJPYC Notice／Claim額、SubscriptionのAsset／Treasury／Plan、ERC-1967 Implementation SlotおよびCreator Registry Noticeを検証済みである。Etherscan Source Verification、Bootstrap Role分離、Relayer／Paymaster、Gateway／Indexer連携および本番Streaming Authorizationは未実装である。この部分実装は本ADRの採用確定、Security Auditまたは本番利用承認を意味しない。
+2026-08-23時点で、Journey UI、Manifest検証、合成Player、一回限りのMockJPYC `claim()`、Contract Testおよび公開Site TestをRepositoryへ実装済みである。公開構成Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`をEthereum Sepoliaへデプロイし、Manifestを`active`へ更新した。公開RPCでBytecode、MockJPYC Notice／Claim額、SubscriptionのAsset／Treasury／Plan、ERC-1967 Implementation Slotおよび音楽クリエーター登録台帳 Noticeを検証済みである。Etherscan Source Verification、Bootstrap Role分離、Relayer／Paymaster、Gateway／Indexer連携および本番Streaming Authorizationは未実装である。この部分実装は本ADRの採用確定、Security Auditまたは本番利用承認を意味しない。
 
 ## Related Documents
 
@@ -161,7 +161,7 @@ Rights、Credential、Media IDおよびStreaming Authorization境界を迂回す
 - [ADR-0008 Account / Wallet / Identity Strategy](./ADR-0008-account-wallet-identity-strategy.md)
 - [ADR-0009 Navidrome / Streaming Authorization Gateway](./ADR-0009-navidrome-streaming-gateway.md)
 - [ADR-0011 Integrated Player Client](./ADR-0011-integrated-player-client.md)
-- [Test User Journeyデモ](/demo/test-user-registration)
-- [Sepolia Smart Contract](/demo/testnet-contracts)
+- [テストユーザ利用フローデモ](/demo/test-user-registration)
+- [Sepolia スマートコントラクト](/demo/testnet-contracts)
 - [Subscription Settlement仕様](/protocol/specs/subscription-settlement)
 - [Player Client仕様](/protocol/specs/player-client)

@@ -1,5 +1,5 @@
 ---
-description: 利用者の発見利便性を保ちながら、人気の自己強化を抑え、多様なクリエイターとの接点を広げる設計。
+description: ユーザの発見利便性を保ちながら、人気の自己強化を抑え、多様な音楽クリエーターとの接点を広げる設計。
 ---
 
 # 8. 発見とコミュニティ — Discovery & Community
@@ -8,36 +8,36 @@ description: 利用者の発見利便性を保ちながら、人気の自己強�
 
 Creator First Platform における「発見」は、単なる推薦アルゴリズムの問題ではない。
 
-既存の音楽ストリーミングサービスでは、利用者が好みの音楽を素早く見つけられることが重要である一方、過去の再生実績や人気が推薦に強く反映されると、
+既存の音楽ストリーミングサービスでは、ユーザが好みの音楽を素早く見つけられることが重要である一方、過去の再生実績や人気が推薦に強く反映されると、
 
 > **人気があるから推薦され、推薦されるからさらに人気になる**
 
 という自己強化ループが生じやすい。
 
-Creator First Platform は、利用者の利便性を維持しながら、
+Creator First Platform は、ユーザの利便性を維持しながら、
 
 - まだ知られていない作品
-- 新人クリエイター
+- 新人音楽クリエーター
 - 小規模なジャンル
 - 地域的な音楽文化
 - 新しい表現
 
 に発見される機会を提供する。
 
-さらに、利用者が単なる「消費者」ではなく、
+さらに、ユーザが単なる「消費者」ではなく、
 
-> **自分が見つけたクリエイターの成長を見守り、応援し、他の利用者へ紹介できる参加者**
+> **自分が見つけた音楽クリエーターの成長を見守り、応援し、他のユーザへ紹介できる参加者**
 
 となるコミュニティを設計する。
 
 ```mermaid
 flowchart LR
-    CREATE[Creator]
+    CREATE[音楽クリエーター]
     RELEASE[Release]
     DISCOVER[Discovery]
     USER[Listener]
     SUPPORT[Support]
-    GROW[Creator Growth]
+    GROW[音楽クリエーターの成長]
     COMMUNITY[Community]
 
     CREATE --> RELEASE --> DISCOVER --> USER
@@ -52,9 +52,9 @@ flowchart LR
 
 Discovery Layer は次の原則に従う。
 
-### User Autonomy
+### ユーザの自律性
 
-利用者自身が何を聴くかを決める。
+ユーザ自身が何を聴くかを決める。
 
 ### Fair Opportunity
 
@@ -68,7 +68,7 @@ Discovery Layer は次の原則に従う。
 
 人気、ジャンル、地域、活動段階などが異なる作品に接触できる余地を設ける。
 
-### Creator Independence
+### 音楽クリエーターの独立性
 
 広告費や資本力だけで推薦枠を独占できる構造にしない。
 
@@ -82,15 +82,15 @@ Discovery のルールも3つの憲章に従う。
 
 ---
 
-## 8.3 利用者の満足と発見機会
+## 8.3 ユーザの満足と発見機会
 
-Creator First だからといって、利用者が望まない新人作品を強制的に大量表示することは適切ではない。
+音楽クリエーター中心 だからといって、ユーザが望まない新人作品を強制的に大量表示することは適切ではない。
 
-利用者価値と発見機会の両方を成立させる必要がある。
+ユーザ価値と発見機会の両方を成立させる必要がある。
 
 ```mermaid
 flowchart LR
-    PREF[User Preference]
+    PREF[ユーザ選好]
     DISC[Discovery Opportunity]
 
     PREF --> BALANCE[Discovery Balance]
@@ -105,14 +105,14 @@ flowchart LR
 
 ## 8.4 複数の Discovery Mode
 
-利用者は、その時の目的に応じて発見方法を選択できる。
+ユーザは、その時の目的に応じて発見方法を選択できる。
 
 例えば、
 
 - **For You** — 好みに基づく推薦
 - **Explore** — 好みの周辺を広げる
 - **New Voices** — 新人・新規登録作品
-- **Rising** — 成長し始めたクリエイター
+- **Rising** — 成長し始めた音楽クリエーター
 - **Community Picks** — コミュニティ推薦
 - **Local / Scene** — 地域・シーンから探す
 - **Random Discovery** — 意図的な偶然性
@@ -132,7 +132,7 @@ flowchart TD
     USER --> RANDOM[Random Discovery]
 ```
 
-利用者が「いつも通り聴きたい」と「新しい音楽を探したい」を明示的に切り替えられることを重視する。
+ユーザが「いつも通り聴きたい」と「新しい音楽を探したい」を明示的に切り替えられることを重視する。
 
 ---
 
@@ -176,7 +176,7 @@ flowchart LR
 
 ## 8.6 人気と発見機会の分離
 
-人気作品は利用者にとって価値があり、人気であること自体を否定しない。
+人気作品はユーザにとって価値があり、人気であること自体を否定しない。
 
 しかし「人気だから表示される」枠と「まだ知られていない作品を発見する」枠を分ける。
 
@@ -201,7 +201,7 @@ flowchart TD
 
 ## 8.7 Cold Start
 
-新人クリエイターには過去の再生履歴がない。
+新人音楽クリエーターには過去の再生履歴がない。
 
 通常の協調フィルタリングでは、データが少ない作品ほど推薦されにくいという Cold Start 問題が生じる。
 
@@ -209,7 +209,7 @@ Creator First Platform では、初期段階から、
 
 - ジャンル
 - 音響特徴
-- クリエイター自身の説明
+- 音楽クリエーター自身の説明
 - 関連アーティスト
 - 地域・シーン
 - コミュニティタグ
@@ -267,14 +267,14 @@ $$
 と表現できる。
 
 ::: info 概念モデル
-$\delta$ は固定仕様ではない。利用者の選択、Discovery Mode、実証データ、ガバナンス等によって調整する。
+$\delta$ は固定仕様ではない。ユーザの選択、Discovery Mode、実証データ、ガバナンス等によって調整する。
 :::
 
 ---
 
 ## 8.9 Serendipity
 
-推薦精度を高め続けると、利用者が既に好む音楽だけが表示される可能性がある。
+推薦精度を高め続けると、ユーザが既に好む音楽だけが表示される可能性がある。
 
 音楽には、
 
@@ -296,7 +296,7 @@ Discovery Layer は精度だけではなく、Serendipity を品質指標とし�
 
 ---
 
-## 8.10 利用者による発見
+## 8.10 ユーザによる発見
 
 アルゴリズムだけでなく、人が人へ音楽を紹介する経路を重視する。
 
@@ -325,11 +325,11 @@ flowchart LR
 
 ---
 
-## 8.11 「推し活」と Creator First
+## 8.11 「推し活」と 音楽クリエーター中心
 
-Creator First Platform と特に相性が良い利用者体験の一つが、
+Creator First Platform と特に相性が良いユーザ体験の一つが、
 
-> **自分がまだ知られていないクリエイターを発見し、その成長に参加する**
+> **自分がまだ知られていない音楽クリエーターを発見し、その成長に参加する**
 
 という体験である。
 
@@ -345,13 +345,13 @@ flowchart LR
     DISCOVER --> FOLLOW --> SUPPORT --> SHARE --> GROW --> MEMORY
 ```
 
-重要なのは、利用者に「人気を買わせる」ことではなく、発見と応援の履歴をコミュニティ体験として残すことである。
+重要なのは、ユーザに「人気を買わせる」ことではなく、発見と応援の履歴をコミュニティ体験として残すことである。
 
 ---
 
 ## 8.12 Early Supporter
 
-クリエイターがまだ小規模だった時期から支援していた利用者を、Early Supporter として記録することができる。
+音楽クリエーターがまだ小規模だった時期から支援していたユーザを、Early Supporter として記録することができる。
 
 例えば、
 
@@ -368,7 +368,7 @@ flowchart LR
     EARLY[Early Listener]
     ACTION[Support Action]
     HISTORY[Support History]
-    CREATOR[Creator Growth]
+    CREATOR[音楽クリエーターの成長]
 
     EARLY --> ACTION --> HISTORY
     CREATOR --> HISTORY
@@ -378,33 +378,33 @@ flowchart LR
 
 ### Supporter / Early Supporter SBTの表示例
 
-利用者が音楽Playerから特定のCreatorを応援する意思を明示すると、一般のSupporterとして記録できる。本人が公開Credentialの受領に同意した場合は、譲渡不能なSupporter SBTを発行し、Fan Communityへの参加資格やSupporter表示へ利用できる。
+ユーザが音楽Playerから特定の音楽クリエーターを応援する意思を明示すると、一般のSupporterとして記録できる。本人が公開Credentialの受領に同意した場合は、譲渡不能なSupporter SBTを発行し、Fan Communityへの参加資格やSupporter表示へ利用できる。
 
-そのSupport Actionが、版管理されたEarly Qualification Policyの対象期間、Creator Scopeおよび条件を満たす場合は、Early Supporterという追加の履歴をSBTで表現できる。一般Supporterは継続的な応援を、Early SupporterはCreatorの初期段階から応援した履歴を示し、両者を同じ資格として扱わない。
+そのSupport Actionが、版管理されたEarly Qualification Policyの対象期間、音楽クリエーター対象範囲および条件を満たす場合は、Early Supporterという追加の履歴をSBTで表現できる。一般Supporterは継続的な応援を、Early Supporterは音楽クリエーターの初期段階から応援した履歴を示し、両者を同じ資格として扱わない。
 
-以下は架空の`CREATOR A`に対するCommunity Credentialの表示例である。実際のToken Metadata、Creator名、発行時点、Contract、Chain、Issuer、Policy VersionおよびStatusは、確定した実装と利用者の同意に従って表示する。
+以下は架空の`CREATOR A`に対するCommunity Credentialの表示例である。実際のToken Metadata、音楽クリエーター名、発行時点、Contract、Chain、Issuer、Policy VersionおよびStatusは、確定した実装とユーザの同意に従って表示する。
 
 #### 一般Supporter SBT
 
 ![継続的な応援とコミュニティ参加を示す一般Supporter SBTの表示例](/images/supporter-sbt-example.webp)
 
-*複数の葉へ育った植物と青緑の音声波形は、Creatorへの継続的な支援とCommunityへの参加を表す。*
+*複数の葉へ育った植物と青緑の音声波形は、音楽クリエーターへの継続的な支援とCommunityへの参加を表す。*
 
 #### Early Supporter SBT
 
-![Creatorの初期段階からの支援履歴を示すEarly Supporter SBTの表示例](/images/early-supporter-sbt-example.webp)
+![音楽クリエーターの初期段階からの支援履歴を示すEarly Supporter SBTの表示例](/images/early-supporter-sbt-example.webp)
 
-*芽吹きと最初の光は、Creatorがまだ初期段階だった時期の発見と支援を表す。*
+*芽吹きと最初の光は、音楽クリエーターがまだ初期段階だった時期の発見と支援を表す。*
 
 これらの画像はCredentialの視覚表現例であり、画像の所持、複製、URLまたはClient表示だけでは資格を証明しない。GatewayとCommunity Serviceは、正規Contractの確定済みEvent、Wallet Link、Credential Status、Policy VersionおよびRead Modelの鮮度を検証する。
 
 ### Early Supporter SBTとサービス特権
 
-Early Supporterの履歴は、本人の同意に基づいて譲渡不能なSBTとして発行できる。SBTは投資商品、将来収益への請求権、Creator Revenueの分配権またはProtocol Governanceの議決権ではなく、正規Issuerが特定の基準と時点に基づいて発行したCommunity Credentialとする。
+Early Supporterの履歴は、本人の同意に基づいて譲渡不能なSBTとして発行できる。SBTは投資商品、将来収益への請求権、音楽クリエーター収益の分配権またはプロトコルガバナンスの議決権ではなく、正規Issuerが特定の基準と時点に基づいて発行したCommunity Credentialとする。
 
 JPYC等による初期SubscriptionまたはSupportをQualification Policyの入力にする場合、金額そのものではなく、承認済みPayment IntentがFinality条件を満たしたという版管理済みEvidenceを参照する。未確定、誤Asset、誤Chainまたは重複PaymentからSBTを発行しない。テスト系では`MockJPYC`以外の資産を受け付けず、実在JPYC、実在資金またはMainnet Walletを使用しない。
 
-SBTに対応する特権は、通常のSubscriptionへ追加される限定的な利用権としてPolicyで定義する。例えば、CreatorとRights Holderが許諾した先行試聴、限定音源、イベント、Beta機能またはCommunity表示を対象にできる。
+SBTに対応する特権は、通常のSubscriptionへ追加される限定的な利用権としてPolicyで定義する。例えば、音楽クリエーターと権利者が許諾した先行試聴、限定音源、イベント、Beta機能またはCommunity表示を対象にできる。
 
 ```mermaid
 flowchart LR
@@ -423,19 +423,19 @@ flowchart LR
     RIGHTS --> PRIV
 ```
 
-SBT保有だけで全楽曲、全地域、全期間または全品質の再生を許可しない。再生時にはPlatform Account、Wallet Link、Subscription、Rights State、対象Creator、特権Policy、失効状態およびRead Modelの鮮度をGatewayが評価する。
+SBT保有だけで全楽曲、全地域、全期間または全品質の再生を許可しない。再生時にはPlatform Account、Wallet Link、Subscription、Rights State、対象音楽クリエーター、特権Policy、失効状態およびRead Modelの鮮度をGatewayが評価する。
 
-発行Contract、Chain、Issuer、Qualification Policy、Creator Scope、発行時点、StatusおよびLifecycleを版管理する。Wallet紛失や変更、不正発行、資格取消し、利用者からの削除要求に備え、Burn、Revocationおよび監査可能な再発行手順を用意する。個人情報、支援金額および詳細な視聴履歴はPublic Blockchainへ記録しない。
+発行Contract、Chain、Issuer、Qualification Policy、音楽クリエーター対象範囲、発行時点、StatusおよびLifecycleを版管理する。Wallet紛失や変更、不正発行、資格取消し、ユーザからの削除要求に備え、Burn、Revocationおよび監査可能な再発行手順を用意する。個人情報、支援金額および詳細な視聴履歴はPublic Blockchainへ記録しない。
 
-一般利用者へSBT発行用Gas Tokenを要求しない。明示的な受領同意とWallet署名を得た後、限定権限を持つRelayerまたはPaymasterがTestnet Transactionを送信できる。ただしGas Sponsorshipは資格、支払完了または特権を証明せず、発行の冪等性、Issuer権限および確定済みChain Eventを別に検証する。
+一般ユーザへSBT発行用Gas Tokenを要求しない。明示的な受領同意とWallet署名を得た後、限定権限を持つRelayerまたはPaymasterがTestnet Transactionを送信できる。ただしGas Sponsorshipは資格、支払完了または特権を証明せず、発行の冪等性、Issuer権限および確定済みChain Eventを別に検証する。
 
-SBTの発行基準と利用特権はSTOの購入額、Security Token保有量、将来のCreator人気または収益に連動させない。STO投資家向けの付帯利益として設計する場合は、このCommunity Credentialとは別の制度として法務、会計、税務および開示の確認を必要とする。
+SBTの発行基準と利用特権はSTOの購入額、Security Token保有量、将来の音楽クリエーター人気または収益に連動させない。STO投資家向けの付帯利益として設計する場合は、このCommunity Credentialとは別の制度として法務、会計、税務および開示の確認を必要とする。
 
 ---
 
 ## 8.13 金銭的リターンを中心にしない
 
-Early Supporter がクリエイターの将来人気に応じて金銭的利益を得る仕組みにすると、
+Early Supporter が音楽クリエーターの将来人気に応じて金銭的利益を得る仕組みにすると、
 
 > 「好きだから応援する」
 
@@ -488,7 +488,7 @@ Reputation は譲渡可能な金融資産ではなく、原則として活動履
 
 ## 8.15 Curator
 
-利用者の中には、自分で音楽を制作しなくても、新しい音楽を見つけることに優れた人がいる。
+ユーザの中には、自分で音楽を制作しなくても、新しい音楽を見つけることに優れた人がいる。
 
 その役割を Curator として認識する。
 
@@ -498,7 +498,7 @@ flowchart LR
     FIND[Find]
     LIST[Playlist / Collection]
     USERS[Listeners]
-    CREATOR[Creators]
+    CREATOR[音楽クリエーター]
 
     C --> FIND --> LIST --> USERS
     USERS --> CREATOR
@@ -533,9 +533,9 @@ Curator の評価を単純なフォロワー数だけで決めない。
 ```mermaid
 flowchart TD
     COMMUNITY[Community]
-    COMMUNITY --> U1[User A]
-    COMMUNITY --> U2[User B]
-    COMMUNITY --> U3[User C]
+    COMMUNITY --> U1[ユーザA]
+    COMMUNITY --> U2[ユーザB]
+    COMMUNITY --> U3[ユーザC]
 
     U1 --> PLAYLIST[Community Playlist]
     U2 --> PLAYLIST
@@ -568,14 +568,14 @@ flowchart LR
     REGION[Region]
     CITY[City]
     SCENE[Scene]
-    CREATOR[Creator]
+    CREATOR[音楽クリエーター]
 
     GLOBAL --> REGION --> CITY --> SCENE --> CREATOR
 ```
 
 のように、地域・シーン単位で音楽を探索できるようにする。
 
-ただし、位置情報の利用は利用者の明示的な選択とプライバシー保護を前提とする。
+ただし、位置情報の利用はユーザの明示的な選択とプライバシー保護を前提とする。
 
 ---
 
@@ -589,7 +589,7 @@ flowchart LR
     SUPPORT[Support Signals]
     VERIFY[Integrity Check]
     GROWTH[Growth Pool]
-    CREATOR[Emerging Creator]
+    CREATOR[Emerging 音楽クリエーター]
 
     COMMUNITY --> SUPPORT --> VERIFY --> GROWTH --> CREATOR
 ```
@@ -610,9 +610,9 @@ flowchart LR
 
 ## 8.20 Community Support と Quadratic Funding
 
-多数の独立した利用者による支持を Growth Pool に反映する場合、Quadratic Funding 的な仕組みを利用できる。
+多数の独立したユーザによる支持を Growth Pool に反映する場合、Quadratic Funding 的な仕組みを利用できる。
 
-利用者 $u$ がクリエイター $i$ へ行う支援を $c_{u,i}$ とすると、概念的な支持スコアは、
+ユーザ $u$ が音楽クリエーター $i$ へ行う支援を $c_{u,i}$ とすると、概念的な支持スコアは、
 
 $$
 Q_i =
@@ -623,7 +623,7 @@ $$
 
 と表現できる。
 
-これにより、一人の大口支援より、多数の利用者からの小さな支援を強く評価できる。
+これにより、一人の大口支援より、多数のユーザからの小さな支援を強く評価できる。
 
 詳細は第6章「経済モデル」で扱う。
 
@@ -631,7 +631,7 @@ $$
 
 ## 8.21 推薦と経済的利益の分離
 
-クリエイターが Growth Pool から資金を得るために推薦アルゴリズムを攻略するようになると、Discovery の品質が低下する。
+音楽クリエーターが Growth Pool から資金を得るために推薦アルゴリズムを攻略するようになると、Discovery の品質が低下する。
 
 そのため、
 
@@ -655,7 +655,7 @@ flowchart LR
 
 ## 8.22 Pay-to-Play を避ける
 
-資金力のあるクリエイターやレーベルが推薦枠を購入し、それが通常推薦と区別できない状態を避ける。
+資金力のある音楽クリエーターやレーベルが推薦枠を購入し、それが通常推薦と区別できない状態を避ける。
 
 有料プロモーションを将来導入する場合でも、
 
@@ -700,7 +700,7 @@ Usage Oracle、不正検出、Sybil Resistance、Rate Limitなどを組み合わ
 
 ## 8.24 Echo Chamber を避ける
 
-コミュニティ機能が強くなると、同じ趣味・価値観の利用者だけが集まり、新しい音楽との接触が減る可能性がある。
+コミュニティ機能が強くなると、同じ趣味・価値観のユーザだけが集まり、新しい音楽との接触が減る可能性がある。
 
 そこで、
 
@@ -724,9 +724,9 @@ flowchart LR
 
 ---
 
-## 8.25 フィルターバブルへの利用者コントロール
+## 8.25 フィルターバブルへのユーザコントロール
 
-利用者が推薦システムの状態を理解し、必要に応じて調整できるようにする。
+ユーザが推薦システムの状態を理解し、必要に応じて調整できるようにする。
 
 例えば、
 
@@ -741,7 +741,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    USER[User]
+    USER[ユーザ]
     CONTROL[Discovery Controls]
     ENGINE[Recommendation Engine]
     RESULT[Results]
@@ -765,13 +765,13 @@ flowchart LR
 
 > 「普段聴かないジャンルからのDiscovery枠です」
 
-これにより、推薦が広告なのか、人気順なのか、探索なのかを利用者が理解できる。
+これにより、推薦が広告なのか、人気順なのか、探索なのかをユーザが理解できる。
 
 ---
 
-## 8.27 利用者の拒否権
+## 8.27 ユーザの拒否権
 
-利用者は推薦を受け入れる義務を負わない。
+ユーザは推薦を受け入れる義務を負わない。
 
 - Not Interested
 - Hide Artist
@@ -781,15 +781,15 @@ flowchart LR
 
 などを提供する。
 
-Creator First は、クリエイターに「聴かれる権利」を与えるものではない。
+音楽クリエーター中心 は、音楽クリエーターに「聴かれる権利」を与えるものではない。
 
-> **発見される機会を改善することと、利用者の選択を尊重することを両立する。**
+> **発見される機会を改善することと、ユーザの選択を尊重することを両立する。**
 
 ---
 
-## 8.28 クリエイター側の透明性
+## 8.28 音楽クリエーター側の透明性
 
-クリエイターには、
+音楽クリエーターには、
 
 - どのDiscovery経路から聴かれたか
 - New Voicesからの流入
@@ -802,25 +802,25 @@ Creator First は、クリエイターに「聴かれる権利」を与えるも
 ```mermaid
 flowchart LR
     DISC[Discovery Sources]
-    DISC --> DASH[Creator Dashboard]
+    DISC --> DASH[音楽クリエーターダッシュボード]
 
     DASH --> ANALYZE[Understand Audience]
     ANALYZE --> CREATE[Creative Activity]
 ```
 
-ただし、個々の利用者のプライバシーを侵害する情報は提供しない。
+ただし、個々のユーザのプライバシーを侵害する情報は提供しない。
 
 ---
 
 ## 8.29 コミュニティとガバナンス
 
-コミュニティ活動と User House のガバナンスは関連するが、同一ではない。
+コミュニティ活動と ユーザ院議会 のガバナンスは関連するが、同一ではない。
 
 ```mermaid
 flowchart LR
     COMMUNITY[Community Activity]
     REP[Reputation]
-    GOV[User House]
+    GOV[ユーザ院議会]
 
     COMMUNITY --> REP
     REP -.->|自動的な政治権力にはしない| GOV
@@ -832,14 +832,14 @@ flowchart LR
 
 ---
 
-## 8.30 クリエイターとファンの関係
+## 8.30 音楽クリエーターとファンの関係
 
-クリエイターが利用者へ直接情報を届けられる機能を設けることができる。
+音楽クリエーターがユーザへ直接情報を届けられる機能を設けることができる。
 
 例えば、
 
 - Release Update
-- Creator Note
+- 音楽クリエーター注記
 - 制作背景
 - Event
 - Community Post
@@ -848,24 +848,24 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    CREATOR[Creator]
-    POST[Creator Update]
+    CREATOR[音楽クリエーター]
+    POST[音楽クリエーター更新]
     FOLLOWER[Followers]
 
     CREATOR --> POST --> FOLLOWER
 ```
 
-ただし、プラットフォームを大量広告・スパム配信の場にしないため、通知頻度等を利用者が制御できるようにする。
+ただし、プラットフォームを大量広告・スパム配信の場にしないため、通知頻度等をユーザが制御できるようにする。
 
 ---
 
 ## 8.31 ファンコミュニティ
 
-クリエイター単位またはジャンル単位のコミュニティを構築できる。
+音楽クリエーター単位またはジャンル単位のコミュニティを構築できる。
 
 ```mermaid
 flowchart TD
-    CREATOR[Creator]
+    CREATOR[音楽クリエーター]
     COMMUNITY[Community]
 
     CREATOR --> COMMUNITY
@@ -877,7 +877,7 @@ flowchart TD
     COMMUNITY --> SUPPORT[Support]
 ```
 
-コミュニティはクリエイターの所有物ではなく、参加者が交流する場として設計する。
+コミュニティは音楽クリエーターの所有物ではなく、参加者が交流する場として設計する。
 
 ---
 
@@ -941,7 +941,7 @@ AIは、
 
 などに利用できる。
 
-例えば利用者が、
+例えばユーザが、
 
 > 「夜に歩きながら聴ける、まだあまり知られていない福岡のアーティスト」
 
@@ -949,7 +949,7 @@ AIは、
 
 ```mermaid
 flowchart LR
-    USER[User Intent]
+    USER[ユーザ意思]
     AI[AI Discovery]
     CATALOG[Music Catalog]
     RESULT[Explainable Suggestions]
@@ -994,7 +994,7 @@ AIモデルそのものの全パラメータ公開ではなく、
 - Pay-to-Play禁止原則
 - 新人発見枠
 - 透明性要件
-- 利用者コントロール
+- ユーザコントロール
 - 経済分配との接続ルール
 
 ### 運用・開発対象
@@ -1027,7 +1027,7 @@ flowchart TD
 
 - 新人の露出
 - 人気集中度
-- 利用者満足度
+- ユーザ満足度
 - Skip率
 - 新規Follow
 - ジャンル多様性
@@ -1048,8 +1048,8 @@ Creator First Platform では、Discovery の品質を複数の軸で測る。
 flowchart TD
     QUALITY[Discovery Quality]
 
-    QUALITY --> SAT[User Satisfaction]
-    QUALITY --> NEW[New Creator Discovery]
+    QUALITY --> SAT[ユーザ満足度]
+    QUALITY --> NEW[新人音楽クリエーター発見]
     QUALITY --> DIV[Diversity]
     QUALITY --> RET[Retention]
     QUALITY --> SUPPORT[Meaningful Support]
@@ -1058,11 +1058,11 @@ flowchart TD
 
 例えば、
 
-- 利用者が新しくフォローしたクリエイター数
+- ユーザが新しくフォローした音楽クリエーター数
 - 新人作品から継続視聴へ進んだ割合
 - Discovery経由のSupport
 - 発見されたジャンルの多様性
-- 新規クリエイターの継続活動率
+- 新規音楽クリエーターの継続活動率
 
 などを利用できる。
 
@@ -1114,7 +1114,7 @@ flowchart LR
 
 と段階的に高度化する。
 
-アルゴリズムを先に作り、そのアルゴリズムにコミュニティを合わせるのではなく、実際の利用者・クリエイターの行動から設計を進化させる。
+アルゴリズムを先に作り、そのアルゴリズムにコミュニティを合わせるのではなく、実際のユーザ・音楽クリエーターの行動から設計を進化させる。
 
 ---
 
@@ -1126,8 +1126,8 @@ Discovery と Community は3つの憲章が最も直接的に衝突し得る領�
 flowchart TD
     CONST[3つの憲章]
 
-    CONST --> CREATOR[Creator Opportunity]
-    CONST --> USER[User Autonomy]
+    CONST --> CREATOR[音楽クリエーターの機会]
+    CONST --> USER[ユーザの自律性]
     CONST --> FAIR[Fair Ecosystem]
 
     CREATOR --> DISC[Discovery & Community]
@@ -1135,9 +1135,9 @@ flowchart TD
     FAIR --> DISC
 ```
 
-新人の発見機会を増やすために利用者の選択を奪わない。
+新人の発見機会を増やすためにユーザの選択を奪わない。
 
-利用者のクリック率を最大化するために、新人が永遠に発見されない構造を作らない。
+ユーザのクリック率を最大化するために、新人が永遠に発見されない構造を作らない。
 
 コミュニティの人気をそのまま経済的・政治的権力へ変換しない。
 
@@ -1149,7 +1149,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    CREATOR[Creators]
+    CREATOR[音楽クリエーター]
     TRACK[Music]
     CATALOG[Catalog]
 
@@ -1157,7 +1157,7 @@ flowchart TD
 
     CATALOG --> DISC[Discovery Engine]
 
-    PREF[User Preference] --> DISC
+    PREF[ユーザ選好] --> DISC
     COMMUNITY[Community Signals] --> DISC
     NOVEL[Novelty / Diversity] --> DISC
     CURATOR[Curators] --> DISC
@@ -1175,10 +1175,10 @@ flowchart TD
     FOLLOW --> COMMUNITY
 
     GROWTH --> CREATOR
-    ORACLE --> ECON[Creator Economy]
+    ORACLE --> ECON[音楽クリエーター経済]
     ECON --> CREATOR
 
-    GOV[Creator House + User House] --> RULES[Discovery Principles]
+    GOV[音楽クリエータ院議会 + ユーザ院議会] --> RULES[Discovery Principles]
     RULES --> DISC
 ```
 
@@ -1190,7 +1190,7 @@ Creator First Platform の Discovery は、
 
 > **「あなたが好きそうな曲」を当てるだけの推薦システムではない。**
 
-利用者が自分の好みを楽しみながら、未知の作品に出会い、クリエイターを発見し、その成長に参加できる環境を作る。
+ユーザが自分の好みを楽しみながら、未知の作品に出会い、音楽クリエーターを発見し、その成長に参加できる環境を作る。
 
 ```mermaid
 flowchart LR
@@ -1207,16 +1207,16 @@ flowchart LR
 
 特に Creator First Platform が目指すのは、
 
-> **「有名だから聴く」だけではなく、「自分が見つけたクリエイターが成長していくこと自体が楽しい」という音楽体験**
+> **「有名だから聴く」だけではなく、「自分が見つけた音楽クリエーターが成長していくこと自体が楽しい」という音楽体験**
 
 である。
 
 そのためには、アルゴリズムだけでは不十分である。
 
-クリエイター、ファン、Curator、コミュニティ、経済モデル、ガバナンスを接続しながら、
+音楽クリエーター、ファン、Curator、コミュニティ、経済モデル、ガバナンスを接続しながら、
 
 - 発見機会
-- 利用者の自由
+- ユーザの自由
 - 多様性
 - 透明性
 - 不正耐性

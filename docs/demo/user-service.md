@@ -1,11 +1,11 @@
 ---
 title: ユーザ向け利用デモ
-description: Test Userの登録状態、合成Catalog、Capability表示とTestnet Journeyへの導線を確認するページ。
+description: テストユーザの登録状態、合成Catalog、Capability表示とTestnet Journeyへの導線を確認するページ。
 ---
 
 # ユーザ向け利用デモ
 
-公開ページで確認できる利用者向け機能と、ローカルGateway版で検証する機能を分けて表示します。Wallet、mockJPYC Subscription、合成Playerを順に試す場合は[Test User Journey](/demo/test-user-registration)を利用してください。
+公開ページで確認できるユーザ向け機能と、ローカルGateway版で検証する機能を分けて表示します。Wallet、mockJPYC Subscription、合成Playerを順に試す場合は[テストユーザ利用フロー](/demo/test-user-registration)を利用してください。
 
 <ClientOnly>
   <UserServiceDemo />

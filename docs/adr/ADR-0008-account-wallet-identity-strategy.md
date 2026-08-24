@@ -10,13 +10,13 @@ description: Web2アカウント、Wallet、本人確認、権限、Recoveryを�
 
 ## 1. Context
 
-Creator First Platform は、Creator と User がコンテンツを利用し、権利を管理し、Stablecoinで支払いを行い、Creator Distributionを受け取り、Governanceへ参加できるPlatformを目指す。
+Creator First Platform は、音楽クリエーター と ユーザ がコンテンツを利用し、権利を管理し、Stablecoinで支払いを行い、音楽クリエーター分配を受け取り、Governanceへ参加できるPlatformを目指す。
 
 これまでのADRでは、
 
 - ADR-0002 Verifiable Sortition
 - ADR-0003 Rights Registry
-- ADR-0004 Creator Distribution Model
+- ADR-0004 音楽クリエーター分配 Model
 - ADR-0005 Usage Oracle
 - ADR-0006 Zero-Knowledge Proof Strategy
 - ADR-0007 Blockchain / L2 Strategy
@@ -25,12 +25,12 @@ Creator First Platform は、Creator と User がコンテンツを利用し、�
 
 これらを実際のApplicationへ接続するためには、
 
-- User Account
-- Creator Account
+- ユーザアカウント
+- 音楽クリエーターアカウント
 - Wallet
 - Payment Authorization
 - Governance Identity
-- Rights Holder Identity
+- 権利者 Identity
 - Credentials
 
 の関係を明確にする必要がある。
@@ -38,7 +38,7 @@ Creator First Platform は、Creator と User がコンテンツを利用し、�
 単純に、
 
 ```text
-Wallet Address = User Identity
+Wallet Address = ユーザ本人性
 ```
 
 とすると、
@@ -49,7 +49,7 @@ Wallet Address = User Identity
 - Sybil Resistance
 - Privacy
 - Governance Eligibility
-- Creator / Rights Holder Verification
+- 音楽クリエーター／権利者 Verification
 - Account Recovery
 
 を適切に扱えない。
@@ -75,7 +75,7 @@ flowchart TD
     ACCOUNT[Platform Account]
     WALLET1[Wallet A]
     WALLET2[Wallet B]
-    CREATOR[Creator Credential]
+    CREATOR[音楽クリエーター資格証明]
     RIGHTS[Rights Credential]
     GOV[Governance Credential]
     LEGAL[Verified Legal Identity]
@@ -101,7 +101,7 @@ Accountは、
 - Profile
 - Subscription State
 - Content Library
-- Creator Registration
+- 音楽クリエーター登録
 - Rights-related References
 - Governance Eligibility Reference
 - Linked Wallets
@@ -122,17 +122,17 @@ Walletは、
 - Stablecoin Payment
 - Distribution Receipt
 - On-chain Authorization
-- Smart Contract Interaction
+- スマートコントラクト Interaction
 - Cryptographic Signature
 
 等に利用する。
 
 ただしWallet Addressだけから、
 
-- 一人のUserである
-- Creatorである
-- Rights Holderである
-- Governance Memberである
+- 一人のユーザである
+- 音楽クリエーターである
+- 権利者である
+- ガバナンス議員である
 
 と判断してはならない。
 
@@ -277,7 +277,7 @@ Authorization:
 
 例えばAccountへLoginできても、
 
-- Creator Rights変更
+- 音楽クリエーターの権利変更
 - Distribution Address変更
 - Governance Vote
 - Treasury Operation
@@ -294,7 +294,7 @@ Identityを単一のIdentity Recordへ統合しない。
 
 ```text
 Application Identity
-Creator Identity
+音楽クリエーター本人性
 Rights Identity
 Payment Identity
 Governance Identity
@@ -307,28 +307,28 @@ Legal Identity
 
 ---
 
-## 12. Creator Identity
+## 12. 音楽クリエーター本人性
 
-CreatorとしてContentを登録するためには、Creator Registration Processを経る。
+音楽クリエーターとしてContentを登録するためには、音楽クリエーター登録 Processを経る。
 
 ```text
 Account
    ↓
-Creator Registration
+音楽クリエーター登録
    ↓
-Creator Credential
+音楽クリエーター資格証明
 ```
 
-Creator Credentialは、
+音楽クリエーター資格証明は、
 
-> このAccountがPlatform上でCreatorとして承認されている
+> このAccountがPlatform上で音楽クリエーターとして承認されている
 
 ことを表す。
 
 ただしADR-0003に従い、
 
 ```text
-Creator Credential
+音楽クリエーター資格証明
     ≠
 Rights Ownership
 ```
@@ -339,7 +339,7 @@ Rights Ownership
 
 ## 13. Rights Identity
 
-Rights Holderとしての資格はRights Registryによって管理する。
+権利者としての資格はRights Registryによって管理する。
 
 Legal IdentityやContract Evidenceが必要な場合でも、それらをApplication Profileへ無条件に公開しない。
 
@@ -383,7 +383,7 @@ Creator First Platformは、必要に応じてPrivacy-preserving Credentialを�
 
 例えば、
 
-> User House Eligibilityを満たしている
+> ユーザ院議会参加資格を満たしている
 
 ことを証明するために、
 
@@ -414,7 +414,7 @@ One Valid Entry
 
 という方式を利用できる。
 
-Nullifierは異なるService Context間でUser Tracking Identifierとして再利用しない。
+Nullifierは異なるService Context間でユーザ追跡 Identifierとして再利用しない。
 
 具体方式はEligibility Proof Specificationで定義する。
 
@@ -422,7 +422,7 @@ Nullifierは異なるService Context間でUser Tracking Identifierとして再�
 
 ## 17. Subscription Payment
 
-Userは関連付けられたWalletを使用してJPYC等のApproved Settlement AssetでSubscription Paymentを行える。
+ユーザは関連付けられたWalletを使用してJPYC等のApproved Settlement AssetでSubscription Paymentを行える。
 
 Subscription Price、Payment Intent、Payment Eventおよび会計上の受領額は承認済みSettlement Assetで表現する。ETH等のNative Gas TokenはNetwork Feeであり、Subscription Paymentではない。
 
@@ -430,7 +430,7 @@ Subscription Price、Payment Intent、Payment Eventおよび会計上の受領�
 
 ```mermaid
 flowchart LR
-    USER[User Account]
+    USER[ユーザアカウント]
     WALLET[Linked Wallet]
     AUTH[Payment Authorization]
     CONTRACT[Subscription Contract]
@@ -454,7 +454,7 @@ Blockchain Walletでは従来型Credit Cardと同じ自動引落しを当然に�
 
 Recurring Subscriptionには、
 
-- User-approved allowance
+- ユーザ-approved allowance
 - Permit-based authorization
 - Smart Account authorization
 - Periodic user approval
@@ -488,11 +488,11 @@ Stablecoinを支払ったWalletが、そのままGovernance IdentityやLegal Ide
 例えば、
 
 ```text
-User Account
+ユーザアカウント
     ↓
 Payment Wallet A
 
-User Account
+ユーザアカウント
     ↓
 Governance Credential B
 ```
@@ -503,9 +503,9 @@ Governance Credential B
 
 ---
 
-## 20. Creator Distribution Wallet
+## 20. 音楽クリエーター分配 Wallet
 
-Creator / Rights HolderはDistributionを受け取るWalletを登録できる。
+音楽クリエーター／権利者はDistributionを受け取るWalletを登録できる。
 
 Distribution Wallet変更は重要なSecurity Operationとして扱う。
 
@@ -524,7 +524,7 @@ Account TakeoverによるPayment Address Substitutionを防止する。
 
 ## 21. Smart Accounts / Account Abstraction
 
-User Experience向上のため、Smart Account / Account Abstractionを利用できる。
+ユーザ体験向上のため、Smart Account / Account Abstractionを利用できる。
 
 期待される機能には、
 
@@ -538,7 +538,7 @@ User Experience向上のため、Smart Account / Account Abstractionを利用で
 等がある。
 
 ```text
-User
+ユーザ
   ↓
 Simple Application Action
   ↓
@@ -553,12 +553,12 @@ Blockchain Transactions
 
 ## 22. Gas Abstraction
 
-一般UserにGas Tokenの購入を必須としないUXを目標とする。
+一般ユーザにGas Tokenの購入を必須としないUXを目標とする。
 
 例えばSubscription Payment時に、
 
 ```text
-User pays JPYC
+ユーザが支払う JPYC
 ```
 
 だけを意識し、Gas処理は、
@@ -575,9 +575,9 @@ Gas Sponsorship PolicyはAbuse ResistanceとCost Controlを考慮する。
 
 RelayerまたはPaymasterの受付結果、Transaction HashまたはGas支払だけをSubscription Paymentの証拠としてはならない。Settlement Adapterは承認済みStablecoin Transferを独立に検証する。
 
-Testnet Demoでは`MockJPYC`を支払資産とし、Faucet由来のNative TokenはRelayerのGasにだけ使用する。利用者へTestnet ETHの取得を要求せず、Mainnet Asset、本番Walletまたは本番秘密鍵を使用しない。
+Testnet Demoでは`MockJPYC`を支払資産とし、Faucet由来のNative TokenはRelayerのGasにだけ使用する。ユーザへTestnet ETHの取得を要求せず、Mainnet Asset、本番Walletまたは本番秘密鍵を使用しない。
 
-2026-08-23の公開Test User Journeyは、Account／Wallet／SubscriptionのUI境界を先行検証する暫定実装である。Same-originの検証済みManifestがSepolia、全Contract AddressおよびSource Commitを`active`として公開した場合だけ書込みを許し、任意Address入力、Mainnet追加または自動接続を認めない。現段階ではRelayer／Paymasterが未実装であるため、Walletによる書込みは利用者のSepolia ETHをGasに必要とし、上記のGas Sponsored終了条件を満たさない。Profile AliasとWallet AddressはPlatform Accountとして永続結合しない。
+2026-08-23の公開テストユーザ利用フローは、Account／Wallet／SubscriptionのUI境界を先行検証する暫定実装である。Same-originの検証済みManifestがSepolia、全Contract AddressおよびSource Commitを`active`として公開した場合だけ書込みを許し、任意Address入力、Mainnet追加または自動接続を認めない。現段階ではRelayer／Paymasterが未実装であるため、Walletによる書込みはユーザのSepolia ETHをGasに必要とし、上記のGas Sponsored終了条件を満たさない。Profile AliasとWallet AddressはPlatform Accountとして永続結合しない。
 
 ---
 
@@ -684,7 +684,7 @@ Credentialには、
 
 ## 28. Revocation
 
-Creator Credential、Rights Credential、Governance Credential等は必要に応じて失効可能にする。
+音楽クリエーター資格証明、Rights Credential、Governance Credential等は必要に応じて失効可能にする。
 
 ただし、失効によって過去の正当なProtocol Historyを消去してはならない。
 
@@ -705,13 +705,13 @@ Credential revoked at T2
 
 ```text
 Account
-├── User
-├── Creator
-├── Rights Holder
+├── ユーザ
+├── 音楽クリエーター
+├── 権利者
 └── Governance Participant
 ```
 
-Creatorも同時にUserであり得る。
+音楽クリエーターも同時にユーザであり得る。
 
 Roleは排他的に設計しない。
 
@@ -719,35 +719,35 @@ Roleは排他的に設計しない。
 
 ---
 
-## 30. User as Governance Source
+## 30. ガバナンスの源泉としてのユーザ
 
-Governance MemberはUserとは別の固定階級ではない。
+ガバナンス議員はユーザとは別の固定階級ではない。
 
-User CommunityからEligibilityを満たすMemberがADR-0002のVerifiable Sortitionによって一時的なRepresentativeとなる。
+ユーザコミュニティからEligibilityを満たすMemberがADR-0002のVerifiable Sortitionによって一時的なRepresentativeとなる。
 
 ```text
-User
+ユーザ
   ↓
-Eligible User
+適格ユーザ
   ↓
 Sortition
   ↓
-User House Member
+ユーザ院議会議員
   ↓
 Term Ends
   ↓
-User
+ユーザ
 ```
 
-Creatorについても同様である。
+音楽クリエーターについても同様である。
 
-この構造により、Governance MemberがCreator / User Communityの代表であり続けることを制度的に支える。
+この構造により、ガバナンス議員が音楽クリエーター／ユーザコミュニティの代表であり続けることを制度的に支える。
 
 ---
 
 ## 31. Identity and Rights Separation
 
-Accountが本人確認済みであることと、作品のRights Holderであることを混同しない。
+Accountが本人確認済みであることと、作品の権利者であることを混同しない。
 
 ```text
 Verified Person
@@ -800,7 +800,7 @@ Audit Recordには必要最小限の情報のみを保持し、機密情報そ�
 
 ## 34. Security Events
 
-Account Securityに関する重要操作についてUserへ通知できるようにする。
+Account Securityに関する重要操作についてユーザへ通知できるようにする。
 
 例えば、
 
@@ -818,7 +818,7 @@ Account Securityに関する重要操作についてUserへ通知できるよう
 
 ## 35. Account Deletion
 
-UserがAccount削除を要求した場合、法的・監査上必要な記録と削除可能なPersonal Dataを区別する。
+ユーザがAccount削除を要求した場合、法的・監査上必要な記録と削除可能なPersonal Dataを区別する。
 
 Blockchain上の確定Transactionを削除することはできないため、On-chain Dataには最初から個人情報を記録しない。
 
@@ -839,7 +839,7 @@ Off-chain Personal DataについてはApplicable LawおよびRetention Policyに
 
 等では追加Credentialが必要になる場合がある。
 
-全Userに不要なKYCを一律要求する設計は採用しない。
+全ユーザに不要なKYCを一律要求する設計は採用しない。
 
 ---
 
@@ -868,13 +868,13 @@ Identity Verificationの要否は、
 Account作成時にすべてのIdentity Verificationを要求せず、Service利用に応じて必要なCredentialを追加する。
 
 ```text
-Basic User
+Basic ユーザ
     ↓
-Subscription User
+Subscription ユーザ
     ↓
-Creator
+音楽クリエーター
     ↓
-Rights Holder
+権利者
     ↓
 Governance Eligible Member
 ```
@@ -891,7 +891,7 @@ MVPではIdentity Infrastructureを過度に複雑化しない。
 
 最初の実装目標を、
 
-> **JPYC等のStablecoin Walletを持つUserがPlatform Accountを作成し、Walletを安全に関連付け、Subscription Paymentを行える**
+> **JPYC等のStablecoin Walletを持つユーザがPlatform Accountを作成し、Walletを安全に関連付け、Subscription Paymentを行える**
 
 こととする。
 
@@ -910,7 +910,7 @@ Phase 3
 Stablecoin Subscription Payment
 
 Phase 4
-Creator Registration
+音楽クリエーター登録
 + Distribution Wallet
 
 Phase 5
@@ -927,11 +927,11 @@ Governance Credentials
 
 ## 40. MVP Registration Flow
 
-最初のUser Registration Flowは概念的に、
+最初のユーザ登録 Flowは概念的に、
 
 ```mermaid
 sequenceDiagram
-    participant U as User
+    participant U as ユーザ
     participant A as Application
     participant W as Wallet
     participant B as Backend
@@ -960,7 +960,7 @@ Wallet Linking後、
 
 ```mermaid
 sequenceDiagram
-    participant U as User
+    participant U as ユーザ
     participant A as Application
     participant W as Wallet
     participant C as Subscription Contract
@@ -989,7 +989,7 @@ Wallet AddressをPerson Identityと同一視してはならない。
 
 ### Invariant 2
 
-Creator CredentialをRights Ownershipの証明として扱ってはならない。
+音楽クリエーター資格証明をRights Ownershipの証明として扱ってはならない。
 
 ### Invariant 3
 
@@ -1039,9 +1039,9 @@ Email / Password等のAccountだけを利用しWalletをProtocol Identityから�
 
 Stablecoin Settlement、On-chain Authorization、Self-custodyとの統合が弱いため採用しない。
 
-### Mandatory KYC for Every User
+### Mandatory KYC for Every ユーザ
 
-全UserにAccount作成時から法的本人確認を要求する。
+全ユーザにAccount作成時から法的本人確認を要求する。
 
 不要なPersonal Data収集、UX、Privacyの問題があるため基本方式として採用しない。
 
@@ -1064,12 +1064,12 @@ Economic PowerとGovernance Representationを混同するため採用しない�
 ### Positive
 
 - Wallet変更・追加に対応できる
-- User AccountをWallet紛失から分離できる
+- ユーザアカウントをWallet紛失から分離できる
 - Payment、Rights、GovernanceのIdentityを分離できる
 - Privacyを保護しやすい
 - Sybil ResistanceをGovernance Layerへ導入できる
 - JPYC等のStablecoin Subscriptionへ自然に接続できる
-- Creator / Rights HolderのRoleを明確に管理できる
+- 音楽クリエーター／権利者のRoleを明確に管理できる
 - Progressive Verificationが可能になる
 - Account Abstractionを将来導入しやすい
 
@@ -1115,11 +1115,11 @@ Account / Wallet / Identity Layerは少なくとも次のリスクを考慮す�
 
 ADR-0002はGovernance EligibilityとVerifiable Sortitionを定義する。
 
-ADR-0003はRights HolderとRights Stateを定義する。
+ADR-0003は権利者とRights Stateを定義する。
 
-ADR-0004はCreator / Rights HolderへのDistributionを定義する。
+ADR-0004は音楽クリエーター／権利者へのDistributionを定義する。
 
-ADR-0005はUserのUsage Eventを扱う。
+ADR-0005はユーザのUsage Eventを扱う。
 
 ADR-0006はIdentity / EligibilityをPrivacy-preservingに証明する技術戦略を提供する。
 
@@ -1136,7 +1136,7 @@ ADR-0008はこれらをApplication Account、Wallet、Identity、Credentialと�
           │                │
           ↓          ┌─────┼─────┐
  Blockchain / L2     ↓     ↓     ↓
-                  Creator Rights Governance
+                  音楽クリエーターの権利 Governance
 ```
 
 ---
@@ -1146,7 +1146,7 @@ ADR-0008はこれらをApplication Account、Wallet、Identity、Credentialと�
 - Whitepaper: Vision
 - Whitepaper: Rights and Funds
 - Whitepaper: Platform Architecture
-- Whitepaper: Creator Registration
+- Whitepaper: 音楽クリエーター登録
 - Whitepaper: Economic Model
 - Whitepaper: Governance
 - Whitepaper: Technology
@@ -1154,11 +1154,11 @@ ADR-0008はこれらをApplication Account、Wallet、Identity、Credentialと�
 - Whitepaper: Legal / STO / Tax
 - ADR-0002: Verifiable Sortition
 - ADR-0003: Rights Registry
-- ADR-0004: Creator Distribution Model
+- ADR-0004: 音楽クリエーター分配 Model
 - ADR-0005: Usage Oracle
 - ADR-0006: Zero-Knowledge Proof Strategy
 - ADR-0007: Blockchain / L2 Strategy
-- ADR-0014: Public Testnet User Journey
+- ADR-0014: 公開テストネットユーザ利用フロー
 
 ---
 

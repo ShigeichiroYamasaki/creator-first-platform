@@ -8,7 +8,7 @@ description: Navidromeを非公開Media Adapterとして利用し、Wallet・Sup
 **Date:** 2026-08-21
 **Last Updated:** 2026-08-23
 
-> **Implementation note (2026-08-23):** `apps/player`へVue 3／TypeScriptのローカルPWAを、`apps/gateway`へ対応するMock APIを実装した。Catalog Home、単一Audio Element、Play／Pause／Seek／Next／Previous、短命Playback Session、Range、SIWE、EIP-712 Support Intent、Mock Supporter状態、Community CapabilityおよびAlias限定Test-only Profileを検証できる。Test-only ProfileはPlatform AccountやAuthenticatorではなく、登録の有無は認可を変更しない。GitHub PagesにはADR-0014に基づき、Tab-local Profile、明示的EIP-1193 Wallet接続、Sepolia固定、検証済みDeployment Manifest、mockJPYC課金UIおよび合成Playerを一続きにしたPublic Testnet Journeyを実装し、Sepolia Contract Addressを有効化した。公開PlayerのSubscription状態はGateway認可やNavidromeへ接続しない。ローカルPlayer／Gatewayは引き続きMock状態を使用する。Search、Artist／Album詳細、Client Playback Event、Logout／Account Switch、Service Worker、Contract Indexerおよび本番Authenticatorは未実装である。Framework等の未決定事項は`MOCK-ASSUMPTION-001`で限定しており、この実装は本ADRの採用確定またはProtocol適合完了を意味しない。
+> **Implementation note (2026-08-23):** `apps/player`へVue 3／TypeScriptのローカルPWAを、`apps/gateway`へ対応するMock APIを実装した。Catalog Home、単一Audio Element、Play／Pause／Seek／Next／Previous、短命Playback Session、Range、SIWE、EIP-712 Support Intent、Mock Supporter状態、Community CapabilityおよびAlias限定Test-only Profileを検証できる。Test-only ProfileはPlatform AccountやAuthenticatorではなく、登録の有無は認可を変更しない。GitHub PagesにはADR-0014に基づき、Tab-local Profile、明示的EIP-1193 Wallet接続、Sepolia固定、検証済みDeployment Manifest、mockJPYC課金UIおよび合成Playerを一続きにした公開テストネット利用フローを実装し、Sepolia Contract Addressを有効化した。公開PlayerのSubscription状態はGateway認可やNavidromeへ接続しない。ローカルPlayer／Gatewayは引き続きMock状態を使用する。Search、Artist／Album詳細、Client Playback Event、Logout／Account Switch、Service Worker、Contract Indexerおよび本番Authenticatorは未実装である。Framework等の未決定事項は`MOCK-ASSUMPTION-001`で限定しており、この実装は本ADRの採用確定またはProtocol適合完了を意味しない。
 
 ## 1. Context
 
@@ -16,7 +16,7 @@ Creator First Platformは、Navidromeからの音楽配信に、Platform Account
 
 ADR-0009はNavidromeを非公開Media Serverとし、Streaming Authorization Gatewayを唯一の公開再生境界とした。しかし、既存のOpenSubsonic ClientをそのままPublic Playerとして利用すると、Navidrome Server URL、CredentialまたはMedia IDをClientへ渡す構成になりやすく、Subscription、Rights、Credential PrivilegeおよびPlayback Evidenceの境界を迂回する危険がある。
 
-また、音楽再生のたびにWallet接続、署名またはBlockchain Transactionを要求すると、利用者の利便性を損ない、Wallet障害を通常再生のCritical Pathへ持ち込む。
+また、音楽再生のたびにWallet接続、署名またはBlockchain Transactionを要求すると、ユーザの利便性を損ない、Wallet障害を通常再生のCritical Pathへ持ち込む。
 
 ## 2. Decision
 
@@ -26,8 +26,8 @@ Creator First Platformは、公開Playerとして次の構成を採用候補と�
 
 ```mermaid
 flowchart LR
-    USER[User]
-    PLAYER[Creator First Player PWA]
+    USER[ユーザ]
+    PLAYER[音楽クリエーター中心 Player PWA]
     AUDIO[Browser Audio / Media Session]
     WALLET[External or Embedded Wallet]
     GATEWAY[Streaming Authorization Gateway]
@@ -61,9 +61,9 @@ Playerは次を担当する。
 - Platform Session、Wallet Linkおよび処理状態の表示
 - 一般Supporter登録、Early資格結果およびSBT発行状態の表示
 - Fan Community、限定ContentおよびGovernanceへの権限に応じた導線
-- Wallet操作前の目的、Chain、Asset、Amount、対象Creatorおよび公開範囲の表示
+- Wallet操作前の目的、Chain、Asset、Amount、対象音楽クリエーターおよび公開範囲の表示
 
-PlayerはSubscription、Rights、Credential、Early Qualification、Verified UsageまたはCreator DistributionのSource of Truthにならない。
+PlayerはSubscription、Rights、Credential、Early Qualification、Verified Usageまたは音楽クリエーター分配のSource of Truthにならない。
 
 ## 4. Gateway API Boundary
 
@@ -103,7 +103,7 @@ Track変更または画面離脱時は不要な上流Requestを中断する。Pl
 
 ## 6. Account and Wallet Experience
 
-PlayerはPlatform Account Sessionを通常利用の主体とし、Wallet Addressを唯一のUser IDとして扱わない。
+PlayerはPlatform Account Sessionを通常利用の主体とし、Wallet Addressを唯一のユーザIDとして扱わない。
 
 Wallet操作は少なくとも次に限定する。
 
@@ -120,7 +120,7 @@ Artist画面の「サポーターになる」は、単なるLocal Likeではな�
 
 ```text
 Support Intent
-    -> User consent
+    -> ユーザ同意
     -> Gateway-issued EIP-712 typed data
     -> Purpose-bound Wallet signature
     -> Relayer submission
@@ -129,9 +129,9 @@ Support Intent
     -> Community capability refresh
 ```
 
-一つのCreator ScopeとWalletにつき原則一つのSupporter SBTを発行し、その確定済みTierを一般SupporterまたはEarly Supporterとして表示する。Playerは未登録、署名待ち、Relayer受付、Transaction送信、Confirming、一般Supporter Active、Early Supporter Active、Revoked、Burnedおよび失敗を区別する。Early判定結果をTransaction確定前に保証せず、確認済みCredential EventをRead Modelが取り込んだ後だけActiveとして表示する。
+一つの音楽クリエーター対象範囲とWalletにつき原則一つのSupporter SBTを発行し、その確定済みTierを一般SupporterまたはEarly Supporterとして表示する。Playerは未登録、署名待ち、Relayer受付、Transaction送信、Confirming、一般Supporter Active、Early Supporter Active、Revoked、Burnedおよび失敗を区別する。Early判定結果をTransaction確定前に保証せず、確認済みCredential EventをRead Modelが取り込んだ後だけActiveとして表示する。
 
-SBTを公開Walletへ発行する前に、譲渡不能性、公開Metadata、対象Creator、用途、Burn、失効およびRecoveryを説明し、明示的同意を得る。Community参加資格または限定再生はGatewayの版管理されたPrivilege Policyで判定し、Client表示だけでAccessを許可しない。
+SBTを公開Walletへ発行する前に、譲渡不能性、公開Metadata、対象音楽クリエーター、用途、Burn、失効およびRecoveryを説明し、明示的同意を得る。Community参加資格または限定再生はGatewayの版管理されたPrivilege Policyで判定し、Client表示だけでAccessを許可しない。
 
 標準登録はGasless Relayer Flowとし、JPYC支払を同じ署名へ混在させない。特権はSBT MetadataでなくGatewayの短命Capabilityで行使する。
 
@@ -209,7 +209,7 @@ Latency、離脱、PrivacyおよびWallet依存障害を増やすため採用し
 
 ### Positive
 
-- Creator First固有のSupport、SBTおよびCommunity UXを音楽体験へ統合できる
+- 音楽クリエーター中心固有のSupport、SBTおよびCommunity UXを音楽体験へ統合できる
 - Navidrome Credentialと内部識別子をClientへ渡さずに済む
 - Media Serverを将来置換してもPlayerのProtocol境界を維持できる
 - 通常再生をWalletおよび同期Blockchain RPCから分離できる
@@ -229,7 +229,7 @@ Latency、離脱、PrivacyおよびWallet依存障害を増やすため採用し
 3. Play、Pause、Seek、Next、Reconnect、Session ExpiryおよびAbortがGateway経由で動作する
 4. `200`および`206 Partial Content`を正しく扱い、許可範囲を超えるRangeを拒否する
 5. 通常のPlayback ControlでWallet署名を要求しない
-6. Wallet署名前にPurpose、Chain、Asset、Amount、対象Creatorおよび公開範囲の適用項目を表示する
+6. Wallet署名前にPurpose、Chain、Asset、Amount、対象音楽クリエーターおよび公開範囲の適用項目を表示する
 7. 一般SupporterとEarly Supporterの資格、Credential状態およびCommunity Capabilityを区別する
 8. 未確定Transaction、失効CredentialまたはClient表示だけで特権を付与しない
 9. Service WorkerおよびClient StorageがProtected Audio、Playback Session、秘密鍵または詳細な再生履歴を永続化しない
@@ -246,14 +246,14 @@ Latency、離脱、PrivacyおよびWallet依存障害を増やすため採用し
 - Feishin等からコードを再利用する範囲とGPL Compliance手順をどう確定するか
 - Community画面をPlayer内Routeと独立Applicationのどちらにするか
 
-これらはProtocol SpecificationのOpen QuestionとImplementation Work Packageで追跡し、実装が暗黙に決定しない。
+これらはプロトコル仕様のOpen QuestionとImplementation Work Packageで追跡し、実装が暗黙に決定しない。
 
 ## 16. Related Documents
 
 - [ADR-0008 Account / Wallet / Identity Strategy](./ADR-0008-account-wallet-identity-strategy.md)
 - [ADR-0009 Navidrome / Streaming Authorization Gateway](./ADR-0009-navidrome-streaming-gateway.md)
 - [ADR-0010 Early Supporter SBT Privileges](./ADR-0010-early-supporter-sbt-privileges.md)
-- [ADR-0014 Public Testnet User Journey](./ADR-0014-public-testnet-user-journey.md)
+- [ADR-0014 公開テストネットユーザ利用フロー](./ADR-0014-public-testnet-user-journey.md)
 - [Whitepaper: Platform Architecture](/whitepaper/04-platform-architecture)
 - [Whitepaper: Discovery and Community](/whitepaper/08-discovery-community)
 - [Protocol: Playback Authorization](/protocol/specs/playback-authorization)

@@ -10,15 +10,15 @@ description: 一般SupporterとEarly Supporterを一つの非金銭的SBT Creden
 
 ## 1. Context
 
-> **Implementation note (2026-08-23):** Testnet専用の`SupporterSBTUpgradeable`をHardhat 3で実装した。EIP-712 Support Intent、Holder nonce／deadline、Contract-side Early判定、Creatorごとの版管理Policyと人数上限、一Scope・Holderあたり一つのActive Credential、ERC-5192、移転拒否、失効・Burn、役割分離およびERC-1967／UUPSをローカルテストし、Ethereum SepoliaへImplementationとProxyをデプロイした。Relayer／Indexer／Gateway未接続、Bootstrap Role未分離、監査前であり、本番CredentialまたはProtocol適合完了を意味しない。
+> **Implementation note (2026-08-23):** Testnet専用の`SupporterSBTUpgradeable`をHardhat 3で実装した。EIP-712 Support Intent、Holder nonce／deadline、Contract-side Early判定、音楽クリエーターごとの版管理Policyと人数上限、一Scope・Holderあたり一つのActive Credential、ERC-5192、移転拒否、失効・Burn、役割分離およびERC-1967／UUPSをローカルテストし、Ethereum SepoliaへImplementationとProxyをデプロイした。Relayer／Indexer／Gateway未接続、Bootstrap Role未分離、監査前であり、本番CredentialまたはProtocol適合完了を意味しない。
 
-Whitepaperは、PlayerからCreatorを支援する意思を表明した利用者を一般Supporterとして記録し、そのうち版管理された初期条件を満たした利用者をEarly Supporterとして可視化する方針を示している。いずれも金銭的リターンではなくCommunity Reputationとして扱う。
+Whitepaperは、Playerから音楽クリエーターを支援する意思を表明したユーザを一般Supporterとして記録し、そのうち版管理された初期条件を満たしたユーザをEarly Supporterとして可視化する方針を示している。いずれも金銭的リターンではなくCommunity Reputationとして扱う。
 
 一方、Streaming Gatewayの現行設計はActive SubscriptionとRights Stateを必須とし、Wallet ControlまたはToken Balanceだけで再生を許可しない。Early Supporter SBTを単純なToken Gateとして追加すると、Account、Subscription、Rights、CredentialおよびSTOの責務が混在する。
 
 ## 2. Decision
 
-Creator First PlatformはSupporter SBTを、利用者の明示的なSupport Intentに基づいて正規Issuerが発行する、譲渡不能かつ失効可能なCommunity Credentialとして扱う。一般SupporterとEarly Supporterは別Tokenを重複発行せず、原則として一つのCreator ScopeとHolder Walletにつき一つのSBTへ`SUPPORTER`または`EARLY_SUPPORTER`のTierを確定して記録する。
+Creator First PlatformはSupporter SBTを、ユーザの明示的なSupport Intentに基づいて正規Issuerが発行する、譲渡不能かつ失効可能なCommunity Credentialとして扱う。一般SupporterとEarly Supporterは別Tokenを重複発行せず、原則として一つの音楽クリエーター対象範囲とHolder Walletにつき一つのSBTへ`SUPPORTER`または`EARLY_SUPPORTER`のTierを確定して記録する。
 
 Early Tierは発行Transaction内で、承認済みの版管理されたQualification Policyから決定する。Player、GatewayまたはRelayerはEarly Tierを自己申告、先取り表示または上書きしない。
 
@@ -40,7 +40,7 @@ playback_allowed =
   )
 ```
 
-SBT単独でSubscription、Rights、本人性、唯一の人間、投資家資格、Creator資格またはGovernance Eligibilityを証明しない。
+SBT単独でSubscription、Rights、本人性、唯一の人間、投資家資格、音楽クリエーター資格またはGovernance Eligibilityを証明しない。
 
 ## 3. Credential Model
 
@@ -50,7 +50,7 @@ Supporter Credentialは少なくとも次を版管理する。
 - Token ID、Credential TypeおよびSupporter Tier
 - Authorized Issuer
 - Qualification Policy ID、Versionおよび発行時に確定したTier
-- Creator ScopeまたはCommunity Scope
+- 音楽クリエーター対象範囲またはCommunity Scope
 - Issuance Event、Source BlockおよびFinality Reference
 - Active、RevokedまたはBurnedのStatus
 - Status Effective TimeおよびStatus Version
@@ -67,15 +67,15 @@ Supporter Credentialは少なくとも次を版管理する。
 
 ## 5. Qualification and Issuance
 
-Qualification Policyは、対象Creator、対象Action、判定期間、最大Early人数その他のEarly条件、SnapshotまたはEvent Source、重複排除、Bot対策、異議申立ておよびIssuer権限を定義する。一般Supporter登録はSupport Intentと受領同意を必要とし、Early Tierは同じ発行操作内でContractが決定する。
+Qualification Policyは、対象音楽クリエーター、対象Action、判定期間、最大Early人数その他のEarly条件、SnapshotまたはEvent Source、重複排除、Bot対策、異議申立ておよびIssuer権限を定義する。一般Supporter登録はSupport Intentと受領同意を必要とし、Early Tierは同じ発行操作内でContractが決定する。
 
 JPYC等による初期SubscriptionまたはSupportを対象Actionにする場合、Qualificationは承認済みAsset、Payment Intent、Finalityおよび一回限りのPayment Referenceを参照する。支払額をPublic Metadataへ記録せず、未確定、誤Asset、誤Chain、重複または取消済みPaymentから発行しない。
 
-利用者の受領意思を確認せずにPublic WalletへSBTを送り付けない。発行操作は同じQualificationとPolicy Versionに対して冪等にし、同一Credentialの二重発行を拒否する。
+ユーザの受領意思を確認せずにPublic WalletへSBTを送り付けない。発行操作は同じQualificationとPolicy Versionに対して冪等にし、同一Credentialの二重発行を拒否する。
 
-Early Supporterの資格をSTOへの申込額、Security Token保有量、Creatorの将来人気、将来収益または投機的価値へ連動させない。
+Early Supporterの資格をSTOへの申込額、Security Token保有量、音楽クリエーターの将来人気、将来収益または投機的価値へ連動させない。
 
-一般利用者へSBT発行用Native Gas Tokenを要求しない。明示的同意とEIP-712等による目的限定Wallet署名の後、最小権限のRelayerが発行Transactionを送信できる。署名は少なくともHolder Wallet、Canonical Creator Scope、Credential Deployment、Nonce、Deadline、ConsentまたはTerms Versionおよび許可するMint操作をBindする。Supporter登録をJPYC支払、Token ApprovalまたはSubscription購入と同じ署名へ混在させない。
+一般ユーザへSBT発行用Native Gas Tokenを要求しない。明示的同意とEIP-712等による目的限定Wallet署名の後、最小権限のRelayerが発行Transactionを送信できる。署名は少なくともHolder Wallet、Canonical 音楽クリエーター対象範囲、Credential Deployment、Nonce、Deadline、ConsentまたはTerms Versionおよび許可するMint操作をBindする。Supporter登録をJPYC支払、Token ApprovalまたはSubscription購入と同じ署名へ混在させない。
 
 Relayer受付、Gas支払またはTransaction送信は発行成功ではなく、確定済みCredential EventをIndexerが取り込んだ時点でCredentialを`ACTIVE`とする。
 
@@ -83,19 +83,19 @@ Relayer受付、Gas支払またはTransaction送信は発行成功ではなく�
 
 ## 6. Privilege Policy
 
-PrivilegeはSBT Metadataへ永久に埋め込まず、Operating CompanyがRights Holderとの許諾および利用規約に基づいて版管理するPolicyとして定義する。
+PrivilegeはSBT Metadataへ永久に埋め込まず、Operating Companyが権利者との許諾および利用規約に基づいて版管理するPolicyとして定義する。
 
 Credentialは支援ScopeとTierを証明し、Privilege Policyは現在許可する操作を定義する。Early認定条件と特権内容は別々に版管理する。
 
 対象候補は次のとおりとする。
 
-- CreatorとRights Holderが許諾した先行試聴
+- 音楽クリエーターと権利者が許諾した先行試聴
 - 限定Recordingまたは限定イベント
 - Beta機能
 - Community BadgeまたはProfile表示
 - Subscription Plan内の限定的な品質・機能拡張
 
-Privilegeは対象Creator、Canonical Track、Content Version、Territory、License Window、Plan、品質、開始・終了時刻および緊急停止条件でBoundする。
+Privilegeは対象音楽クリエーター、Canonical Track、Content Version、Territory、License Window、Plan、品質、開始・終了時刻および緊急停止条件でBoundする。
 
 Off-chain特権はGatewayがRead Modelを評価して限定Streaming Session、Community Tokenまたは期限付き招待を発行する。On-chain特権は対象Contractが承認済みSBTのHolder、Scope、TierおよびPolicyを検証する。Client申告やMetadataを権限根拠にしない。
 
@@ -130,11 +130,11 @@ CredentialまたはPrivilegeの取消しは、定義された伝播時間内に�
 
 ## 10. STO and Legal Boundary
 
-Early Supporter SBTはSecurity Token、株主権、投資元本、配当、収益分配、換金請求権またはProtocol Governance Voting Powerを表さない。
+Early Supporter SBTはSecurity Token、株主権、投資元本、配当、収益分配、換金請求権またはプロトコルガバナンス Voting Powerを表さない。
 
 SBT Contract、発行条件、利用規約、表示、会計および監査証跡をSTOから分離する。STO投資家だけへの付与、投資額連動、料金減免その他の経済的価値を導入する場合は、実装または募集前にOperating Companyが金融規制、会計・税務、消費者保護および開示を専門家と確認する。
 
-## 11. Privacy and User Control
+## 11. Privacy and ユーザ制御
 
 Public SBTはWalletとEarly Supporter属性の関連を第三者に公開する。発行前に公開範囲、Metadata、Burn権限、失効、再発行およびAccount連携を説明し、明示的な受領意思を取得する。
 
@@ -179,19 +179,19 @@ Community Reputationを投資・経済力・Protocol支配へ変換し、Whitepa
 ## 14. Testnet Acceptance Criteria
 
 1. 金銭的価値を持たないDemo SBTをTestnetへDeployする
-2. 利用者の同意後だけ一つのQualificationにつき一つ発行する
+2. ユーザの同意後だけ一つのQualificationにつき一つ発行する
 3. Transfer操作を拒否する
 4. Active Subscription、Active Rights、Active SBTおよび一致するPrivilegeで限定試験音を再生できる
 5. SBTがなくても通常Planで許可された試験音は再生できる
 6. SBTだけでSubscriptionまたはRightsを迂回できない
-7. Creator Scope、Policy Version、TerritoryまたはContent Version不一致を拒否する
+7. 音楽クリエーター対象範囲、Policy Version、TerritoryまたはContent Version不一致を拒否する
 8. RevokeまたはBurn後、定義された時間内に新規Playback Sessionを拒否する
 9. staleまたはreorganization-unsafeなCredential Read ModelでFail Closedになる
 10. Wallet Recovery時に旧Credentialが無効化され、新Credentialとの監査Linkが残る
 11. NavidromeへGatewayを迂回して到達できない
 12. Token Metadata、LogおよびDelivery Evidenceに個人情報、支援額または詳細な公開視聴履歴を含めない
 13. `MockJPYC`の確定済みPaymentをQualificationに使う場合、誤Asset、誤Chain、未確定および重複Paymentから発行しない
-14. 利用者がTest ETHを保持しなくてもRelayer経由で発行でき、Gas Sponsorshipを支払・資格または発行成功として扱わない
+14. ユーザがTest ETHを保持しなくてもRelayer経由で発行でき、Gas Sponsorshipを支払・資格または発行成功として扱わない
 15. Relayer、Issuer、RevokerおよびDeployerの権限と鍵を分離し、Repositoryや公開Logへ秘密を残さない
 
 ## 15. Related Documents

@@ -10,18 +10,18 @@ description: 利用履歴や個人情報を公開せず、抽選・権利・利�
 
 ## 1. Context
 
-Creator First Platform は、Creator と User の権利、利用実績、Governance、収益分配を検証可能にしながら、個人情報や詳細な利用履歴を不要に公開しないことを重要な設計原則とする。
+Creator First Platform は、音楽クリエーター と ユーザ の権利、利用実績、Governance、収益分配を検証可能にしながら、個人情報や詳細な利用履歴を不要に公開しないことを重要な設計原則とする。
 
 これまでのADRでは、Zero-Knowledge Proof（ZKP）が有効となる複数の領域が明らかになっている。
 
 - ADR-0002 Verifiable Sortition
 - ADR-0003 Rights Registry
-- ADR-0004 Creator Distribution Model
+- ADR-0004 音楽クリエーター分配 Model
 - ADR-0005 Usage Oracle
 
 特にUsage Oracleでは、
 
-> 個々のUserの視聴履歴を公開せず、Distributionに使用されたUsage AggregateがProtocol Ruleに従って計算されたことを検証する
+> 個々のユーザの視聴履歴を公開せず、Distributionに使用されたUsage AggregateがProtocol Ruleに従って計算されたことを検証する
 
 必要がある。
 
@@ -119,7 +119,7 @@ Playback Eventの詳細を公開せず、
 
 個人情報を公開せず、
 
-- Creator House / User HouseのEligibilityを満たす
+- 音楽クリエータ院議会 / ユーザ院議会のEligibilityを満たす
 - Eligibility Snapshotに含まれる
 - 必要なCredentialを保有する
 
@@ -127,7 +127,7 @@ Playback Eventの詳細を公開せず、
 
 ### Distribution Proof
 
-Userの詳細な視聴履歴や個別契約を公開せず、
+ユーザの詳細な視聴履歴や個別契約を公開せず、
 
 - Revenue Snapshot
 - Verified Usage
@@ -249,7 +249,7 @@ zk-SNARKおよびPlonk系Proof Systemは、
 
 等の観点から有力な場合がある。
 
-特にSmart Contract上で頻繁にProof Verificationを行う用途では、STARK Proofを直接検証するよりSNARK系Proofへ変換・集約するArchitectureが有利な可能性がある。
+特にスマートコントラクト上で頻繁にProof Verificationを行う用途では、STARK Proofを直接検証するよりSNARK系Proofへ変換・集約するArchitectureが有利な可能性がある。
 
 したがって、
 
@@ -341,13 +341,13 @@ Proofは、
 
 ことを証明する。
 
-個々のUserの視聴履歴をPublic Inputにしてはならない。
+個々のユーザの視聴履歴をPublic Inputにしてはならない。
 
 ---
 
 ## 11. Distribution Proof
 
-ADR-0004 Creator Distribution Modelについて、将来的にDistribution CalculationそのものをZK Proofで検証可能にする。
+ADR-0004 音楽クリエーター分配 Modelについて、将来的にDistribution CalculationそのものをZK Proofで検証可能にする。
 
 概念的に、
 
@@ -399,7 +399,7 @@ ADR-0003 Rights Registryでは、PrivateなRights InformationをPublic Blockchai
 
 ZKPを利用して、
 
-> Rights Holderが特定条件を満たすVerified Credentialを保有する
+> 権利者が特定条件を満たすVerified Credentialを保有する
 
 ことを証明できる。
 
@@ -430,7 +430,7 @@ ADR-0002 Verifiable Sortitionでは、Eligible Setへの参加資格をPrivacy-p
 
 例えば、
 
-> この参加者はUser House Eligibilityを満たしているが、その法的Identityは公開しない
+> この参加者はユーザ院議会参加資格を満たしているが、その法的Identityは公開しない
 
 というProofを構成できる。
 
@@ -539,7 +539,7 @@ Distribution Proof
 
 ## 18. On-chain Verification
 
-すべてのProofをSmart Contract上で直接検証する必要はない。
+すべてのProofをスマートコントラクト上で直接検証する必要はない。
 
 用途に応じて、
 
@@ -550,7 +550,7 @@ Independent Verification
         ↓
 Commitment / Verified Result
         ↓
-Smart Contract
+スマートコントラクト
 ```
 
 または、
@@ -560,7 +560,7 @@ Proof
    ↓
 On-chain Verifier
    ↓
-Smart Contract Execution
+スマートコントラクト Execution
 ```
 
 を選択できる。
@@ -663,7 +663,7 @@ Governance Oversight
 - Deprecation Schedule
 - Security Parameter
 
-重大なProof System変更はADRおよびProtocol Specificationを経る。
+重大なProof System変更はADRおよびプロトコル仕様を経る。
 
 Platform運営者が独断でVerifierを変更し、DistributionやGovernance Eligibilityの意味を変えてはならない。
 
@@ -818,7 +818,7 @@ MVPでは利用可能だが、Privacy-Preserving Verifiabilityという長期目
 
 Privacyを犠牲にして全データをBlockchainへ公開し、ZKPを不要にする。
 
-User Privacy、Rights Information、契約機密性の観点から採用しない。
+ユーザプライバシー、Rights Information、契約機密性の観点から採用しない。
 
 ### ZKP as Business Logic
 
@@ -834,7 +834,7 @@ Business Logicを独立して実装し、その計算をProof化できる構造�
 
 ### Positive
 
-- User Privacyと検証可能性を両立できる
+- ユーザプライバシーと検証可能性を両立できる
 - Usage OracleのTrustを低減できる
 - Distribution Calculationを第三者が検証できる
 - Rights Credentialを公開せず資格を証明できる
@@ -850,7 +850,7 @@ Business Logicを独立して実装し、その計算をProof化できる構造�
 - Developer Toolingへの依存が増える
 - Proving CostがInfrastructure Costへ影響する
 - Proof System Migrationを設計する必要がある
-- Smart Contract VerificationではGas Costが発生する
+- スマートコントラクト VerificationではGas Costが発生する
 - ZKPが保証する範囲について誤解を防ぐ必要がある
 
 ---
@@ -885,7 +885,7 @@ ADR-0002 Verifiable Sortitionでは、Governance EligibilityをPrivacy-preservin
 
 ADR-0003 Rights Registryでは、Rights Credentialや契約情報を公開せず条件成立を証明する用途がある。
 
-ADR-0004 Creator Distribution Modelでは、Distribution Calculationの正当性を証明する用途がある。
+ADR-0004 音楽クリエーター分配 Modelでは、Distribution Calculationの正当性を証明する用途がある。
 
 ADR-0005 Usage Oracleでは、Playback Eventを公開せずVerified Usage Aggregateを証明する用途がある。
 
@@ -914,7 +914,7 @@ ADR-0005 Usage Oracle ────┘
 - Whitepaper: Infrastructure / Cost
 - ADR-0002: Verifiable Sortition
 - ADR-0003: Rights Registry
-- ADR-0004: Creator Distribution Model
+- ADR-0004: 音楽クリエーター分配 Model
 - ADR-0005: Usage Oracle
 
 ---

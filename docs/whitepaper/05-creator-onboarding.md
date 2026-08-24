@@ -1,20 +1,20 @@
 ---
-description: クリエイター本人、作品の権利、配信許諾、報酬受取先を確認する登録・審査・更新プロセス。
+description: 音楽クリエーター本人、作品の権利、配信許諾、報酬受取先を確認する登録・審査・更新プロセス。
 ---
 
-# 5. クリエイター登録 — Creator Onboarding
+# 5. 音楽クリエーター登録 — 音楽クリエーター登録
 
-## Testnetで検証する最小Creator Journey
+## Testnetで検証する最小音楽クリエーター利用フロー
 
-公開Testnetでは、仮名Profileを現在のTabへ保存し、利用者が明示接続したSepolia WalletからCreator Commitmentと作品の権利自己申告Commitmentを登録する。公開Chainへ実名、作品名、音源、契約書、権利資料、税務情報または秘密情報は保存しない。
+公開Testnetでは、仮名Profileを現在のTabへ保存し、ユーザが明示接続したSepolia Walletから音楽クリエーターコミットメントと作品の権利自己申告Commitmentを登録する。公開Chainへ実名、作品名、音源、契約書、権利資料、税務情報または秘密情報は保存しない。
 
-この登録は本人確認、Rights Holder確認、Payee審査、配信許諾または作品公開ではない。作品状態は常に`SELF_DECLARED_UNVERIFIED`から始まり、将来の法人によるEvidence確認、Rights Review、契約および異議申立てを経なければRights Registryの`VERIFIED`／`ACTIVE`へ進まない。Creatorが指定したPayout候補Walletも、本人・Wallet Link・税務・制裁・支払承認が完了するまで報酬送金先として使用しない。
+この登録は本人確認、権利者確認、Payee審査、配信許諾または作品公開ではない。作品状態は常に`SELF_DECLARED_UNVERIFIED`から始まり、将来の法人によるEvidence確認、Rights Review、契約および異議申立てを経なければRights Registryの`VERIFIED`／`ACTIVE`へ進まない。音楽クリエーターが指定したPayout候補Walletも、本人・Wallet Link・税務・制裁・支払承認が完了するまで報酬送金先として使用しない。
 
-[Test Creator Journey](/demo/creator-workspace)ではこの分離を合成データとEthereum Sepoliaで確認できる。
+[テスト音楽クリエーター利用フロー](/demo/creator-workspace)ではこの分離を合成データとEthereum Sepoliaで確認できる。
 
 ## 5.1 本章の目的
 
-Creator First Platform におけるクリエイター登録は、単なるアカウント作成ではない。
+Creator First Platform における音楽クリエーター登録は、単なるアカウント作成ではない。
 
 音楽を配信し、その利用に基づく報酬を受け取るためには、
 
@@ -25,7 +25,7 @@ Creator First Platform におけるクリエイター登録は、単なるアカ
 
 を確認する必要がある。
 
-一方、確認手続を過度に複雑にすれば、新人や独立系クリエイターほど参加しにくくなる。
+一方、確認手続を過度に複雑にすれば、新人や独立系音楽クリエーターほど参加しにくくなる。
 
 したがって Creator First Platform では、
 
@@ -33,7 +33,7 @@ Creator First Platform におけるクリエイター登録は、単なるアカ
 
 ```mermaid
 flowchart LR
-    APPLY[Creator Application]
+    APPLY[音楽クリエーターアプリ]
     ACCOUNT[Account]
     ID[Identity Verification]
     RIGHTS[Rights Declaration]
@@ -51,11 +51,11 @@ flowchart LR
     REGISTER --> RELEASE
 ```
 
-本章では、クリエイターが参加してから作品を公開し、報酬を受け取るまでの基本構造を定義する。
+本章では、音楽クリエーターが参加してから作品を公開し、報酬を受け取るまでの基本構造を定義する。
 
 ---
 
-## 5.2 Creator First の入口
+## 5.2 音楽クリエーター中心 の入口
 
 Creator First Platform は、既に大きな実績を持つアーティストだけを対象としない。
 
@@ -64,7 +64,7 @@ Creator First Platform は、既に大きな実績を持つアーティストだ
 - 新人アーティスト
 - 独立系ミュージシャン
 - 小規模レーベル
-- 地域で活動するクリエイター
+- 地域で活動する音楽クリエーター
 - ニッチジャンルの制作者
 - 作詞家・作曲家
 - 実演家
@@ -77,7 +77,7 @@ flowchart TD
     CFP[Creator First Platform]
 
     INDIE[Independent Artist] --> CFP
-    NEW[New Creator] --> CFP
+    NEW[新人音楽クリエーター] --> CFP
     BAND[Band / Group] --> CFP
     LABEL[Independent Label] --> CFP
     WRITER[Songwriter / Composer] --> CFP
@@ -92,7 +92,7 @@ flowchart TD
 
 ## 5.3 登録の基本原則
 
-クリエイター登録は次の原則に従う。
+音楽クリエーター登録は次の原則に従う。
 
 ### Low Barrier
 
@@ -106,9 +106,9 @@ flowchart TD
 
 最初からすべての確認を要求せず、利用する機能に応じて検証レベルを上げる。
 
-### Creator Control
+### 音楽クリエーターControl
 
-クリエイター自身が登録情報、権利情報、分配情報を確認できるようにする。
+音楽クリエーター自身が登録情報、権利情報、分配情報を確認できるようにする。
 
 ### Explainable Review
 
@@ -127,7 +127,7 @@ flowchart TD
 ```mermaid
 flowchart LR
     L0[Level 0<br/>Account]
-    L1[Level 1<br/>Creator Profile]
+    L1[Level 1<br/>音楽クリエータープロフィール]
     L2[Level 2<br/>Identity Verified]
     L3[Level 3<br/>Rights Verified]
     L4[Level 4<br/>Distribution Enabled]
@@ -139,7 +139,7 @@ flowchart LR
 
 基本アカウントを作成する。
 
-### Level 1 — Creator Profile
+### Level 1 — 音楽クリエータープロフィール
 
 アーティスト名、プロフィール、ジャンル等を登録する。
 
@@ -161,11 +161,11 @@ flowchart LR
 
 ## 5.5 アカウントと公開プロフィール
 
-クリエイターの内部アカウント情報と、利用者に表示する公開プロフィールは分離する。
+音楽クリエーターの内部アカウント情報と、ユーザに表示する公開プロフィールは分離する。
 
 ```mermaid
 flowchart TD
-    ACCOUNT[Creator Account]
+    ACCOUNT[音楽クリエーターアカウント]
 
     ACCOUNT --> PRIVATE[Private Information]
     ACCOUNT --> PUBLIC[Public Profile]
@@ -187,13 +187,13 @@ flowchart TD
 
 ## 5.6 本人確認
 
-報酬を受け取るクリエイターについては、法令、決済、税務、不正防止等の要件に応じて本人確認を行う。
+報酬を受け取る音楽クリエーターについては、法令、決済、税務、不正防止等の要件に応じて本人確認を行う。
 
 登録主体によって必要な確認は異なる。
 
 ```mermaid
 flowchart TD
-    CREATOR[Creator]
+    CREATOR[音楽クリエーター]
 
     CREATOR --> PERSON[Individual]
     CREATOR --> ORG[Organization]
@@ -201,7 +201,7 @@ flowchart TD
     PERSON --> KYC[Identity Verification]
     ORG --> KYB[Organization Verification]
 
-    KYC --> VERIFIED[Verified Creator]
+    KYC --> VERIFIED[検証済み音楽クリエーター]
     KYB --> VERIFIED
 ```
 
@@ -213,7 +213,7 @@ flowchart TD
 
 ## 5.7 作品登録
 
-クリエイターは作品ごとに基本情報を登録する。
+音楽クリエーターは作品ごとに基本情報を登録する。
 
 想定する情報には次が含まれる。
 
@@ -248,7 +248,7 @@ flowchart LR
     AUDIO --> REVIEW
 ```
 
-独立系クリエイター向けには、複雑な権利用語を理解していなくても入力できるガイド型UIを用意する。
+独立系音楽クリエーター向けには、複雑な権利用語を理解していなくても入力できるガイド型UIを用意する。
 
 ---
 
@@ -272,7 +272,7 @@ flowchart TD
 
 のように、役割を分けて申告する。
 
-これにより、クリエイター自身にも権利構造を理解しやすくする。
+これにより、音楽クリエーター自身にも権利構造を理解しやすくする。
 
 ---
 
@@ -312,7 +312,7 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    CREATOR[Creator]
+    CREATOR[音楽クリエーター]
     VERIFY[Rights Verification]
     REG[Rights Registry]
     STREAM[Streaming Platform]
@@ -330,7 +330,7 @@ Rights Registry は「著作権そのもの」を作るものではなく、プ�
 
 ## 5.11 共同制作作品
 
-現代の音楽制作では、複数のクリエイターが一つの作品へ関与することが多い。
+現代の音楽制作では、複数の音楽クリエーターが一つの作品へ関与することが多い。
 
 そのため、登録者一人の申告だけで全権利を確定する設計にはしない。
 
@@ -338,9 +338,9 @@ Rights Registry は「著作権そのもの」を作るものではなく、プ�
 flowchart TD
     TRACK[Track]
 
-    TRACK --> A[Creator A]
-    TRACK --> B[Creator B]
-    TRACK --> C[Creator C]
+    TRACK --> A[音楽クリエーターA]
+    TRACK --> B[音楽クリエーターB]
+    TRACK --> C[音楽クリエーターC]
 
     A --> SPLIT[Rights / Revenue Split]
     B --> SPLIT
@@ -362,7 +362,7 @@ flowchart TD
 
 例えば、
 
-- 個人クリエイター
+- 個人音楽クリエーター
 - バンド
 - レーベル
 - 出版社
@@ -376,8 +376,8 @@ flowchart TD
     TRACK[Track Revenue]
     TRACK --> SPLIT[Distribution Split]
 
-    SPLIT --> A[Creator A]
-    SPLIT --> B[Creator B]
+    SPLIT --> A[音楽クリエーターA]
+    SPLIT --> B[音楽クリエーターB]
     SPLIT --> LABEL[Label]
     SPLIT --> PUB[Publisher / Rights Entity]
 ```
@@ -388,7 +388,7 @@ flowchart TD
 
 ## 5.13 配信契約
 
-作品公開前に、運営株式会社とクリエイターまたは権利者との間で配信に必要な契約関係を成立させる。
+作品公開前に、運営株式会社と音楽クリエーターまたは権利者との間で配信に必要な契約関係を成立させる。
 
 契約では少なくとも、
 
@@ -409,7 +409,7 @@ flowchart TD
 flowchart LR
     RIGHTS[Verified Rights]
     TERMS[Distribution Terms]
-    CONSENT[Creator Consent]
+    CONSENT[音楽クリエーターConsent]
     CONTRACT[Agreement]
     RELEASE[Release]
 
@@ -444,7 +444,7 @@ flowchart TD
     REGION --> OK
 
     OK -->|Yes| PUBLISH[Publish]
-    OK -->|No| FIX[Creator Action / Review]
+    OK -->|No| FIX[音楽クリエーターAction / Review]
 ```
 
 審査は作品の芸術的価値を評価するためのものではない。
@@ -482,13 +482,13 @@ Creator First Platform における登録審査は、
 
 ## 5.16 発見機会への接続
 
-登録された新人クリエイターが、単に巨大なカタログの中へ埋もれるだけでは Creator First とは言えない。
+登録された新人音楽クリエーターが、単に巨大なカタログの中へ埋もれるだけでは 音楽クリエーター中心 とは言えない。
 
 登録後は Discovery Layer と接続する。
 
 ```mermaid
 flowchart LR
-    NEW[New Creator]
+    NEW[新人音楽クリエーター]
     VERIFY[Verified Release]
     DISC[Discovery System]
     USERS[Listeners]
@@ -501,7 +501,7 @@ flowchart LR
     SUPPORT --> NEW
 ```
 
-ただし、新人であるという理由だけで強制的に利用者へ推薦するのではなく、利用者の利便性・選択権と公平な発見機会を両立させる。
+ただし、新人であるという理由だけで強制的にユーザへ推薦するのではなく、ユーザの利便性・選択権と公平な発見機会を両立させる。
 
 詳細は第8章「発見とコミュニティ」で扱う。
 
@@ -509,7 +509,7 @@ flowchart LR
 
 ## 5.17 「推し活」と Early Support
 
-Creator First Platform では、利用者が新人を発見し、その成長を支える体験を重要な価値の一つとして設計できる。
+Creator First Platform では、ユーザが新人を発見し、その成長を支える体験を重要な価値の一つとして設計できる。
 
 例えば、
 
@@ -527,7 +527,7 @@ flowchart LR
     DISCOVER[Discover]
     FOLLOW[Follow]
     SUPPORT[Support]
-    GROW[Creator Growth]
+    GROW[音楽クリエーターの成長]
     COMMUNITY[Community]
 
     DISCOVER --> FOLLOW
@@ -567,7 +567,7 @@ flowchart TD
     ABUSE --> REVIEW
 ```
 
-AIを利用したという事実だけでクリエイターを排除するのではなく、権利と透明性を中心に扱う。
+AIを利用したという事実だけで音楽クリエーターを排除するのではなく、権利と透明性を中心に扱う。
 
 ---
 
@@ -584,7 +584,7 @@ flowchart TD
     TRIAGE --> REVIEW[Needs Investigation]
     TRIAGE --> URGENT[Urgent / Serious]
 
-    REVIEW --> CREATOR[Creator Response]
+    REVIEW --> CREATOR[音楽クリエーター応答]
     URGENT --> HOLD[Temporary Measures]
 
     CREATOR --> DECISION[Decision]
@@ -601,7 +601,7 @@ flowchart TD
 
 ## 5.20 異議申立て
 
-クリエイターは、
+音楽クリエーターは、
 
 - 登録拒否
 - 権利確認保留
@@ -614,7 +614,7 @@ flowchart TD
 ```mermaid
 flowchart LR
     DECISION[Platform Decision]
-    APPEAL[Creator Appeal]
+    APPEAL[音楽クリエーターAppeal]
     REVIEW[Independent / Human Review]
     RESULT[Reasoned Result]
 
@@ -623,7 +623,7 @@ flowchart LR
     REVIEW --> RESULT
 ```
 
-Creator First の理念上、**説明可能性と救済手続**は重要な要素となる。
+音楽クリエーター中心 の理念上、**説明可能性と救済手続**は重要な要素となる。
 
 ---
 
@@ -661,13 +661,13 @@ flowchart LR
 
 ## 5.22 アカウントと権利の分離
 
-クリエイターのアカウントが停止・削除された場合でも、作品の法的権利が消えるわけではない。
+音楽クリエーターのアカウントが停止・削除された場合でも、作品の法的権利が消えるわけではない。
 
 したがって、
 
 ```mermaid
 flowchart TD
-    ACCOUNT[Creator Account]
+    ACCOUNT[音楽クリエーターアカウント]
     RIGHTS[Legal Rights]
     REG[Rights Registry]
 
@@ -687,7 +687,7 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    PRIVATE[Private Creator Data]
+    PRIVATE[非公開音楽クリエーターデータ]
     PRIVATE --> SECURE[Secure Off-chain Storage]
 
     SECURE --> HASH[Hash / Reference]
@@ -707,13 +707,13 @@ flowchart LR
 
 ---
 
-## 5.24 クリエイターダッシュボード
+## 5.24 音楽クリエーターダッシュボード
 
-クリエイター自身が、自分の作品と経済状態を確認できるダッシュボードを提供する。
+音楽クリエーター自身が、自分の作品と経済状態を確認できるダッシュボードを提供する。
 
 ```mermaid
 flowchart TD
-    DASH[Creator Dashboard]
+    DASH[音楽クリエーターダッシュボード]
 
     DASH --> TRACKS[Tracks]
     DASH --> RIGHTS[Rights Status]
@@ -733,9 +733,9 @@ flowchart TD
 
 ---
 
-## 5.25 Creator House への参加
+## 5.25 音楽クリエータ院議会 への参加
 
-登録クリエイターが一定の要件を満たした場合、Creator House のガバナンスへ参加できる。
+登録音楽クリエーターが一定の要件を満たした場合、音楽クリエータ院議会 のガバナンスへ参加できる。
 
 ただし、
 
@@ -745,10 +745,10 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    REGISTERED[Registered Creator]
-    VERIFIED[Verified Creator]
+    REGISTERED[Registered 音楽クリエーター]
+    VERIFIED[検証済み音楽クリエーター]
     ELIGIBLE[Governance Eligibility]
-    HOUSE[Creator House]
+    HOUSE[音楽クリエータ院議会]
 
     REGISTERED --> VERIFIED
     VERIFIED --> ELIGIBLE
@@ -765,16 +765,16 @@ flowchart LR
 
 ```mermaid
 sequenceDiagram
-    participant C as Creator
-    participant P as Creator Portal
+    participant C as 音楽クリエーター
+    participant P as 音楽クリエーターポータル
     participant Corp as Corporation
     participant R as Rights Registry
     participant S as Streaming Platform
     participant O as Usage Oracle
-    participant SC as Smart Contract
+    participant SC as スマートコントラクト
 
     C->>P: Create account
-    C->>P: Creator profile
+    C->>P: 音楽クリエータープロフィール
     C->>Corp: Identity verification
     C->>P: Upload track / rights declaration
     P->>Corp: Rights review
@@ -787,7 +787,7 @@ sequenceDiagram
     SC-->>C: Distribution
 ```
 
-この流れでは、アカウント作成から報酬分配までを一つのブラックボックスにせず、それぞれの段階の状態をクリエイターが確認できるようにする。
+この流れでは、アカウント作成から報酬分配までを一つのブラックボックスにせず、それぞれの段階の状態を音楽クリエーターが確認できるようにする。
 
 ---
 
@@ -811,7 +811,7 @@ flowchart LR
 
 という比較的単純な構成から開始できる。
 
-初期段階では登録クリエイター数を限定し、人による確認を多く残すことで、実際にどのような権利問題が発生するかを学習する。
+初期段階では登録音楽クリエーター数を限定し、人による確認を多く残すことで、実際にどのような権利問題が発生するかを学習する。
 
 その後、定型的な確認から自動化する。
 
@@ -854,7 +854,7 @@ flowchart LR
 
 ## 5.29 3つの憲章との関係
 
-クリエイター登録制度も、プラットフォームの3つの憲章に従う。
+音楽クリエーター登録制度も、プラットフォームの3つの憲章に従う。
 
 登録者を増やすこと、権利審査を効率化すること、収益を最大化することよりも、憲章上の原則を優先する。
 
@@ -862,7 +862,7 @@ flowchart LR
 flowchart TD
     CONST[3つの憲章]
 
-    CONST --> ONBOARD[Creator Onboarding]
+    CONST --> ONBOARD[音楽クリエーター登録]
     CONST --> RIGHTS[Rights Review]
     CONST --> DISC[Discovery]
     CONST --> MONEY[Distribution]
@@ -875,21 +875,21 @@ flowchart TD
 
 例えば、新人を支援するという目的があっても、第三者の権利を侵害する作品を優遇することはできない。
 
-また、不正防止を理由に、すべてのクリエイターへ不必要な監視や過剰な個人情報提出を要求することも避ける。
+また、不正防止を理由に、すべての音楽クリエーターへ不必要な監視や過剰な個人情報提出を要求することも避ける。
 
 ---
 
 ## 5.30 本章のまとめ
 
-Creator First Platform におけるクリエイター登録は、
+Creator First Platform における音楽クリエーター登録は、
 
 > **アカウントを作って音源をアップロードするだけの処理ではない。**
 
-クリエイター、作品、権利、契約、分配、ガバナンスを接続する入口である。
+音楽クリエーター、作品、権利、契約、分配、ガバナンスを接続する入口である。
 
 ```mermaid
 flowchart LR
-    CREATOR[Creator]
+    CREATOR[音楽クリエーター]
     ID[Identity]
     RIGHTS[Rights]
     CONTRACT[Contract]
@@ -909,7 +909,7 @@ flowchart LR
 
 目指すのは、
 
-> **新人でも参加しやすく、権利者には安全で、利用者には信頼でき、クリエイター自身が自分の権利と収益を理解できる登録制度**
+> **新人でも参加しやすく、権利者には安全で、ユーザには信頼でき、音楽クリエーター自身が自分の権利と収益を理解できる登録制度**
 
 である。
 

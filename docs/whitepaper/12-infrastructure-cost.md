@@ -13,8 +13,8 @@ Creator First Platform のインフラ設計では、単に「サーバーを動
 
 同時に満たすべきものは、
 
-- 音楽サービスとして快適なユーザー体験
-- クリエイターへの正確で検証可能な分配
+- 音楽サービスとして快適なユーザ体験
+- 音楽クリエーターへの正確で検証可能な分配
 - Usage Oracle と ZK Proof の検証可能性
 - スマートコントラクトの安全な実行
 - 成長に応じたスケーラビリティ
@@ -24,7 +24,7 @@ Creator First Platform のインフラ設計では、単に「サーバーを動
 
 ```mermaid
 flowchart TD
-    UX[User Experience]
+    UX[ユーザ体験]
     PERF[Performance]
     REL[Reliability]
     SEC[Security]
@@ -41,7 +41,7 @@ flowchart TD
 
 本章では、技術性能を事業計画と切り離さず、
 
-> **1ユーザー、1再生、1クリエイター、1分配あたりのコストを把握できるインフラ**
+> **1ユーザ、1再生、1音楽クリエーター、1分配あたりのコストを把握できるインフラ**
 
 を目標とする。
 
@@ -81,9 +81,9 @@ flowchart LR
 
 ---
 
-## 12.3 User Experience を性能要件の起点にする
+## 12.3 ユーザ体験 を性能要件の起点にする
 
-性能目標はサーバー側の都合ではなく、利用者が感じる品質から逆算する。
+性能目標はサーバー側の都合ではなく、ユーザが感じる品質から逆算する。
 
 音楽サービスで重要なのは、
 
@@ -98,7 +98,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    TAP[User Action]
+    TAP[ユーザ操作]
     UI[UI Response]
     API[API]
     STREAM[Audio Stream]
@@ -127,7 +127,7 @@ flowchart LR
 | Track Transition | 500 ms以下を目標 |
 | Playback Availability | 99.95%以上 |
 | Core API Availability | 99.9%以上 |
-| Governance / Creator Console | 99.9%以上 |
+| Governance / 音楽クリエーターConsole | 99.9%以上 |
 
 これらは初期設計値であり、実測に基づいて改訂する。
 
@@ -145,7 +145,7 @@ $$
 
 と表す。
 
-平均が速くても、一部のユーザーが数秒待たされるサービスは快適ではない。
+平均が速くても、一部のユーザが数秒待たされるサービスは快適ではない。
 
 したがって、
 
@@ -342,7 +342,7 @@ $H$ を高くすることで、
 
 ## 12.11 Long Tail とコスト
 
-Creator First Platform は有名曲だけでなく、新人・小規模クリエイターの作品発見を重視する。
+Creator First Platform は有名曲だけでなく、新人・小規模音楽クリエーターの作品発見を重視する。
 
 そのため、
 
@@ -377,7 +377,7 @@ flowchart LR
 
     API --> AUTH[Auth]
     API --> CATALOG[Catalog]
-    API --> CREATOR[Creator]
+    API --> CREATOR[音楽クリエーター]
     API --> COMMUNITY[Community]
     API --> RIGHTS[Rights]
 ```
@@ -405,8 +405,8 @@ flowchart TD
 
 ### Relational DB
 
-- User
-- Creator
+- ユーザ
+- 音楽クリエーター
 - Rights
 - Subscription
 - Contract Metadata
@@ -459,7 +459,7 @@ flowchart LR
 
 ## 12.15 Event Throughput
 
-同時利用者数を $U_c$、1ユーザーあたり平均イベント発生率を $r_e$ events/s とすると、
+同時ユーザ数を $U_c$、1ユーザあたり平均イベント発生率を $r_e$ events/s とすると、
 
 $$
 TPS_{event}
@@ -469,7 +469,7 @@ $$
 
 である。
 
-例えば同時利用者10万人が平均30秒に1イベント送信するなら、
+例えば同時ユーザ10万人が平均30秒に1イベント送信するなら、
 
 $$
 TPS_{event}
@@ -672,31 +672,31 @@ Batch化によって $N_{tx}$ を抑えることが重要である。
 
 ## 12.23 Claim型分配
 
-多数のCreatorへPlatformが一括Push送金するより、
+多数の音楽クリエーターへPlatformが一括Push送金するより、
 
 ```mermaid
 flowchart LR
     ROOT[Distribution Root]
     CONTRACT[Distribution Contract]
 
-    CONTRACT --> C1[Creator A Claim]
-    CONTRACT --> C2[Creator B Claim]
-    CONTRACT --> C3[Creator C Claim]
+    CONTRACT --> C1[音楽クリエーターA Claim]
+    CONTRACT --> C2[音楽クリエーターB Claim]
+    CONTRACT --> C3[音楽クリエーターC Claim]
 
     ROOT --> CONTRACT
 ```
 
-Creatorが必要な時にClaimする方式を検討する。
+音楽クリエーターが必要な時にClaimする方式を検討する。
 
 これにより、分配処理のGas負担や失敗処理を分散できる。
 
-ただし、少額CreatorにGas負担を押し付ける設計にならないよう、Gas Sponsorship等も検討する。
+ただし、少額音楽クリエーターにGas負担を押し付ける設計にならないよう、Gas Sponsorship等も検討する。
 
 ---
 
 ## 12.24 Wallet UX
 
-一般の音楽クリエイターや利用者へ、
+一般の音楽クリエーターやユーザへ、
 
 - Seed Phrase
 - Gas Token
@@ -707,7 +707,7 @@ Creatorが必要な時にClaimする方式を検討する。
 
 ```mermaid
 flowchart LR
-    USER[User]
+    USER[ユーザ]
     APP[Music App UX]
     WALLET[Embedded / Smart Wallet]
     L2[Blockchain]
@@ -721,7 +721,7 @@ flowchart LR
 
 ## 12.25 Gas Sponsorship
 
-利用者のSubscription Payment、Early Supporter SBT発行、ガバナンス投票またはCreator Claimでは、必要に応じてPlatformがRelayerまたはPaymasterを通じてGasをスポンサーする。
+ユーザのSubscription Payment、Early Supporter SBT発行、ガバナンス投票または音楽クリエーターClaimでは、必要に応じてPlatformがRelayerまたはPaymasterを通じてGasをスポンサーする。
 
 月間Gas Sponsorship Costを、
 
@@ -735,9 +735,9 @@ $$
 
 とする。
 
-これをCreator/User Participation Costとして事業計画に含める。
+これを音楽クリエーター／ユーザ参加 Costとして事業計画に含める。
 
-Gas Sponsorship CostはJPYC等で表示するSubscription Priceと分離し、利用者がETH等でサービス料金を支払ったものとして記録しない。テスト系ではFaucet由来のTestnet Gas Tokenだけを使用し、`MockJPYC`決済とSBT発行を無料で検証する。本番系ではSponsorship上限、対象Operation、Rate Limit、失敗時の再送、秘密鍵管理および会計処理を承認済みPolicyとして定義する。
+Gas Sponsorship CostはJPYC等で表示するSubscription Priceと分離し、ユーザがETH等でサービス料金を支払ったものとして記録しない。テスト系ではFaucet由来のTestnet Gas Tokenだけを使用し、`MockJPYC`決済とSBT発行を無料で検証する。本番系ではSponsorship上限、対象Operation、Rate Limit、失敗時の再送、秘密鍵管理および会計処理を承認済みPolicyとして定義する。
 
 ---
 
@@ -849,7 +849,7 @@ flowchart TD
 - Playback Start p95
 - Buffering Ratio
 - API Error Rate
-- Active Users
+- Active ユーザ
 - Plays/min
 - Fraud Rate
 - Proof Queue Length
@@ -957,7 +957,7 @@ $$
 - Blockchain
 - Storage増加
 
-利用者数が少ない段階ではFixed Cost比率が高く、成長するとVariable Costが重要になる。
+ユーザ数が少ない段階ではFixed Cost比率が高く、成長するとVariable Costが重要になる。
 
 ---
 
@@ -993,7 +993,7 @@ $$
 
 ---
 
-## 12.35 1ユーザーあたりインフラコスト
+## 12.35 1ユーザあたりインフラコスト
 
 MAUを $U$ とすると、
 
@@ -1019,7 +1019,7 @@ $$
 
 ## 12.36 Unit Economics
 
-月額料金を $P$、Creator等への分配率を $r_c$、決済費率を $r_p$、ユーザーあたりインフラコストを $C_u$ とすると、単純化したContribution Marginは、
+月額料金を $P$、音楽クリエーター等への分配率を $r_c$、決済費率を $r_p$、ユーザあたりインフラコストを $C_u$ とすると、単純化したContribution Marginは、
 
 $$
 M
@@ -1032,7 +1032,7 @@ $$
 ```mermaid
 flowchart LR
     PRICE[Subscription]
-    CREATOR[Creator Distribution]
+    CREATOR[音楽クリエーター分配]
     PAYMENT[Payment Cost]
     INFRA[Infrastructure]
     MARGIN[Contribution Margin]
@@ -1043,11 +1043,11 @@ flowchart LR
     PRICE --> MARGIN
 ```
 
-Creator Firstである以上、Creator分配率を下げることで利益を作るモデルを第一選択にしない。
+音楽クリエーター中心である以上、音楽クリエーター分配率を下げることで利益を作るモデルを第一選択にしない。
 
 したがって、
 
-> **インフラ効率を高めること自体がCreatorへの還元余力を増やす**
+> **インフラ効率を高めること自体が音楽クリエーターへの還元余力を増やす**
 
 という考え方を採る。
 
@@ -1089,7 +1089,7 @@ flowchart LR
 | MAU | 10,000 | 100,000 | 1,000,000 |
 | 有料会員 | 2,000 | 30,000 | 300,000 |
 | 月間再生 | 1,000,000 | 20,000,000 | 300,000,000 |
-| 登録Creator | 500 | 10,000 | 100,000 |
+| 登録音楽クリエーター | 500 | 10,000 | 100,000 |
 | 同時再生Peak | 500 | 10,000 | 100,000 |
 
 これらは予測値ではなく、容量計画を比較するための基準シナリオである。
@@ -1145,7 +1145,7 @@ $$
 
 ここから、
 
-- Creator / Rights Holder Distribution
+- 音楽クリエーター／権利者 Distribution
 - 決済手数料
 - Infrastructure
 - 人件費
@@ -1176,22 +1176,22 @@ $$
 
 ---
 
-## 12.42 Creator First Cost Allocation
+## 12.42 音楽クリエーター中心 Cost Allocation
 
-インフラコストをCreatorごとに単純転嫁しない。
+インフラコストを音楽クリエーターごとに単純転嫁しない。
 
-新人Creatorの再生数が少ないために、
+新人音楽クリエーターの再生数が少ないために、
 
-> 「固定費を回収できないCreatorは登録できない」
+> 「固定費を回収できない音楽クリエーターは登録できない」
 
-という構造にすると、Creator Firstの理念と矛盾する。
+という構造にすると、音楽クリエーター中心の理念と矛盾する。
 
 ```mermaid
 flowchart TD
     PLATFORM[Platform Economy]
-    POP[Popular Creators]
-    LONG[Long-tail Creators]
-    NEW[New Creators]
+    POP[Popular 音楽クリエーター]
+    LONG[Long-tail 音楽クリエーター]
+    NEW[新人音楽クリエーター]
 
     PLATFORM --> POP
     PLATFORM --> LONG
@@ -1248,7 +1248,7 @@ flowchart LR
     ANOMALY --> ALERT
 ```
 
-例えば無限Retryが発生すると、ユーザー数が増えていないのにAPI費用だけが急増する可能性がある。
+例えば無限Retryが発生すると、ユーザ数が増えていないのにAPI費用だけが急増する可能性がある。
 
 ---
 
@@ -1370,7 +1370,7 @@ flowchart LR
     BATCH[Batch Recommendation]
     REAL[Real-time Signals]
     CACHE[Recommendation Cache]
-    USER[User]
+    USER[ユーザ]
 
     DATA --> BATCH --> CACHE
     REAL --> CACHE
@@ -1396,10 +1396,10 @@ $$
 - $\Delta E$：EngagementやDiscovery価値の改善
 - $C_{rec}$：推薦計算コスト
 
-Creator Firstでは、クリック率だけでなく、
+音楽クリエーター中心では、クリック率だけでなく、
 
 - 新人発見
-- Creator Diversity
+- 音楽クリエーターの多様性
 - Long Tail Exposure
 
 も価値指標へ含める。
@@ -1505,7 +1505,7 @@ flowchart LR
 
 ## 12.55 GitHub とインフラ
 
-Whitepaper、Protocol Specification、Smart Contract、Infrastructure DefinitionをGitHubで関連付ける。
+Whitepaper、プロトコル仕様、スマートコントラクト、Infrastructure DefinitionをGitHubで関連付ける。
 
 ```text
 creator-first-platform/
@@ -1538,7 +1538,7 @@ flowchart TD
 
     OPS --> TEAM[Engineering]
     PROTOCOL --> REVIEW[Protocol Review]
-    ECON --> GOV[Creator + User Governance]
+    ECON --> GOV[音楽クリエーター + ユーザガバナンス]
 ```
 
 例えばDBのIndex追加はEngineering判断でよい。
@@ -1550,27 +1550,27 @@ flowchart TD
 - Treasury
 - Governance Executor
 
-に影響する変更はProtocol Governanceと接続する。
+に影響する変更はプロトコルガバナンスと接続する。
 
 ---
 
 ## 12.57 Performance Governance
 
-ユーザー体験を憲章上の理念と接続する。
+ユーザ体験を憲章上の理念と接続する。
 
-Creator Firstであっても、サービスが遅く使いにくければ利用者が増えず、結果としてCreatorへの還元も成立しない。
+音楽クリエーター中心であっても、サービスが遅く使いにくければユーザが増えず、結果として音楽クリエーターへの還元も成立しない。
 
 ```mermaid
 flowchart LR
     UX[Good UX]
-    USERS[User Growth / Retention]
+    USERS[ユーザ成長 / Retention]
     REVENUE[Revenue]
-    CREATOR[Creator Sustainability]
+    CREATOR[音楽クリエーターの持続可能性]
 
     UX --> USERS --> REVENUE --> CREATOR
 ```
 
-したがって性能は単なる技術問題ではなく、Creator Economyの基盤である。
+したがって性能は単なる技術問題ではなく、音楽クリエーター経済の基盤である。
 
 ---
 
@@ -1580,14 +1580,14 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    DASH[Creator First Dashboard]
+    DASH[音楽クリエーター中心 Dashboard]
 
     DASH --> UX[Playback p95]
-    DASH --> USER[MAU / Paid Users]
-    DASH --> CREATOR[Active Creators]
+    DASH --> USER[MAU / Paid ユーザ]
+    DASH --> CREATOR[Active 音楽クリエーター]
     DASH --> PLAY[Listening Hours]
     DASH --> COST[Infrastructure Cost]
-    DASH --> UNIT[Cost / User]
+    DASH --> UNIT[Cost / ユーザ]
     DASH --> MARGIN[Contribution Margin]
     DASH --> PROOF[Proof Cost]
     DASH --> FRAUD[Fraud Rate]
@@ -1617,7 +1617,7 @@ flowchart TD
 
 ### Scale
 
-- Concurrent Users
+- Concurrent ユーザ
 - Plays/s
 - Events/s
 - Proofs/day
@@ -1625,18 +1625,18 @@ flowchart TD
 ### Cost
 
 - Cost / MAU
-- Cost / Paid User
+- Cost / Paid ユーザ
 - Cost / Play
 - Cost / Listening Hour
 - CDN Cost / Listening Hour
 - ZK Cost / Distribution Cycle
 
-### Creator Economy
+### 音楽クリエーター経済
 
-- Creator Distribution Ratio
+- 音楽クリエーター分配 Ratio
 - Long Tail Listening Ratio
-- Active Creator Count
-- New Creator Discovery Rate
+- Active 音楽クリエーターCount
+- 新人音楽クリエーター発見 Rate
 
 を継続監視する。
 
@@ -1644,7 +1644,7 @@ flowchart TD
 
 ## 12.60 Scale Trigger
 
-「ユーザーが増えそうだから」インフラを複雑化するのではなく、Triggerを定義する。
+「ユーザが増えそうだから」インフラを複雑化するのではなく、Triggerを定義する。
 
 ```mermaid
 flowchart LR
@@ -1674,7 +1674,7 @@ MVPでは構成を意図的に小さくする。
 
 ```mermaid
 flowchart TD
-    USER[Users]
+    USER[ユーザ]
     CDN[CDN]
     APP[App / API]
     DB[(Managed DB)]
@@ -1761,7 +1761,7 @@ flowchart TD
 ```mermaid
 flowchart LR
     FUNCTION[Function]
-    DIFFERENTIATOR{Creator Firstの<br/>競争力か?}
+    DIFFERENTIATOR{音楽クリエーター中心の<br/>競争力か?}
 
     FUNCTION --> DIFFERENTIATOR
     DIFFERENTIATOR -->|Yes| BUILD[Build]
@@ -1770,7 +1770,7 @@ flowchart LR
 
 自作価値が高い候補：
 
-- Creator Economy
+- 音楽クリエーター経済
 - Rights Graph
 - Distribution Logic
 - Governance
@@ -1823,9 +1823,9 @@ flowchart LR
 - Backup
 - Security Monitoring
 - Rights Data Integrity
-- Creator Payout Accuracy
+- 音楽クリエーター支払 Accuracy
 - Critical Audit Logs
-- Smart Contract Audit
+- スマートコントラクト Audit
 - Incident Response
 
 短期的なクラウド費削減のために、事業存続リスクを増やさない。
@@ -1840,8 +1840,8 @@ flowchart LR
 flowchart TD
     CONST[3つの憲章]
 
-    CONST --> CREATOR[Creator Sustainability]
-    CONST --> USER[User Experience / Autonomy]
+    CONST --> CREATOR[音楽クリエーターの持続可能性]
+    CONST --> USER[ユーザ体験 / Autonomy]
     CONST --> FAIR[Fair Ecosystem]
 
     CREATOR --> INFRA[Infrastructure]
@@ -1849,11 +1849,11 @@ flowchart TD
     FAIR --> INFRA
 ```
 
-### Creator
+### 音楽クリエーター
 
 低コストで正確な分配を可能にする。
 
-### User
+### ユーザ
 
 高速で安定した音楽体験とプライバシーを提供する。
 
@@ -1867,11 +1867,11 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    USER[Users]
-    CREATOR[Creators]
+    USER[ユーザ]
+    CREATOR[音楽クリエーター]
 
     USER --> EDGE[CDN / Edge]
-    CREATOR --> APP[Creator App]
+    CREATOR --> APP[音楽クリエーターApp]
 
     EDGE --> PLAYER[Player]
     PLAYER --> API[Application API]
@@ -1909,7 +1909,7 @@ flowchart TD
 最終的に、インフラ計画は次の関係を継続的に測定する。
 
 $$
-\text{Users}
+\text{ユーザ}
 \rightarrow
 \text{Listening}
 \rightarrow
@@ -1919,24 +1919,24 @@ $$
 \rightarrow
 \text{Revenue}
 \rightarrow
-\text{Creator Distribution}
+\text{音楽クリエーター分配}
 $$
 
 ```mermaid
 flowchart LR
-    USERS[Users]
+    USERS[ユーザ]
     LISTEN[Listening]
     LOAD[Infrastructure Load]
     COST[Cost]
     REV[Revenue]
-    DIST[Creator Distribution]
+    DIST[音楽クリエーター分配]
 
     USERS --> LISTEN --> LOAD --> COST
     USERS --> REV --> DIST
     COST --> REV
 ```
 
-事業成長によって売上だけでなくCreatorへの分配余力が増える構造を目指す。
+事業成長によって売上だけでなく音楽クリエーターへの分配余力が増える構造を目指す。
 
 ---
 
@@ -1963,19 +1963,19 @@ Creator First Platform のインフラは、
 - ZK/STARKは段階導入する
 - Blockchain処理を必要最小限にする
 - p50/p95/p99とSLOでUXを管理する
-- Cost / User、Cost / Play、Cost / Listening Hourを測る
-- Creator DistributionとInfrastructure Costを同じ事業モデルで管理する
+- Cost / ユーザ、Cost / Play、Cost / Listening Hourを測る
+- 音楽クリエーター分配とInfrastructure Costを同じ事業モデルで管理する
 - 成長に応じて段階的にInfrastructureを拡張する
 
 ことである。
 
 ```mermaid
 flowchart LR
-    UX[User Experience]
+    UX[ユーザ体験]
     SCALE[Scalability]
     VERIFY[Verifiability]
     COST[Cost Efficiency]
-    CREATOR[Creator Sustainability]
+    CREATOR[音楽クリエーターの持続可能性]
 
     UX --> CREATOR
     SCALE --> CREATOR
@@ -1985,7 +1985,7 @@ flowchart LR
 
 Creator First Platform において、インフラ効率は単なる技術上の最適化ではない。
 
-> **同じ利用料金から、より多くをCreatorへ還元しながら、利用者には高速で安定したサービスを提供するための事業設計そのもの**
+> **同じ利用料金から、より多くを音楽クリエーターへ還元しながら、ユーザには高速で安定したサービスを提供するための事業設計そのもの**
 
 である。
 
@@ -1996,7 +1996,7 @@ Creator First Platform において、インフラ効率は単なる技術上の
 本章の数式を実際の事業計画へ利用するため、次段階ではSpreadsheet等で、
 
 - MAU
-- Paid Users
+- Paid ユーザ
 - 月額料金
 - Listening Hours
 - 平均Bitrate
@@ -2005,7 +2005,7 @@ Creator First Platform において、インフラ効率は単なる技術上の
 - Database
 - ZK Proof Cost
 - L2 Gas
-- Creator Distribution Ratio
+- 音楽クリエーター分配 Ratio
 - 決済手数料
 - 人件費
 
@@ -2022,7 +2022,7 @@ Infrastructure\ Cost
 $$
 
 $$
-Creator\ Distribution
+音楽クリエーター\ Distribution
 $$
 
 $$
@@ -2030,7 +2030,7 @@ Contribution\ Margin
 $$
 
 $$
-Cost\ per\ User
+Cost\ per\ ユーザ
 $$
 
 $$

@@ -10,15 +10,15 @@ description: 二院制議会の独立承認、本人単位のクアドラティ�
 
 ## Context
 
-ADR-0001はCreator HouseとUser Houseによる二院制、ADR-0002は代表者の検証可能な抽選を採用した。しかし、Smart Contractの仕様変更について、提案の固定、各院内の投票、両院承認、実装照合、Upgrade権限への接続が未定義だった。
+ADR-0001は音楽クリエータ院議会とユーザ院議会による二院制、ADR-0002は代表者の検証可能な抽選を採用した。しかし、スマートコントラクトの仕様変更について、提案の固定、各院内の投票、両院承認、実装照合、Upgrade権限への接続が未定義だった。
 
 単純なToken Votingは資本支配を招き、一人一票だけでは複数提案に対する意思の強さを表現しにくい。また、説明文だけを承認し、異なるcalldataを実行できる構成はGovernanceの正統性を失わせる。
 
 ## Decision
 
-Smart Contract仕様変更には、次を一体として採用する。
+スマートコントラクト仕様変更には、次を一体として採用する。
 
-1. Creator HouseとUser Houseの会期別Membership snapshot
+1. 音楽クリエータ院議会とユーザ院議会の会期別Membership snapshot
 2. 各議員へ同量・譲渡不能・購入不能・期限付きVoice Creditを付与するQuadratic Voting
 3. 両院ごとのQuorum、Approval Thresholdおよび独立承認
 4. Specification hash、Target、calldata、Code hash、Chain IDを固定するExecution Manifest
@@ -33,8 +33,8 @@ Quadratic Votingの費用は$v^2$とし、資金支出ではなく各会期のVo
 
 - QVは抽選議員による会期内の提案評価に用いる。抽選自体のWeightには用いない。
 - Supporter SBTはGovernance IdentityまたはVoting Powerを付与しない。
-- 具体的なVoice Credit、Quorum、Approval Threshold、議席数、投票秘密方式はProtocol Governanceの未決事項とする。
-- P3 Constitutional変更には両院特別多数に加え、Creator/User Referendumを要求する。
+- 具体的なVoice Credit、Quorum、Approval Threshold、議席数、投票秘密方式はプロトコルガバナンスの未決事項とする。
+- P3 Constitutional変更には両院特別多数に加え、音楽クリエーター／ユーザコミュニティ直接投票を要求する。
 - 株式会社の法的義務はGovernanceで上書きしない。執行不能時は理由付き差し戻しとし、代替実行を禁止する。
 - Emergency権限はPauseまたはTimelock中のcancelに限定し、任意Upgradeを認めない。
 
@@ -48,7 +48,7 @@ Quadratic Votingの費用は$v^2$とし、資金支出ではなく各会期のVo
 
 ### Token-weighted voting
 
-経済力をProtocol Governanceへ直結させ、Global Invariantに反するため採用しない。
+経済力をプロトコルガバナンスへ直結させ、Global Invariantに反するため採用しない。
 
 ### One-member one-vote only
 
@@ -66,7 +66,7 @@ Quadratic Votingの費用は$v^2$とし、資金支出ではなく各会期のVo
 
 ### Positive
 
-- CreatorとUserの双方が独立した拒否・承認能力を持つ
+- 音楽クリエーターとユーザの双方が独立した拒否・承認能力を持つ
 - 資本ではなく本人単位の有限Creditで意思の強さを表現できる
 - Proposal、Specification、Code、Transaction、Deploymentを追跡できる
 - Upgrade keyの単独支配とGovernance bypassを抑制できる

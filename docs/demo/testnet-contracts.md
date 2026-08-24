@@ -1,9 +1,9 @@
 ---
-title: Sepolia Smart Contract Demo
-description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決済、Supporter SBT、Creator Registryを検証する手順。
+title: Sepolia スマートコントラクト Demo
+description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決済、Supporter SBT、音楽クリエーター登録台帳を検証する手順。
 ---
 
-# Sepolia Smart Contract Demo
+# Sepolia スマートコントラクト Demo
 
 Hardhat 3とViemを使い、次のTestnet専用コントラクトをEthereum Sepoliaへデプロイしました。公開構成はSource Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`で再現できます。
 
@@ -14,7 +14,7 @@ Hardhat 3とViemを使い、次のTestnet専用コントラクトをEthereum Sep
 | `CreatorFirstTreasury` | Test Assetを保有し、分類・一意な参照付きで支出Eventを出す | 法定会計帳簿、税務申告、Governance承認の正本ではない |
 | `SupporterSBTUpgradeable` | EIP-712 Support Intentを検証し、一般／Early TierをContract内で確定する | Subscription、Rights、STO、配当・収益請求権を表さない |
 | `SupporterSBTProxy` | ERC-1967 ProxyからUUPS実装を呼び出す | Upgradeは監査・Timelock・複数承認を経る本番設計へ置換する |
-| `CreatorFirstCreatorRegistry` | 仮名Creatorと作品／権利自己申告のsalt付きCommitment、状態、Eventを記録する | 本人、Rights、Payee、Catalog、配信許諾、分配または支払を承認しない |
+| `CreatorFirstCreatorRegistry` | 仮名音楽クリエーターと作品／権利自己申告のsalt付きCommitment、状態、Eventを記録する | 本人、Rights、Payee、Catalog、配信許諾、分配または支払を承認しない |
 
 SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を拒否します。Early条件の`POLICY_ROLE`、実装更新の`UPGRADER_ROLE`、署名済みIntentを送る`RELAYER_ROLE`を分離し、発行済みTierを後日のPolicy更新で書き換えません。
 
@@ -29,7 +29,7 @@ SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を�
 | SupporterSBT Implementation | [`0x350a…7a66`](https://sepolia.etherscan.io/address/0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66) |
 | CreatorFirstCreatorRegistry | [`0x5676…e6E9`](https://sepolia.etherscan.io/address/0x5676d34d7C41849311b99932d8272af58b63e6E9) |
 
-Chain IDは`11155111`です。[公開Manifest](/testnet/deployment.json)と[Transactionを含むDeployment Record](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Sepolia RPCからBytecode、MockJPYC Notice／Claim額、SubscriptionのAsset／Treasury／Plan、ERC-1967 Implementation SlotおよびCreator RegistryのTestnet Noticeを再検証します。
+Chain IDは`11155111`です。[公開Manifest](/testnet/deployment.json)と[Transactionを含むDeployment Record](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Sepolia RPCからBytecode、MockJPYC Notice／Claim額、SubscriptionのAsset／Treasury／Plan、ERC-1967 Implementation Slotおよび音楽クリエーター登録台帳のTestnet Noticeを再検証します。
 
 ```sh
 npm run contracts:verify:sepolia
@@ -45,7 +45,7 @@ npm run contracts:compile
 npm run contracts:test
 ```
 
-テストは、MockJPYCの一回限りの自己取得と移転、Payment／支出Referenceの重複拒否、EIP-712 nonceのreplay拒否、Early上限、ERC-5192、SBT移転拒否、一Wallet一Creator、Commitment重複拒否、Release自己申告とCreator限定取消しを確認します。
+テストは、MockJPYCの一回限りの自己取得と移転、Payment／支出Referenceの重複拒否、EIP-712 nonceのreplay拒否、Early上限、ERC-5192、SBT移転拒否、一Wallet一音楽クリエーター、Commitment重複拒否、Release自己申告と音楽クリエーター限定取消しを確認します。
 
 ## InfuraとSepoliaの設定
 
@@ -79,4 +79,4 @@ npm run contracts:deploy:sepolia
 
 ## 現在未接続の範囲
 
-GatewayとPlayerはまだローカルMock資格を利用しており、このContract Eventを読むIndexer／Read Model、Relayer、Gas Sponsorship、Reorganization／Finality処理には接続されていません。したがって、この実装だけでStreaming認可、Creator分配、法的Rights、法定会計または本番決済は成立しません。
+GatewayとPlayerはまだローカルMock資格を利用しており、このContract Eventを読むIndexer／Read Model、Relayer、Gas Sponsorship、Reorganization／Finality処理には接続されていません。したがって、この実装だけでStreaming認可、音楽クリエーター分配、法的Rights、法定会計または本番決済は成立しません。

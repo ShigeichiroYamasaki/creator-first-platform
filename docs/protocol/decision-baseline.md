@@ -5,7 +5,7 @@ description: Open Question、公開Decision、Mock専用仮定を分離し、後
 
 # Decision Baseline
 
-IMP-001は、未決定事項を実装値へ暗黙に変換しないためのDecision境界です。11個のDraft Protocol Specificationを正規Sourceとして参照し、各Open Questionの割当、状態、実装可否、公開Decision証拠を検証します。
+IMP-001は、未決定事項を実装値へ暗黙に変換しないためのDecision境界です。11個のDraft プロトコル仕様を正規Sourceとして参照し、各Open Questionの割当、状態、実装可否、公開Decision証拠を検証します。
 
 ::: warning Open Questionは未決定です
 全Open Questionには`UNASSIGNED / OPEN / BLOCKED`を適用します。ローカルPlayer MVP用のMock Assumptionが1件ありますが、本番の技術、法務、Rights、税務、Privacy、SecurityまたはOSS License判断を承認するものではありません。
@@ -13,7 +13,7 @@ IMP-001は、未決定事項を実装値へ暗黙に変換しないためのDeci
 
 ## Source-derived Register
 
-Question ID、Decision owner role、Blocks、Question本文は、各Protocol SpecificationをSource of Truthとします。Registerは仕様本文を複製せず、対象Specification ID、Version、Pathを固定します。
+Question ID、Decision owner role、Blocks、Question本文は、各プロトコル仕様をSource of Truthとします。Registerは仕様本文を複製せず、対象Specification ID、Version、Pathを固定します。
 
 - [Decision Register](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/decisions/decision-register.yaml)
 - [Mock Assumption Register](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/decisions/mock-assumptions.yaml)
@@ -46,7 +46,7 @@ nvm exec 24 npm run decisions:validate
 
 1. 公開可能なDecision assignmentを記録する。
 2. Mock実装に必要な値だけを、期限と禁止用途を持つMock Assumptionとして提案する。
-3. 採用判断をADR、CFPまたはGovernance Decisionへ記録する。
+3. 採用判断をADR、CFPまたはガバナンス決定へ記録する。
 4. 後続の各`IMP-...`がDecision IDまたはMock Assumption IDを参照する。
 
 実在する個人情報、秘密情報、契約書、Rights証憑、税務資料、秘密鍵または本番Credentialは公開Registerへ保存しません。

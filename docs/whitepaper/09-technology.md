@@ -13,8 +13,8 @@ Creator First Platform の技術設計は、ブロックチェーンを使うこ
 - 音楽配信として十分な性能と使いやすさ
 - 権利情報と収益分配ルールの明確化
 - 利用実績の検証可能性
-- クリエイターへの透明な分配
-- 利用者のプライバシー保護
+- 音楽クリエーターへの透明な分配
+- ユーザのプライバシー保護
 - ガバナンス決定と実行コードの一致
 - 法制度・契約・会計との接続
 - 将来の世界展開に耐えられる拡張性
@@ -33,7 +33,7 @@ flowchart TD
     API[Application Services]
     DATA[Off-chain Data]
     ZK[ZK Proof Layer]
-    SC[Smart Contracts]
+    SC[スマートコントラクトs]
     CHAIN[Blockchain]
 
     APP --> API
@@ -81,10 +81,10 @@ Creator First Platform は大きく次のレイヤーから構成する。
 flowchart TD
     CLIENT[Client Layer<br/>Player / Web / Mobile]
     SERVICE[Service Layer<br/>API / Search / Discovery]
-    RIGHTS[Rights Layer<br/>Creator / Rights Metadata]
+    RIGHTS[Rights Layer<br/>音楽クリエーター / Rights Metadata]
     USAGE[Usage Layer<br/>Playback Events]
     PROOF[Proof Layer<br/>ZK / Aggregation]
-    CONTRACT[Protocol Layer<br/>Smart Contracts]
+    CONTRACT[Protocol Layer<br/>スマートコントラクトs]
     SETTLE[Settlement Layer<br/>Payment / Stablecoin]
     GOV[Governance Layer]
     CORP[Corporate / Legal Layer]
@@ -107,14 +107,14 @@ flowchart TD
 
 ## 9.4 Client Layer
 
-利用者はブロックチェーンを意識せず音楽を利用できることが望ましい。
+ユーザはブロックチェーンを意識せず音楽を利用できることが望ましい。
 
 Client Layer は、
 
 - Web Player
 - Mobile App
 - Desktop App
-- Creator Dashboard
+- 音楽クリエーターダッシュボード
 - Governance UI
 
 などから構成する。
@@ -122,11 +122,11 @@ Client Layer は、
 ```mermaid
 flowchart LR
     USER[Listener]
-    CREATOR[Creator]
-    MEMBER[Governance Member]
+    CREATOR[音楽クリエーター]
+    MEMBER[ガバナンス議員]
 
     USER --> PLAYER[Player]
-    CREATOR --> DASH[Creator Dashboard]
+    CREATOR --> DASH[音楽クリエーターダッシュボード]
     MEMBER --> GOVUI[Governance UI]
 
     PLAYER --> API[Platform API]
@@ -208,9 +208,9 @@ flowchart TD
     WORK --> RIGHTS
     RECORDING --> RIGHTS
 
-    RIGHTS --> A[Creator A]
-    RIGHTS --> B[Creator B]
-    RIGHTS --> C[Rights Holder C]
+    RIGHTS --> A[音楽クリエーターA]
+    RIGHTS --> B[音楽クリエーターB]
+    RIGHTS --> C[権利者 C]
 
     RIGHTS --> CONTRACT[Distribution Contract]
 ```
@@ -285,7 +285,7 @@ flowchart LR
 
 ただし、
 
-> **分配のために必要だからといって、利用者の詳細な行動履歴を永久保存することは正当化されない。**
+> **分配のために必要だからといって、ユーザの詳細な行動履歴を永久保存することは正当化されない。**
 
 データ最小化と保持期間を設計する。
 
@@ -304,7 +304,7 @@ flowchart LR
     VERIFY[Validation]
     AGG[Aggregation]
     ORACLE[Usage Oracle]
-    CONTRACT[Smart Contract]
+    CONTRACT[スマートコントラクト]
 
     PLAYER --> EVENTS --> VERIFY --> AGG --> ORACLE --> CONTRACT
 ```
@@ -359,7 +359,7 @@ Zero-Knowledge Proof（ZKP）は、ある命題が正しいことを、その根
 
 Creator First Platform では、
 
-> **個々の利用者の再生履歴を公開せずに、分配に使われた利用集計が定義されたルールを満たすことを証明する**
+> **個々のユーザの再生履歴を公開せずに、分配に使われた利用集計が定義されたルールを満たすことを証明する**
 
 用途が考えられる。
 
@@ -863,7 +863,7 @@ Usage Proof の設計では、何を公開し、何を秘密にするかが重�
 ### Private Witness の例
 
 - 個々の再生イベント
-- 仮名化された利用者情報
+- 仮名化されたユーザ情報
 - 中間集計データ
 - 不正判定に必要な非公開情報
 
@@ -915,23 +915,23 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    D1[Creator A : Amount]
-    D2[Creator B : Amount]
-    D3[Creator C : Amount]
+    D1[音楽クリエーターA : Amount]
+    D2[音楽クリエーターB : Amount]
+    D3[音楽クリエーターC : Amount]
 
     D1 --> TREE[Distribution Merkle Tree]
     D2 --> TREE
     D3 --> TREE
 
     TREE --> ROOT[Distribution Root]
-    ROOT --> CONTRACT[Smart Contract]
+    ROOT --> CONTRACT[スマートコントラクト]
 ```
 
 各権利者は自分の分配額とMerkle Proofを提示してClaimする方式を検討できる。
 
 ---
 
-## 9.33 Smart Contract Layer
+## 9.33 スマートコントラクト Layer
 
 スマートコントラクトは、
 
@@ -1006,7 +1006,7 @@ Emergency Keyを「何でもできる管理者鍵」にしない。
 
 ## 9.36 Stablecoin Settlement
 
-利用者のサブスクリプション支払いとクリエイターへの分配には、価格変動の大きいETH等ではなく、JPYC等の承認済み法定通貨連動型ステーブルコインを使用する。
+ユーザのサブスクリプション支払いと音楽クリエーターへの分配には、価格変動の大きいETH等ではなく、JPYC等の承認済み法定通貨連動型ステーブルコインを使用する。
 
 日本国内では、法令・事業者要件を満たすステーブルコインや決済経路を選択する。
 
@@ -1017,7 +1017,7 @@ flowchart LR
     STABLE[Approved JPYC等]
     FINAL[Finalized Settlement]
     TREASURY[Treasury / Accounting]
-    CREATOR[Creator]
+    CREATOR[音楽クリエーター]
 
     USER --> INTENT
     STABLE --> INTENT --> FINAL --> TREASURY --> CREATOR
@@ -1029,7 +1029,7 @@ flowchart LR
 
 ## 9.37 Blockchain Abstraction
 
-利用者に、
+ユーザに、
 
 - Network
 - Gas
@@ -1039,11 +1039,11 @@ flowchart LR
 
 などを意識させない。
 
-特にSubscription PaymentとSBT発行では、Relayer、PaymasterまたはSmart AccountがGasをスポンサーできる。ネイティブトークンはネットワーク手数料にだけ使用し、Subscription Price、Early Supporter資格またはCreator Distribution額へ算入しない。
+特にSubscription PaymentとSBT発行では、Relayer、PaymasterまたはSmart AccountがGasをスポンサーできる。ネイティブトークンはネットワーク手数料にだけ使用し、Subscription Price、Early Supporter資格または音楽クリエーター分配額へ算入しない。
 
 ```mermaid
 flowchart LR
-    USER[User]
+    USER[ユーザ]
     APP[Music App]
     ABSTRACTION[Blockchain Abstraction]
     CHAIN[Blockchain]
@@ -1074,7 +1074,7 @@ Ethereum L1だけでなくL2の利用も有力である。
 
 ```mermaid
 flowchart TD
-    PROTOCOL[Creator First Protocol]
+    PROTOCOL[音楽クリエーター中心 Protocol]
     PROTOCOL --> L2[Ethereum L2]
     L2 --> L1[Ethereum Settlement]
 ```
@@ -1149,7 +1149,7 @@ flowchart TD
 
 ### 9.40.1 Streaming GatewayとNavidrome Adapter
 
-最初のStreaming Vertical Sliceでは、Creator First APIの一部としてStreaming Authorization Gatewayを配置し、NavidromeをPrivate Media Adapterとして接続する。
+最初のStreaming Vertical Sliceでは、音楽クリエーター中心 APIの一部としてStreaming Authorization Gatewayを配置し、NavidromeをPrivate Media Adapterとして接続する。
 
 ```mermaid
 flowchart LR
@@ -1239,15 +1239,15 @@ flowchart TD
 
 ## 9.43 Privacy
 
-再生履歴は利用者の嗜好や生活パターンを推測し得る情報である。
+再生履歴はユーザの嗜好や生活パターンを推測し得る情報である。
 
 したがって、
 
-> **ブロックチェーンの透明性を利用者データへ直接適用しない。**
+> **ブロックチェーンの透明性をユーザデータへ直接適用しない。**
 
 ```mermaid
 flowchart LR
-    USER[User Activity]
+    USER[ユーザ活動]
     PRIVATE[Private Data Layer]
     AGG[Aggregation]
     ZK[Zero-Knowledge Proof]
@@ -1321,7 +1321,7 @@ flowchart TD
 
 特に、
 
-- Smart Contracts
+- スマートコントラクトs
 - Proof Program
 - Verifier
 - Governance Logic
@@ -1516,7 +1516,7 @@ flowchart TD
     MUSIC[Music Service]
     OFF[Scalable Off-chain Systems]
     ZK[Zero-Knowledge Proofs]
-    SC[Smart Contracts]
+    SC[スマートコントラクトs]
     GOV[Governance]
     CORP[Corporate Responsibility]
 
@@ -1536,7 +1536,7 @@ flowchart TD
 - 会計
 - 運営
 - セキュリティ
-- 利用者対応
+- ユーザ対応
 
 について現実社会で責任を負う。
 

@@ -1,23 +1,23 @@
 ---
-description: Creator HouseとUser Houseによる二院制議会、クアドラティック投票、コントラクト仕様変更の公開プロセス設計。
+description: 音楽クリエータ院議会とユーザ院議会による二院制議会、クアドラティック投票、コントラクト仕様変更の公開プロセス設計。
 ---
 
 # 二院制議会・Governance
 
-Creator First Platformでは、CreatorとUserがSmart Contractの仕様変更を共同で統治します。株式、STO、JPYC残高、Supporter SBTの保有数を投票力に変換せず、抽選された代表へ各会期で同量のVoice Creditを付与します。
+Creator First Platformでは、音楽クリエーターとユーザがスマートコントラクトの仕様変更を共同で統治します。株式、STO、JPYC残高、Supporter SBTの保有数を投票力に変換せず、抽選された代表へ各会期で同量のVoice Creditを付与します。
 
 > **CFP → 影響分析 → 両院審議 → 各院のQuadratic Vote → 実装照合 → Timelock → On-chain実行**
 
 ::: warning 現在の状態
-このページは制度とユーザーインターフェースの設計です。公開Testnetの投票・Timelockコントラクトは未実装であり、表示例を実際の投票として扱うことはできません。
+このページは制度とユーザインターフェースの設計です。公開Testnetの投票・Timelockコントラクトは未実装であり、表示例を実際の投票として扱うことはできません。
 :::
 
 ## 議会の構成
 
 | 議院 | 代表するCommunity | 主な審議観点 | 議員の形成 |
 | --- | --- | --- | --- |
-| Creator House | Verified Creator | 権利、分配、制作活動、Creator Economy | Eligible Creatorから検証可能な抽選 |
-| User House | Governance Eligible User | 利便性、価格、Privacy、Discovery、Community | Eligible Userから検証可能な抽選 |
+| 音楽クリエータ院議会 | 検証済み音楽クリエーター | 権利、分配、制作活動、音楽クリエーター経済 | 適格音楽クリエーターから検証可能な抽選 |
+| ユーザ院議会 | ガバナンス適格ユーザ | 利便性、価格、Privacy、Discovery、Community | 適格ユーザから検証可能な抽選 |
 
 両院は別々の母集団、議員名簿、Quorum、投票結果を持ちます。重要なProtocol変更は、一方の院の得票を他方へ合算せず、両院がそれぞれ成立要件を満たした場合だけ承認されます。
 
@@ -25,10 +25,10 @@ Creator First Platformでは、CreatorとUserがSmart Contractの仕様変更を
 flowchart LR
     CFP[CFP提出]
     CLASS[変更区分と影響分析]
-    CH[Creator House]
-    UH[User House]
-    CV[Creator House Vote]
-    UV[User House Vote]
+    CH[音楽クリエータ院議会]
+    UH[ユーザ院議会]
+    CV[音楽クリエータ院議会投票]
+    UV[ユーザ院議会投票]
     JOINT{両院承認?}
     VERIFY[仕様・Code・監査照合]
     TIME[Timelock]
@@ -50,7 +50,7 @@ flowchart LR
 - 現在の会期、両院の議席数、充足状況、任期
 - 審議中・投票中・Timelock中・実行済みのCFP
 - 各提案の変更区分、対象Contract、Protocol Version、Risk Level
-- Creator HouseとUser HouseのQuorum・賛成・反対を分離した結果
+- 音楽クリエータ院議会とユーザ院議会のQuorum・賛成・反対を分離した結果
 - 法務・Security Review、Audit、Source Commit、実行予定時刻
 - 利益相反による除外、棄権、欠員、少数意見書
 
@@ -61,11 +61,11 @@ flowchart LR
 | 表示項目 | 内容 |
 | --- | --- |
 | CFP | ID、Version、提案者、審議期間、変更理由 |
-| 現行仕様と変更案 | Specificationの差分、利用者向け要約 |
+| 現行仕様と変更案 | Specificationの差分、ユーザ向け要約 |
 | 実行Manifest | Chain ID、Proxy、現在/新Implementation、calldata hash、Code hash |
-| 影響 | Creator、User、権利、経済、Privacy、法務、Security |
+| 影響 | 音楽クリエーター、ユーザ、権利、経済、Privacy、法務、Security |
 | 安全策 | Test、Audit、Migration、Rollback、Emergency Pause |
-| 根拠 | ADR、Protocol Specification、Source Commit、Artifact、Audit Report |
+| 根拠 | ADR、プロトコル仕様、Source Commit、Artifact、Audit Report |
 
 UIは「説明として承認した内容」と「実際にTimelockが実行するTransaction」が一致するかを機械検証し、不一致なら投票開始または実行を停止します。
 
@@ -114,7 +114,7 @@ $$
 S_{h,p}=\sum_{m \in M_h} v_{m,p}
 $$
 
-成立にはNet Scoreだけでなく、独立したUnique-member Quorum、Approval Threshold、利益相反要件を満たす必要があります。具体的な議席数、Credit量、Quorum、閾値はGovernance Decisionで決定し、Version管理します。
+成立にはNet Scoreだけでなく、独立したUnique-member Quorum、Approval Threshold、利益相反要件を満たす必要があります。具体的な議席数、Credit量、Quorum、閾値はガバナンス決定で決定し、Version管理します。
 
 ### 採用する安全策
 
@@ -136,7 +136,7 @@ Whitepaperで将来候補としているCommunity ReferendumのDelegationとは�
 | P0 Product configuration | UI表示、On-chain権限に影響しない設定 | 法人の運用手続。Governance対象外を明示 |
 | P1 Bounded parameter | 既承認範囲内の手数料・上限・期間 | 両院通常承認、Review、短いTimelock |
 | P2 Contract upgrade | Implementation、Verifier、Asset allowlist、権限変更 | 両院承認、独立監査、長いTimelock |
-| P3 Constitutional | 憲章、基本権、Governance構造の変更 | 両院特別多数とCreator/User Referendum |
+| P3 Constitutional | 憲章、基本権、Governance構造の変更 | 両院特別多数と音楽クリエーター／ユーザコミュニティ直接投票 |
 | Emergency | 攻撃停止、鍵無効化 | 限定Pauseのみ。期限内の両院追認がなければ失効 |
 
 株式会社は適法性、契約、税務、会計、雇用、規制対応を担います。執行不能な提案は理由と根拠を付して差し戻せますが、別Transactionへ黙って置換したり、単独でProtocol変更を成立させたりできません。
@@ -155,7 +155,7 @@ TIMELOCKED → SECURITY_CANCELLED → REMEDIATION
 
 各状態遷移は、Actor、時刻、Rule Version、根拠hash、前状態をEventとして記録します。投票後にTarget、calldata、Specification、Code hashが変わった場合は同じ提案として実行せず、再審議します。
 
-## Smart Contractの責任分割
+## スマートコントラクトの責任分割
 
 ```mermaid
 flowchart TD
@@ -200,4 +200,4 @@ UUPS Proxyの`UPGRADER_ROLE`、Policy activation、Treasury実行権限は、個
 - [ADR-0001 Governance Model](../adr/ADR-0001-governance-model.md)
 - [ADR-0002 Verifiable Sortition](../adr/ADR-0002-verifiable-sortition.md)
 - [ADR-0016 Bicameral Quadratic Governance](../adr/ADR-0016-bicameral-quadratic-governance.md)
-- [Governance Change Protocol Specification](../protocol/specs/governance-change.md)
+- [Governance Change プロトコル仕様](../protocol/specs/governance-change.md)

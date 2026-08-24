@@ -1,23 +1,23 @@
 ---
-description: クリエイターの持続可能性と利用者の利便性を中心に据え、株式会社とDAOを接続するプラットフォームの理念。
+description: 音楽クリエーターの持続可能性とユーザの利便性を中心に据え、株式会社とDAOを接続するプラットフォームの理念。
 ---
 
 # 1. ビジョン — Vision
 
 ## 1.1 Creator First Platform
 
-Creator First Platform は、音楽を中心とするデジタルコンテンツの流通において、プラットフォーマーの利益最大化を第一目的とするのではなく、**Creatorの権利と持続可能な活動、Userの自由で豊かな利用体験、公正で検証可能なエコシステム**を中心に据えるプラットフォームである。
+Creator First Platform は、音楽を中心とするデジタルコンテンツの流通において、プラットフォーマーの利益最大化を第一目的とするのではなく、**音楽クリエーターの権利と持続可能な活動、ユーザの自由で豊かな利用体験、公正で検証可能なエコシステム**を中心に据えるプラットフォームである。
 
 本プロジェクトが目指すのは、単なる音楽サブスクリプションサービスでも、単なるDAOでも、単なるブロックチェーンアプリケーションでもない。
 
-株式会社が現実社会における法的責任を負いながら、CreatorとUserがプラットフォームのルール形成に参加し、その合意をProtocol Specificationとして明文化し、監査されたSmart Contractによって自動執行する、新しいデジタルプラットフォーム統治モデルを構築する。
+株式会社が現実社会における法的責任を負いながら、音楽クリエーターとユーザがプラットフォームのルール形成に参加し、その合意をプロトコル仕様として明文化し、監査されたスマートコントラクトによって自動執行する、新しいデジタルプラットフォーム統治モデルを構築する。
 
 ```mermaid
 flowchart TD
     VISION[Creator First Platform]
 
-    VISION --> CREATOR[Creator Sustainability]
-    VISION --> USER[User Experience & Autonomy]
+    VISION --> CREATOR[音楽クリエーターの持続可能性]
+    VISION --> USER[ユーザ体験 & Autonomy]
     VISION --> FAIR[Fair & Verifiable Ecosystem]
 
     CREATOR --> PLATFORM[Music Platform]
@@ -27,19 +27,19 @@ flowchart TD
 
 ---
 
-## 1.2 なぜCreator Firstなのか
+## 1.2 なぜ音楽クリエーター中心なのか
 
-従来のデジタルプラットフォームでは、作品の流通、利用者との接点、推薦、課金、データ、分配ルールがプラットフォーム事業者へ集中しやすい。
+従来のデジタルプラットフォームでは、作品の流通、ユーザとの接点、推薦、課金、データ、分配ルールがプラットフォーム事業者へ集中しやすい。
 
-その結果、CreatorとUserはサービスの主要な構成主体であるにもかかわらず、プラットフォームのルール形成から切り離されることがある。
+その結果、音楽クリエーターとユーザはサービスの主要な構成主体であるにもかかわらず、プラットフォームのルール形成から切り離されることがある。
 
 Creator First Platformは、この関係を再設計する。
 
 ```mermaid
 flowchart LR
-    CREATOR[Creators]
+    CREATOR[音楽クリエーター]
     PLATFORM[Platform]
-    USER[Users]
+    USER[ユーザ]
 
     CREATOR --> PLATFORM
     USER --> PLATFORM
@@ -47,13 +47,13 @@ flowchart LR
     PLATFORM --> USER
 ```
 
-PlatformをCreatorとUserの上位に置くのではなく、両者の活動を支える制度・技術基盤として位置付ける。
+Platformを音楽クリエーターとユーザの上位に置くのではなく、両者の活動を支える制度・技術基盤として位置付ける。
 
 ---
 
-## 1.3 Creatorの定義
+## 1.3 音楽クリエーターの定義
 
-本Whitepaperにおける **Creator** とは、Creator First Platform上で流通する作品またはその創作・制作に実質的に関与し、所定の登録・検証手続きを経た参加者をいう。
+本Whitepaperにおける **音楽クリエーター** とは、Creator First Platform上で流通する作品またはその創作・制作に実質的に関与し、所定の登録・検証手続きを経た参加者をいう。
 
 音楽の場合には、例えば、
 
@@ -69,16 +69,16 @@ PlatformをCreatorとUserの上位に置くのではなく、両者の活動を�
 
 ただし、
 
-> **Creator と Rights Holder は同一概念ではない。**
+> **音楽クリエーター と 権利者 は同一概念ではない。**
 
-Creatorは創作・制作への参加を表すプラットフォーム上の主体概念であり、Rights Holderは著作権、著作隣接権、契約上の利用権その他の法的権利を有する主体である。
+音楽クリエーターは創作・制作への参加を表すプラットフォーム上の主体概念であり、権利者は著作権、著作隣接権、契約上の利用権その他の法的権利を有する主体である。
 
 ```mermaid
 flowchart TD
     WORK[Creative Work]
 
-    WORK --> CREATOR[Creator]
-    WORK --> RIGHTS[Rights Holder]
+    WORK --> CREATOR[音楽クリエーター]
+    WORK --> RIGHTS[権利者]
 
     CREATOR --> CREATE[Creative Contribution]
     RIGHTS --> LEGAL[Legal Rights]
@@ -86,26 +86,26 @@ flowchart TD
     CREATOR -.場合により同一.-> RIGHTS
 ```
 
-Creator Houseへの参加資格は、単なるアカウント保有ではなく、Creator登録、活動実績、本人性・権利関係等の検証を基礎として定める。
+音楽クリエータ院議会への参加資格は、単なるアカウント保有ではなく、音楽クリエーター登録、活動実績、本人性・権利関係等の検証を基礎として定める。
 
 ---
 
-## 1.4 Userの定義
+## 1.4 ユーザの定義
 
-本Whitepaperにおける **User** とは、Creator First Platformを利用して音楽その他のコンテンツを聴取、発見、評価、共有、支援その他の方法で利用する者をいう。
+本Whitepaperにおける **ユーザ** とは、Creator First Platformを利用して音楽その他のコンテンツを聴取、発見、評価、共有、支援その他の方法で利用する者をいう。
 
-Userであることと、Governanceへ直接参加する資格を持つことは区別する。
+ユーザであることと、Governanceへ直接参加する資格を持つことは区別する。
 
 ```mermaid
 flowchart LR
-    USER[User]
-    ACTIVE[Active / Verified User]
-    ELIGIBLE[Governance Eligible User]
+    USER[ユーザ]
+    ACTIVE[Active / 検証済みユーザ]
+    ELIGIBLE[ガバナンス適格ユーザ]
 
     USER --> ACTIVE --> ELIGIBLE
 ```
 
-Governance Eligible Userの条件はProtocol Governanceによって定めるが、少なくとも、
+ガバナンス適格ユーザの条件はプロトコルガバナンスによって定めるが、少なくとも、
 
 - 実際のサービス利用との結び付き
 - Sybil Attackへの耐性
@@ -116,36 +116,36 @@ Governance Eligible Userの条件はProtocol Governanceによって定めるが�
 
 ---
 
-## 1.5 Governance MemberはUserの代表である
+## 1.5 ガバナンス議員はユーザの代表である
 
-User HouseのGovernance Memberは、Userとは別の恒久的な政治階級ではない。
+ユーザ院議会のガバナンス議員は、ユーザとは別の恒久的な政治階級ではない。
 
-Governance Memberは、
+ガバナンス議員は、
 
-> **Governance Eligible Userの集合から一時的に統治責任を委ねられたUserの代表**
+> **ガバナンス適格ユーザの集合から一時的に統治責任を委ねられたユーザの代表**
 
 である。
 
-その正統性はPlatform、株式会社、株主、Token保有量からではなく、User Communityから生じる。
+その正統性はPlatform、株式会社、株主、Token保有量からではなく、ユーザコミュニティから生じる。
 
 ```mermaid
 flowchart LR
-    USERS[Users]
-    ELIGIBLE[Governance Eligible Users]
+    USERS[ユーザ]
+    ELIGIBLE[ガバナンス適格ユーザ]
     SORT[Sortition]
-    MEMBER[Governance Members]
-    HOUSE[User House]
+    MEMBER[ガバナンス議員]
+    HOUSE[ユーザ院議会]
 
     USERS --> ELIGIBLE --> SORT --> MEMBER --> HOUSE
 ```
 
-Governance Member自身も原則としてActive Userであり続けることを要求する。
+ガバナンス議員自身も原則としてActive ユーザであり続けることを要求する。
 
 ---
 
 ## 1.6 抽選による代表
 
-Creator First Platformでは、Creator HouseとUser Houseの構成に**抽選（Sortition）**を重要な方法として導入する。
+Creator First Platformでは、音楽クリエータ院議会とユーザ院議会の構成に**抽選（Sortition）**を重要な方法として導入する。
 
 選挙だけでは、
 
@@ -157,7 +157,7 @@ Creator First Platformでは、Creator HouseとUser Houseの構成に**抽選（
 
 が代表選出へ過度に影響する可能性がある。
 
-抽選は、通常のCreatorやUserが統治へ参加する機会を制度的に確保する。
+抽選は、通常の音楽クリエーターやユーザが統治へ参加する機会を制度的に確保する。
 
 ```mermaid
 flowchart TD
@@ -175,15 +175,15 @@ flowchart TD
 
 ## 1.7 主権と代表を分離する
 
-抽選されたGovernance MemberがCreatorやUserに代わって主権そのものを所有するわけではない。
+抽選されたガバナンス議員が音楽クリエーターやユーザに代わって主権そのものを所有するわけではない。
 
-Creator HouseとUser Houseは、日常的なProtocol Governanceを行うための**熟議機関**である。
+音楽クリエータ院議会とユーザ院議会は、日常的なプロトコルガバナンスを行うための**熟議機関**である。
 
-重要な憲章変更等については、Creator/User Community全体による直接承認を要求できる。
+重要な憲章変更等については、音楽クリエーター／ユーザコミュニティ全体による直接承認を要求できる。
 
 ```mermaid
 flowchart TD
-    COMMUNITY[Creator / User Community]
+    COMMUNITY[音楽クリエーター／ユーザコミュニティ]
 
     COMMUNITY --> HOUSE[Sortition-based Houses]
     COMMUNITY --> REFERENDUM[Direct Referendum]
@@ -194,28 +194,28 @@ flowchart TD
 
 つまり、
 
-> **主権の源泉はCreatorとUserにあり、議会はその統治機能を一時的に委ねられる。**
+> **主権の源泉は音楽クリエーターとユーザにあり、議会はその統治機能を一時的に委ねられる。**
 
 ---
 
 ## 1.8 二院制
 
-CreatorとUserは同じPlatformを構成するが、利害は常に一致するとは限らない。
+音楽クリエーターとユーザは同じPlatformを構成するが、利害は常に一致するとは限らない。
 
 そこで、
 
-- Creator House
-- User House
+- 音楽クリエータ院議会
+- ユーザ院議会
 
 の二院制を採用する。
 
 ```mermaid
 flowchart LR
-    C[Creators]
-    CH[Creator House]
+    C[音楽クリエーター]
+    CH[音楽クリエータ院議会]
 
-    U[Users]
-    UH[User House]
+    U[ユーザ]
+    UH[ユーザ院議会]
 
     C --> CH
     U --> UH
@@ -224,24 +224,24 @@ flowchart LR
     UH --> JOINT
 ```
 
-Creator HouseはCreatorの権利、収益、制作環境等を代表し、User Houseは利用体験、プライバシー、発見、コミュニティ等を代表する。
+音楽クリエータ院議会は音楽クリエーターの権利、収益、制作環境等を代表し、ユーザ院議会は利用体験、プライバシー、発見、コミュニティ等を代表する。
 
 重要なProtocol変更は一方の利益だけで決定しない。
 
 ---
 
-## 1.9 Creator/User → 抽選議会 → 熟議
+## 1.9 音楽クリエーター／ユーザ → 抽選議会 → 熟議
 
 Creator First Platformの統治モデルの中心は次の流れである。
 
 ```mermaid
 flowchart LR
-    CU[Creator / User]
+    CU[音楽クリエーター／ユーザ]
     SORT[Sortition]
-    PARL[Creator House / User House]
+    PARL[音楽クリエータ院議会 / ユーザ院議会]
     DELIB[Deliberation]
-    SPEC[Protocol Specification]
-    CODE[Smart Contract]
+    SPEC[プロトコル仕様]
+    CODE[スマートコントラクト]
     EXEC[Automatic Execution]
 
     CU --> SORT --> PARL --> DELIB --> SPEC --> CODE --> EXEC
@@ -249,9 +249,9 @@ flowchart LR
 
 これは単なる投票DAOではない。
 
-CreatorとUserから抽選された代表が情報、影響、代替案を検討し、**熟議によってルールを形成する**。
+音楽クリエーターとユーザから抽選された代表が情報、影響、代替案を検討し、**熟議によってルールを形成する**。
 
-その結果をProtocol Specificationとして明文化し、実装・テスト・監査を経たSmart Contractへ変換する。
+その結果をプロトコル仕様として明文化し、実装・テスト・監査を経たスマートコントラクトへ変換する。
 
 ---
 
@@ -263,13 +263,13 @@ Creator First Platformにおける「Code is Law」は、
 
 という意味ではない。
 
-Creator/Userによって正統に形成されたProtocol Ruleを、Smart Contractが恣意的な運用変更なしに執行することを意味する。
+音楽クリエーター／ユーザによって正統に形成されたProtocol Ruleを、スマートコントラクトが恣意的な運用変更なしに執行することを意味する。
 
 ```mermaid
 flowchart LR
-    WILL[Creator / User Will]
+    WILL[音楽クリエーター／ユーザ意思]
     DELIB[Deliberation]
-    SPEC[Protocol Specification]
+    SPEC[プロトコル仕様]
     CODE[Audited Code]
     EXEC[Execution]
 
@@ -278,7 +278,7 @@ flowchart LR
 
 Codeの正統性はコードそのものから生まれるのではない。
 
-**Creator/Userによる統治プロセスから生じる。**
+**音楽クリエーター／ユーザによる統治プロセスから生じる。**
 
 ---
 
@@ -286,13 +286,13 @@ Codeの正統性はコードそのものから生まれるのではない。
 
 Creator First Platformでは、日常的なGovernanceより上位に、3つの憲章を置く。
 
-### Creator Charter
+### 音楽クリエーター憲章
 
-Creatorの権利、利益、創作の自由、持続可能性を守る。
+音楽クリエーターの権利、利益、創作の自由、持続可能性を守る。
 
-### User Charter
+### ユーザ憲章
 
-Userの利用体験、選択、自律性、プライバシー、参加権を守る。
+ユーザの利用体験、選択、自律性、プライバシー、参加権を守る。
 
 ### Ecosystem Charter
 
@@ -302,8 +302,8 @@ Userの利用体験、選択、自律性、プライバシー、参加権を守�
 flowchart TD
     CONST[Three Charters]
 
-    CONST --> CC[Creator Charter]
-    CONST --> UC[User Charter]
+    CONST --> CC[音楽クリエーター憲章]
+    CONST --> UC[ユーザ憲章]
     CONST --> EC[Ecosystem Charter]
 
     CC --> GOV[Governance]
@@ -323,9 +323,9 @@ Creator First Platformの規範構造を次のように定義する。
 flowchart TD
     LAW[Applicable Law / Regulation]
     CONST[Three Charters]
-    GOV[Creator + User Governance]
-    SPEC[Protocol Specification]
-    CODE[Smart Contract]
+    GOV[音楽クリエーター + ユーザガバナンス]
+    SPEC[プロトコル仕様]
+    CODE[スマートコントラクト]
     EXEC[Execution]
 
     LAW --> CONST --> GOV --> SPEC --> CODE --> EXEC
@@ -361,7 +361,7 @@ Creator First Platformは、DAOが現実社会の法的主体を置き換える�
 flowchart LR
     CORP[Corporation]
     LEGAL[Legal Responsibility]
-    PROTOCOL[Protocol Governance]
+    PROTOCOL[プロトコルガバナンス]
 
     CORP --> LEGAL
     PROTOCOL --> RULES[Protocol Rules]
@@ -370,15 +370,15 @@ flowchart LR
     RULES --> PLATFORM
 ```
 
-株式会社によるCorporate GovernanceとCreator/UserによるProtocol Governanceは区別する。
+株式会社によるCorporate Governanceと音楽クリエーター／ユーザによるプロトコルガバナンスは区別する。
 
 ---
 
 ## 1.14 株式会社は議会の代わりではない
 
-株式会社はProtocol Governanceで決定された政策を自由に拒否できる上位統治者とは位置付けない。
+株式会社はプロトコルガバナンスで決定された政策を自由に拒否できる上位統治者とは位置付けない。
 
-両院で正当に承認されたProtocol Specificationについては、株式会社は原則として実装・執行プロセスを進める。
+両院で正当に承認されたプロトコル仕様については、株式会社は原則として実装・執行プロセスを進める。
 
 ただし、
 
@@ -391,7 +391,7 @@ flowchart LR
 
 その場合、
 
-> 理由を公開し、Creator House / User Houseへ差し戻す。
+> 理由を公開し、音楽クリエータ院議会 / ユーザ院議会へ差し戻す。
 
 ```mermaid
 flowchart TD
@@ -406,40 +406,40 @@ flowchart TD
 
 ---
 
-## 1.15 株主とProtocol Governance
+## 1.15 株主とプロトコルガバナンス
 
 STOを含む株式保有は株式会社のCorporate Governanceに関係する。
 
 しかし、
 
-> **資本保有量がProtocol Governanceの投票権へ自動的に変換されてはならない。**
+> **資本保有量がプロトコルガバナンスの投票権へ自動的に変換されてはならない。**
 
 ```mermaid
 flowchart TD
     INVESTOR[Shareholders / STO Investors]
     COMPANY[Corporate Governance]
 
-    CREATOR[Creators]
-    CH[Creator House]
+    CREATOR[音楽クリエーター]
+    CH[音楽クリエータ院議会]
 
-    USER[Users]
-    UH[User House]
+    USER[ユーザ]
+    UH[ユーザ院議会]
 
     INVESTOR --> COMPANY
     CREATOR --> CH
     USER --> UH
 
-    CH --> PROTOCOL[Protocol Governance]
+    CH --> PROTOCOL[プロトコルガバナンス]
     UH --> PROTOCOL
 ```
 
-資本とProtocol支配を分離することはCreator Firstの基本原則である。
+資本とProtocol支配を分離することは音楽クリエーター中心の基本原則である。
 
 ---
 
 ## 1.16 検証可能なPlatform
 
-PlatformはCreator/Userに、
+Platformは音楽クリエーター／ユーザに、
 
 > 「会社を信用してください」
 
@@ -467,7 +467,7 @@ Zero-Knowledge Proofはその実現技術の一つであり、zk-STARKは現時�
 
 GovernanceやBlockchainは、音楽サービスとしての価値を置き換えない。
 
-Userにとって、
+ユーザにとって、
 
 - 速い
 - 安定している
@@ -476,7 +476,7 @@ Userにとって、
 
 ことが必要である。
 
-Creatorにとって、
+音楽クリエーターにとって、
 
 - 登録しやすい
 - 権利が明確である
@@ -494,12 +494,12 @@ Creatorにとって、
 
 Creator First Platformへの参加は、単なるサービス利用契約だけではない。
 
-CreatorとUserは、3つの憲章のもとで共通のPlatformを構成し、そのルール形成に参加できる。
+音楽クリエーターとユーザは、3つの憲章のもとで共通のPlatformを構成し、そのルール形成に参加できる。
 
 ```mermaid
 flowchart TD
-    CREATOR[Creators]
-    USER[Users]
+    CREATOR[音楽クリエーター]
+    USER[ユーザ]
 
     CREATOR --> COMMUNITY[Platform Community]
     USER --> COMMUNITY
@@ -511,7 +511,7 @@ flowchart TD
 
 この意味でCreator First Platformは、
 
-> **CreatorとUserが共同で形成するデジタル社会契約を、検証可能なProtocolとして実装する試み**
+> **音楽クリエーターとユーザが共同で形成するデジタル社会契約を、検証可能なProtocolとして実装する試み**
 
 である。
 
@@ -521,11 +521,11 @@ flowchart TD
 
 Creator First Platformが目指すのは、
 
-> CreatorがPlatformに従属する世界でも、Userが単なる消費データとして扱われる世界でもない。
+> 音楽クリエーターがPlatformに従属する世界でも、ユーザが単なる消費データとして扱われる世界でもない。
 
-CreatorとUserがPlatformの構成主体となり、
+音楽クリエーターとユーザがPlatformの構成主体となり、
 
-> **Creator/User → 抽選議会 → 熟議 → Protocol Specification → Smart Contract → 自動執行**
+> **音楽クリエーター／ユーザ → 抽選議会 → 熟議 → プロトコル仕様 → スマートコントラクト → 自動執行**
 
 というプロセスによって、自ら利用するデジタル空間のルールを共同形成する。
 
@@ -533,6 +533,6 @@ CreatorとUserがPlatformの構成主体となり、
 
 Creator First Platformは、音楽を出発点として、
 
-> **企業、Creator、User、Codeの関係を再設計するデジタルプラットフォーム**
+> **企業、音楽クリエーター、ユーザ、Codeの関係を再設計するデジタルプラットフォーム**
 
 を目指す。

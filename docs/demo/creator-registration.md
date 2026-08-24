@@ -1,9 +1,9 @@
 ---
-title: Test Creator登録デモ
+title: テスト音楽クリエーター登録デモ
 description: 音楽クリエータ向けの仮名Profile登録と、本人・権利・契約・支払資格を分離する境界をブラウザ内で試すページ。
 ---
 
-# Test Creator登録デモ
+# テスト音楽クリエーター登録デモ
 
 このページはGitHub Pages上で利用できます。登録内容は現在のタブのSession Storageだけに保存されます。
 
@@ -15,4 +15,4 @@ description: 音楽クリエータ向けの仮名Profile登録と、本人・権
   <CreatorRegistrationDemo />
 </ClientOnly>
 
-Creator Profileの作成は参加申請のUIシミュレーションです。Creator Entity、Legal Identity、Rights Holder、PayeeおよびWallet Controlはそれぞれ独立した審査・記録を必要とします。
+音楽クリエータープロフィールの作成は参加申請のUIシミュレーションです。音楽クリエーター主体、Legal Identity、権利者、PayeeおよびWallet Controlはそれぞれ独立した審査・記録を必要とします。

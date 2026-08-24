@@ -5,7 +5,7 @@ description: Docker ComposeとNavidromeでCreator First Platformのローカル�
 
 # ローカル音楽ストリーミング
 
-Creator First Platformの最初の実装として、Navidrome `0.63.2`をDocker Composeでローカル起動できます。この手順ではNavidrome自体のライブラリスキャン、管理画面、検索、再生を独立して検証します。Streaming Gateway Mockは別途実装済みですが、この管理用Composeには接続せず、Subscription、Rights、WalletまたはSmart Contractの権限をNavidromeへ持たせません。
+Creator First Platformの最初の実装として、Navidrome `0.63.2`をDocker Composeでローカル起動できます。この手順ではNavidrome自体のライブラリスキャン、管理画面、検索、再生を独立して検証します。Streaming Gateway Mockは別途実装済みですが、この管理用Composeには接続せず、Subscription、Rights、Walletまたはスマートコントラクトの権限をNavidromeへ持たせません。
 
 ::: warning ローカル開発専用です
 Navidromeは`127.0.0.1`だけで待ち受けます。実在する未公開音源、個人情報、本番Credentialまたは本番資金を投入しないでください。LAN、InternetまたはTunnelへ公開しないでください。
