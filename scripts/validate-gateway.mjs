@@ -36,9 +36,9 @@ const consistencyRequirements = [
   ['protocol/account/account-lifecycle-spec.md', 'not an implementation of Account registration', 'Account specification boundary'],
   ['protocol/streaming/player-client-spec.md', 'MUST NOT satisfy any authentication or authorization precondition', 'Player specification boundary'],
   ['decisions/mock-assumptions.yaml', 'is never an authorization input', 'Mock assumption boundary'],
-  ['docs/demo/index.md', 'Playback、Wallet Link、SubscriptionまたはSBT資格の認可条件にも使用しません', 'Demo user-facing boundary'],
-  ['docs/protocol/vertical-slice.md', 'End-to-End Vertical Sliceは未成立', 'Vertical Slice status'],
-  ['docs/status.md', 'ローカルPlayback Slice（部分実装）', 'Project status']
+  ['docs/demo/index.md', '再生、ウォレット連携、サブスクリプションまたはSBT資格の認可条件にも使用しません', 'Demo user-facing boundary'],
+  ['docs/protocol/vertical-slice.md', 'エンドツーエンド最小縦断実装は未成立', 'Vertical Slice status'],
+  ['docs/status.md', 'ローカル再生部分実装', 'Project status']
 ]
 
 const consistencyContents = new Map(await Promise.all(
