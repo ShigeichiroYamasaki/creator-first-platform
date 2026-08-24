@@ -1,14 +1,14 @@
 ---
 title: テストユーザ利用フローデモ
-description: テストユーザ登録、Sepolia Wallet、mockJPYC Subscription、合成音源Playerを順番に試せるTestnetデモ。
+description: テストユーザ登録、Sepolia ウォレット、mockJPYC サブスクリプション、合成音源プレーヤーを順番に試せるテストネットデモ。
 ---
 
 # テストユーザ利用フローデモ
 
-このページはGitHub Pages上で利用でき、テストユーザ登録、EIP-1193 Wallet接続、Ethereum Sepolia上のmockJPYC取得・利用承認・Subscription、合成音源Player操作を一続きで検証する入口です。
+このページはGitHub Pages上で利用でき、テストユーザ登録、EIP-1193 ウォレット接続、Ethereum Sepolia上のmockJPYC取得・利用承認・サブスクリプション、合成音源プレーヤー操作を一続きで検証する入口です。
 
-::: warning Testnet専用です
-SepoliaのContract AddressとSource Commitを公開し、mockJPYCの取得・Approve・Subscriptionを有効化しました。tJPYCは無価値・償還不可で実在JPYCではなく、Sepolia ETHはGasにだけ使用します。Gateway、Navidrome、本番Accountまたは本番決済とは未接続です。
+::: warning テストネット専用です
+Sepoliaのコントラクトアドレスとソースコミットを公開し、mockJPYCの取得・Approve・サブスクリプションを有効化しました。tJPYCは無価値・償還不可で実在JPYCではなく、Sepolia ETHはガスにだけ使用します。ゲートウェイ、Navidrome、本番アカウントまたは本番決済とは未接続です。
 :::
 
 <ClientOnly>
@@ -17,23 +17,23 @@ SepoliaのContract AddressとSource Commitを公開し、mockJPYCの取得・App
 
 ## データと資産の境界
 
-| 項目 | この公開Journey | ローカルGateway連携版 |
+| 項目 | この公開利用フロー | ローカルゲートウェイ連携版 |
 | --- | --- | --- |
-| Profile | AliasとテストユーザIDを現在のタブだけに保存 | GatewayのDemo PrincipalとCookie Session |
-| Wallet | ユーザが明示接続。AddressとTransactionは公開Chainに記録 | SIWE／EIP-712署名境界をローカル検証 |
-| 支払資産 | 無価値・償還不可の`tJPYC`だけ。Sepolia ETHはGasのみ | 固定Mock Subscription |
-| Player | ページ内で生成する短い合成WAV。PreviewとSubscription限定Track | Gateway経由の合成音源、Range、短命Playback Session |
-| Streaming認可 | Sepolia SubscriptionによるUI解放だけ | Gateway CapabilityとDelivery Evidence |
-| Navidrome | 未接続 | 明示Mapping型Adapterを選択可能 |
+| プロフィール | AliasとテストユーザIDを現在のタブだけに保存 | ゲートウェイのデモ PrincipalとCookie セッション |
+| ウォレット | ユーザが明示接続。アドレスとトランザクションは公開チェーンに記録 | SIWE／EIP-712署名境界をローカル検証 |
+| 支払資産 | 無価値・償還不可の`tJPYC`だけ。Sepolia ETHはガスのみ | 固定モックサブスクリプション |
+| プレーヤー | ページ内で生成する短い合成WAV。プレビューとサブスクリプション限定楽曲 | ゲートウェイ経由の合成音源、範囲、短命再生セッション |
+| ストリーミング認可 | Sepolia サブスクリプションによるUI解放だけ | ゲートウェイ Capabilityと配信証跡 |
+| Navidrome | 未接続 | 明示対応付け型アダプターを選択可能 |
 
-公開JourneyのSubscription状態は、まだGatewayのPlayback AuthorizationやNavidromeへ接続されません。API、Cookie、Range、Concurrency、監査境界を含む検証は[ローカルStreaming Gateway](/demo/local-gateway)を参照してください。
+公開利用フローのサブスクリプション状態は、まだゲートウェイの再生認可やNavidromeへ接続されません。API、Cookie、範囲、Concurrency、監査境界を含む検証は[ローカルストリーミングゲートウェイ](/demo/local-gateway)を参照してください。
 
 ## 操作順序
 
 1. 個人情報を含まないAliasでテストユーザプロフィールを登録する。
-2. Walletを明示的に接続し、Chain ID `11155111`のSepoliaへ切り替える。
-3. 公開済みManifestが`active`の場合だけ、一回限りの`2,000 tJPYC`を取得する。
-4. Plan価格だけをSubscription ContractへApproveし、Subscriptionを開始する。
-5. Preview Trackを操作し、有効なSubscriptionでは限定合成Trackが解放されることを確認する。
+2. ウォレットを明示的に接続し、チェーン ID `11155111`のSepoliaへ切り替える。
+3. 公開済みマニフェストが`active`の場合だけ、一回限りの`2,000 tJPYC`を取得する。
+4. 計画価格だけをサブスクリプションコントラクトへApproveし、サブスクリプションを開始する。
+5. プレビュー楽曲を操作し、有効なサブスクリプションでは限定合成楽曲が解放されることを確認する。
 
-Seed Phraseや秘密鍵は入力しません。本番Wallet、本番資金、Mainnet Asset、実在JPYC、実在楽曲または個人情報を使わないでください。
+Seed Phraseや秘密鍵は入力しません。本番ウォレット、本番資金、Mainnet 資産、実在JPYC、実在楽曲または個人情報を使わないでください。

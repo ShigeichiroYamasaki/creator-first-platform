@@ -1,6 +1,6 @@
 ---
-title: SPEC-RIGHTS-001 Rights Registry
-description: WorkとRecordingを分離し、権利主張・審査・紛争・履歴を版管理するDraft プロトコル仕様
+title: SPEC-RIGHTS-001 権利登録台帳
+description: 作業と原盤を分離し、権利主張・審査・紛争・履歴を版管理する草案プロトコル仕様
 editLink: false
 ---
 

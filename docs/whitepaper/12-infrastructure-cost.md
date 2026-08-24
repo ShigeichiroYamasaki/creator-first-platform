@@ -2,7 +2,7 @@
 description: 音楽配信、検証可能な利用集計、分配処理を持続可能に運用するための性能・可用性・コストモデル。
 ---
 
-# 12. インフラ・コスト — Infrastructure, Performance & Cost
+# 12. インフラ・デモ・コスト
 
 > [!NOTE]
 > 本章の金額は、特定クラウド事業者の価格表を固定的に採用するものではなく、事業計画を更新可能にするための**コストモデル**として示す。実際の予算策定時には、CDN、クラウド、L2、ZK基盤、決済事業者等の最新料金を入力して再計算する。
@@ -15,7 +15,7 @@ Creator First Platform のインフラ設計では、単に「サーバーを動
 
 - 音楽サービスとして快適なユーザ体験
 - 音楽クリエーターへの正確で検証可能な分配
-- Usage Oracle と ZK Proof の検証可能性
+- 利用実績オラクルと ZK 証明の検証可能性
 - スマートコントラクトの安全な実行
 - 成長に応じたスケーラビリティ
 - 事業として持続可能なコスト構造
@@ -25,13 +25,13 @@ Creator First Platform のインフラ設計では、単に「サーバーを動
 ```mermaid
 flowchart TD
     UX[ユーザ体験]
-    PERF[Performance]
-    REL[Reliability]
-    SEC[Security]
-    VERIFY[Verifiability]
-    COST[Cost Sustainability]
+    PERF[実演]
+    REL[信頼性]
+    SEC[セキュリティ]
+    VERIFY[検証可能性]
+    COST[コスト持続可能性]
 
-    UX --> ARCH[Infrastructure Architecture]
+    UX --> ARCH[インフラアーキテクチャ]
     PERF --> ARCH
     REL --> ARCH
     SEC --> ARCH
@@ -53,13 +53,13 @@ Creator First Platform は、すべてをブロックチェーン上で実行す
 
 ```mermaid
 flowchart LR
-    CLIENT[Web / Mobile Player]
-    EDGE[CDN / Edge]
-    APP[Application Services]
-    DATA[Databases / Object Storage]
-    USAGE[Usage Pipeline]
-    ZK[ZK Proof]
-    L2[Blockchain / L2]
+    CLIENT[ウェブ / モバイルプレーヤー]
+    EDGE[CDN / エッジ]
+    APP[アプリケーションサービス]
+    DATA[データベース / オブジェクトストレージ]
+    USAGE[利用実績パイプライン]
+    ZK[ZK 証明]
+    L2[ブロックチェーン / L2]
 
     CLIENT --> EDGE
     CLIENT --> APP
@@ -72,16 +72,16 @@ flowchart LR
 
 大量・低遅延の処理はオフチェーンで行い、
 
-- Commitment
-- Proof
-- Distribution State
-- Governance State
+- コミットメント
+- 証明
+- 分配状態
+- ガバナンス状態
 
 など、検証可能性が必要な情報をオンチェーンへ接続する。
 
 ---
 
-## 12.3 ユーザ体験 を性能要件の起点にする
+## 12.3 ユーザ体験を性能要件の起点にする
 
 性能目標はサーバー側の都合ではなく、ユーザが感じる品質から逆算する。
 
@@ -99,35 +99,35 @@ flowchart LR
 ```mermaid
 flowchart LR
     TAP[ユーザ操作]
-    UI[UI Response]
+    UI[UI 対応]
     API[API]
-    STREAM[Audio Stream]
-    PLAY[Playback]
+    STREAM[音声ストリーム]
+    PLAY[再生]
 
     TAP --> UI --> API --> STREAM --> PLAY
 ```
 
-ブロックチェーン確認時間やZK Proof生成時間を音楽再生のクリティカルパスへ入れない。
+ブロックチェーン確認時間やZK 証明生成時間を音楽再生のクリティカルパスへ入れない。
 
 ---
 
-## 12.4 Performance SLO
+## 12.4 実演 SLO
 
 初期のサービス目標として以下を設定する。
 
 | 指標 | 目標 |
 | --- | ---: |
-| API Read p50 | 100 ms以下 |
-| API Read p95 | 300 ms以下 |
-| API Read p99 | 1 s以下 |
+| API 参照 p50 | 100 ms以下 |
+| API 参照 p95 | 300 ms以下 |
+| API 参照 p99 | 1 s以下 |
 | 検索 p95 | 500 ms以下 |
-| Playback Start p50 | 500 ms以下 |
-| Playback Start p95 | 1.5 s以下 |
-| Playback Start p99 | 3 s以下 |
-| Track Transition | 500 ms以下を目標 |
-| Playback Availability | 99.95%以上 |
-| Core API Availability | 99.9%以上 |
-| Governance / 音楽クリエーターConsole | 99.9%以上 |
+| 再生開始 p50 | 500 ms以下 |
+| 再生開始 p95 | 1.5 s以下 |
+| 再生開始 p99 | 3 s以下 |
+| 楽曲 Transition | 500 ms以下を目標 |
+| 再生可用性 | 99.95%以上 |
+| Core API 可用性 | 99.9%以上 |
+| ガバナンス / 音楽クリエーターConsole | 99.9%以上 |
 
 これらは初期設計値であり、実測に基づいて改訂する。
 
@@ -155,7 +155,7 @@ $$
 
 ---
 
-## 12.6 Playback Start Time
+## 12.6 再生開始時間
 
 再生開始時間を、
 
@@ -180,12 +180,12 @@ $$
 ```mermaid
 flowchart LR
     UI[UI]
-    AUTH[Authorization]
-    MANIFEST[Manifest]
-    NET[Network]
-    BUFFER[Initial Buffer]
-    DECODE[Decode]
-    AUDIO[Audio]
+    AUTH[認可]
+    MANIFEST[マニフェスト]
+    NET[ネットワーク]
+    BUFFER[初期バッファ]
+    DECODE[デコード]
+    AUDIO[音声]
 
     UI --> AUTH --> MANIFEST --> NET --> BUFFER --> DECODE --> AUDIO
 ```
@@ -196,60 +196,60 @@ flowchart LR
 
 ## 12.7 音源配信
 
-本番Scaleでは、音源ファイルを一般的なApplication API Processから直接配信しない。
+本番規模拡大では、音源ファイルを一般的なアプリケーション API 手続から直接配信しない。
 
 ```mermaid
 flowchart LR
-    MASTER[Master Audio]
-    TRANSCODE[Transcoding]
-    OBJECT[Object Storage]
+    MASTER[原盤音声]
+    TRANSCODE[トランスコード]
+    OBJECT[オブジェクトストレージ]
     CDN[CDN]
-    PLAYER[Player]
+    PLAYER[プレーヤー]
 
     MASTER --> TRANSCODE --> OBJECT --> CDN --> PLAYER
 ```
 
-Object Storage + CDNを基本構成とする。
+オブジェクトストレージ + CDNを基本構成とする。
 
 これにより、
 
-- Application Server負荷
+- アプリケーションサーバー負荷
 - 帯域コスト
 - 世界各地への遅延
 
 を抑える。
 
-ただし、最初のVertical Sliceでは、実際のHTTP Range、Seek、Transcoding、Subscription AuthorizationおよびPlayback Evidenceを小さな構成で検証するため、Streaming GatewayがNavidromeのResponseを逐次中継する。
+ただし、最初の最小縦断実装では、実際のHTTP 範囲、Seek、トランスコード、サブスクリプション認可および再生証跡を小さな構成で検証するため、ストリーミングゲートウェイがNavidromeの対応を逐次中継する。
 
 ```mermaid
 flowchart LR
-    PLAYER[Player]
-    GATEWAY[Streaming Gateway]
+    PLAYER[プレーヤー]
+    GATEWAY[ストリーミングゲートウェイ]
     NAVI[Navidrome]
-    VOLUME[Read-only Music Volume]
+    VOLUME[読取専用音楽ボリューム]
 
     PLAYER --> GATEWAY --> NAVI --> VOLUME
 ```
 
-このMVP構成では、音声全体をGateway MemoryへBufferせず、Backpressure、Range ResponseおよびClient Cancellationを維持する。
+このMVP構成では、音声全体をゲートウェイ Memoryへバッファせず、Backpressure、範囲対応およびクライアント Cancellationを維持する。
 
-Gateway Relayは帯域とConnectionを消費するため、少なくとも次をScale Triggerとして計測する。
+ゲートウェイ Relayは帯域とConnectionを消費するため、少なくとも次を規模拡大 Triggerとして計測する。
 
-- 同時Stream数
-- Gateway egress帯域
-- Playback Start Time p95 / p99
+- 同時ストリーム数
+- ゲートウェイ egress帯域
+- 再生開始 Time p95 / p99
 - Navidrome同時Transcode数
-- CPU、MemoryおよびTranscode Cache
-- Origin ErrorおよびClient Abort率
-- 1 Listening Hour当たりのRelay Cost
+- CPU、MemoryおよびTranscode キャッシュ
+- オリジン Errorおよびクライアント Abort率
+- 1 聴取 Hour当たりのRelay コスト
 
-定義した閾値を超えた場合、Audio Byte DeliveryをObject Storage + CDN + Short-lived Signed URLへ移す。Subscription、RightsおよびPlayback Sessionは引き続きGatewayが判定し、CDNへ渡す許可を短時間Tokenとして表現する。
+定義した閾値を超えた場合、音声 Byte 配信をオブジェクトストレージ + CDN + Short-lived Signed URLへ移す。サブスクリプション、権利および再生セッションは引き続きゲートウェイが判定し、CDNへ渡す許可を短時間トークンとして表現する。
 
-したがって、MVPのGateway Relayと本番のCDN Deliveryは矛盾する方式ではなく、同じAuthorization Boundaryを維持した段階的実装である。詳細は[ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway)を参照する。
+したがって、MVPのゲートウェイ Relayと本番のCDN 配信は矛盾する方式ではなく、同じ認可境界を維持した段階的実装である。詳細は[ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway)を参照する。
 
 ---
 
-## 12.8 Adaptive Streaming
+## 12.8 適応型ストリーミング
 
 通信環境に応じて複数の品質を提供する。
 
@@ -258,17 +258,17 @@ Gateway Relayは帯域とConnectionを消費するため、少なくとも次を
 - 96 kbps
 - 160 kbps
 - 256 kbps
-- Lossless
+- ロスレス
 
 等を用意し、ネットワーク状況や契約プランに応じて選択する。
 
 ```mermaid
 flowchart TD
-    MASTER[Master]
+    MASTER[原盤]
     MASTER --> Q1[96 kbps]
     MASTER --> Q2[160 kbps]
     MASTER --> Q3[256 kbps]
-    MASTER --> Q4[Lossless]
+    MASTER --> Q4[ロスレス]
 
     Q1 --> CDN[CDN]
     Q2 --> CDN
@@ -316,9 +316,9 @@ $$
 
 ---
 
-## 12.10 CDN Cache Hit Ratio
+## 12.10 CDNキャッシュヒット率
 
-CDNのCache Hit Ratioを、
+CDNのキャッシュヒット Ratioを、
 
 $$
 H
@@ -330,8 +330,8 @@ $$
 
 $H$ を高くすることで、
 
-- Origin負荷
-- Origin帯域
+- オリジン負荷
+- オリジン帯域
 - レイテンシ
 
 を削減する。
@@ -340,7 +340,7 @@ $H$ を高くすることで、
 
 ---
 
-## 12.11 Long Tail とコスト
+## 12.11 ロングテールとコスト
 
 Creator First Platform は有名曲だけでなく、新人・小規模音楽クリエーターの作品発見を重視する。
 
@@ -352,11 +352,11 @@ Creator First Platform は有名曲だけでなく、新人・小規模音楽ク
 
 ```mermaid
 flowchart LR
-    POP[Popular Tracks]
-    LONG[Long-tail Tracks]
+    POP[人気楽曲]
+    LONG[ロングテール楽曲]
 
-    POP --> CACHE[High Cache Hit]
-    LONG --> ORIGIN[More Origin Access]
+    POP --> CACHE[高キャッシュヒット]
+    LONG --> ORIGIN[増加オリジンアクセス]
 
     CACHE --> CDN[CDN]
     ORIGIN --> CDN
@@ -366,20 +366,20 @@ Long Tail比率を事業KPIと同時にインフラKPIとして監視する。
 
 ---
 
-## 12.12 API Architecture
+## 12.12 API アーキテクチャ
 
 初期段階では、必要以上にMicroservices化しない。
 
 ```mermaid
 flowchart LR
-    CLIENT[Client]
-    API[API Layer]
+    CLIENT[クライアント]
+    API[API レイヤー]
 
-    API --> AUTH[Auth]
-    API --> CATALOG[Catalog]
+    API --> AUTH[認証]
+    API --> CATALOG[カタログ]
     API --> CREATOR[音楽クリエーター]
-    API --> COMMUNITY[Community]
-    API --> RIGHTS[Rights]
+    API --> COMMUNITY[コミュニティ]
+    API --> RIGHTS[権利]
 ```
 
 MVPではModular Monolithまたは少数サービスから開始し、負荷特性や組織規模に応じて分割する。
@@ -388,76 +388,76 @@ MVPではModular Monolithまたは少数サービスから開始し、負荷特�
 
 ---
 
-## 12.13 Database
+## 12.13 データベース
 
 用途に応じてデータを分離する。
 
 ```mermaid
 flowchart TD
-    DATA[Data Layer]
+    DATA[データレイヤー]
 
-    DATA --> SQL[Relational DB]
-    DATA --> CACHE[Cache]
-    DATA --> SEARCH[Search Index]
-    DATA --> OBJECT[Object Storage]
-    DATA --> ANALYTICS[Analytics Store]
+    DATA --> SQL[関係データベース]
+    DATA --> CACHE[キャッシュ]
+    DATA --> SEARCH[検索索引]
+    DATA --> OBJECT[オブジェクトストレージ]
+    DATA --> ANALYTICS[分析保存]
 ```
 
-### Relational DB
+### 関係データベース
 
 - ユーザ
 - 音楽クリエーター
-- Rights
-- Subscription
-- Contract Metadata
+- 権利
+- サブスクリプション
+- コントラクトメタデータ
 
-### Cache
+### キャッシュ
 
-- Session
-- Hot Metadata
-- Recommendation Cache
+- セッション
+- ホットメタデータ
+- 推薦キャッシュ
 
-### Search Index
+### 検索索引
 
-- Artist
-- Track
+- アーティスト
+- 楽曲
 - Album
-- Community Content
+- コミュニティコンテンツ
 
-### Object Storage
+### オブジェクトストレージ
 
-- Audio
+- 音声
 - Artwork
 - Documents
 
-### Analytics Store
+### 分析保存
 
-- Playback Events
-- Aggregated Usage
+- 再生イベント
+- 集約利用実績
 
 ---
 
-## 12.14 Playback Event Pipeline
+## 12.14 再生イベントパイプライン
 
 再生イベントを同期的にDBへ書き込んでから音楽を再生する設計にはしない。
 
 ```mermaid
 flowchart LR
-    PLAYER[Player]
-    INGEST[Event Ingestion]
-    QUEUE[Event Stream / Queue]
-    VALID[Validation]
-    STORE[Usage Store]
-    AGG[Aggregation]
+    PLAYER[プレーヤー]
+    INGEST[イベント取込み]
+    QUEUE[イベントストリーム / 一覧]
+    VALID[検証]
+    STORE[利用実績保存]
+    AGG[集約]
 
     PLAYER --> INGEST --> QUEUE --> VALID --> STORE --> AGG
 ```
 
-イベント処理を非同期化することで、Usage Pipeline障害がPlaybackへ波及するのを防ぐ。
+イベント処理を非同期化することで、利用実績パイプライン障害が再生へ波及するのを防ぐ。
 
 ---
 
-## 12.15 Event Throughput
+## 12.15 イベント処理量
 
 同時ユーザ数を $U_c$、1ユーザあたり平均イベント発生率を $r_e$ events/s とすると、
 
@@ -492,7 +492,7 @@ $$
 
 ---
 
-## 12.16 Usage Event をオンチェーンへ直接送らない
+## 12.16 利用実績イベントをオンチェーンへ直接送らない
 
 各再生イベントをブロックチェーンへ送る構造は採用しない。
 
@@ -508,10 +508,10 @@ $$
 
 ```mermaid
 flowchart LR
-    E1[Playback Events]
-    AGG[Aggregation]
-    ROOT[Merkle Root]
-    ZK[ZK Proof]
+    E1[再生イベント]
+    AGG[集約]
+    ROOT[マークルルート]
+    ZK[ZK 証明]
     L2[L2]
 
     E1 --> AGG --> ROOT --> ZK --> L2
@@ -521,7 +521,7 @@ flowchart LR
 
 ---
 
-## 12.17 Batch Processing
+## 12.17 バッチ処理
 
 期間 $t$ のイベント集合を、
 
@@ -537,37 +537,37 @@ $$
 R_t = \operatorname{MerkleRoot}(E_t)
 $$
 
-を生成し、集計結果とProofをまとめてオンチェーンへ提出する。
+を生成し、集計結果と証明をまとめてオンチェーンへ提出する。
 
-Batch Sizeを大きくすると1イベントあたりのBlockchain Costは低下する。
+バッチ Sizeを大きくすると1イベントあたりのブロックチェーンコストは低下する。
 
 ---
 
-## 12.18 ZK/STARK Infrastructure
+## 12.18 ZK/STARK インフラ
 
-ZK Proof生成は、通常のWeb APIとは異なる計算負荷を持つ。
+ZK 証明生成は、通常のウェブ APIとは異なる計算負荷を持つ。
 
 ```mermaid
 flowchart LR
-    EVENTS[Validated Events]
-    TRACE[Execution Trace]
-    PROVER[STARK Prover]
-    PROOF[Proof]
-    STORE[Proof Storage]
-    CHAIN[Verifier]
+    EVENTS[検証済みイベント]
+    TRACE[実行トレース]
+    PROVER[STARK 証明者]
+    PROOF[証明]
+    STORE[証明ストレージ]
+    CHAIN[検証者]
 
     EVENTS --> TRACE --> PROVER --> PROOF
     PROOF --> STORE
     PROOF --> CHAIN
 ```
 
-ProverはCPU、RAM、場合によってはGPUを多く使用するため、常時最大構成で稼働させるのではなく、Batch Jobとしてスケールさせる。
+証明者はCPU、RAM、場合によってはGPUを多く使用するため、常時最大構成で稼働させるのではなく、バッチ Jobとしてスケールさせる。
 
 ---
 
-## 12.19 Proof Latency
+## 12.19 証明遅延
 
-ZK Proofは再生開始に必要ない。
+ZK 証明は再生開始に必要ない。
 
 したがって、
 
@@ -577,58 +577,58 @@ $$
 
 とする。
 
-Proof生成には数分以上かかっても、分配周期内に完了すればよい。
+証明生成には数分以上かかっても、分配周期内に完了すればよい。
 
 例えば、
 
-- Playback：1秒単位
-- Usage Aggregation：分〜時間単位
-- Proof：時間単位
-- Distribution：日次〜月次
+- 再生：1秒単位
+- 利用実績集約：分〜時間単位
+- 証明：時間単位
+- 分配：日次〜月次
 
 という異なる時間軸を許容する。
 
 ```mermaid
 flowchart LR
-    PLAY[Playback<br/>seconds]
-    EVENT[Events<br/>seconds-minutes]
-    AGG[Aggregation<br/>minutes-hours]
-    PROOF[Proof<br/>hours]
-    PAY[Distribution<br/>days-month]
+    PLAY[再生<br/>秒]
+    EVENT[イベント<br/>秒から分]
+    AGG[集約<br/>分から時間]
+    PROOF[証明<br/>時間]
+    PAY[分配<br/>日から月]
 
     PLAY --> EVENT --> AGG --> PROOF --> PAY
 ```
 
 ---
 
-## 12.20 Progressive ZK Deployment
+## 12.20 段階的 ZK デプロイ
 
 MVPから完全なSTARK基盤を構築する必要はない。
 
 ```mermaid
 flowchart LR
-    P1[Phase 1<br/>Auditable DB]
-    P2[Phase 2<br/>Merkle Commitments]
-    P3[Phase 3<br/>ZK Usage Proof]
-    P4[Phase 4<br/>Scalable STARK Infrastructure]
+    P1[フェーズ 1<br/>監査可能 DB]
+    P2[フェーズ 2<br/>マークルコミットメント]
+    P3[フェーズ 3<br/>ZK 利用実績証明]
+    P4[フェーズ 4<br/>拡張可能 STARK インフラ]
 
     P1 --> P2 --> P3 --> P4
 ```
 
-これにより、事業検証前にZK Infrastructureへ過剰投資することを避ける。
+これにより、事業検証前にZK インフラへ過剰投資することを避ける。
 
 ---
 
-## 12.21 Blockchain / L2
+## 12.21 ブロックチェーン / L2
 
 オンチェーン処理は、
 
-- Distribution Root
-- Claim
-- Treasury
-- Governance
-- Protocol Version
-- ZK Verification
+- 分配ルート
+- 主張
+- 資金庫
+- ガバナンス
+- プロトコル版
+- ZK 検証
 
 等へ限定する。
 
@@ -636,17 +636,17 @@ flowchart LR
 flowchart TD
     L2[L2]
 
-    L2 --> DIST[Distribution]
-    L2 --> GOV[Governance]
-    L2 --> TREASURY[Treasury]
-    L2 --> VERIFY[Proof Verification]
+    L2 --> DIST[分配]
+    L2 --> GOV[ガバナンス]
+    L2 --> TREASURY[資金庫]
+    L2 --> VERIFY[証明検証]
 ```
 
 Ethereum Mainnetへすべて直接書き込むのではなく、要件に応じてL2を利用する。
 
 ---
 
-## 12.22 Gas Cost Model
+## 12.22 ガスコストモデル
 
 期間あたりのオンチェーンコストを、
 
@@ -662,45 +662,45 @@ $$
 
 とする。
 
-- $N_{tx}$：Transaction数
-- $G_{avg}$：平均Gas使用量
-- $P_{gas}$：Gas単価を通貨換算した値
+- $N_{tx}$：トランザクション数
+- $G_{avg}$：平均ガス使用量
+- $P_{gas}$：ガス単価を通貨換算した値
 
-Batch化によって $N_{tx}$ を抑えることが重要である。
+バッチ化によって $N_{tx}$ を抑えることが重要である。
 
 ---
 
-## 12.23 Claim型分配
+## 12.23 主張型分配
 
-多数の音楽クリエーターへPlatformが一括Push送金するより、
+多数の音楽クリエーターへプラットフォームが一括Push送金するより、
 
 ```mermaid
 flowchart LR
-    ROOT[Distribution Root]
-    CONTRACT[Distribution Contract]
+    ROOT[分配ルート]
+    CONTRACT[分配コントラクト]
 
-    CONTRACT --> C1[音楽クリエーターA Claim]
-    CONTRACT --> C2[音楽クリエーターB Claim]
-    CONTRACT --> C3[音楽クリエーターC Claim]
+    CONTRACT --> C1[音楽クリエーターA 主張]
+    CONTRACT --> C2[音楽クリエーターB 主張]
+    CONTRACT --> C3[音楽クリエーターC 主張]
 
     ROOT --> CONTRACT
 ```
 
-音楽クリエーターが必要な時にClaimする方式を検討する。
+音楽クリエーターが必要な時に主張する方式を検討する。
 
-これにより、分配処理のGas負担や失敗処理を分散できる。
+これにより、分配処理のガス負担や失敗処理を分散できる。
 
-ただし、少額音楽クリエーターにGas負担を押し付ける設計にならないよう、Gas Sponsorship等も検討する。
+ただし、少額音楽クリエーターにガス負担を押し付ける設計にならないよう、ガス代支援等も検討する。
 
 ---
 
-## 12.24 Wallet UX
+## 12.24 ウォレット UX
 
 一般の音楽クリエーターやユーザへ、
 
 - Seed Phrase
-- Gas Token
-- Chain ID
+- ガストークン
+- チェーン ID
 - RPC
 
 を理解することを要求しない。
@@ -708,9 +708,9 @@ flowchart LR
 ```mermaid
 flowchart LR
     USER[ユーザ]
-    APP[Music App UX]
-    WALLET[Embedded / Smart Wallet]
-    L2[Blockchain]
+    APP[音楽アプリ UX]
+    WALLET[組込み / スマートウォレット]
+    L2[ブロックチェーン]
 
     USER --> APP --> WALLET --> L2
 ```
@@ -719,11 +719,11 @@ flowchart LR
 
 ---
 
-## 12.25 Gas Sponsorship
+## 12.25 ガス代支援
 
-ユーザのSubscription Payment、Early Supporter SBT発行、ガバナンス投票または音楽クリエーターClaimでは、必要に応じてPlatformがRelayerまたはPaymasterを通じてGasをスポンサーする。
+ユーザのサブスクリプション決済、初期サポーター SBT発行、ガバナンス投票または音楽クリエーター主張では、必要に応じてプラットフォームがリレイヤーまたはペイマスターを通じてガスをスポンサーする。
 
-月間Gas Sponsorship Costを、
+月間ガス代支援コストを、
 
 $$
 C_{sponsor}
@@ -735,9 +735,9 @@ $$
 
 とする。
 
-これを音楽クリエーター／ユーザ参加 Costとして事業計画に含める。
+これを音楽クリエーター／ユーザ参加コストとして事業計画に含める。
 
-Gas Sponsorship CostはJPYC等で表示するSubscription Priceと分離し、ユーザがETH等でサービス料金を支払ったものとして記録しない。テスト系ではFaucet由来のTestnet Gas Tokenだけを使用し、`MockJPYC`決済とSBT発行を無料で検証する。本番系ではSponsorship上限、対象Operation、Rate Limit、失敗時の再送、秘密鍵管理および会計処理を承認済みPolicyとして定義する。
+ガス代支援コストはJPYC等で表示するサブスクリプション価格と分離し、ユーザがETH等でサービス料金を支払ったものとして記録しない。テスト系ではFaucet由来のテストネットガストークンだけを使用し、`MockJPYC`決済とSBT発行を無料で検証する。本番系ではSponsorship上限、対象運用、率制限、失敗時の再送、秘密鍵管理および会計処理を承認済みポリシーとして定義する。
 
 ---
 
@@ -747,24 +747,24 @@ Gas Sponsorship CostはJPYC等で表示するSubscription Priceと分離し、�
 
 ```mermaid
 flowchart TD
-    TIER1[Tier 1]
-    TIER2[Tier 2]
-    TIER3[Tier 3]
+    TIER1[階層 1]
+    TIER2[階層 2]
+    TIER3[階層 3]
 
-    TIER1 --> STREAM[Playback / Auth / CDN]
-    TIER2 --> API[Catalog / Search / Subscription]
-    TIER3 --> GOV[Governance / Analytics / Proof Jobs]
+    TIER1 --> STREAM[再生 / 認証 / CDN]
+    TIER2 --> API[カタログ / 検索 / サブスクリプション]
+    TIER3 --> GOV[ガバナンス / 分析 / 証明ジョブ]
 ```
 
-Playbackは最も高い可用性を要求する。
+再生は最も高い可用性を要求する。
 
-Proof Jobが一時停止しても、音楽再生は継続できる設計にする。
+証明 Jobが一時停止しても、音楽再生は継続できる設計にする。
 
 ---
 
-## 12.27 Availability と停止時間
+## 12.27 可用性と停止時間
 
-Availability $A$ を、
+可用性 $A$ を、
 
 $$
 A
@@ -776,7 +776,7 @@ $$
 
 概算では、
 
-| Availability | 年間停止時間 |
+| 可用性 | 年間停止時間 |
 | --- | ---: |
 | 99.0% | 約87.6時間 |
 | 99.9% | 約8.76時間 |
@@ -795,10 +795,10 @@ $$
 
 ```mermaid
 flowchart LR
-    LB[Load Balancer]
-    AZ1[Zone A]
-    AZ2[Zone B]
-    DB[(Replicated DB)]
+    LB[負荷分散器]
+    AZ1[ゾーン A]
+    AZ2[ゾーン B]
+    DB[(複製 DB)]
 
     LB --> AZ1
     LB --> AZ2
@@ -806,11 +806,11 @@ flowchart LR
     AZ2 --> DB
 ```
 
-MVPでは単一Region + Multi-AZを基本候補とし、国際展開に応じてMulti-Region化を検討する。
+MVPでは単一地域 + Multi-AZを基本候補とし、国際展開に応じてMulti-Region化を検討する。
 
 ---
 
-## 12.29 Disaster Recovery
+## 12.29 災害復旧
 
 RPOとRTOをサービス別に定義する。
 
@@ -818,48 +818,48 @@ RPOとRTOをサービス別に定義する。
 
 | システム | RPO | RTO |
 | --- | ---: | ---: |
-| Rights / Contract Data | 5分以下 | 1時間以下 |
-| Subscription | 5分以下 | 1時間以下 |
-| Playback Metadata | 15分以下 | 1時間以下 |
-| Analytics | 24時間以下 | 24時間以下 |
-| Governance State | Blockchain + Backup | 数時間以内 |
-| Audio Masters | 原則データ損失なし | 数時間〜 |
+| 権利 / コントラクトデータ | 5分以下 | 1時間以下 |
+| サブスクリプション | 5分以下 | 1時間以下 |
+| 再生メタデータ | 15分以下 | 1時間以下 |
+| 分析 | 24時間以下 | 24時間以下 |
+| ガバナンス状態 | ブロックチェーン + バックアップ | 数時間以内 |
+| 音声 Masters | 原則データ損失なし | 数時間〜 |
 
 ---
 
-## 12.30 Observability
+## 12.30 可観測性
 
 監視はCPU使用率だけでは不十分である。
 
 ```mermaid
 flowchart TD
-    OBS[Observability]
+    OBS[可観測性]
 
-    OBS --> METRIC[Metrics]
-    OBS --> LOG[Logs]
-    OBS --> TRACE[Tracing]
-    OBS --> BIZ[Business Metrics]
-    OBS --> SEC[Security Events]
+    OBS --> METRIC[指標]
+    OBS --> LOG[ログ]
+    OBS --> TRACE[トレーシング]
+    OBS --> BIZ[事業指標]
+    OBS --> SEC[セキュリティイベント]
 ```
 
 技術指標と事業指標を接続する。
 
 例えば、
 
-- Playback Start p95
+- 再生開始 p95
 - Buffering Ratio
-- API Error Rate
-- Active ユーザ
-- Plays/min
-- Fraud Rate
-- Proof Queue Length
-- Distribution Delay
+- API Error 率
+- 有効ユーザ
+- 再生回数/min
+- 不正率
+- 証明一覧 Length
+- 分配 Delay
 
 を同じ運用画面から追跡可能にする。
 
 ---
 
-## 12.31 Error Budget
+## 12.31 エラー予算
 
 SLOを99.95%とした場合、
 
@@ -869,7 +869,7 @@ $$
 
 が許容エラー率である。
 
-Error Budgetを使い、
+Error 予算を使い、
 
 > 新機能開発を優先するか、信頼性改善を優先するか
 
@@ -877,7 +877,7 @@ Error Budgetを使い、
 
 ---
 
-## 12.32 Cost Architecture
+## 12.32 コストアーキテクチャ
 
 月間インフラ費用を、
 
@@ -911,21 +911,21 @@ $$
 
 ```mermaid
 flowchart TD
-    COST[Infrastructure Cost]
+    COST[インフラコスト]
 
-    COST --> CDN[CDN / Transfer]
-    COST --> COMPUTE[Compute]
-    COST --> DB[Database]
-    COST --> STORAGE[Storage]
-    COST --> ZK[ZK Prover]
-    COST --> CHAIN[Blockchain]
-    COST --> OBS[Monitoring]
-    COST --> SEC[Security]
+    COST --> CDN[CDN / 転送]
+    COST --> COMPUTE[コンピュート]
+    COST --> DB[データベース]
+    COST --> STORAGE[ストレージ]
+    COST --> ZK[ZK 証明者]
+    COST --> CHAIN[ブロックチェーン]
+    COST --> OBS[監視]
+    COST --> SEC[セキュリティ]
 ```
 
 ---
 
-## 12.33 Fixed Cost と Variable Cost
+## 12.33 固定費と変動費
 
 インフラ費用を、
 
@@ -939,25 +939,25 @@ $$
 
 に分ける。
 
-### Fixed Cost
+### 固定費
 
 - 最小DB
-- Monitoring
+- 監視
 - CI/CD
-- Backup
-- Security Services
-- Base Compute
+- バックアップ
+- セキュリティサービス
+- Base コンピュート
 
-### Variable Cost
+### 変動費
 
 - CDN転送
-- Playback
+- 再生
 - API
 - ZK計算
-- Blockchain
-- Storage増加
+- ブロックチェーン
+- ストレージ増加
 
-ユーザ数が少ない段階ではFixed Cost比率が高く、成長するとVariable Costが重要になる。
+ユーザ数が少ない段階ではFixed コスト比率が高く、成長するとVariable コストが重要になる。
 
 ---
 
@@ -1017,9 +1017,9 @@ $$
 
 ---
 
-## 12.36 Unit Economics
+## 12.36 単位経済性
 
-月額料金を $P$、音楽クリエーター等への分配率を $r_c$、決済費率を $r_p$、ユーザあたりインフラコストを $C_u$ とすると、単純化したContribution Marginは、
+月額料金を $P$、音楽クリエーター等への分配率を $r_c$、決済費率を $r_p$、ユーザあたりインフラコストを $C_u$ とすると、単純化した貢献利益幅は、
 
 $$
 M
@@ -1031,11 +1031,11 @@ $$
 
 ```mermaid
 flowchart LR
-    PRICE[Subscription]
+    PRICE[サブスクリプション]
     CREATOR[音楽クリエーター分配]
-    PAYMENT[Payment Cost]
-    INFRA[Infrastructure]
-    MARGIN[Contribution Margin]
+    PAYMENT[決済コスト]
+    INFRA[インフラ]
+    MARGIN[貢献利益幅]
 
     PRICE --> CREATOR
     PRICE --> PAYMENT
@@ -1053,7 +1053,7 @@ flowchart LR
 
 ---
 
-## 12.37 Cost per Listening Hour
+## 12.37 聴取1時間あたりのコスト
 
 音楽サービスでは1再生より再生時間が適切な場合がある。
 
@@ -1078,13 +1078,13 @@ $$
 ```mermaid
 flowchart LR
     S1[MVP]
-    S2[Growth]
-    S3[Scale]
+    S2[成長]
+    S3[規模拡大]
 
     S1 --> S2 --> S3
 ```
 
-| 指標 | MVP | Growth | Scale |
+| 指標 | MVP | 成長 | 規模拡大 |
 | --- | ---: | ---: | ---: |
 | MAU | 10,000 | 100,000 | 1,000,000 |
 | 有料会員 | 2,000 | 30,000 | 300,000 |
@@ -1100,26 +1100,26 @@ flowchart LR
 
 例えば月間コストを次のように入力する。
 
-| 項目 | MVP | Growth | Scale |
+| 項目 | MVP | 成長 | 規模拡大 |
 | --- | ---: | ---: | ---: |
-| Compute | ¥100,000 | ¥500,000 | ¥3,000,000 |
-| Database / Cache | ¥100,000 | ¥400,000 | ¥2,000,000 |
-| Storage | ¥30,000 | ¥150,000 | ¥800,000 |
-| CDN / Network | ¥100,000 | ¥1,000,000 | ¥10,000,000 |
-| Search / Analytics | ¥30,000 | ¥300,000 | ¥2,000,000 |
-| Monitoring / Security | ¥100,000 | ¥300,000 | ¥1,500,000 |
-| ZK / Proof | ¥0〜¥50,000 | ¥200,000 | ¥1,500,000 |
-| Blockchain / L2 | ¥20,000 | ¥100,000 | ¥500,000 |
-| Backup / DR | ¥30,000 | ¥100,000 | ¥500,000 |
+| コンピュート | ¥100,000 | ¥500,000 | ¥3,000,000 |
+| データベース / キャッシュ | ¥100,000 | ¥400,000 | ¥2,000,000 |
+| ストレージ | ¥30,000 | ¥150,000 | ¥800,000 |
+| CDN / ネットワーク | ¥100,000 | ¥1,000,000 | ¥10,000,000 |
+| 検索 / 分析 | ¥30,000 | ¥300,000 | ¥2,000,000 |
+| 監視 / セキュリティ | ¥100,000 | ¥300,000 | ¥1,500,000 |
+| ZK / 証明 | ¥0〜¥50,000 | ¥200,000 | ¥1,500,000 |
+| ブロックチェーン / L2 | ¥20,000 | ¥100,000 | ¥500,000 |
+| バックアップ / DR | ¥30,000 | ¥100,000 | ¥500,000 |
 
 > [!WARNING]
-> この表は料金見積りではなく、予算モデルを作るための**仮置き例**である。音質、地域、CDN契約、クラウド割引、Proof方式、L2、利用パターンによって大きく変化する。
+> この表は料金見積りではなく、予算モデルを作るための**仮置き例**である。音質、地域、CDN契約、クラウド割引、証明方式、L2、利用パターンによって大きく変化する。
 
 重要なのは数値そのものではなく、これを毎月実績値へ置き換えられる構造にすることである。
 
 ---
 
-## 12.40 Revenue Scenario
+## 12.40 収益シナリオ
 
 月額料金を $P$、有料会員を $U_p$ とすると、
 
@@ -1145,9 +1145,9 @@ $$
 
 ここから、
 
-- 音楽クリエーター／権利者 Distribution
+- 音楽クリエーター／権利者分配
 - 決済手数料
-- Infrastructure
+- インフラ
 - 人件費
 - 権利処理費
 - 法務・監査
@@ -1158,7 +1158,7 @@ $$
 
 ---
 
-## 12.41 Infrastructure Ratio
+## 12.41 インフラ比率
 
 売上に対するインフラ費率を、
 
@@ -1176,7 +1176,7 @@ $$
 
 ---
 
-## 12.42 音楽クリエーター中心 Cost Allocation
+## 12.42 音楽クリエーター中心コスト配分
 
 インフラコストを音楽クリエーターごとに単純転嫁しない。
 
@@ -1188,9 +1188,9 @@ $$
 
 ```mermaid
 flowchart TD
-    PLATFORM[Platform Economy]
-    POP[Popular 音楽クリエーター]
-    LONG[Long-tail 音楽クリエーター]
+    PLATFORM[プラットフォーム経済]
+    POP[人気音楽クリエーター]
+    LONG[ロングテール音楽クリエーター]
     NEW[新人音楽クリエーター]
 
     PLATFORM --> POP
@@ -1208,9 +1208,9 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    ENGINEER[Engineering]
-    FINANCE[Finance]
-    PRODUCT[Product]
+    ENGINEER[エンジニアリング]
+    FINANCE[財務]
+    PRODUCT[プロダクト]
     FINOPS[FinOps]
 
     ENGINEER --> FINOPS
@@ -1221,26 +1221,26 @@ flowchart LR
 各サービスに、
 
 - Owner
-- Cost Center
-- Usage Metric
-- Budget
-- Alert
+- コスト Center
+- 利用実績 Metric
+- 予算
+- 警告
 
 を設定する。
 
 ---
 
-## 12.44 Cost Anomaly Detection
+## 12.44 コスト異常検知
 
 通常のアクセス増加と、攻撃・バグによる異常コストを区別する。
 
 ```mermaid
 flowchart LR
-    USAGE[Usage]
-    COST[Cloud Cost]
-    MODEL[Expected Cost]
-    ANOMALY[Anomaly]
-    ALERT[Alert]
+    USAGE[利用実績]
+    COST[クラウドコスト]
+    MODEL[予想コスト]
+    ANOMALY[異常]
+    ALERT[警告]
 
     USAGE --> MODEL
     COST --> ANOMALY
@@ -1252,25 +1252,25 @@ flowchart LR
 
 ---
 
-## 12.45 Autoscaling
+## 12.45 自動スケーリング
 
-負荷に応じてComputeを増減させる。
+負荷に応じてコンピュートを増減させる。
 
 ```mermaid
 flowchart LR
-    LOAD[Traffic]
-    METRIC[Metrics]
-    SCALE[Autoscaler]
-    COMPUTE[Compute]
+    LOAD[トラフィック]
+    METRIC[指標]
+    SCALE[自動スケーラー]
+    COMPUTE[コンピュート]
 
     LOAD --> METRIC --> SCALE --> COMPUTE
 ```
 
-ただし、AutoscalingだけではDDoS時に「攻撃者のためにクラウド費用を増やす」可能性があるため、WAF・Rate Limitと組み合わせる。
+ただし、AutoscalingだけではDDoS時に「攻撃者のためにクラウド費用を増やす」可能性があるため、WAF・率制限と組み合わせる。
 
 ---
 
-## 12.46 Capacity Planning
+## 12.46 容量計画
 
 必要容量を、
 
@@ -1298,35 +1298,35 @@ $$
 
 ---
 
-## 12.47 Load Test
+## 12.47 負荷テスト
 
 本番開始前に、
 
-- API Load Test
-- Playback Start Test
-- CDN Test
-- Event Ingestion Test
-- Database Failover Test
-- Proof Queue Test
+- API 負荷テスト
+- 再生開始テスト
+- CDN テスト
+- イベント取込みテスト
+- データベース Failover テスト
+- 証明一覧テスト
 
 を実施する。
 
 ```mermaid
 flowchart LR
-    MODEL[Expected Traffic]
-    TEST[Load Test]
-    BOTTLENECK[Bottleneck]
-    FIX[Optimization]
-    RETEST[Retest]
+    MODEL[予想トラフィック]
+    TEST[負荷テスト]
+    BOTTLENECK[ボトルネック]
+    FIX[最適化]
+    RETEST[再テスト]
 
     MODEL --> TEST --> BOTTLENECK --> FIX --> RETEST
 ```
 
 ---
 
-## 12.48 Performance Budget
+## 12.48 実演予算
 
-新機能ごとに性能Budgetを持つ。
+新機能ごとに性能予算を持つ。
 
 例えば再生開始時間1.5秒を、
 
@@ -1346,11 +1346,11 @@ $$
 
 のように分配する。
 
-新機能がBudgetを超える場合は、他の処理を改善するか設計を見直す。
+新機能が予算を超える場合は、他の処理を改善するか設計を見直す。
 
 ---
 
-## 12.49 Search と Discovery
+## 12.49 検索と発見
 
 第8章の発見機能はUX上重要である。
 
@@ -1362,14 +1362,14 @@ $$
 
 を初期目標とする。
 
-Recommendationは検索より重い処理になり得るため、事前計算とリアルタイム計算を組み合わせる。
+推薦は検索より重い処理になり得るため、事前計算とリアルタイム計算を組み合わせる。
 
 ```mermaid
 flowchart LR
-    DATA[Usage / Content]
-    BATCH[Batch Recommendation]
-    REAL[Real-time Signals]
-    CACHE[Recommendation Cache]
+    DATA[利用実績 / コンテンツ]
+    BATCH[バッチ推薦]
+    REAL[リアルタイムシグナル]
+    CACHE[推薦キャッシュ]
     USER[ユーザ]
 
     DATA --> BATCH --> CACHE
@@ -1379,7 +1379,7 @@ flowchart LR
 
 ---
 
-## 12.50 Recommendation Cost
+## 12.50 推薦コスト
 
 AI推薦はモデルサイズを大きくすれば必ず良くなるわけではない。
 
@@ -1393,7 +1393,7 @@ $$
 
 と考える。
 
-- $\Delta E$：EngagementやDiscovery価値の改善
+- $\Delta E$：Engagementや発見価値の改善
 - $C_{rec}$：推薦計算コスト
 
 音楽クリエーター中心では、クリック率だけでなく、
@@ -1406,58 +1406,58 @@ $$
 
 ---
 
-## 12.51 Privacy とAnalytics Cost
+## 12.51 プライバシーと分析コスト
 
 すべての生ログを永久保存しない。
 
 ```mermaid
 flowchart LR
-    RAW[Raw Events]
-    HOT[Hot Storage]
-    AGG[Aggregated Data]
-    ARCHIVE[Archive]
-    DELETE[Delete]
+    RAW[生のイベント]
+    HOT[ホットストレージ]
+    AGG[集約データ]
+    ARCHIVE[アーカイブ]
+    DELETE[削除]
 
     RAW --> HOT --> AGG
     HOT --> ARCHIVE
     HOT --> DELETE
 ```
 
-Retention PolicyはプライバシーだけでなくStorage Cost削減にも寄与する。
+保存期間ポリシーはプライバシーだけでなくストレージコスト削減にも寄与する。
 
 ---
 
-## 12.52 Development / Staging / Production
+## 12.52 開発・ステージング・本番
 
 環境を分離する。
 
 ```mermaid
 flowchart LR
-    DEV[Development]
-    STAGE[Staging]
-    PROD[Production]
+    DEV[開発]
+    STAGE[ステージング]
+    PROD[本番]
 
     DEV --> STAGE --> PROD
 ```
 
-ただしStagingをProductionと完全同一規模にすると費用が大きい。
+ただしステージングを本番と完全同一規模にすると費用が大きい。
 
-構成は近づけつつ、データ量・Compute規模を縮小する。
+構成は近づけつつ、データ量・コンピュート規模を縮小する。
 
 ---
 
-## 12.53 Infrastructure as Code
+## 12.53 インフラ as コード
 
 インフラ設定を手作業だけで管理しない。
 
 ```mermaid
 flowchart LR
     GIT[Git]
-    REVIEW[Review]
-    IAC[Infrastructure as Code]
-    PLAN[Plan]
-    APPLY[Apply]
-    CLOUD[Cloud]
+    REVIEW[レビュー]
+    IAC[インフラ as コード]
+    PLAN[計画]
+    APPLY[適用]
+    CLOUD[クラウド]
 
     GIT --> REVIEW --> IAC --> PLAN --> APPLY --> CLOUD
 ```
@@ -1466,23 +1466,23 @@ flowchart LR
 
 - 再現性
 - 監査
-- Disaster Recovery
-- AI Agentによる支援
+- 災害復旧
+- AI エージェントによる支援
 
 を容易にする。
 
 ---
 
-## 12.54 AI Agent とインフラ運用
+## 12.54 AI エージェントとインフラ運用
 
-AI Agentは、
+AI エージェントは、
 
 - Terraform等の変更案
 - CI/CD設定
-- Cost Report
+- コスト報告
 - Log Analysis
-- Performance Regression検出
-- Documentation更新
+- 実演 Regression検出
+- 文書更新
 
 を支援できる。
 
@@ -1490,22 +1490,22 @@ AI Agentは、
 
 ```mermaid
 flowchart LR
-    AI[AI Agent]
-    PR[Pull Request]
-    TEST[Automated Checks]
-    HUMAN[Human / Governance Review]
-    PROD[Production]
+    AI[AI エージェント]
+    PR[プルリクエスト]
+    TEST[自動検査]
+    HUMAN[人間 / ガバナンスレビュー]
+    PROD[本番]
 
     AI --> PR --> TEST --> HUMAN --> PROD
 ```
 
-とし、AIが本番Treasuryや重要Infrastructureを無制限に直接変更する構造にはしない。
+とし、AIが本番資金庫や重要インフラを無制限に直接変更する構造にはしない。
 
 ---
 
 ## 12.55 GitHub とインフラ
 
-Whitepaper、プロトコル仕様、スマートコントラクト、Infrastructure DefinitionをGitHubで関連付ける。
+ホワイトペーパー、プロトコル仕様、スマートコントラクト、インフラ DefinitionをGitHubで関連付ける。
 
 ```text
 creator-first-platform/
@@ -1520,41 +1520,41 @@ creator-first-platform/
 └── .github/
 ```
 
-将来的には、ホワイトペーパーの性能要件と実装上のSLOを同じRepositoryで追跡可能にする。
+将来的には、ホワイトペーパーの性能要件と実装上のSLOを同じリポジトリで追跡可能にする。
 
 ---
 
-## 12.56 Infrastructure Governance
+## 12.56 インフラガバナンス
 
 重要なインフラ変更をすべて二院制投票にかける必要はない。
 
 ```mermaid
 flowchart TD
-    CHANGE[Infrastructure Change]
+    CHANGE[インフラ変更]
 
-    CHANGE --> OPS[Operational]
-    CHANGE --> PROTOCOL[Protocol Critical]
-    CHANGE --> ECON[Economic / Governance Critical]
+    CHANGE --> OPS[運用事項]
+    CHANGE --> PROTOCOL[プロトコル重大]
+    CHANGE --> ECON[経済 / ガバナンス重大]
 
-    OPS --> TEAM[Engineering]
-    PROTOCOL --> REVIEW[Protocol Review]
+    OPS --> TEAM[エンジニアリング]
+    PROTOCOL --> REVIEW[プロトコルレビュー]
     ECON --> GOV[音楽クリエーター + ユーザガバナンス]
 ```
 
-例えばDBのIndex追加はEngineering判断でよい。
+例えばDBの索引追加はエンジニアリング判断でよい。
 
 一方、
 
-- Distribution Algorithm
-- Proof Verification
-- Treasury
-- Governance Executor
+- 分配アルゴリズム
+- 証明検証
+- 資金庫
+- ガバナンス実行者
 
 に影響する変更はプロトコルガバナンスと接続する。
 
 ---
 
-## 12.57 Performance Governance
+## 12.57 実演ガバナンス
 
 ユーザ体験を憲章上の理念と接続する。
 
@@ -1562,9 +1562,9 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    UX[Good UX]
-    USERS[ユーザ成長 / Retention]
-    REVENUE[Revenue]
+    UX[良好な UX]
+    USERS[ユーザ成長 / 保存期間]
+    REVENUE[収益]
     CREATOR[音楽クリエーターの持続可能性]
 
     UX --> USERS --> REVENUE --> CREATOR
@@ -1574,23 +1574,23 @@ flowchart LR
 
 ---
 
-## 12.58 Business Dashboard
+## 12.58 事業ダッシュボード
 
-経営とEngineeringが共通して見るDashboardを用意する。
+経営とエンジニアリングが共通して見るダッシュボードを用意する。
 
 ```mermaid
 flowchart TD
-    DASH[音楽クリエーター中心 Dashboard]
+    DASH[音楽クリエーター中心ダッシュボード]
 
-    DASH --> UX[Playback p95]
-    DASH --> USER[MAU / Paid ユーザ]
-    DASH --> CREATOR[Active 音楽クリエーター]
-    DASH --> PLAY[Listening Hours]
-    DASH --> COST[Infrastructure Cost]
-    DASH --> UNIT[Cost / ユーザ]
-    DASH --> MARGIN[Contribution Margin]
-    DASH --> PROOF[Proof Cost]
-    DASH --> FRAUD[Fraud Rate]
+    DASH --> UX[再生 p95]
+    DASH --> USER[MAU / 有料ユーザ]
+    DASH --> CREATOR[有効音楽クリエーター]
+    DASH --> PLAY[聴取時間]
+    DASH --> COST[インフラコスト]
+    DASH --> UNIT[コスト / ユーザ]
+    DASH --> MARGIN[貢献利益幅]
+    DASH --> PROOF[証明コスト]
+    DASH --> FRAUD[不正率]
 ```
 
 技術KPIと事業KPIを別々の世界にしない。
@@ -1603,55 +1603,55 @@ flowchart TD
 
 ### UX
 
-- Playback Start p50 / p95 / p99
+- 再生開始 p50 / p95 / p99
 - Buffering Ratio
-- Playback Error Rate
-- Search Latency
+- 再生 Error 率
+- 検索 Latency
 
-### Reliability
+### 信頼性
 
-- Availability
-- Error Rate
+- 可用性
+- Error 率
 - MTTR
-- Error Budget
+- Error 予算
 
-### Scale
+### 規模拡大
 
 - Concurrent ユーザ
-- Plays/s
-- Events/s
+- 再生回数/s
+- イベント/s
 - Proofs/day
 
-### Cost
+### コスト
 
-- Cost / MAU
-- Cost / Paid ユーザ
-- Cost / Play
-- Cost / Listening Hour
-- CDN Cost / Listening Hour
-- ZK Cost / Distribution Cycle
+- コスト / MAU
+- コスト / 有料ユーザ
+- コスト / Play
+- コスト / 聴取 Hour
+- CDN コスト / 聴取 Hour
+- ZK コスト / 分配 Cycle
 
 ### 音楽クリエーター経済
 
 - 音楽クリエーター分配 Ratio
-- Long Tail Listening Ratio
-- Active 音楽クリエーターCount
-- 新人音楽クリエーター発見 Rate
+- Long Tail 聴取 Ratio
+- 有効音楽クリエーターCount
+- 新人音楽クリエーター発見率
 
 を継続監視する。
 
 ---
 
-## 12.60 Scale Trigger
+## 12.60 規模拡大の判断条件
 
 「ユーザが増えそうだから」インフラを複雑化するのではなく、Triggerを定義する。
 
 ```mermaid
 flowchart LR
-    KPI[KPI Threshold]
-    REVIEW[Architecture Review]
-    SCALE[Scale Decision]
-    CHANGE[Infrastructure Change]
+    KPI[KPI しきい値]
+    REVIEW[アーキテクチャレビュー]
+    SCALE[規模拡大決定]
+    CHANGE[インフラ変更]
 
     KPI --> REVIEW --> SCALE --> CHANGE
 ```
@@ -1660,15 +1660,15 @@ flowchart LR
 
 - DB CPU p95 > 70%
 - API p95 > 300 ms
-- Queue Lag > 許容値
-- CDN Hit Ratio低下
-- Proof Queueが分配期限を超える
+- 一覧 Lag > 許容値
+- CDN ヒット Ratio低下
+- 証明一覧が分配期限を超える
 
 などをTriggerにする。
 
 ---
 
-## 12.61 MVP Infrastructure
+## 12.61 MVP インフラ
 
 MVPでは構成を意図的に小さくする。
 
@@ -1676,11 +1676,11 @@ MVPでは構成を意図的に小さくする。
 flowchart TD
     USER[ユーザ]
     CDN[CDN]
-    APP[App / API]
-    DB[(Managed DB)]
-    OBJECT[Object Storage]
-    EVENT[Managed Queue]
-    MON[Monitoring]
+    APP[アプリ / API]
+    DB[(マネージド DB)]
+    OBJECT[オブジェクトストレージ]
+    EVENT[マネージド一覧]
+    MON[監視]
 
     USER --> CDN
     USER --> APP
@@ -1690,24 +1690,24 @@ flowchart TD
     APP --> MON
 ```
 
-Managed Serviceを優先し、少人数チームがKubernetes等の複雑な基盤運用に時間を奪われないようにする。
+マネージドサービスを優先し、少人数チームがKubernetes等の複雑な基盤運用に時間を奪われないようにする。
 
 ---
 
-## 12.62 Growth Infrastructure
+## 12.62 成長インフラ
 
 利用規模拡大後、
 
 ```mermaid
 flowchart TD
-    EDGE[Global CDN / Edge]
-    API[Autoscaled API]
-    CACHE[Distributed Cache]
-    DB[(HA Database)]
-    SEARCH[Search]
-    STREAM[Event Streaming]
-    ANALYTICS[Analytics]
-    PROVER[ZK Prover Pool]
+    EDGE[国際 CDN / エッジ]
+    API[自動スケール API]
+    CACHE[分散キャッシュ]
+    DB[(HA データベース)]
+    SEARCH[検索]
+    STREAM[イベントストリーミング]
+    ANALYTICS[分析]
+    PROVER[ZK 証明者プール]
     L2[L2]
 
     EDGE --> API
@@ -1723,68 +1723,68 @@ flowchart TD
 
 ---
 
-## 12.63 Global Infrastructure
+## 12.63 国際インフラ
 
 国際展開時には、
 
-- CDN Edge
-- Data Residency
+- CDN エッジ
+- データ Residency
 - Latency
-- Rights Territory
-- Payment Region
-- Privacy Regulation
+- 権利地域
+- 決済地域
+- プライバシー規制
 
 を同時に考慮する。
 
 ```mermaid
 flowchart TD
-    GLOBAL[Global Service]
-    GLOBAL --> JP[Japan]
-    GLOBAL --> EU[Europe]
-    GLOBAL --> US[North America]
+    GLOBAL[国際サービス]
+    GLOBAL --> JP[日本]
+    GLOBAL --> EU[欧州]
+    GLOBAL --> US[北米]
 
-    JP --> EDGE1[Regional Edge]
-    EU --> EDGE2[Regional Edge]
-    US --> EDGE3[Regional Edge]
+    JP --> EDGE1[地域エッジ]
+    EU --> EDGE2[地域エッジ]
+    US --> EDGE3[地域エッジ]
 
-    GLOBAL --> CONTROL[Global Protocol / Governance]
+    GLOBAL --> CONTROL[国際プロトコル / ガバナンス]
 ```
 
-音声配信はEdgeへ分散しつつ、法務・権利・個人情報上必要なデータ境界を維持する。
+音声配信はエッジへ分散しつつ、法務・権利・個人情報上必要なデータ境界を維持する。
 
 ---
 
-## 12.64 Build vs Buy
+## 12.64 自社構築と外部調達
 
 すべてを自作しない。
 
 ```mermaid
 flowchart LR
-    FUNCTION[Function]
+    FUNCTION[機能]
     DIFFERENTIATOR{音楽クリエーター中心の<br/>競争力か?}
 
     FUNCTION --> DIFFERENTIATOR
-    DIFFERENTIATOR -->|Yes| BUILD[Build]
-    DIFFERENTIATOR -->|No| BUY[Managed / Partner]
+    DIFFERENTIATOR -->|はい| BUILD[ビルド]
+    DIFFERENTIATOR -->|No| BUY[マネージド / パートナー]
 ```
 
 自作価値が高い候補：
 
 - 音楽クリエーター経済
-- Rights Graph
-- Distribution Logic
-- Governance
-- Usage Proof
+- 権利 Graph
+- 分配 Logic
+- ガバナンス
+- 利用実績証明
 
 外部サービス活用候補：
 
 - CDN
-- Object Storage
-- Authentication
-- Monitoring
+- オブジェクトストレージ
+- 認証
+- 監視
 - Email
 - 決済
-- 一般的なCloud Infrastructure
+- 一般的なクラウドインフラ
 
 ---
 
@@ -1794,9 +1794,9 @@ flowchart LR
 
 1. 不要な処理をしない
 2. 不要なデータを保存しない
-3. Batch化する
-4. Cacheする
-5. Managed Serviceを適切に使う
+3. バッチ化する
+4. キャッシュする
+5. マネージドサービスを適切に使う
 6. Scale-to-zero可能なJobを分離する
 7. オンチェーン処理を最小化する
 8. 実測してから最適化する
@@ -1805,11 +1805,11 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    MEASURE[Measure]
-    IDENTIFY[Identify]
-    OPT[Optimize]
-    VERIFY[Verify UX]
-    SAVE[Cost Saving]
+    MEASURE[測定]
+    IDENTIFY[特定]
+    OPT[最適化]
+    VERIFY[検証 UX]
+    SAVE[コスト削減]
 
     MEASURE --> IDENTIFY --> OPT --> VERIFY --> SAVE
 ```
@@ -1820,13 +1820,13 @@ flowchart LR
 
 以下を安易なコスト削減対象にしない。
 
-- Backup
-- Security Monitoring
-- Rights Data Integrity
+- バックアップ
+- セキュリティ監視
+- 権利データ完全性
 - 音楽クリエーター支払 Accuracy
-- Critical Audit Logs
-- スマートコントラクト Audit
-- Incident Response
+- 重大監査ログ
+- スマートコントラクト監査
+- インシデント対応
 
 短期的なクラウド費削減のために、事業存続リスクを増やさない。
 
@@ -1841,10 +1841,10 @@ flowchart TD
     CONST[3つの憲章]
 
     CONST --> CREATOR[音楽クリエーターの持続可能性]
-    CONST --> USER[ユーザ体験 / Autonomy]
-    CONST --> FAIR[Fair Ecosystem]
+    CONST --> USER[ユーザ体験 / 自律性]
+    CONST --> FAIR[公正なエコシステム]
 
-    CREATOR --> INFRA[Infrastructure]
+    CREATOR --> INFRA[インフラ]
     USER --> INFRA
     FAIR --> INFRA
 ```
@@ -1857,7 +1857,7 @@ flowchart TD
 
 高速で安定した音楽体験とプライバシーを提供する。
 
-### Ecosystem
+### エコシステム
 
 新人・Long Tail作品を含めてスケール可能な基盤を提供する。
 
@@ -1870,33 +1870,33 @@ flowchart TD
     USER[ユーザ]
     CREATOR[音楽クリエーター]
 
-    USER --> EDGE[CDN / Edge]
-    CREATOR --> APP[音楽クリエーターApp]
+    USER --> EDGE[CDN / エッジ]
+    CREATOR --> APP[音楽クリエーターアプリ]
 
-    EDGE --> PLAYER[Player]
-    PLAYER --> API[Application API]
+    EDGE --> PLAYER[プレーヤー]
+    PLAYER --> API[アプリケーション API]
     APP --> API
 
-    API --> DB[(Operational DB)]
-    API --> SEARCH[Search]
-    API --> OBJECT[Object Storage]
+    API --> DB[(運用事項 DB)]
+    API --> SEARCH[検索]
+    API --> OBJECT[オブジェクトストレージ]
 
-    PLAYER --> EVENTS[Usage Events]
-    EVENTS --> STREAM[Event Stream]
-    STREAM --> VALID[Validation / Fraud Detection]
-    VALID --> ANALYTICS[Analytics / Aggregation]
+    PLAYER --> EVENTS[利用実績イベント]
+    EVENTS --> STREAM[イベントストリーム]
+    STREAM --> VALID[検証 / 不正検知]
+    VALID --> ANALYTICS[分析 / 集約]
 
-    ANALYTICS --> ROOT[Merkle Commitment]
-    ANALYTICS --> PROVER[ZK / STARK Prover]
+    ANALYTICS --> ROOT[Merkle コミットメント]
+    ANALYTICS --> PROVER[ZK / STARK 証明者]
 
-    ROOT --> L2[Blockchain / L2]
+    ROOT --> L2[ブロックチェーン / L2]
     PROVER --> L2
 
-    L2 --> DIST[Distribution]
-    L2 --> GOV[Governance]
-    L2 --> TREASURY[Treasury]
+    L2 --> DIST[分配]
+    L2 --> GOV[ガバナンス]
+    L2 --> TREASURY[資金庫]
 
-    OBS[Observability / FinOps] --> API
+    OBS[可観測性 / FinOps] --> API
     OBS --> STREAM
     OBS --> PROVER
     OBS --> L2
@@ -1911,13 +1911,13 @@ flowchart TD
 $$
 \text{ユーザ}
 \rightarrow
-\text{Listening}
+\text{聴取}
 \rightarrow
-\text{Infrastructure Load}
+\text{インフラ負荷}
 \rightarrow
-\text{Cost}
+\text{コスト}
 \rightarrow
-\text{Revenue}
+\text{収益}
 \rightarrow
 \text{音楽クリエーター分配}
 $$
@@ -1925,10 +1925,10 @@ $$
 ```mermaid
 flowchart LR
     USERS[ユーザ]
-    LISTEN[Listening]
-    LOAD[Infrastructure Load]
-    COST[Cost]
-    REV[Revenue]
+    LISTEN[聴取]
+    LOAD[インフラ負荷]
+    COST[コスト]
+    REV[収益]
     DIST[音楽クリエーター分配]
 
     USERS --> LISTEN --> LOAD --> COST
@@ -1952,29 +1952,29 @@ Creator First Platform のインフラは、
 
 だけでもない。
 
-音楽再生のリアルタイム処理、Rights Management、Usage Pipeline、ZK Proof、Blockchain、Governance、Treasuryを、それぞれ異なる性能・信頼性・コスト要件で組み合わせる。
+音楽再生のリアルタイム処理、権利管理、利用実績パイプライン、ZK 証明、ブロックチェーン、ガバナンス、資金庫を、それぞれ異なる性能・信頼性・コスト要件で組み合わせる。
 
 基本原則は、
 
-- PlaybackをBlockchainやZKの待ち時間から分離する
-- AudioはObject Storage + CDNで配信する
-- Usage Eventは非同期処理する
-- 個別再生をオンチェーン化せずBatch + Commitment + Proofを利用する
+- 再生をブロックチェーンやZKの待ち時間から分離する
+- 音声はオブジェクトストレージ + CDNで配信する
+- 利用実績イベントは非同期処理する
+- 個別再生をオンチェーン化せずバッチ + コミットメント + 証明を利用する
 - ZK/STARKは段階導入する
-- Blockchain処理を必要最小限にする
+- ブロックチェーン処理を必要最小限にする
 - p50/p95/p99とSLOでUXを管理する
-- Cost / ユーザ、Cost / Play、Cost / Listening Hourを測る
-- 音楽クリエーター分配とInfrastructure Costを同じ事業モデルで管理する
-- 成長に応じて段階的にInfrastructureを拡張する
+- コスト / ユーザ、コスト / Play、コスト / 聴取 Hourを測る
+- 音楽クリエーター分配とインフラコストを同じ事業モデルで管理する
+- 成長に応じて段階的にインフラを拡張する
 
 ことである。
 
 ```mermaid
 flowchart LR
     UX[ユーザ体験]
-    SCALE[Scalability]
-    VERIFY[Verifiability]
-    COST[Cost Efficiency]
+    SCALE[拡張性]
+    VERIFY[検証可能性]
+    COST[コスト効率]
     CREATOR[音楽クリエーターの持続可能性]
 
     UX --> CREATOR
@@ -1996,15 +1996,15 @@ Creator First Platform において、インフラ効率は単なる技術上の
 本章の数式を実際の事業計画へ利用するため、次段階ではSpreadsheet等で、
 
 - MAU
-- Paid ユーザ
+- 有料ユーザ
 - 月額料金
-- Listening Hours
+- 聴取時間
 - 平均Bitrate
 - CDN単価
-- Cloud Compute
-- Database
-- ZK Proof Cost
-- L2 Gas
+- クラウドコンピュート
+- データベース
+- ZK 証明コスト
+- L2 ガス
 - 音楽クリエーター分配 Ratio
 - 決済手数料
 - 人件費
@@ -2014,27 +2014,27 @@ Creator First Platform において、インフラ効率は単なる技術上の
 そこから、
 
 $$
-Revenue
+収益
 $$
 
 $$
-Infrastructure\ Cost
+インフラ\ コスト
 $$
 
 $$
-音楽クリエーター\ Distribution
+音楽クリエーター\ 分配
 $$
 
 $$
-Contribution\ Margin
+貢献\ 利益幅
 $$
 
 $$
-Cost\ per\ ユーザ
+コスト\ per\ ユーザ
 $$
 
 $$
-Cost\ per\ Listening\ Hour
+コスト\ per\ 聴取\ Hour
 $$
 
 を自動計算する。

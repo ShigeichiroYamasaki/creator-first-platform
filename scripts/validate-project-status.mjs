@@ -30,9 +30,13 @@ async function filesMatching(directory, suffix) {
   return files.sort()
 }
 
-function metadata(source, label) {
-  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  return source.match(new RegExp(`^\\*\\*${escaped}:\\*\\*\\s+(.+?)\\s*$`, 'm'))?.[1]
+function metadata(source, ...labels) {
+  for (const label of labels) {
+    const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const value = source.match(new RegExp(`^\\*\\*${escaped}:\\*\\*\\s+(.+?)\\s*$`, 'm'))?.[1]
+    if (value) return value
+  }
+  return undefined
 }
 
 function tableRow(source, label) {
@@ -76,9 +80,9 @@ const adrStatuses = new Set()
 const sourceDates = []
 for (const file of adrFiles) {
   const source = await readFile(file, 'utf8')
-  const status = metadata(source, 'Status')
-  const date = metadata(source, 'Date')
-  const lastUpdated = metadata(source, 'Last Updated')
+  const status = metadata(source, 'Status', '状態')
+  const date = metadata(source, 'Date', '日付')
+  const lastUpdated = metadata(source, 'Last Updated', '最終更新日')
   if (!status) errors.push(`${file}: missing Status metadata`)
   else adrStatuses.add(status)
   if (!isoDate(date)) errors.push(`${file}: missing or invalid Date metadata`)
@@ -127,7 +131,7 @@ if (!adrRow) {
   }
 }
 
-const protocolRow = tableRow(statusSource, 'Protocol')
+const protocolRow = tableRow(statusSource, 'Protocol') ?? tableRow(statusSource, 'プロトコル')
 if (!protocolRow) {
   errors.push('docs/status.md: missing Protocol maturity row')
 } else {
@@ -137,7 +141,8 @@ if (!protocolRow) {
     errors.push('protocol specifications must share one Status and Version for the maturity summary')
   } else {
     const expectedStatus = `${expectedStatuses[0]} ${expectedVersions[0]}`
-    if (protocolRow.status !== expectedStatus) {
+    const localizedStatus = `${expectedStatuses[0] === 'Draft' ? '草案' : expectedStatuses[0]} ${expectedVersions[0]}`
+    if (![expectedStatus, localizedStatus].includes(protocolRow.status)) {
       errors.push(`docs/status.md: Protocol status ${protocolRow.status} does not match ${expectedStatus}`)
     }
   }

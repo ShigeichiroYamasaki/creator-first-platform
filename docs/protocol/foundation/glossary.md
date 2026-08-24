@@ -1,6 +1,6 @@
 ---
-title: Protocol Glossary
-description: Participant、Account、Wallet、Rights、Payment、Governance等のProtocol共通語彙。
+title: プロトコル用語集
+description: 参加者、アカウント、ウォレット、権利、決済、ガバナンス等のプロトコル共通語彙。
 editLink: false
 ---
 

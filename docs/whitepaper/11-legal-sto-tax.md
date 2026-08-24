@@ -2,7 +2,7 @@
 description: 株式会社、DAO、著作権・原盤権、ステーブルコイン決済、STO、税務と雇用の責任分界と確認事項。
 ---
 
-# 11. 法務・STO・税務 — Legal, STO & Tax
+# 11. 法務・STO・税務
 
 > [!IMPORTANT]
 > 本章は Creator First Platform の制度設計を整理するためのホワイトペーパー案であり、個別案件についての法律・税務上の助言ではない。サービス開始、STO実施、ステーブルコイン決済、海外展開に際しては、弁護士、公認会計士・税理士、金融規制の専門家、関係事業者との確認を前提とする。
@@ -21,13 +21,13 @@ Creator First Platform は、単なるソフトウェア・プロトコルでは
 flowchart TD
     CONST[3つの憲章]
     PARL[音楽クリエータ院議会 + ユーザ院議会]
-    CODE[スマートコントラクト / Protocol]
+    CODE[スマートコントラクト / プロトコル]
     CORP[株式会社]
     USERS[ユーザ]
     CREATORS[音楽クリエーター]
     RIGHTS[著作権・著作隣接権]
-    MONEY[Subscription / Settlement]
-    STO[STO / Equity Financing]
+    MONEY[サブスクリプション / 精算]
+    STO[STO / 株式による資金調達]
 
     CONST --> PARL
     PARL --> CODE
@@ -72,8 +72,8 @@ flowchart TD
 ```mermaid
 flowchart LR
     REAL[現実社会]
-    CORP[Operating Corporation]
-    PROTOCOL[音楽クリエーター中心 Protocol]
+    CORP[運営株式会社]
+    PROTOCOL[音楽クリエーター中心プロトコル]
 
     REAL --> CORP --> PROTOCOL
 ```
@@ -82,7 +82,7 @@ flowchart LR
 
 したがって、
 
-> **Code = Law は「国家法をコードが置き換える」という意味ではなく、プラットフォーム内部の分配・Treasury・プロトコル変更について、承認されたコードを規範として実行する**
+> **コード = 法令は「国家法をコードが置き換える」という意味ではなく、プラットフォーム内部の分配・資金庫・プロトコル変更について、承認されたコードを規範として実行する**
 
 という意味で用いる。
 
@@ -99,7 +99,7 @@ flowchart TD
     CONTRACT[定款・契約・利用規約]
     GOV[二院制ガバナンス]
     SPEC[プロトコル仕様]
-    CODE[スマートコントラクト Code]
+    CODE[スマートコントラクトコード]
 
     LAW --> CHARTER
     CHARTER --> CONTRACT
@@ -151,16 +151,16 @@ Creator First Platform は少なくとも、
 - 実演家の著作隣接権
 - レコード製作者の著作隣接権
 
-を区別してRights Metadataを管理する。
+を区別して権利メタデータを管理する。
 
 ```mermaid
 flowchart LR
-    CONTENT[Content ID]
-    RIGHTS[Rights Graph]
+    CONTENT[コンテンツ ID]
+    RIGHTS[権利 Graph]
 
-    RIGHTS --> COPYRIGHT[Copyright]
-    RIGHTS --> PERFORMER[Performer Rights]
-    RIGHTS --> MASTER[Master / Record Producer Rights]
+    RIGHTS --> COPYRIGHT[著作権]
+    RIGHTS --> PERFORMER[実演家権利]
+    RIGHTS --> MASTER[原盤 / 記録製作者権利]
 
     CONTENT --> RIGHTS
 ```
@@ -169,21 +169,21 @@ flowchart LR
 
 ---
 
-## 11.6 Rights Registry と法的権利
+## 11.6 権利登録台帳と法的権利
 
-オンチェーンのRights Registryは、法的権利そのものを自動的に創設するものではない。
+オンチェーンの権利登録台帳は、法的権利そのものを自動的に創設するものではない。
 
 ```mermaid
 flowchart LR
     LEGAL[契約・著作権法上の権利]
-    VERIFY[Rights Verification]
-    REG[Protocol Rights Registry]
-    DIST[Distribution]
+    VERIFY[権利検証]
+    REG[プロトコル権利登録台帳]
+    DIST[分配]
 
     LEGAL --> VERIFY --> REG --> DIST
 ```
 
-Registryは、
+登録台帳は、
 
 > **確認された権利・契約状態をプロトコルが処理できる形で表現する**
 
@@ -191,7 +191,7 @@ Registryは、
 
 ---
 
-## 11.7 音楽クリエーター登録 と契約
+## 11.7 音楽クリエーター登録と契約
 
 音楽クリエーター登録では、
 
@@ -208,11 +208,11 @@ Registryは、
 ```mermaid
 flowchart LR
     APPLY[音楽クリエーター]
-    KYC[Identity]
-    RIGHTS[Rights]
-    AGREEMENT[Agreement]
-    REGISTRY[Rights Registry]
-    DISTRIBUTION[Distribution]
+    KYC[アイデンティティ]
+    RIGHTS[権利]
+    AGREEMENT[契約]
+    REGISTRY[権利登録台帳]
+    DISTRIBUTION[分配]
 
     APPLY --> KYC --> RIGHTS --> AGREEMENT --> REGISTRY --> DISTRIBUTION
 ```
@@ -228,10 +228,10 @@ Creator First Platform が第三者から著作権・著作隣接権の管理を
 ```mermaid
 flowchart TD
     CREATOR[権利者]
-    PLATFORM[Platform]
+    PLATFORM[プラットフォーム]
 
     CREATOR -->|単なる配信契約| PLATFORM
-    CREATOR -->|権利管理を委託| MGMT[Rights Management Function]
+    CREATOR -->|権利管理を委託| MGMT[権利管理機能]
 
     MGMT --> REVIEW[管理事業該当性を法務確認]
 ```
@@ -251,9 +251,9 @@ flowchart TD
 ```mermaid
 flowchart LR
     CREATOR[音楽クリエーター]
-    CMO[Rights Management Organization]
+    CMO[権利管理組織]
     CFP[Creator First Platform]
-    USER[Listener]
+    USER[ユーザ]
 
     CREATOR --> CMO
     CREATOR --> CFP
@@ -261,7 +261,7 @@ flowchart LR
     CFP --> USER
 ```
 
-のように、既存の著作権等管理事業者と連携しつつ、Creator First Platformは独自の音楽クリエーター経済とRights Metadataを構築する方法が考えられる。
+のように、既存の著作権等管理事業者と連携しつつ、Creator First Platformは独自の音楽クリエーター経済と権利メタデータを構築する方法が考えられる。
 
 これにより、既存の権利処理インフラを無視してゼロから作り直す必要がない。
 
@@ -281,11 +281,11 @@ flowchart LR
 ```mermaid
 flowchart TD
     USER[ユーザ支払]
-    USER --> SUB[Subscription Fee]
-    USER --> BALANCE[Stored Balance]
-    USER --> TRANSFER[Transferable Value]
+    USER --> SUB[サブスクリプション手数料]
+    USER --> BALANCE[預り残高]
+    USER --> TRANSFER[移転可能な価値]
 
-    SUB --> SERVICE[Service Revenue]
+    SUB --> SERVICE[サービス収益]
     BALANCE --> REVIEW1[前払式支払手段等の検討]
     TRANSFER --> REVIEW2[資金移動・電子決済手段等の検討]
 ```
@@ -318,9 +318,9 @@ Creator First Platform が、
 ```mermaid
 flowchart LR
     USER[ユーザ]
-    REG[Registered Payment / Stablecoin Provider]
+    REG[登録済み決済 / ステーブルコイン事業者]
     CFP[Creator First Platform]
-    CONTRACT[Distribution Contract]
+    CONTRACT[分配コントラクト]
     CREATOR[音楽クリエーター]
 
     USER --> REG --> CFP
@@ -333,7 +333,7 @@ flowchart LR
 
 構造を基本候補とする。
 
-オンチェーンSubscriptionではJPYC等の承認済みステーブルコインをサービス料金とし、ETH等のNative TokenはNetwork Feeとして分離する。RelayerまたはPaymasterがGasを負担しても、それ自体をユーザの支払い、売上、寄附、SBT資格または音楽クリエーターへの分配額として扱わない。テスト系の`MockJPYC`は金銭的価値、償還請求権および実在JPYCとの交換可能性を持たないことを明示する。
+オンチェーンサブスクリプションではJPYC等の承認済みステーブルコインをサービス料金とし、ETH等のネイティブトークンはネットワーク手数料として分離する。リレイヤーまたはペイマスターがガスを負担しても、それ自体をユーザの支払い、売上、寄附、SBT資格または音楽クリエーターへの分配額として扱わない。テスト系の`MockJPYC`は金銭的価値、償還請求権および実在JPYCとの交換可能性を持たないことを明示する。
 
 ---
 
@@ -353,7 +353,7 @@ JPYC等の円建てステーブルコインを採用候補とする場合でも�
 - 償還構造
 - 保管主体
 - 移転方法
-- Platformが行う行為
+- プラットフォームが行う行為
 - ユーザ資金の保有主体
 
 を確認する。
@@ -364,23 +364,23 @@ JPYC等の円建てステーブルコインを採用候補とする場合でも�
 
 ---
 
-## 11.13 Custody を避ける設計
+## 11.13 カストディを避ける設計
 
-可能であれば、ユーザ・音楽クリエーターの資産をPlatformが長期間保管しない。
+可能であれば、ユーザ・音楽クリエーターの資産をプラットフォームが長期間保管しない。
 
 ```mermaid
 flowchart LR
     USER[ユーザ / PSP]
-    CONTRACT[Protocol]
-    CREATOR[音楽クリエーターウォレット / Payout Provider]
+    CONTRACT[プロトコル]
+    CREATOR[音楽クリエーターウォレット / 分配事業者]
 
     USER --> CONTRACT --> CREATOR
 
-    PLATFORM[Operating Corporation]
+    PLATFORM[運営株式会社]
     PLATFORM -.->|管理・検証| CONTRACT
 ```
 
-ただし、スマートコントラクトに資金を置けば自動的に「Platformは資金を管理していない」と評価されるわけではない。
+ただし、スマートコントラクトに資金を置けば自動的に「プラットフォームは資金を管理していない」と評価されるわけではない。
 
 管理鍵、アップグレード権限、実質的支配、契約関係を含めて法的評価する。
 
@@ -400,11 +400,11 @@ Creator First Platform の資金調達では、STOを、
 
 ```mermaid
 flowchart LR
-    INVESTOR[Investor]
-    STO[Security Token Offering]
-    EQUITY[Equity / Security]
+    INVESTOR[投資家]
+    STO[セキュリティトークン募集]
+    EQUITY[株式 / セキュリティ]
     CORP[株式会社]
-    CAPITAL[Growth Capital]
+    CAPITAL[成長資本]
 
     INVESTOR --> STO --> EQUITY --> CORP --> CAPITAL
 ```
@@ -413,18 +413,18 @@ flowchart LR
 
 ---
 
-## 11.15 Security Token
+## 11.15 セキュリティトークン
 
-Security Tokenは、ブロックチェーン上に記録されるから証券になるのではない。
+セキュリティトークンは、ブロックチェーン上に記録されるから証券になるのではない。
 
 基礎となる権利が株式、社債、集団投資スキーム持分等の金融商品としての性質を持つ場合に、金融商品取引法上の規制を検討する。
 
 ```mermaid
 flowchart TD
-    TOKEN[Token]
-    RIGHT[Underlying Legal Right]
-    CLASS[Legal Classification]
-    RULE[Applicable Regulation]
+    TOKEN[トークン]
+    RIGHT[裏付け法務権利]
+    CLASS[法務分類]
+    RULE[適用規制]
 
     TOKEN --> RIGHT --> CLASS --> RULE
 ```
@@ -451,10 +451,10 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    CORP[Issuer]
-    FIRM[Regulated Financial Firm]
-    INVESTOR[Investor]
-    ST[Security Token]
+    CORP[発行者]
+    FIRM[規制対象財務事業者]
+    INVESTOR[投資家]
+    ST[セキュリティトークン]
 
     CORP --> FIRM --> INVESTOR
     CORP --> ST
@@ -465,13 +465,13 @@ flowchart LR
 
 ## 11.17 STOを自前販売しない
 
-初期段階では、運営会社が独力で一般投資家へSecurity Tokenを販売する構造を前提にしない。
+初期段階では、運営会社が独力で一般投資家へセキュリティトークンを販売する構造を前提にしない。
 
 ```mermaid
 flowchart LR
-    CFP[音楽クリエーター中心 Corp.]
-    PARTNER[Licensed / Regulated Partner]
-    INVESTOR[Investors]
+    CFP[音楽クリエーター中心株式会社]
+    PARTNER[許認可・規制対象パートナー]
+    INVESTOR[投資家]
 
     CFP --> PARTNER --> INVESTOR
 ```
@@ -480,21 +480,21 @@ flowchart LR
 
 ---
 
-### 11.17.1 Early Supporter SBTとSTOの分離
+### 11.17.1 初期サポーター SBTとSTOの分離
 
-Early Supporter SBTは、初期の発見、支援またはCommunity参加を示す譲渡不能なCredentialとして設計できる。ただし、その名称や非譲渡性だけで法的性質が決まるものではなく、発行対価、対象者、付与されるサービス、投資との関係および実際の経済的価値を含む実態を確認する。
+初期サポーター SBTは、初期の発見、支援またはコミュニティ参加を示す譲渡不能な資格証明として設計できる。ただし、その名称や非譲渡性だけで法的性質が決まるものではなく、発行対価、対象者、付与されるサービス、投資との関係および実際の経済的価値を含む実態を確認する。
 
-Community CredentialとしてのSBTは、次のものから明確に分離する。
+コミュニティ資格証明としてのSBTは、次のものから明確に分離する。
 
-- Security Tokenおよび株主権
+- セキュリティトークンおよび株主権
 - 投資元本または将来収益への請求権
-- 音楽クリエーター収益またはDistribution Poolへの参加権
-- Security Token保有量に応じた特典
+- 音楽クリエーター収益または分配プールへの参加権
+- セキュリティトークン保有量に応じた特典
 - プロトコルガバナンスの議決権
 
-SBTがストリーミングサービスの特権を表す場合、通常のSubscription契約、対象コンテンツのRights、利用地域、期間、品質および取消条件を利用規約とPrivilege Policyで明示する。SBT保有だけを無制限または永久の再生権とせず、株式会社が消費者対応、表示、会計・税務、権利許諾、失効およびWallet回復の責任を負う。
+SBTがストリーミングサービスの特権を表す場合、通常のサブスクリプション契約、対象コンテンツの権利、利用地域、期間、品質および取消条件を利用規約と特権ポリシーで明示する。SBT保有だけを無制限または永久の再生権とせず、株式会社が消費者対応、表示、会計・税務、権利許諾、失効およびウォレット回復の責任を負う。
 
-特にSTOの申込者または投資家だけにSBTを付与する場合、SBTが募集条件、現物での利益、投資家への付帯サービスまたは開示対象となる可能性を、募集前に金融規制、会計・税務および消費者保護の専門家と個別に確認する。その確認が完了するまで、Early Supporter SBTの資格をSTOへの出資額またはSecurity Token保有へ連動させない。
+特にSTOの申込者または投資家だけにSBTを付与する場合、SBTが募集条件、現物での利益、投資家への付帯サービスまたは開示対象となる可能性を、募集前に金融規制、会計・税務および消費者保護の専門家と個別に確認する。その確認が完了するまで、初期サポーター SBTの資格をSTOへの出資額またはセキュリティトークン保有へ連動させない。
 
 ## 11.18 STO と株主権
 
@@ -511,10 +511,10 @@ STOを株式会社の株式と接続する場合、
 
 ```mermaid
 flowchart LR
-    TOKEN[Security Token]
-    SHARE[Legal Share Rights]
-    REGISTER[Corporate Records]
-    HOLDER[Shareholder]
+    TOKEN[セキュリティトークン]
+    SHARE[法務比率権利]
+    REGISTER[法人記録]
+    HOLDER[株主]
 
     TOKEN --> SHARE --> REGISTER --> HOLDER
 ```
@@ -527,26 +527,26 @@ flowchart LR
 
 Creator First Platform では、二つのガバナンスを区別する。
 
-### Corporate Governance
+### 法人ガバナンス
 
 株主、取締役、株主総会等による株式会社の統治。
 
 ### プロトコルガバナンス
 
-音楽クリエータ院議会 と ユーザ院議会 によるコード・プロトコルの統治。
+音楽クリエータ院議会とユーザ院議会によるコード・プロトコルの統治。
 
 ```mermaid
 flowchart TD
     CORP[株式会社]
 
-    CORP --> CG[Corporate Governance]
+    CORP --> CG[法人ガバナンス]
     CORP --> PG[プロトコルガバナンス]
 
-    CG --> SHARE[Shareholders / Board]
+    CG --> SHARE[株主・取締役会]
     PG --> CH[音楽クリエータ院議会]
     PG --> UH[ユーザ院議会]
 
-    CH --> CODE[Protocol Code]
+    CH --> CODE[プロトコルコード]
     UH --> CODE
 ```
 
@@ -564,8 +564,8 @@ Creator First Platform の重要な原則の一つは、
 
 ```mermaid
 flowchart LR
-    CAPITAL[Capital Power]
-    CORPORATE[Corporate Governance]
+    CAPITAL[資本権力]
+    CORPORATE[法人ガバナンス]
 
     COMMUNITY[音楽クリエーター + ユーザ]
     PROTOCOL[プロトコルガバナンス]
@@ -582,7 +582,7 @@ flowchart LR
 
 ---
 
-## 11.21 Code = Law と法的責任
+## 11.21 「コードは法である」と法的責任
 
 スマートコントラクトが自動的に実行したとしても、
 
@@ -594,8 +594,8 @@ flowchart LR
 flowchart TD
     GOV[ガバナンス決定]
     CODE[スマートコントラクト]
-    EFFECT[Legal / Economic Effect]
-    RESPONSIBILITY[Legal Responsibility]
+    EFFECT[法務 / 経済効果]
+    RESPONSIBILITY[法務責任]
 
     GOV --> CODE --> EFFECT
     EFFECT --> RESPONSIBILITY
@@ -619,13 +619,13 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    TAX[Tax Structure]
+    TAX[税務構造]
 
-    TAX --> CORP[Corporation]
+    TAX --> CORP[株式会社]
     TAX --> CREATOR[音楽クリエーター]
     TAX --> USER[ユーザ]
-    TAX --> INVESTOR[Investor]
-    TAX --> CROSS[Cross-border]
+    TAX --> INVESTOR[投資家]
+    TAX --> CROSS[国境を越える取引]
 ```
 
 スマートコントラクトで自動分配しても課税関係が消えるわけではない。
@@ -634,7 +634,7 @@ flowchart TD
 
 ## 11.23 株式会社の収益認識
 
-サブスクリプション料金の全額を会社の売上とするのか、音楽クリエーター分を預り・代理回収的に扱うのかは、契約と会計上のPrincipal / Agent評価等に依存する。
+サブスクリプション料金の全額を会社の売上とするのか、音楽クリエーター分を預り・代理回収的に扱うのかは、契約と会計上のPrincipal / エージェント評価等に依存する。
 
 概念的に、
 
@@ -646,18 +646,18 @@ $$
 
 - $S$：ユーザからの料金
 - $C$：音楽クリエーター等への分配原資
-- $P$：Platform Revenue
-- $O$：その他の費用・Pool
+- $P$：プラットフォーム収益
+- $O$：その他の費用・プール
 
 しかし、この経済モデル上の分解と会計上の売上認識は同一とは限らない。
 
 ```mermaid
 flowchart LR
-    SUB[Subscription]
-    ACCOUNTING[Accounting Assessment]
-    REV[Revenue]
-    LIABILITY[Liability / Payable]
-    POOL[Other Allocation]
+    SUB[サブスクリプション]
+    ACCOUNTING[会計評価]
+    REV[収益]
+    LIABILITY[債務 / 未払金]
+    POOL[その他配分]
 
     SUB --> ACCOUNTING
     ACCOUNTING --> REV
@@ -684,26 +684,26 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    DIST[Distribution]
-    CLASS[Tax Classification]
-    WITHHOLD[Withholding if applicable]
-    PAY[Net Payment]
-    REPORT[Tax / Accounting Record]
+    DIST[分配]
+    CLASS[税務分類]
+    WITHHOLD[必要な場合の源泉徴収]
+    PAY[純額決済]
+    REPORT[税務 / 会計記録]
 
     DIST --> CLASS --> WITHHOLD --> PAY
     CLASS --> REPORT
 ```
 
-スマートコントラクトで「Gross Amountを即時送金」する設計は、源泉徴収等が必要な場合に実務と衝突し得る。
+スマートコントラクトで「総額 Amountを即時送金」する設計は、源泉徴収等が必要な場合に実務と衝突し得る。
 
 ---
 
-## 11.25 Tax-aware Distribution
+## 11.25 税務考慮型分配
 
 したがって、分配エンジンは単純な、
 
 $$
-\text{Wallet}_i \leftarrow D_i
+\text{ウォレット}_i \leftarrow D_i
 $$
 
 ではなく、
@@ -714,17 +714,17 @@ $$
 
 のような構造を扱える必要がある。
 
-- $G_i$：Gross Distribution
+- $G_i$：総額分配
 - $W_i$：必要な源泉徴収等
 - $A_i$：その他の調整
-- $N_i$：Net Distribution
+- $N_i$：純額分配
 
 ```mermaid
 flowchart LR
-    GROSS[Gross Distribution]
-    TAX[Tax / Withholding Logic]
-    NET[Net Payment]
-    RECORD[Accounting Record]
+    GROSS[総額分配]
+    TAX[税務 / 源泉徴収ロジック]
+    NET[純額決済]
+    RECORD[会計記録]
 
     GROSS --> TAX --> NET
     TAX --> RECORD
@@ -738,7 +738,7 @@ flowchart LR
 
 ステーブルコインで決済しても、会計・税務上、
 
-> 「1 Token = 1円だから何も記録しなくてよい」
+> 「1 トークン = 1円だから何も記録しなくてよい」
 
 とはならない。
 
@@ -750,16 +750,16 @@ flowchart LR
 - 償還
 - 手数料
 - 時点ごとの帳簿価額
-- Wallet / Transaction ID
+- ウォレット / トランザクション ID
 
 を会計システムと照合可能にする。
 
 ```mermaid
 flowchart LR
-    CHAIN[Blockchain Transaction]
-    LEDGER[Internal Ledger]
-    ACCOUNT[Accounting]
-    RECON[Reconciliation]
+    CHAIN[ブロックチェーントランザクション]
+    LEDGER[内部台帳]
+    ACCOUNT[会計]
+    RECON[照合]
 
     CHAIN --> RECON
     LEDGER --> RECON
@@ -772,7 +772,7 @@ flowchart LR
 
 Creator First Platform では、
 
-- Security Token
+- セキュリティトークン
 - 電子決済手段としてのステーブルコイン
 - 暗号資産
 
@@ -780,15 +780,15 @@ Creator First Platform では、
 
 ```mermaid
 flowchart TD
-    TOKEN[Digital Token]
+    TOKEN[デジタルトークン]
 
-    TOKEN --> ST[Security Token]
-    TOKEN --> STABLE[Stablecoin / Electronic Payment Instrument]
-    TOKEN --> CRYPTO[Crypto Asset]
+    TOKEN --> ST[セキュリティトークン]
+    TOKEN --> STABLE[ステーブルコイン / 電子決済手段]
+    TOKEN --> CRYPTO[暗号資産資産]
 
-    ST --> RULE1[Financial Instruments Rules]
-    STABLE --> RULE2[Payment Services Rules]
-    CRYPTO --> RULE3[Crypto Asset Rules]
+    ST --> RULE1[財務商品ルール]
+    STABLE --> RULE2[決済サービスルール]
+    CRYPTO --> RULE3[暗号資産資産ルール]
 ```
 
 暗号資産および電子決済手段の税務上の取扱いは、改正法令・通達・国税庁FAQの更新を確認する。将来暗号資産を利用する場合には、取引時点の適用法令、対象資産、取引主体、取引類型を個別に確認する。
@@ -810,9 +810,9 @@ STOの税務は、トークンという名称ではなく基礎となる証券�
 
 ```mermaid
 flowchart LR
-    ST[Security Token]
-    RIGHT[Underlying Security]
-    TAX[Tax Treatment]
+    ST[セキュリティトークン]
+    RIGHT[裏付けセキュリティ]
+    TAX[税務取扱い]
 
     ST --> RIGHT --> TAX
 ```
@@ -827,11 +827,11 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    JP[Japan Corporation]
-    JP --> U1[Japan ユーザ]
+    JP[日本株式会社]
+    JP --> U1[日本ユーザ]
     JP --> U2[EU ユーザ]
     JP --> U3[US ユーザ]
-    JP --> C1[Japan 音楽クリエーター]
+    JP --> C1[日本音楽クリエーター]
     JP --> C2[Overseas 音楽クリエーター]
 ```
 
@@ -856,9 +856,9 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    JP[Phase 1<br/>Japan]
-    REGION[Phase 2<br/>Selected Markets]
-    GLOBAL[Phase 3<br/>Global]
+    JP[フェーズ 1<br/>日本]
+    REGION[フェーズ 2<br/>選定市場]
+    GLOBAL[フェーズ 3<br/>国際]
 
     JP --> REGION --> GLOBAL
 ```
@@ -875,11 +875,11 @@ STO、ステーブルコイン、国際的な資金移転を扱う場合、AML/C
 
 ```mermaid
 flowchart LR
-    USER[Participant]
-    VERIFY[Required Verification]
-    SCREEN[Sanctions / Risk Screening]
-    TX[Transaction]
-    MON[Monitoring]
+    USER[参加者]
+    VERIFY[必要検証]
+    SCREEN[Sanctions / リスク審査]
+    TX[トランザクション]
+    MON[監視]
 
     USER --> VERIFY --> SCREEN --> TX --> MON
 ```
@@ -898,41 +898,41 @@ Creator First Platform が扱う情報には、
 - 音楽クリエーター本人確認情報
 - 再生履歴
 - 検索・推薦履歴
-- Community活動
+- コミュニティ活動
 
 などが含まれる。
 
 ```mermaid
 flowchart TD
-    DATA[Personal Data]
-    DATA --> MIN[Data Minimization]
-    DATA --> PURPOSE[Purpose Limitation]
-    DATA --> ACCESS[Access Control]
-    DATA --> RETAIN[Retention]
-    DATA --> DELETE[Deletion]
+    DATA[個人データ]
+    DATA --> MIN[データ最小化]
+    DATA --> PURPOSE[目的限定]
+    DATA --> ACCESS[アクセス制御]
+    DATA --> RETAIN[保存期間]
+    DATA --> DELETE[削除]
 ```
 
 ブロックチェーンへ個人情報を直接記録すると削除・訂正が困難になるため、原則として避ける。
 
 ---
 
-## 11.33 Blockchain と個人情報
+## 11.33 ブロックチェーンと個人情報
 
 オンチェーンには、
 
-- Hash
-- Commitment
-- Proof
-- Protocol State
+- ハッシュ
+- コミットメント
+- 証明
+- プロトコル状態
 
 など、必要最小限の検証情報を置く。
 
 ```mermaid
 flowchart LR
-    PERSONAL[Personal / Usage Data]
-    OFF[Off-chain Protected Storage]
-    ZK[ZK / Commitment]
-    CHAIN[Blockchain]
+    PERSONAL[個人 / 利用実績データ]
+    OFF[オフチェーン保護済みストレージ]
+    ZK[ZK / コミットメント]
+    CHAIN[ブロックチェーン]
 
     PERSONAL --> OFF --> ZK --> CHAIN
 ```
@@ -957,10 +957,10 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    TERMS[Terms]
-    PRICE[Price]
+    TERMS[条件]
+    PRICE[価格]
     CONSENT[ユーザ同意]
-    SERVICE[Subscription]
+    SERVICE[サブスクリプション]
 
     TERMS --> CONSENT
     PRICE --> CONSENT
@@ -977,7 +977,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    TERMS[Human-readable Terms]
+    TERMS[人間可読条件]
     SPEC[プロトコル仕様]
     CODE[スマートコントラクト]
     UI[ユーザインターフェース]
@@ -997,28 +997,28 @@ Creator First Platform には、
 - 役員
 - 従業員
 - 開発者
-- Community Contributor
-- Curator
+- コミュニティ貢献者
+- キュレーター
 - 外部専門家
 
 などが参加する。
 
 ```mermaid
 flowchart TD
-    PEOPLE[Participants]
-    PEOPLE --> EMP[Employee]
-    PEOPLE --> CONTRACTOR[Contractor]
-    PEOPLE --> COMMUNITY[Community Contributor]
-    PEOPLE --> DIRECTOR[Director]
+    PEOPLE[参加者]
+    PEOPLE --> EMP[従業員]
+    PEOPLE --> CONTRACTOR[業務委託者]
+    PEOPLE --> COMMUNITY[コミュニティ貢献者]
+    PEOPLE --> DIRECTOR[取締役]
 ```
 
-DAO的なContributorであっても、実態によって雇用・業務委託等の法的評価が必要になる。
+DAO的な貢献者であっても、実態によって雇用・業務委託等の法的評価が必要になる。
 
 ---
 
-## 11.37 Contributor Reward
+## 11.37 貢献者報酬
 
-Community Contributorへの報酬をTokenで支払う場合でも、
+コミュニティ貢献者への報酬をトークンで支払う場合でも、
 
 - 給与
 - 業務委託報酬
@@ -1027,7 +1027,7 @@ Community Contributorへの報酬をTokenで支払う場合でも、
 
 のどれに該当するかを確認する。
 
-「DAOからのTokenだから税務上の報酬ではない」という扱いにはしない。
+「DAOからのトークンだから税務上の報酬ではない」という扱いにはしない。
 
 ---
 
@@ -1039,24 +1039,24 @@ Community Contributorへの報酬をTokenで支払う場合でも、
 - ロゴ
 - ソフトウェア
 - プロトコル仕様
-- Web Design
-- Documentation
+- ウェブ Design
+- 文書
 
 等がある。
 
-一方、Protocol CodeをOpen Source化する場合は、ライセンスを明確にする。
+一方、プロトコルコードをオープンソース化する場合は、ライセンスを明確にする。
 
 ```mermaid
 flowchart LR
-    IP[Intellectual Property]
-    IP --> BRAND[Brand / Trademark]
-    IP --> CODE[Source Code]
-    IP --> DOC[Documentation]
+    IP[知的財産]
+    IP --> BRAND[ブランド・商標]
+    IP --> CODE[ソースコード]
+    IP --> DOC[文書]
 
-    CODE --> LICENSE[Open-source License]
+    CODE --> LICENSE[オープンソースライセンス]
 ```
 
-音楽クリエーターの音楽権利とPlatformのソフトウェア権利を混同しない。
+音楽クリエーターの音楽権利とプラットフォームのソフトウェア権利を混同しない。
 
 ---
 
@@ -1066,24 +1066,24 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    DISPUTE[Dispute]
+    DISPUTE[紛争]
 
-    DISPUTE --> RIGHTS[Rights Dispute]
+    DISPUTE --> RIGHTS[権利紛争]
     DISPUTE --> USER[ユーザ紛争]
-    DISPUTE --> GOV[Governance Dispute]
-    DISPUTE --> SECURITY[Security Incident]
+    DISPUTE --> GOV[ガバナンス紛争]
+    DISPUTE --> SECURITY[セキュリティインシデント]
 
-    RIGHTS --> LEGAL[Legal / Contract Process]
-    USER --> SUPPORT[Support / ADR etc.]
-    GOV --> GOVPROC[Governance Process]
-    SECURITY --> IR[Incident Response]
+    RIGHTS --> LEGAL[法務 / コントラクト手続]
+    USER --> SUPPORT[支援 / ADR etc.]
+    GOV --> GOVPROC[ガバナンス手続]
+    SECURITY --> IR[インシデント対応]
 ```
 
 特に著作権帰属のような法的事実を、多数決だけで確定しない。
 
 ---
 
-## 11.40 スマートコントラクト と紛争
+## 11.40 スマートコントラクトと紛争
 
 自動分配済みの資金を後から取り戻すことが困難な場合がある。
 
@@ -1091,11 +1091,11 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    CLAIM[Rights Claim]
-    DISPUTE[Dispute]
-    HOLD[Distribution Hold]
-    RESOLVE[Resolution]
-    PAY[Distribution]
+    CLAIM[権利主張]
+    DISPUTE[紛争]
+    HOLD[分配保留]
+    RESOLVE[解決]
+    PAY[分配]
 
     CLAIM --> DISPUTE --> HOLD --> RESOLVE --> PAY
 ```
@@ -1114,7 +1114,7 @@ flowchart LR
 - 利用規約
 - 音楽クリエーター契約
 - プロトコルガバナンス
-- スマートコントラクト Specification
+- スマートコントラクト仕様
 
 へ具体化することで、実効性を持たせる。
 
@@ -1125,8 +1125,8 @@ flowchart TD
     CHARTER --> ARTICLES[定款]
     CHARTER --> TERMS[利用規約]
     CHARTER --> CREATOR[音楽クリエーター契約]
-    CHARTER --> GOV[Governance Rules]
-    CHARTER --> CODE[Protocol Code]
+    CHARTER --> GOV[ガバナンスルール]
+    CHARTER --> CODE[プロトコルコード]
 ```
 
 理念だけで終わらせず、契約とコードへ落とし込む。
@@ -1141,11 +1141,11 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    LAW[Law / Regulation Change]
-    LEGAL[Legal Review]
-    GOV[Governance]
-    VERSION[Protocol Version]
-    CODE[Updated Code]
+    LAW[法令 / 規制変更]
+    LEGAL[法務レビュー]
+    GOV[ガバナンス]
+    VERSION[プロトコル版]
+    CODE[更新済みコード]
 
     LAW --> LEGAL --> GOV --> VERSION --> CODE
 ```
@@ -1154,16 +1154,16 @@ flowchart LR
 
 ---
 
-## 11.43 Legal Oracle という考え方
+## 11.43 法務オラクルという考え方
 
-税率、制裁対象、法的資格等の現実世界情報をコードが必要とする場合、その入力はOracle問題になる。
+税率、制裁対象、法的資格等の現実世界情報をコードが必要とする場合、その入力はオラクル問題になる。
 
 ```mermaid
 flowchart LR
-    LAW[Legal / Regulatory State]
-    REVIEW[Authorized Legal Process]
-    DATA[Verified Parameters]
-    ORACLE[Legal / Compliance Oracle]
+    LAW[法務 / 規制上の状態]
+    REVIEW[認可済み法務手続]
+    DATA[検証済みパラメータ]
+    ORACLE[法務 / 法令遵守オラクル]
     CONTRACT[スマートコントラクト]
 
     LAW --> REVIEW --> DATA --> ORACLE --> CONTRACT
@@ -1199,54 +1199,54 @@ flowchart LR
 
 ### 11.44.1 法的地位の分離
 
-Platform Charter、Protocol議会および株式会社の法的地位を次のように分離する。
+プラットフォーム憲章、プロトコル議会および株式会社の法的地位を次のように分離する。
 
 ```text
 適用法令・行政処分・裁判
         ↓
 株式会社の定款・法定機関・契約上の義務
         ↓
-Platform Charter
+プラットフォーム憲章
         ↓
 音楽クリエータ院議会 / ユーザ院議会の議決
         ↓
 プロトコル仕様 / スマートコントラクト
 ```
 
-Platform Charterは私的な基本規範であり、法律または株式会社の定款そのものではない。音楽クリエータ院議会とユーザ院議会も、別途会社法上の構成を採らない限り、株主総会、取締役会その他の法定機関ではない。したがって、議員資格またはガバナンス議員資格SBTだけで、会社の代表権、業務執行権、株主権、雇用関係または会社財産の処分権は生じない。
+プラットフォーム憲章は私的な基本規範であり、法律または株式会社の定款そのものではない。音楽クリエータ院議会とユーザ院議会も、別途会社法上の構成を採らない限り、株主総会、取締役会その他の法定機関ではない。したがって、議員資格またはガバナンス議員資格SBTだけで、会社の代表権、業務執行権、株主権、雇用関係または会社財産の処分権は生じない。
 
 ### 11.44.2 取締役・株式会社の責任
 
-株式会社と取締役等は、議会の可決後も、法令、定款、既存契約、会社財産、支払能力、Securityおよび内部統制を確認する。議会の決定は取締役等の会社法上の責任を議員へ移転せず、取締役等は「DAOが承認した」ことだけを理由に法的・業務上の確認を省略できない。会社法上の機関、取締役の職務および役員等の責任は、[会社法](https://laws.e-gov.go.jp/law/417AC0000000086)に従う。
+株式会社と取締役等は、議会の可決後も、法令、定款、既存契約、会社財産、支払能力、セキュリティおよび内部統制を確認する。議会の決定は取締役等の会社法上の責任を議員へ移転せず、取締役等は「DAOが承認した」ことだけを理由に法的・業務上の確認を省略できない。会社法上の機関、取締役の職務および役員等の責任は、[会社法](https://laws.e-gov.go.jp/law/417AC0000000086)に従う。
 
-会社が承認済みProposalを実行できない場合は、単なる政策拒否または非公開の拒絶ではなく、少なくとも次を含むReasoned Returnとして両院へ差し戻す。
+会社が承認済み提案を実行できない場合は、単なる政策拒否または非公開の拒絶ではなく、少なくとも次を含む理由付き差戻しとして両院へ差し戻す。
 
-- 対象Proposal RevisionとExecution Manifest
-- 法令、定款、契約、財務またはSecurity上の阻却理由
+- 対象提案 Revisionと実行マニフェスト
+- 法令、定款、契約、財務またはセキュリティ上の阻却理由
 - 根拠となる証拠と確認主体
 - 修正可能な範囲と再審議経路
 - 回答・再評価期限
 
-株式会社はReasoned Returnを利用して別のTransactionへ黙って置換できず、議会も違法・履行不能な実行を役員へ強制できない。
+株式会社は理由付き差戻しを利用して別のトランザクションへ黙って置換できず、議会も違法・履行不能な実行を役員へ強制できない。
 
 ### 11.44.3 ガバナンス議員の責任
 
-ガバナンス議員は、完全な技術的無欠陥または将来損害の不存在を保証するものではない。議員は、開示されたEvidence、Test、独立Review、利益相反および未解決Riskを合理的に検討し、誠実に議決し、その理由を記録するGovernance上・契約上の責任を負う。
+ガバナンス議員は、完全な技術的無欠陥または将来損害の不存在を保証するものではない。議員は、開示された証跡、テスト、独立レビュー、利益相反および未解決リスクを合理的に検討し、誠実に議決し、その理由を記録するガバナンス上・契約上の責任を負う。
 
 議員との関係を委任として構成する場合には、契約内容に応じて受任者の注意義務・報告義務等を検討する必要がある。日本法上の一般的な委任規定は[民法](https://laws.e-gov.go.jp/law/129AC0000000089)に置かれている。
 
-故意のEvidence改ざん、贈収賄、本人以外の投票、重大な利益相反の隠蔽、秘密情報の不正開示等は、議員資格停止、SBT失効、報酬返還、契約責任その他の法的手続の対象として議員規程に定める。一方、未知のバグが後から発見されたことだけで、賛成議員に無制限の個人責任を負わせない。
+故意の証跡改ざん、贈収賄、本人以外の投票、重大な利益相反の隠蔽、秘密情報の不正開示等は、議員資格停止、SBT失効、報酬返還、契約責任その他の法的手続の対象として議員規程に定める。一方、未知のバグが後から発見されたことだけで、賛成議員に無制限の個人責任を負わせない。
 
 ### 11.44.4 共同承認と最終責任
 
-料金、音楽クリエーター分配、Rights Policy、個人情報利用、Treasury支出および重要なContract Upgrade等は、Protocol ApprovalとCorporate Legal Execution Approvalの両方を要求する共同領域とする。
+料金、音楽クリエーター分配、権利ポリシー、個人情報利用、資金庫支出および重要なコントラクトアップグレード等は、プロトコル Approvalと法人法務実行 Approvalの両方を要求する共同領域とする。
 
 | 段階 | 責任主体 | 責任内容 |
 | --- | --- | --- |
-| Policy形成 | 音楽クリエータ院議会 + ユーザ院議会 | 憲章適合性、音楽クリエーター／ユーザへの影響、議決理由 |
-| Test・専門評価 | 開発者、Protocol Reviewer、Auditor | 定められた範囲の実装・Test・専門評価 |
+| ポリシー形成 | 音楽クリエータ院議会 + ユーザ院議会 | 憲章適合性、音楽クリエーター／ユーザへの影響、議決理由 |
+| テスト・専門評価 | 開発者、プロトコル Reviewer、Auditor | 定められた範囲の実装・テスト・専門評価 |
 | 法的実行判断 | 株式会社の法定機関・権限者 | 法令、定款、契約、財務、権利、税務等 |
-| On-chain実行 | Timelock / Deployment Verifier | 承認済みManifestとの一致と実行証拠 |
+| オンチェーン実行 | タイムロック / デプロイ検証者 | 承認済みマニフェストとの一致と実行証拠 |
 
 この二重ゲートは、株式会社による無制限の政策拒否権でも、議会による役員責任の免除でもない。双方の判断、根拠、差戻し、再審議および最終実行を追跡可能にする責任分界である。
 
@@ -1258,15 +1258,15 @@ MVPでは、規制対象機能をできるだけ自前で抱え込まない。
 
 ```mermaid
 flowchart TD
-    CFP[音楽クリエーター中心 Corp.]
+    CFP[音楽クリエーター中心株式会社]
 
-    CFP --> MUSIC[Music Service]
+    CFP --> MUSIC[音楽サービス]
     CFP --> RIGHTS[音楽クリエーター契約]
     CFP --> GOV[プロトコルガバナンス]
 
-    PSP[Payment Provider] --> CFP
-    CMO[Rights Management Partner] --> CFP
-    FIN[STO / Financial Partner] --> CFP
+    PSP[決済事業者] --> CFP
+    CMO[権利管理パートナー] --> CFP
+    FIN[STO / 財務パートナー] --> CFP
 ```
 
 初期段階では、
@@ -1284,38 +1284,38 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    P1[Phase 1<br/>Legal Foundation]
-    P2[Phase 2<br/>音楽クリエーター経済]
-    P3[Phase 3<br/>STO / プロトコルガバナンス]
-    P4[Phase 4<br/>International Expansion]
+    P1[フェーズ 1<br/>法務基盤]
+    P2[フェーズ 2<br/>音楽クリエーター経済]
+    P3[フェーズ 3<br/>STO / プロトコルガバナンス]
+    P4[フェーズ 4<br/>国際展開]
 
     P1 --> P2 --> P3 --> P4
 ```
 
-### Phase 1
+### フェーズ 1
 
 - 株式会社設立
 - 定款
 - 利用規約
-- Privacy Policy
+- プライバシーポリシー
 - 音楽クリエーター契約
 - 権利処理方式
 
-### Phase 2
+### フェーズ 2
 
 - 自動分配
 - ステーブルコイン決済
 - 税務・会計連携
-- Rights Registry
+- 権利登録台帳
 
-### Phase 3
+### フェーズ 3
 
 - STO
 - 二院制ガバナンス
-- スマートコントラクト Governance
-- Treasury Governance
+- スマートコントラクトガバナンス
+- 資金庫ガバナンス
 
-### Phase 4
+### フェーズ 4
 
 - 海外権利者
 - 海外ユーザ
@@ -1331,10 +1331,10 @@ STOはサービス開始の必須条件ではない。
 ```mermaid
 flowchart LR
     MVP[MVP]
-    MARKET[Product / Market Validation]
-    GOVERNANCE[Governance Validation]
+    MARKET[プロダクト / 市場検証]
+    GOVERNANCE[ガバナンス検証]
     STO[STO]
-    SCALE[Scale]
+    SCALE[規模拡大]
 
     MVP --> MARKET --> GOVERNANCE --> STO --> SCALE
 ```
@@ -1353,12 +1353,12 @@ Creator First Platform は、DAO的ガバナンスと株式会社を対立概念
 
 ```mermaid
 flowchart TD
-    LAW[Law]
+    LAW[法令]
     CORP[株式会社]
     CHARTER[3つの憲章]
     PARL[音楽クリエータ院議会 + ユーザ院議会]
     CODE[スマートコントラクト]
-    SERVICE[Music Platform]
+    SERVICE[音楽プラットフォーム]
 
     LAW --> CORP
     LAW --> SERVICE
@@ -1376,7 +1376,7 @@ flowchart TD
 
 二院制ガバナンスは、
 
-> **音楽クリエーターとユーザがProtocolのルールを決定する制度**
+> **音楽クリエーターとユーザがプロトコルのルールを決定する制度**
 
 である。
 
@@ -1422,4 +1422,4 @@ Creator First Platform が目指すのは、法律の外にDAOを作ることで
 
 **最終確認日：2026年8月19日**
 
-制度変更をホワイトペーパーのコード設計へ直結させず、**Legal Review → Governance → Protocol Version** の順で反映する。
+制度変更をホワイトペーパーのコード設計へ直結させず、**法務レビュー → ガバナンス → プロトコル版** の順で反映する。

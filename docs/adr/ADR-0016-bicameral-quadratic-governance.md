@@ -1,94 +1,94 @@
 ---
-description: 二院制議会の独立承認、本人単位のクアドラティック投票、実行ManifestとTimelockをコントラクト変更へ接続する判断。
+description: 二院制議会の独立承認、本人単位のクアドラティック投票、実行マニフェストとタイムロックをコントラクト変更へ接続する判断。
 ---
 
-# ADR-0016: Bicameral Quadratic Governance for Contract Changes
+# ADR-0016: コントラクト変更の二院制・二次投票ガバナンス
 
-**Status:** Proposed  
-**Date:** 2026-08-24  
-**Last Updated:** 2026-08-24
+**状態:** 提案
+**日付:** 2026-08-24
+**最終更新日:** 2026-08-24
 
-## Context
+## 背景
 
-ADR-0001は音楽クリエータ院議会とユーザ院議会による二院制、ADR-0002は代表者の検証可能な抽選を採用した。しかし、スマートコントラクトの仕様変更について、提案の固定、各院内の投票、両院承認、実装照合、Upgrade権限への接続が未定義だった。
+ADR-0001は音楽クリエータ院議会とユーザ院議会による二院制、ADR-0002は代表者の検証可能な抽選を採用した。しかし、スマートコントラクトの仕様変更について、提案の固定、各院内の投票、両院承認、実装照合、アップグレード権限への接続が未定義だった。
 
-単純なToken Votingは資本支配を招き、一人一票だけでは複数提案に対する意思の強さを表現しにくい。また、説明文だけを承認し、異なるcalldataを実行できる構成はGovernanceの正統性を失わせる。
+単純なトークン投票は資本支配を招き、一人一票だけでは複数提案に対する意思の強さを表現しにくい。また、説明文だけを承認し、異なるcalldataを実行できる構成はガバナンスの正統性を失わせる。
 
-## Decision
+## 決定
 
 スマートコントラクト仕様変更には、次を一体として採用する。
 
-1. 音楽クリエータ院議会とユーザ院議会の会期別Membership snapshot
-2. 各議員へ同量・譲渡不能・購入不能・期限付きVoice Creditを付与するQuadratic Voting
-3. 両院ごとのQuorum、Approval Thresholdおよび独立承認
-4. Specification hash、Target、calldata、Code hash、Chain IDを固定するExecution Manifest
-5. 独立Review、再現可能な実装照合、Risk Class別Timelock
-6. TimelockだけがUpgradeまたはPolicy activationを実行できる権限分離
+1. 音楽クリエータ院議会とユーザ院議会の会期別議員資格 snapshot
+2. 各議員へ同量・譲渡不能・購入不能・期限付き投票クレジットを付与する二次投票
+3. 両院ごとの定足数、Approval しきい値および独立承認
+4. 仕様 hash、Target、calldata、コード hash、チェーン IDを固定する実行マニフェスト
+5. 独立レビュー、再現可能な実装照合、リスク Class別タイムロック
+6. タイムロックだけがアップグレードまたはポリシー activationを実行できる権限分離
 
-Quadratic Votingの費用は$v^2$とし、資金支出ではなく各会期のVoice Credit消費として計算する。JPYC、株式、STO、SBT、再生数または収益額でCreditを追加できない。
+二次投票の費用は$v^2$とし、資金支出ではなく各会期の投票クレジット消費として計算する。JPYC、株式、STO、SBT、再生数または収益額でCreditを追加できない。
 
 通常の重要変更は両院がそれぞれ成立要件を満たす必要がある。票を両院間で合算せず、一方の大差による承認でも他方の否決を上書きしない。
 
-## Decision boundaries
+## 決定境界
 
-- QVは抽選議員による会期内の提案評価に用いる。抽選自体のWeightには用いない。
-- Supporter SBTはGovernance IdentityまたはVoting Powerを付与しない。
-- 具体的なVoice Credit、Quorum、Approval Threshold、議席数、投票秘密方式はプロトコルガバナンスの未決事項とする。
-- P3 Constitutional変更には両院特別多数に加え、音楽クリエーター／ユーザコミュニティ直接投票を要求する。
-- 株式会社の法的義務はGovernanceで上書きしない。執行不能時は理由付き差し戻しとし、代替実行を禁止する。
-- Emergency権限はPauseまたはTimelock中のcancelに限定し、任意Upgradeを認めない。
+- QVは抽選議員による会期内の提案評価に用いる。抽選自体の重みには用いない。
+- サポーター SBTはガバナンスアイデンティティまたは投票権力を付与しない。
+- 具体的な投票クレジット、定足数、Approval しきい値、議席数、投票秘密方式はプロトコルガバナンスの未決事項とする。
+- P3 憲章適合変更には両院特別多数に加え、音楽クリエーター／ユーザコミュニティ直接投票を要求する。
+- 株式会社の法的義務はガバナンスで上書きしない。執行不能時は理由付き差し戻しとし、代替実行を禁止する。
+- 緊急権限は停止またはタイムロック中のcancelに限定し、任意アップグレードを認めない。
 
-## Contract boundary
+## コントラクト境界
 
-責任をProposal Registry、House Membership Registry、Quadratic Voting Round、Bicameral Governor、Execution Manifest、Timelock Controllerに分離する。UUPS ProxyのUpgrade権限は段階的にTimelockへ移管する。
+責任を提案登録台帳、議員資格登録台帳、二次投票ラウンド、二院制ガバナー、実行マニフェスト、タイムロック制御コントラクトに分離する。UUPS プロキシのアップグレード権限は段階的にタイムロックへ移管する。
 
-投票開始後のTarget、Value、calldata、Specification hash、Code hashまたはRule Version変更は、元提案を無効化して新しい審議を必要とする。
+投票開始後のTarget、Value、calldata、仕様 hash、コード hashまたはルール版変更は、元提案を無効化して新しい審議を必要とする。
 
-## Alternatives Considered
+## 検討した代替案
 
-### Token-weighted voting
+### トークン保有量加重投票
 
-経済力をプロトコルガバナンスへ直結させ、Global Invariantに反するため採用しない。
+経済力をプロトコルガバナンスへ直結させ、国際不変条件に反するため採用しない。
 
-### One-member one-vote only
+### 議員一人一票のみ
 
 単純である一方、複数提案間の優先度と意思の強さを有限予算で表現できないため、初期の唯一方式にはしない。QVの監査可能性や使いやすさが不足する場合のFallback候補として残す。
 
-### Community-wide QV for every change
+### 全変更に対するコミュニティ全体の二次投票
 
-参加疲れ、Sybil耐性、法務・技術資料の理解負担が大きいため、通常変更では採用しない。重大変更のReferendumは別Ruleで扱う。
+参加疲れ、シビル耐性、法務・技術資料の理解負担が大きいため、通常変更では採用しない。重大変更の全体投票は別ルールで扱う。
 
-### Off-chain result plus administrator execution
+### オフチェーン結果と管理者による実行
 
-迅速だが、承認内容と実行Transactionの置換を技術的に防げないため、本番の最終形として採用しない。
+迅速だが、承認内容と実行トランザクションの置換を技術的に防げないため、本番の最終形として採用しない。
 
-## Consequences
+## 影響
 
-### Positive
+### 利点
 
 - 音楽クリエーターとユーザの双方が独立した拒否・承認能力を持つ
 - 資本ではなく本人単位の有限Creditで意思の強さを表現できる
-- Proposal、Specification、Code、Transaction、Deploymentを追跡できる
-- Upgrade keyの単独支配とGovernance bypassを抑制できる
+- 提案、仕様、コード、トランザクション、デプロイを追跡できる
+- アップグレード keyの単独支配とガバナンス bypassを抑制できる
 
-### Negative
+### 欠点
 
-- Identity、抽選、Credit、Commit-Reveal、異議申立ての運用が複雑になる
-- 両院合意に時間がかかり、Deadlock解消手続が必要になる
+- アイデンティティ、抽選、Credit、Commit-Reveal、異議申立ての運用が複雑になる
+- 両院合意に時間がかかり、膠着解消手続が必要になる
 - QVはCollusion、Bribery、Credit代理行使を完全には防がない
-- On-chain秘密投票と検証可能性の両立には追加技術が必要になる
+- オンチェーン秘密投票と検証可能性の両立には追加技術が必要になる
 
-## Validation Gates
+## 検証ゲート
 
-- 同一Governance Identityが同一会期・同一院でCreditを重複取得できない
+- 同一ガバナンスアイデンティティが同一会期・同一院でCreditを重複取得できない
 - $\sum v^2$がCredit budgetを超える投票を拒否する
-- 両院のうち一院だけが承認してもExecutionへ進まない
-- 投票開始後にManifestが変わると実行できない
-- Timelock以外がUpgradeまたはPolicy activationを実行できない
-- Emergency Guardianが任意Upgradeまたは資金移動を実行できない
-- 投票、集計、Review、Timelock、Executionを第三者が再検証できる
+- 両院のうち一院だけが承認しても実行へ進まない
+- 投票開始後にマニフェストが変わると実行できない
+- タイムロック以外がアップグレードまたはポリシー activationを実行できない
+- 緊急時ガーディアンが任意アップグレードまたは資金移動を実行できない
+- 投票、集計、レビュー、タイムロック、実行を第三者が再検証できる
 
-## Related Documents
+## 関連文書
 
 - `docs/whitepaper/07-governance.md`
 - `docs/governance/index.md`

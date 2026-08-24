@@ -2,7 +2,7 @@
 description: 著作権・原盤権などの権利管理と、利用料金から音楽クリエーター報酬までの透明な資金フロー設計。
 ---
 
-# 3. 権利と資金 — Rights & Money Flow
+# 3. 権利と資金
 
 ## 3.1 本章の目的
 
@@ -19,8 +19,8 @@ Creator First Platform は、音楽配信をスマートコントラクトで実
 ```mermaid
 flowchart TD
     LAW[法令・契約・権利関係] --> CORP[運営株式会社]
-    CORP --> REG[Rights Registry<br/>権利情報]
-    REG --> PROTO[Protocol / スマートコントラクトs]
+    CORP --> REG[権利登録台帳<br/>権利情報]
+    REG --> PROTO[プロトコル / スマートコントラクトs]
     PROTO --> PAY[報酬分配]
 ```
 
@@ -28,13 +28,13 @@ flowchart TD
 
 ## 3.2 音楽には複数の権利が存在する
 
-「1曲」の背後には、単一の権利だけが存在するわけではない。基本設計では、少なくとも **楽曲（Composition）** と **音源（Sound Recording / Master）** を区別する。
+「1曲」の背後には、単一の権利だけが存在するわけではない。基本設計では、少なくとも **楽曲（楽曲）** と **音源（原盤 / 原盤）** を区別する。
 
 ```mermaid
 flowchart TD
     MUSIC[1つの楽曲・音源]
-    MUSIC --> COMP[Composition<br/>楽曲]
-    MUSIC --> MASTER[Sound Recording<br/>音源]
+    MUSIC --> COMP[楽曲<br/>楽曲]
+    MUSIC --> MASTER[原盤<br/>音源]
     COMP --> WRITER[作詞家]
     COMP --> COMPOSER[作曲家]
     COMP --> PUB[音楽出版社・管理事業者]
@@ -67,7 +67,7 @@ Creator First Platform は、独立系音楽クリエーターが参加しやす
 ::: warning オンチェーン登録と法的権利
 NFT、トークン、スマートコントラクト、ブロックチェーン上の記録そのものを、著作権や著作隣接権と同一視しない。
 
-**Rights before Code** を基本原則とする。
+**権利 before コード** を基本原則とする。
 :::
 
 ---
@@ -92,10 +92,10 @@ flowchart TD
     CORP[運営株式会社]
     CORP --> C1[音楽クリエーター契約]
     CORP --> C2[ユーザ契約]
-    CORP --> R[Rights Management]
-    CORP --> A[Accounting / Tax]
-    CORP --> P[Privacy / Compliance]
-    CORP --> D[Dispute Resolution]
+    CORP --> R[権利管理]
+    CORP --> A[会計・税務]
+    CORP --> P[プライバシー / 法令遵守]
+    CORP --> D[紛争解決]
 ```
 
 スマートコントラクトの存在によって株式会社の責任が消滅するわけではない。
@@ -104,19 +104,19 @@ flowchart TD
 
 ---
 
-## 3.5 Rights Registry
+## 3.5 権利登録台帳
 
-各楽曲について、分配に必要な権利情報を **Rights Registry** として管理する。
+各楽曲について、分配に必要な権利情報を **権利登録台帳** として管理する。
 
 想定する情報には、楽曲ID、音源ID、作品名、アーティスト、作詞・作曲者、マスター権利者、出版・管理情報、分配先、分配比率、契約状態、権利確認状態、対象地域、有効期間、外部識別子などが含まれる。
 
 ```mermaid
 flowchart LR
-    TRACK[Track] --> ID[Identifiers]
-    TRACK --> COMP[Composition Rights]
-    TRACK --> MASTER[Master Rights]
-    TRACK --> CONTRACT[Contract Status]
-    TRACK --> SPLIT[Distribution Split]
+    TRACK[楽曲] --> ID[識別子]
+    TRACK --> COMP[楽曲権利]
+    TRACK --> MASTER[原盤権利]
+    TRACK --> CONTRACT[コントラクト状態]
+    TRACK --> SPLIT[分配分割]
     SPLIT --> SC[スマートコントラクト]
 ```
 
@@ -135,7 +135,7 @@ flowchart TD
     CREATOR[音楽クリエーター] --> CFP[Creator First Platform]
     CMO[著作権管理事業者等] --> CFP
     OTHER[その他の権利者] --> CFP
-    CFP --> USER[Listener]
+    CFP --> USER[ユーザ]
 ```
 
 独自性は、
@@ -152,17 +152,17 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    C[Independent 音楽クリエーター]
-    C -->|権利申告| REG[Rights Registry]
+    C[独立音楽クリエーター]
+    C -->|権利申告| REG[権利登録台帳]
     C -->|配信許諾契約| CORP[運営株式会社]
     REG --> DSP[音楽クリエーター中心 DSP]
     CORP --> DSP
-    DSP -->|配信| U[Listener]
-    U -->|Subscription| DSP
-    DSP -->|Distribution| C
+    DSP -->|配信| U[ユーザ]
+    U -->|サブスクリプション| DSP
+    DSP -->|分配| C
 ```
 
-登録から報酬受領までは、本人確認、権利申告、配信許諾契約、楽曲登録、Rights Registry 登録、配信、利用実績集計、報酬分配という流れを想定する。
+登録から報酬受領までは、本人確認、権利申告、配信許諾契約、楽曲登録、権利登録台帳登録、配信、利用実績集計、報酬分配という流れを想定する。
 
 詳細は第5章「音楽クリエーター登録」で扱う。
 
@@ -170,20 +170,20 @@ flowchart LR
 
 ## 3.8 ユーザから音楽クリエーターへの資金の流れ
 
-ユーザは、JPYC等の`Approved Settlement Asset Registry`で承認された法定通貨連動型ステーブルコインにより、Creator First Platformへサブスクリプション料金を支払う。ETH等の価格変動するネイティブトークンをSubscription Priceとして受け付けない。
+ユーザは、JPYC等の`Approved Settlement Asset Registry`で承認された法定通貨連動型ステーブルコインにより、Creator First Platformへサブスクリプション料金を支払う。ETH等の価格変動するネイティブトークンをサブスクリプション価格として受け付けない。
 
 ```mermaid
 flowchart TD
-    USER[Listener Wallet] -->|JPYC等| INTENT[Payment Intent]
-    REG[Approved Settlement Asset Registry] --> INTENT
-    INTENT -->|Finalized Transfer| PAY[Settlement Layer]
+    USER[ユーザウォレット] -->|JPYC等| INTENT[決済意思]
+    REG[承認済み精算資産登録台帳] --> INTENT
+    INTENT -->|確定済み転送| PAY[精算レイヤー]
     PAY --> CORP[運営株式会社]
-    CORP --> POOL[Distributable Revenue]
-    POOL --> RIGHTS[Usage / Rights Pool]
-    POOL --> GROWTH[Growth / Discovery Pool]
-    POOL --> OPS[Platform Operations]
+    CORP --> POOL[分配可能収益]
+    POOL --> RIGHTS[利用実績 / 権利プール]
+    POOL --> GROWTH[成長 / 発見プール]
+    POOL --> OPS[プラットフォーム運用]
     RIGHTS --> CREATOR[音楽クリエーター／権利者]
-    GROWTH --> EMERGING[Emerging 音楽クリエーター]
+    GROWTH --> EMERGING[新人音楽クリエーター]
 ```
 
 実際には税、決済手数料、権利処理費用、契約上の支払いなどが存在する。
@@ -198,21 +198,21 @@ flowchart TD
 
 ## 3.9 ステーブルコイン決済とネットワーク手数料
 
-サブスクリプションのオンチェーン決済経路では、JPYC等の承認済みステーブルコインを支払資産とする。ユーザが認識する料金表示、Payment Intent、領収・会計記録およびSubscription有効化の根拠は、すべて同じ承認済みSettlement Assetと整数額へ結び付ける。
+サブスクリプションのオンチェーン決済経路では、JPYC等の承認済みステーブルコインを支払資産とする。ユーザが認識する料金表示、決済意思、領収・会計記録およびサブスクリプション有効化の根拠は、すべて同じ承認済み精算資産と整数額へ結び付ける。
 
-一方、Transaction実行に必要なETH等のネイティブトークンはネットワーク手数料であり、サブスクリプション料金ではない。一般ユーザへGas Tokenの取得を要求せず、Relayer、PaymasterまたはSmart Accountにより手数料を抽象化する。誰がGasを負担した場合でも、支払済みSubscriptionとして認識するのはJPYC等の一致するTransferがFinality条件を満たした場合だけとする。
+一方、トランザクション実行に必要なETH等のネイティブトークンはネットワーク手数料であり、サブスクリプション料金ではない。一般ユーザへガストークンの取得を要求せず、リレイヤー、ペイマスターまたはスマートアカウントにより手数料を抽象化する。誰がガスを負担した場合でも、支払済みサブスクリプションとして認識するのはJPYC等の一致する転送がファイナリティ条件を満たした場合だけとする。
 
 ```mermaid
 flowchart LR
-    USER[ユーザ] -->|JPYC等の支払認可| WALLET[Wallet / Smart Account]
-    SPONSOR[Relayer / Paymaster] -->|Gasを抽象化| CHAIN[Blockchain]
-    WALLET -->|Approved Stablecoin| CHAIN
-    CHAIN --> FINAL[Finalized Payment]
+    USER[ユーザ] -->|JPYC等の支払認可| WALLET[ウォレット / スマートアカウント]
+    SPONSOR[リレイヤー / ペイマスター] -->|ガスを抽象化| CHAIN[ブロックチェーン]
+    WALLET -->|承認済みステーブルコイン| CHAIN
+    CHAIN --> FINAL[確定済み決済]
     FINAL --> CORP[運営株式会社の会計]
     CORP --> CREATOR[音楽クリエーター分配]
 ```
 
-::: info 支払資産とGasを分離する
+::: info 支払資産とガスを分離する
 Creator First Platform の価値は、価格変動する暗号資産で音楽料金を払うことではない。
 
 **JPYC等で表示・確定するサービス料金**、**ネイティブトークンで精算されるネットワーク手数料**、**分配ルールの透明性・検証可能性**を別の概念として設計する。
@@ -228,13 +228,13 @@ Creator First Platform の価値は、価格変動する暗号資産で音楽料
 
 ```mermaid
 flowchart TD
-    MONEY[Subscription Revenue]
+    MONEY[サブスクリプション収益]
     MONEY --> CONTRACT[契約]
     MONEY --> PAYMENT[決済規制]
     MONEY --> ACCOUNTING[会計]
     MONEY --> TAX[税務]
     MONEY --> DISTRIBUTION[権利者への分配]
-    CONTRACT --> DESIGN[Legal / Financial Design]
+    CONTRACT --> DESIGN[法務 / 財務設計]
     PAYMENT --> DESIGN
     ACCOUNTING --> DESIGN
     TAX --> DESIGN
@@ -251,20 +251,20 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    REV[Distributable Revenue]
-    REV --> U[Usage-based Pool]
-    REV --> G[Growth Pool]
-    REV --> O[Operation Pool]
+    REV[分配可能収益]
+    REV --> U[利用実績連動プール]
+    REV --> G[成長支援プール]
+    REV --> O[運用プール]
     U --> RIGHTS[音楽クリエーター／権利者]
-    G --> NEW[New / Emerging 音楽クリエーター]
-    O --> PLATFORM[Platform Sustainability]
+    G --> NEW[新規 / 新人音楽クリエーター]
+    O --> PLATFORM[プラットフォーム持続可能性]
 ```
 
-**Usage-based Pool** は実際の音楽利用と権利関係に基づく基本分配を担う。
+**利用実績連動プール** は実際の音楽利用と権利関係に基づく基本分配を担う。
 
-**Growth Pool** は新人、独立系音楽クリエーター、まだ十分に発見されていない作品などの成長機会を支援する。
+**成長支援プール** は新人、独立系音楽クリエーター、まだ十分に発見されていない作品などの成長機会を支援する。
 
-**Operation Pool** はインフラ、開発、権利処理、セキュリティ、法務、サポートなど、サービスを持続させるために利用する。
+**運用プール** はインフラ、開発、権利処理、セキュリティ、法務、サポートなど、サービスを持続させるために利用する。
 
 具体的な比率は第6章「経済モデル」とガバナンス設計で詳細化する。
 
@@ -277,8 +277,8 @@ flowchart TD
 ```mermaid
 flowchart TD
     SUB[ユーザサブスクリプション]
-    SUB --> BASE[Usage-based Allocation]
-    SUB --> SUPPORT[Support Allocation]
+    SUB --> BASE[利用実績連動配分]
+    SUB --> SUPPORT[支援配分]
     BASE --> LISTENED[実際に聴いた作品]
     SUPPORT --> FAVORITE[明示的に支持する音楽クリエーター]
     LISTENED --> ECON[音楽クリエーター経済]
@@ -287,43 +287,43 @@ flowchart TD
 
 ただし、単純な人気投票では有名アーティストへの集中を再生産し得る。
 
-そのため Growth Pool、Quadratic Funding、発見時期などの要素を組み合わせ、**人気と支援機会を同一視しない**設計を検討する。
+そのため成長支援プール、二次資金配分、発見時期などの要素を組み合わせ、**人気と支援機会を同一視しない**設計を検討する。
 
 ---
 
 ## 3.13 スマートコントラクトが担う範囲
 
-スマートコントラクトは、分配ルール、分配計算、権利者への支払い、Growth Pool、ガバナンス承認済みパラメータ、分配履歴、監査可能性などを担う。
+スマートコントラクトは、分配ルール、分配計算、権利者への支払い、成長支援プール、ガバナンス承認済みパラメータ、分配履歴、監査可能性などを担う。
 
 一方、契約の有効性、本人確認、権利紛争、税務判断などはスマートコントラクトだけでは処理しない。
 
 ```mermaid
 flowchart LR
-    LEGAL[Off-chain Legal Layer] -->|検証済み情報| SC[スマートコントラクト Layer]
+    LEGAL[オフチェーン法務レイヤー] -->|検証済み情報| SC[スマートコントラクトレイヤー]
     LEGAL --> CONTRACT[契約]
     LEGAL --> ID[本人確認]
     LEGAL --> RIGHTS[権利紛争]
     LEGAL --> TAX[税務]
     SC --> SPLIT[分配]
-    SC --> GOV[Governance Rules]
-    SC --> AUDIT[Audit Trail]
+    SC --> GOV[ガバナンスルール]
+    SC --> AUDIT[監査 Trail]
 ```
 
 ---
 
-## 3.14 Usage Oracle
+## 3.14 利用実績オラクル
 
 スマートコントラクトは、ブロックチェーン外で発生した音楽再生を直接知ることができない。
 
-そのため、プレーヤーや配信システムで発生した利用実績を分配プロトコルへ安全に伝える **Usage Oracle** を設ける。
+そのため、プレーヤーや配信システムで発生した利用実績を分配プロトコルへ安全に伝える **利用実績オラクル** を設ける。
 
 ```mermaid
 flowchart LR
-    APP[Player App] --> EVENT[Playback Events]
-    STREAM[Streaming Infrastructure] --> EVENT
-    EVENT --> VERIFY[Usage Verification]
-    VERIFY --> ORACLE[Usage Oracle]
-    ORACLE --> SC[Distribution スマートコントラクト]
+    APP[プレーヤーアプリ] --> EVENT[再生イベント]
+    STREAM[ストリーミングインフラ] --> EVENT
+    EVENT --> VERIFY[利用実績検証]
+    VERIFY --> ORACLE[利用実績オラクル]
+    ORACLE --> SC[分配スマートコントラクト]
 ```
 
 再生実績の正当性、ボット対策、重複排除、プライバシー、改ざん防止を同時に考える。
@@ -340,18 +340,18 @@ flowchart LR
 
 分配アルゴリズムそのものを運営会社だけの裁量に置かない。
 
-Usage-based Pool や Growth Pool の比率、成長支援の配分方式、不正再生判定、分配頻度、プロトコル手数料など、音楽クリエーターの利益やユーザの支払いに直接関係する重要パラメータはガバナンス対象とする。
+利用実績連動プールや成長支援プールの比率、成長支援の配分方式、不正再生判定、分配頻度、プロトコル手数料など、音楽クリエーターの利益やユーザの支払いに直接関係する重要パラメータはガバナンス対象とする。
 
 ```mermaid
 flowchart TD
     CONST[3つの憲章]
     CONST --> CH[音楽クリエータ院議会]
     CONST --> UH[ユーザ院議会]
-    CH --> GOV[Governance]
+    CH --> GOV[ガバナンス]
     UH --> GOV
-    GOV --> PARAM[Distribution Parameters]
+    GOV --> PARAM[分配パラメータ]
     PARAM --> SC[スマートコントラクトs]
-    SC --> PAY[Distribution]
+    SC --> PAY[分配]
 ```
 
 ただし、ガバナンスによって法令や契約上の義務を無効化することはできない。コード統治は法的責任の枠内で行われる。
@@ -366,9 +366,9 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    CLAIM[Rights Claim / Dispute] --> REVIEW[法人による確認・法的手続]
+    CLAIM[権利主張 / 紛争] --> REVIEW[法人による確認・法的手続]
     REVIEW --> VALID{権利状態}
-    VALID -->|確定| UPDATE[Rights Registry 更新]
+    VALID -->|確定| UPDATE[権利登録台帳更新]
     VALID -->|係争中| HOLD[対象分配の保留]
     UPDATE --> SC[スマートコントラクト]
     HOLD --> RESOLVE[解決後に分配]
@@ -383,20 +383,20 @@ flowchart TD
 ```mermaid
 flowchart TD
     CREATOR[音楽クリエーター／権利者]
-    USER[Listeners]
+    USER[ユーザ]
     CORP[運営株式会社]
-    RIGHTS[Rights Registry]
-    DSP[Streaming Platform]
-    ORACLE[Usage Oracle]
+    RIGHTS[権利登録台帳]
+    DSP[ストリーミングプラットフォーム]
+    ORACLE[利用実績オラクル]
     GOV[音楽クリエータ院議会 + ユーザ院議会]
-    SC[Distribution スマートコントラクトs]
-    MONEY[Distribution Pools]
+    SC[分配スマートコントラクトs]
+    MONEY[分配プール]
 
     CREATOR -->|権利情報・配信許諾| CORP
     CORP --> RIGHTS
     RIGHTS --> DSP
-    USER -->|Subscription| CORP
-    DSP -->|Playback Data| ORACLE
+    USER -->|サブスクリプション| CORP
+    DSP -->|再生データ| ORACLE
     ORACLE --> SC
     RIGHTS --> SC
     GOV -->|承認されたルール| SC
@@ -412,10 +412,10 @@ flowchart TD
 
 ## 3.18 設計原則
 
-### Rights before Code
+### コードより権利を優先
 コードより先に法的権利と契約を確認する。
 
-### Transparent Distribution
+### 透明分配
 分配ルールと分配結果を可能な限り検証可能にする。
 
 ### 音楽クリエーター中心
@@ -424,13 +424,13 @@ flowchart TD
 ### ユーザ主権
 ユーザの支払いと支持の意思を尊重し、同時にプライバシーを守る。
 
-### Fair Discovery
+### 公正な発見
 再生数だけでは支援されにくい新人や独立系音楽クリエーターにも成長機会を設ける。
 
-### Corporate Responsibility
+### 法人責任
 法的責任をコードやDAOへ転嫁せず、運営株式会社が責任主体となる。
 
-### Governed Code
+### 統治されたコード
 重要な経済ルールをコード化し、そのコード変更を音楽クリエーターとユーザによるガバナンスの対象とする。
 
 ---
@@ -445,11 +445,11 @@ Creator First Platform は、
 
 ```mermaid
 flowchart LR
-    RIGHTS[Rights] --> CONTRACT[Contracts]
-    CONTRACT --> CORP[Corporate Responsibility]
-    CORP --> PROTOCOL[Protocol]
-    PROTOCOL --> GOV[Governance]
-    GOV --> MONEY[Transparent Distribution]
+    RIGHTS[権利] --> CONTRACT[契約]
+    CONTRACT --> CORP[法人責任]
+    CORP --> PROTOCOL[プロトコル]
+    PROTOCOL --> GOV[ガバナンス]
+    GOV --> MONEY[透明分配]
     MONEY --> CREATOR[音楽クリエーター]
 ```
 

@@ -2,30 +2,30 @@
 description: 利用履歴や個人情報を公開せず、抽選・権利・利用実績・分配の正しさを証明するZKP活用方針案。
 ---
 
-# ADR-0006: Zero-Knowledge Proof Strategy
+# ADR-0006: ゼロ知識証明戦略
 
-**Status:** Proposed  
-**Date:** 2026-07-29
-**Last Updated:** 2026-08-20
+**状態:** 提案
+**日付:** 2026-07-29
+**最終更新日:** 2026-08-20
 
-## 1. Context
+## 1. 背景
 
-Creator First Platform は、音楽クリエーター と ユーザ の権利、利用実績、Governance、収益分配を検証可能にしながら、個人情報や詳細な利用履歴を不要に公開しないことを重要な設計原則とする。
+Creator First Platform は、音楽クリエーターとユーザの権利、利用実績、ガバナンス、収益分配を検証可能にしながら、個人情報や詳細な利用履歴を不要に公開しないことを重要な設計原則とする。
 
-これまでのADRでは、Zero-Knowledge Proof（ZKP）が有効となる複数の領域が明らかになっている。
+これまでのADRでは、ゼロ知識証明（ZKP）が有効となる複数の領域が明らかになっている。
 
-- ADR-0002 Verifiable Sortition
-- ADR-0003 Rights Registry
-- ADR-0004 音楽クリエーター分配 Model
-- ADR-0005 Usage Oracle
+- ADR-0002 検証可能抽選
+- ADR-0003 権利登録台帳
+- ADR-0004 音楽クリエーター分配モデル
+- ADR-0005 利用実績オラクル
 
-特にUsage Oracleでは、
+特に利用実績オラクルでは、
 
-> 個々のユーザの視聴履歴を公開せず、Distributionに使用されたUsage AggregateがProtocol Ruleに従って計算されたことを検証する
+> 個々のユーザの視聴履歴を公開せず、分配に使用された利用実績 Aggregateがプロトコルルールに従って計算されたことを検証する
 
 必要がある。
 
-またRights Registryでは、
+また権利登録台帳では、
 
 > 個人情報や契約内容を公開せず、必要な権利条件を満たしていることを証明する
 
@@ -37,46 +37,46 @@ Creator First Platform は、音楽クリエーター と ユーザ の権利、
 
 - zk-SNARK
 - zk-STARK
-- Plonk系Proof System
-- Folding / Recursive Proof
-- その他のVerifiable Computation
+- Plonk系証明システム
+- Folding / Recursive 証明
+- その他の検証可能 Computation
 
 があり、それぞれ、
 
-- Trusted Setup
-- Proof Size
-- Proving Cost
-- Verification Cost
+- 信頼された Setup
+- 証明 Size
+- Proving コスト
+- 検証コスト
 - Recursion
-- Blockchain Compatibility
-- Developer Tooling
+- ブロックチェーン Compatibility
+- 開発者 Tooling
 - Cryptographic Assumptions
-- Post-Quantum Security
+- Post-Quantum セキュリティ
 
 について異なる特性を持つ。
 
-したがって、個別機能ごとに場当たり的にProof Systemを選択するのではなく、Creator First Platform全体としてZero-Knowledge Proofをどのように利用するかを定義する必要がある。
+したがって、個別機能ごとに場当たり的に証明システムを選択するのではなく、Creator First Platform全体としてゼロ知識証明をどのように利用するかを定義する必要がある。
 
 ---
 
-## 2. Decision
+## 2. 決定
 
-Creator First Platform は、Zero-Knowledge Proofを **Privacy-Preserving Verifiability Layer** として採用する。
+Creator First Platform は、ゼロ知識証明を **プライバシー保護型の検証可能性レイヤー** として採用する。
 
 ZKPの目的は、
 
-> **Private Dataを公開せず、Protocol Ruleに従った計算または資格条件の成立を第三者が検証可能にすること**
+> **非公開データを公開せず、プロトコルルールに従った計算または資格条件の成立を第三者が検証可能にすること**
 
 である。
 
 ```mermaid
 flowchart LR
-    PRIVATE[Private Data]
-    RULE[Protocol Rules]
-    PROVER[ZK Prover]
-    PROOF[Proof]
-    VERIFY[Verifier]
-    RESULT[Verified Statement]
+    PRIVATE[非公開データ]
+    RULE[プロトコルルール]
+    PROVER[ZK 証明者]
+    PROOF[証明]
+    VERIFY[検証者]
+    RESULT[検証済みステートメント]
 
     PRIVATE --> PROVER
     RULE --> PROVER
@@ -84,79 +84,79 @@ flowchart LR
     RULE --> VERIFY
 ```
 
-ただし、Creator First Platformは現時点で単一のProof Systemへ全機能を固定しない。
+ただし、Creator First Platformは現時点で単一の証明システムへ全機能を固定しない。
 
-用途ごとにRequirementsを定義し、共通のProof InterfaceとVersioningを設けた上で、適切なProof Systemを選択できるArchitectureを採用する。
+用途ごとに要件を定義し、共通の証明 Interfaceとバージョン管理を設けた上で、適切な証明システムを選択できるアーキテクチャを採用する。
 
 ---
 
-## 3. Primary Use Cases
+## 3. 主要ユースケース
 
 ZKPの主要用途を次の4領域とする。
 
-### Usage Proof
+### 利用実績証明
 
-Playback Eventの詳細を公開せず、
+再生イベントの詳細を公開せず、
 
-- 有効なUsage Eventである
+- 有効な利用実績イベントである
 - 重複がない
-- Verification Ruleを満たす
+- 検証ルールを満たす
 - Aggregateが正しく計算された
 
 ことを証明する。
 
-### Rights Proof
+### 権利証明
 
-契約書や法的Identityを公開せず、
+契約書や法的アイデンティティを公開せず、
 
-- 必要なRights Credentialを持つ
-- 指定時点で有効なRights Stateに属する
-- 必要なDistribution Conditionを満たす
+- 必要な権利資格証明を持つ
+- 指定時点で有効な権利状態に属する
+- 必要な分配 Conditionを満たす
 
 ことを証明する。
 
-### Governance Eligibility Proof
+### ガバナンス適格性証明
 
 個人情報を公開せず、
 
-- 音楽クリエータ院議会 / ユーザ院議会のEligibilityを満たす
-- Eligibility Snapshotに含まれる
-- 必要なCredentialを保有する
+- 音楽クリエータ院議会 / ユーザ院議会の適格性を満たす
+- 適格性スナップショットに含まれる
+- 必要な資格証明を保有する
 
 ことを証明する。
 
-### Distribution Proof
+### 分配証明
 
 ユーザの詳細な視聴履歴や個別契約を公開せず、
 
-- Revenue Snapshot
-- Verified Usage
-- Rights State
-- Distribution Policy
+- 収益スナップショット
+- 検証済み利用実績
+- 権利状態
+- 分配ポリシー
 
-からDistribution Resultが正しく計算されたことを証明する。
+から分配結果が正しく計算されたことを証明する。
 
 ---
 
-## 4. ZKP Is Not the Source of Truth
+## 4. ZKPは正本ではない
 
-Zero-Knowledge Proofは事実そのものを生成しない。
+ゼロ知識証明は事実そのものを生成しない。
 
 例えば、
 
 ```text
-False Input
+偽の入力
     ↓
 Correct ZK Computation
     ↓
-Cryptographically Valid Proof
+Cryptographically 有効証明
 ```
 
 は理論上あり得る。
 
 したがってZKPは、
 
-> **入力されたPrivate Dataに対して計算が正しいこと**
+> **入力された非公開データに対して計算が正しいこと**
 
 を証明するものであり、
 
@@ -164,35 +164,35 @@ Cryptographically Valid Proof
 
 を自動的に保証するものではない。
 
-Usage Event、Rights Credential、Identity等の入力信頼性は、それぞれのProtocol Layerで確保する。
+利用実績イベント、権利資格証明、アイデンティティ等の入力信頼性は、それぞれのプロトコルレイヤーで確保する。
 
 ---
 
-## 5. Proof System Abstraction
+## 5. 証明システム抽象化
 
-Application Layerが特定Proof Systemへ直接依存しないよう、論理的なProof Interfaceを設ける。
+アプリケーションレイヤーが特定証明システムへ直接依存しないよう、論理的な証明 Interfaceを設ける。
 
 概念的には、
 
 ```text
-Protocol Statement
+プロトコルステートメント
         ↓
-Proof Program / Circuit
+証明プログラム / Circuit
         ↓
-Proof Backend
+証明 Backend
    ├── STARK
    ├── SNARK
-   └── Future System
+   └── Future システム
         ↓
-Standard Verification Interface
+標準検証 Interface
 ```
 
 とする。
 
-Proof Recordは少なくとも、
+証明記録は少なくとも、
 
 ```text
-Proof
+証明
 ├── proofType
 ├── proofVersion
 ├── program / circuit identifier
@@ -203,33 +203,33 @@ Proof
 
 を識別できる構造とする。
 
-これにより、将来Proof Systemを変更してもProtocol全体を作り直す必要を減らす。
+これにより、将来証明システムを変更してもプロトコル全体を作り直す必要を減らす。
 
 ---
 
-## 6. zk-STARK as a Strategic Candidate
+## 6. 戦略的候補としてのzk-STARK
 
-Creator First Platformでは、特にUsage OracleおよびDistribution Proofについて **zk-STARKを戦略的な有力候補** とする。
+Creator First Platformでは、特に利用実績オラクルおよび分配証明について **zk-STARKを戦略的な有力候補** とする。
 
 理由は、
 
-- Transparent Setupを採用できる
+- 透明 Setupを採用できる
 - 大量計算の検証に適する
 - Hash-based cryptographic assumptionsを中心に構成できる
-- Post-Quantum Securityを考慮した長期設計と整合しやすい
+- Post-Quantum セキュリティを考慮した長期設計と整合しやすい
 
 ことである。
 
-Usage Oracleでは大量のPlayback Eventを期間単位で集約するため、
+利用実績オラクルでは大量の再生イベントを期間単位で集約するため、
 
 ```text
-Many Usage Events
+Many 利用実績イベント
         ↓
 Large Computation
         ↓
-STARK Proof
+STARK 証明
         ↓
-Public Verification
+公開検証
 ```
 
 という構造との相性がよい。
@@ -238,56 +238,56 @@ Public Verification
 
 ---
 
-## 7. SNARK-family Systems
+## 7. SNARK系証明システム
 
-zk-SNARKおよびPlonk系Proof Systemは、
+zk-SNARKおよびPlonk系証明システムは、
 
-- 小さなProof Size
-- EVM上でのVerification Cost
+- 小さな証明 Size
+- EVM上での検証コスト
 - Tooling
-- Recursive Proof
+- Recursive 証明
 
 等の観点から有力な場合がある。
 
-特にスマートコントラクト上で頻繁にProof Verificationを行う用途では、STARK Proofを直接検証するよりSNARK系Proofへ変換・集約するArchitectureが有利な可能性がある。
+特にスマートコントラクト上で頻繁に証明検証を行う用途では、STARK 証明を直接検証するよりSNARK系証明へ変換・集約するアーキテクチャが有利な可能性がある。
 
 したがって、
 
 ```text
-STARK Computation Proof
+STARK Computation 証明
         ↓
-Recursive / Wrapped Proof
+Recursive / Wrapped 証明
         ↓
-Compact On-chain Verification
+Compact オンチェーン検証
 ```
 
-のようなHybrid Architectureも許容する。
+のようなハイブリッドアーキテクチャも許容する。
 
 ---
 
-## 8. Trusted Setup Policy
+## 8. 信頼されたセットアップのポリシー
 
-Creator First Platformは、可能な限りTrusted Setupへの依存を避ける。
+Creator First Platformは、可能な限り信頼された Setupへの依存を避ける。
 
-Trusted Setupを必要とするProof Systemを採用する場合は、
+信頼された Setupを必要とする証明システムを採用する場合は、
 
 - Setup Procedure
-- Participants
-- Toxic Waste Assumption
-- Ceremony Record
-- Upgrade Procedure
+- 参加者
+- Toxic Waste 仮定
+- Ceremony 記録
+- アップグレード Procedure
 
 を明示する。
 
-Transparent Proof SystemがRequirementsを満たす場合は、原則としてTransparent Systemを優先する。
+透明証明システムが要件を満たす場合は、原則として透明システムを優先する。
 
-ただし、Trusted Setupの有無だけでProof Systemを選択せず、Security、Performance、Operational Complexityを総合的に評価する。
+ただし、信頼された Setupの有無だけで証明システムを選択せず、セキュリティ、実演、運用事項 Complexityを総合的に評価する。
 
 ---
 
-## 9. Post-Quantum Strategy
+## 9. 耐量子戦略
 
-Creator First Platformは長期運用を想定するため、Proof SystemのCryptographic Assumptionsを明示する。
+Creator First Platformは長期運用を想定するため、証明システムのCryptographic Assumptionsを明示する。
 
 特に、
 
@@ -297,57 +297,57 @@ Creator First Platformは長期運用を想定するため、Proof SystemのCryp
 
 等への依存を記録する。
 
-Post-Quantum Securityが重要な長期データやProtocolでは、Hash-basedな構成を持つProof Systemを優先的に評価する。
+Post-Quantum セキュリティが重要な長期データやプロトコルでは、Hash-basedな構成を持つ証明システムを優先的に評価する。
 
 ただし、
 
-> STARKを採用すればPlatform全体が自動的にPost-Quantum Secureになる
+> STARKを採用すればプラットフォーム全体が自動的にPost-Quantum 安全なになる
 
 とはみなさない。
 
-Signature、Wallet、Blockchain、Identity、Commitment等を含むSystem全体のCryptographic Dependencyを別途評価する。
+署名、ウォレット、ブロックチェーン、アイデンティティ、コミットメント等を含むシステム全体のCryptographic Dependencyを別途評価する。
 
 ---
 
-## 10. Usage Oracle Proof
+## 10. 利用実績オラクル証明
 
-ADR-0005 Usage Oracleでは、Distribution PeriodごとにVerified Usage Snapshotを生成する。
+ADR-0005 利用実績オラクルでは、分配期間ごとに検証済み利用実績スナップショットを生成する。
 
 ZKPを利用する場合、概念的に、
 
-Private Inputs:
+非公開 Inputs:
 
 ```text
-Playback Events
-Session / Credential Data
-Validation Data
-Fraud / Duplicate State
+再生イベント
+セッション / 資格証明データ
+検証データ
+不正 / Duplicate 状態
 ```
 
-Public Inputs:
+公開 Inputs:
 
 ```text
-Period Identifier
-Event Commitment
-Verification Rule Version
-Aggregate Usage
+期間 Identifier
+イベントコミットメント
+検証ルール版
+Aggregate 利用実績
 ```
 
 を使用する。
 
-Proofは、
+証明は、
 
-> Aggregate UsageがCommitされたEvent集合と指定されたVerification Ruleから正しく計算された
+> Aggregate 利用実績がコミットされたイベント集合と指定された検証ルールから正しく計算された
 
 ことを証明する。
 
-個々のユーザの視聴履歴をPublic Inputにしてはならない。
+個々のユーザの視聴履歴を公開入力にしてはならない。
 
 ---
 
-## 11. Distribution Proof
+## 11. 分配証明
 
-ADR-0004 音楽クリエーター分配 Modelについて、将来的にDistribution CalculationそのものをZK Proofで検証可能にする。
+ADR-0004 音楽クリエーター分配モデルについて、将来的に分配計算そのものをZK 証明で検証可能にする。
 
 概念的に、
 
@@ -357,31 +357,31 @@ $$
 
 について、
 
-- $R$: Revenue Snapshot
-- $U$: Verified Usage
-- $G$: Rights State
-- $P$: Distribution Policy
-- $D$: Distribution Result
+- $R$: 収益スナップショット
+- $U$: 検証済み利用実績
+- $G$: 権利状態
+- $P$: 分配ポリシー
+- $D$: 分配結果
 
 とする。
 
-Proofは、
+証明は、
 
 $$
 F(R,U,G,P)=D
 $$
 
-が成立することを、必要なPrivate Inputを公開せず証明する。
+が成立することを、必要な非公開入力を公開せず証明する。
 
 ```mermaid
 flowchart LR
-    R[Revenue]
-    U[Usage]
-    G[Rights]
-    P[Policy]
-    ZK[ZK Distribution Program]
-    D[Distribution Result]
-    PROOF[Proof]
+    R[収益]
+    U[利用実績]
+    G[権利]
+    P[ポリシー]
+    ZK[ZK 分配計画]
+    D[分配結果]
+    PROOF[証明]
 
     R --> ZK
     U --> ZK
@@ -393,29 +393,29 @@ flowchart LR
 
 ---
 
-## 12. Rights Proof
+## 12. 権利証明
 
-ADR-0003 Rights Registryでは、PrivateなRights InformationをPublic Blockchainへ保存しない。
+ADR-0003 権利登録台帳では、非公開な権利情報を公開ブロックチェーンへ保存しない。
 
 ZKPを利用して、
 
-> 権利者が特定条件を満たすVerified Credentialを保有する
+> 権利者が特定条件を満たす検証済み資格証明を保有する
 
 ことを証明できる。
 
 例えば、
 
 ```text
-Private
-├── Legal Identity
-├── Contract
-└── Rights Credential
+非公開
+├── 法務アイデンティティ
+├── コントラクト
+└── 権利資格証明
 
-Public
-├── Content Identifier
-├── Rights Type
-├── Validity Condition
-└── Credential Commitment
+公開
+├── コンテンツ Identifier
+├── 権利 Type
+├── 有効性 Condition
+└── 資格証明コミットメント
 ```
 
 という分離を可能にする。
@@ -424,15 +424,15 @@ Public
 
 ---
 
-## 13. Governance Eligibility Proof
+## 13. ガバナンス適格性証明
 
-ADR-0002 Verifiable Sortitionでは、Eligible Setへの参加資格をPrivacy-preservingに証明する用途でZKPを利用できる。
+ADR-0002 検証可能抽選では、適格集合への参加資格をPrivacy-preservingに証明する用途でZKPを利用できる。
 
 例えば、
 
-> この参加者はユーザ院議会参加資格を満たしているが、その法的Identityは公開しない
+> この参加者はユーザ院議会参加資格を満たしているが、その法的アイデンティティは公開しない
 
-というProofを構成できる。
+という証明を構成できる。
 
 また、Nullifier等を利用して、
 
@@ -440,32 +440,32 @@ ADR-0002 Verifiable Sortitionでは、Eligible Setへの参加資格をPrivacy-p
 
 ことを証明する方式を検討する。
 
-具体的なIdentity / Sybil Resistance方式は別ADRまたはSpecificationで決定する。
+具体的なアイデンティティ / シビル耐性方式は別ADRまたは仕様で決定する。
 
 ---
 
-## 14. Public Inputs
+## 14. 公開入力
 
-ZKPのPublic Inputは必要最小限とする。
+ZKPの公開入力は必要最小限とする。
 
-Public Inputには、
+公開入力には、
 
-- Protocol Version
-- Period / Round Identifier
-- Commitment
-- Aggregate Result
-- Policy Version
-- Verification Key Identifier
+- プロトコル版
+- 期間 / ラウンド Identifier
+- コミットメント
+- Aggregate 結果
+- ポリシー版
+- 検証鍵 Identifier
 
 等を使用できる。
 
-個人情報、詳細なPlayback History、Private Contract等をPublic Inputへ含めない。
+個人情報、詳細な再生履歴、非公開コントラクト等を公開入力へ含めない。
 
 ---
 
-## 15. Circuit / Program Versioning
+## 15. 回路・プログラムのバージョン管理
 
-ZK CircuitまたはProof ProgramはProtocolの一部としてVersion管理する。
+ZK回路または証明プログラムはプロトコルの一部として版管理する。
 
 例えば、
 
@@ -478,77 +478,77 @@ eligibility-proof-v1
 
 とする。
 
-Proofには必ずProgram Versionを関連付ける。
+証明には必ず計画版を関連付ける。
 
-Protocol Ruleが変更された場合、
+プロトコルルールが変更された場合、
 
 ```text
-Program v1
+計画 v1
    ↓
 Governance-approved change
    ↓
-Program v2
+計画 v2
 ```
 
-として更新し、過去のProofを検証可能な状態に保つ。
+として更新し、過去の証明を検証可能な状態に保つ。
 
 ---
 
-## 16. Verification Key Management
+## 16. 検証鍵管理
 
-Verification Keyが必要なProof Systemでは、
+検証鍵が必要な証明システムでは、
 
-- Verification Key Identifier
-- Version
-- Activation Time
+- 検証鍵 Identifier
+- 版
+- 有効化 Time
 - Retirement Time
-- Corresponding Program
-- Governance Approval
+- Corresponding 計画
+- ガバナンス Approval
 
 を管理する。
 
-Verification Keyの差し替えだけでProtocol Ruleを秘密裏に変更できる設計を避ける。
+検証鍵の差し替えだけでプロトコルルールを秘密裏に変更できる設計を避ける。
 
 ---
 
-## 17. Recursive Proofs
+## 17. 再帰証明
 
-大量のProofを効率的に扱うためRecursive Proofを利用できる。
+大量の証明を効率的に扱うためRecursive 証明を利用できる。
 
 例えば、
 
 ```text
-Usage Proof 1
-Usage Proof 2
-Usage Proof 3
+利用実績証明 1
+利用実績証明 2
+利用実績証明 3
      ↓
-Recursive Aggregation
+Recursive 集約
      ↓
-Period Usage Proof
+期間利用実績証明
      ↓
-Distribution Proof
+分配証明
 ```
 
 とする。
 
-これにより、大量のEventまたはBatchを少数のProofへ集約できる。
+これにより、大量のイベントまたはバッチを少数の証明へ集約できる。
 
-ただしRecursionの採用はComplexityとSecurity Riskを増加させるため、MVPでは必須としない。
+ただしRecursionの採用はComplexityとセキュリティリスクを増加させるため、MVPでは必須としない。
 
 ---
 
-## 18. On-chain Verification
+## 18. オンチェーン検証
 
-すべてのProofをスマートコントラクト上で直接検証する必要はない。
+すべての証明をスマートコントラクト上で直接検証する必要はない。
 
 用途に応じて、
 
 ```text
-Off-chain Proof
+オフチェーン証明
         ↓
-Independent Verification
+独立検証
         ↓
-Commitment / Verified Result
+コミットメント / 検証済み結果
         ↓
 スマートコントラクト
 ```
@@ -556,44 +556,44 @@ Commitment / Verified Result
 または、
 
 ```text
-Proof
+証明
    ↓
-On-chain Verifier
+オンチェーン検証者
    ↓
-スマートコントラクト Execution
+スマートコントラクト実行
 ```
 
 を選択できる。
 
-On-chain Verificationを採用する場合は、
+オンチェーン検証を採用する場合は、
 
-- Gas Cost
-- Proof Size
-- Verification Latency
-- Chain Compatibility
-- Verifier Contract Security
+- ガスコスト
+- 証明 Size
+- 検証 Latency
+- チェーン Compatibility
+- 検証者コントラクトセキュリティ
 
 を評価する。
 
 ---
 
-## 19. Proof Generation Infrastructure
+## 19. 証明世代インフラ
 
-Proof Generationは計算負荷が高い可能性があるため、Application Serverと分離できるArchitectureとする。
+証明世代は計算負荷が高い可能性があるため、アプリケーションサーバーと分離できるアーキテクチャとする。
 
 ```mermaid
 flowchart LR
-    APP[Application]
-    DATA[Private Data]
-    QUEUE[Proof Job]
-    PROVER[Prover Infrastructure]
-    PROOF[Proof]
-    VERIFY[Verifier]
+    APP[アプリケーション]
+    DATA[非公開データ]
+    QUEUE[証明 Job]
+    PROVER[証明者インフラ]
+    PROOF[証明]
+    VERIFY[検証者]
 
     APP --> DATA --> QUEUE --> PROVER --> PROOF --> VERIFY
 ```
 
-Prover Infrastructureは将来的に、
+証明者インフラは将来的に、
 
 - Platform-operated prover
 - distributed prover
@@ -602,326 +602,326 @@ Prover Infrastructureは将来的に、
 
 等へ拡張できる。
 
-Private Dataを外部Proverへ渡す場合は、PrivacyとTrust Boundaryを明示する。
+非公開データを外部証明者へ渡す場合は、プライバシーと信頼境界を明示する。
 
 ---
 
-## 20. Proof Does Not Replace Audit
+## 20. 証明は監査を代替しない
 
-Cryptographic Verificationが成功しても、
+Cryptographic 検証が成功しても、
 
-- Protocol Rule自体が適切か
-- Input Sourceが正しいか
-- Rights Verificationが法的に妥当か
-- Fraud Detection Policyが公平か
+- プロトコルルール自体が適切か
+- 入力ソースが正しいか
+- 権利検証が法的に妥当か
+- 不正検知ポリシーが公平か
 
 は別問題である。
 
 したがって、
 
 ```text
-Cryptographic Verification
+Cryptographic 検証
 +
-Protocol Audit
+プロトコル監査
 +
-Operational Audit
+運用事項監査
 +
-Governance Oversight
+ガバナンス Oversight
 ```
 
 を組み合わせる。
 
 ---
 
-## 21. Open Source Verification
+## 21. オープンソース検証
 
 可能な範囲で、
 
-- Proof Program
+- 証明プログラム
 - Circuit
-- Verifier
-- Public Input Encoding
-- Verification Procedure
+- 検証者
+- 公開入力 Encoding
+- 検証 Procedure
 
 を公開し、第三者が独立して検証できるようにする。
 
 秘密のCircuitによって「検証可能性」を主張する設計は避ける。
 
-ただし、Fraud Detection等で公開が攻撃を容易にする情報については、公開範囲を別途評価する。
+ただし、不正検知等で公開が攻撃を容易にする情報については、公開範囲を別途評価する。
 
 ---
 
-## 22. Governance
+## 22. ガバナンス
 
-以下はGovernance対象とする。
+以下はガバナンス対象とする。
 
-- Proof System
-- Program / Circuit Version
-- Verification Rules
-- Verification Key
-- Supported Proof Types
+- 証明システム
+- 計画 / Circuit 版
+- 検証ルール
+- 検証鍵
+- Supported 証明 Types
 - Deprecation Schedule
-- Security Parameter
+- セキュリティ Parameter
 
-重大なProof System変更はADRおよびプロトコル仕様を経る。
+重大な証明システム変更はADRおよびプロトコル仕様を経る。
 
-Platform運営者が独断でVerifierを変更し、DistributionやGovernance Eligibilityの意味を変えてはならない。
+プラットフォーム運営者が独断で検証者を変更し、分配やガバナンス適格性の意味を変えてはならない。
 
 ---
 
-## 23. Migration
+## 23. 移行
 
-Proof Systemは将来変更可能でなければならない。
+証明システムは将来変更可能でなければならない。
 
 例えば、
 
 ```text
-Proof System A
+証明システム A
       ↓
-Migration Period
+Migration 期間
       ├── A accepted
       └── B accepted
       ↓
-Proof System B
+証明システム B
 ```
 
 という移行期間を設定できる。
 
-過去のProof Verificationに必要なVerifierやVersion情報は保持する。
+過去の証明検証に必要な検証者や版情報は保持する。
 
 ---
 
-## 24. Failure Handling
+## 24. 障害処理
 
-Proof GenerationまたはVerificationが失敗した場合、
+証明世代または検証が失敗した場合、
 
-- Invalid Proof
-- Prover Failure
+- 無効証明
+- 証明者 Failure
 - Timeout
-- Unsupported Version
-- Verification Key Mismatch
+- Unsupported 版
+- 検証鍵 Mismatch
 
 等を区別する。
 
-Proof Infrastructure障害を理由に、未検証Dataを自動的にVerifiedとして扱ってはならない。
+証明インフラ障害を理由に、未検証データを自動的に検証済みとして扱ってはならない。
 
-必要に応じてDistribution等を保留する。
+必要に応じて分配等を保留する。
 
 ---
 
-## 25. MVP Strategy
+## 25. MVP 戦略
 
 MVPではZKPを最初から全機能へ導入しない。
 
 段階的に、
 
 ```text
-Phase 1
-Deterministic Calculation + Tests
+フェーズ 1
+決定論的計算 + テスト
 
-Phase 2
-Commitments + Independent Verification
+フェーズ 2
+Commitments + 独立検証
 
-Phase 3
-ZK Proof Prototype
+フェーズ 3
+ZK 証明 Prototype
 
-Phase 4
-Production Proof Infrastructure
+フェーズ 4
+本番証明インフラ
 
-Phase 5
-Recursive / On-chain Verification where justified
+フェーズ 5
+Recursive / オンチェーン検証 where justified
 ```
 
 と進める。
 
-最初の実装では、ZKPなしでも同じProtocol Ruleを決定論的に実行・テストできるようにする。
+最初の実装では、ZKPなしでも同じプロトコルルールを決定論的に実行・テストできるようにする。
 
-これにより、Proof SystemとBusiness Logicを分離して検証できる。
+これにより、証明システムと業務ロジックを分離して検証できる。
 
 ---
 
-## 26. Selection Criteria
+## 26. 選定基準
 
-個別用途のProof Systemは少なくとも次の基準で評価する。
+個別用途の証明システムは少なくとも次の基準で評価する。
 
 | Criterion | Description |
 |---|---|
-| Security | Cryptographic assumptions and maturity |
-| Transparency | Trusted setup requirements |
-| Privacy | Ability to protect required private inputs |
-| Proving Cost | CPU, memory, GPU and time requirements |
-| Verification Cost | Off-chain and on-chain verification cost |
-| Proof Size | Storage and network impact |
-| Scalability | Ability to handle large usage datasets |
+| セキュリティ | Cryptographic assumptions・maturity |
+| 透明性 | 信頼された setup requirements |
+| プライバシー | Ability to protect required private inputs |
+| Proving コスト | CPU, memory, GPU・time requirements |
+| 検証コスト | オフチェーン・on-chain verification cost |
+| 証明 Size | ストレージ・network impact |
+| 拡張性 | Ability to handle large usage datasets |
 | Recursion | Efficient proof aggregation support |
-| Tooling | Language, compiler, debugger and test support |
-| EVM Integration | Practicality of smart-contract verification |
-| Auditability | Ability for third parties to inspect implementation |
-| Upgradeability | Ability to migrate without breaking historical verification |
-| Post-Quantum Direction | Long-term cryptographic assumptions |
+| Tooling | Language, compiler, debugger・test support |
+| EVM 連携 | Practicality of smart-contract verification |
+| 監査可能性 | Ability for third parties to inspect implementation |
+| アップグレード可能性 | Ability to migrate without breaking historical verification |
+| Post-Quantum 方向性 | Long-term cryptographic assumptions |
 
-Proof System選択の理由はADRまたはSpecificationに記録する。
+証明システム選択の理由はADRまたは仕様に記録する。
 
 ---
 
-## 27. Invariants
+## 27. 不変条件
 
-### Invariant 1
+### 不変条件 1
 
-ZKPによってPrivate Dataを不必要にPublic Inputへ露出してはならない。
+ZKPによって非公開データを不必要に公開入力へ露出してはならない。
 
-### Invariant 2
+### 不変条件 2
 
-Proof Systemの変更によって過去のProofの意味を不明確にしてはならない。
+証明システムの変更によって過去の証明の意味を不明確にしてはならない。
 
-### Invariant 3
+### 不変条件 3
 
-Proofには対応するProgram / Circuit Versionを識別可能にしなければならない。
+証明には対応する計画 / Circuit 版を識別可能にしなければならない。
 
-### Invariant 4
+### 不変条件 4
 
-Invalid ProofをVerified Resultとして受理してはならない。
+無効証明を検証済み結果として受理してはならない。
 
-### Invariant 5
+### 不変条件 5
 
-Proof Generation失敗時に未検証Dataを自動承認してはならない。
+証明世代失敗時に未検証データを自動承認してはならない。
 
-### Invariant 6
+### 不変条件 6
 
 ZKPを現実世界の入力そのものの真実性の証明として扱ってはならない。
 
-### Invariant 7
+### 不変条件 7
 
-Verifierの変更によってGovernance承認なしにProtocol Ruleを変更してはならない。
+検証者の変更によってガバナンス承認なしにプロトコルルールを変更してはならない。
 
-### Invariant 8
+### 不変条件 8
 
-ZKP導入前後で、基礎となるProtocol Calculationを独立してテスト可能にしなければならない。
+ZKP導入前後で、基礎となるプロトコル計算を独立してテスト可能にしなければならない。
 
 ---
 
-## 28. Alternatives Considered
+## 28. 検討した代替案
 
-### No Zero-Knowledge Proof
+### No ゼロ知識証明
 
-すべての検証をTrusted Serverと通常のDatabase Auditだけで行う。
+すべての検証を信頼されたサーバーと通常のデータベース監査だけで行う。
 
-MVPでは利用可能だが、Privacy-Preserving Verifiabilityという長期目標を満たさないため最終Architectureとして採用しない。
+MVPでは利用可能だが、Privacy-Preserving 検証可能性という長期目標を満たさないため最終アーキテクチャとして採用しない。
 
-### Single Proof System for Everything
+### すべてを単一証明システムで処理
 
 全用途を単一のZKP技術へ固定する。
 
-設計は単純になるが、Usage、Rights、Eligibility、On-chain VerificationでRequirementsが異なるため採用しない。
+設計は単純になるが、利用実績、権利、適格性、オンチェーン検証で要件が異なるため採用しない。
 
-### Fully On-chain Transparent Data
+### 完全オンチェーン透明データ
 
-Privacyを犠牲にして全データをBlockchainへ公開し、ZKPを不要にする。
+プライバシーを犠牲にして全データをブロックチェーンへ公開し、ZKPを不要にする。
 
-ユーザプライバシー、Rights Information、契約機密性の観点から採用しない。
+ユーザプライバシー、権利情報、契約機密性の観点から採用しない。
 
-### ZKP as Business Logic
+### 業務ロジックとしてのZKP
 
-すべてのProtocol Logicを最初からZK Circuit内だけに実装する。
+すべてのプロトコル Logicを最初からZK回路内だけに実装する。
 
 開発・監査・テストを複雑化するため採用しない。
 
-Business Logicを独立して実装し、その計算をProof化できる構造を採用する。
+業務ロジックを独立して実装し、その計算を証明化できる構造を採用する。
 
 ---
 
-## 29. Consequences
+## 29. 影響
 
-### Positive
+### 利点
 
 - ユーザプライバシーと検証可能性を両立できる
-- Usage OracleのTrustを低減できる
-- Distribution Calculationを第三者が検証できる
-- Rights Credentialを公開せず資格を証明できる
-- Governance EligibilityをPrivacy-preservingに検証できる
-- 将来的なOracle Decentralizationを支援できる
-- Proof Systemを用途ごとに最適化できる
+- 利用実績オラクルの信頼を低減できる
+- 分配計算を第三者が検証できる
+- 権利資格証明を公開せず資格を証明できる
+- ガバナンス適格性をPrivacy-preservingに検証できる
+- 将来的なオラクル分散化を支援できる
+- 証明システムを用途ごとに最適化できる
 
-### Negative
+### 欠点
 
-- Prover Infrastructureが必要になる
-- Cryptographic Implementationが複雑になる
-- Proof Programの監査が必要になる
-- Developer Toolingへの依存が増える
-- Proving CostがInfrastructure Costへ影響する
-- Proof System Migrationを設計する必要がある
-- スマートコントラクト VerificationではGas Costが発生する
+- 証明者インフラが必要になる
+- Cryptographic 実装が複雑になる
+- 証明プログラムの監査が必要になる
+- 開発者 Toolingへの依存が増える
+- Proving コストがインフラコストへ影響する
+- 証明システム Migrationを設計する必要がある
+- スマートコントラクト検証ではガスコストが発生する
 - ZKPが保証する範囲について誤解を防ぐ必要がある
 
 ---
 
-## 30. Security Considerations
+## 30. セキュリティ上の考慮事項
 
-ZKP Layerは少なくとも次のリスクを考慮する。
+ZKP レイヤーは少なくとも次のリスクを考慮する。
 
-- Unsound Proof System
-- Circuit / Program Bug
-- Incorrect Public Input Encoding
-- Verification Key Substitution
-- Prover Compromise
-- Verifier Contract Vulnerability
-- Trusted Setup Failure
-- Cryptographic Library Vulnerability
-- Proof Replay
-- Version Confusion
+- Unsound 証明システム
+- Circuit / 計画バグ
+- Incorrect 公開入力 Encoding
+- 検証鍵 Substitution
+- 証明者 Compromise
+- 検証者コントラクト Vulnerability
+- 信頼された Setup Failure
+- Cryptographic ライブラリ Vulnerability
+- 証明 Replay
+- 版 Confusion
 - Side-channel Leakage
-- Private Input Leakage
-- Denial of Service against Prover Infrastructure
-- Invalid Migration
-- Weak Security Parameters
+- 非公開入力 Leakage
+- Denial of サービス against 証明者インフラ
+- 無効 Migration
+- Weak セキュリティパラメータ
 
-Proof Systemの採用前にはSecurity ReviewとIndependent Auditを行う。
+証明システムの採用前にはセキュリティレビューと独立監査を行う。
 
 ---
 
-## 31. Relationship to Other ADRs
+## 31. 他のADRとの関係
 
-ADR-0002 Verifiable Sortitionでは、Governance EligibilityをPrivacy-preservingに証明する用途がある。
+ADR-0002 検証可能抽選では、ガバナンス適格性をPrivacy-preservingに証明する用途がある。
 
-ADR-0003 Rights Registryでは、Rights Credentialや契約情報を公開せず条件成立を証明する用途がある。
+ADR-0003 権利登録台帳では、権利資格証明や契約情報を公開せず条件成立を証明する用途がある。
 
-ADR-0004 音楽クリエーター分配 Modelでは、Distribution Calculationの正当性を証明する用途がある。
+ADR-0004 音楽クリエーター分配モデルでは、分配計算の正当性を証明する用途がある。
 
-ADR-0005 Usage Oracleでは、Playback Eventを公開せずVerified Usage Aggregateを証明する用途がある。
+ADR-0005 利用実績オラクルでは、再生イベントを公開せず検証済み利用実績 Aggregateを証明する用途がある。
 
-ADR-0006はこれらを横断するZero-Knowledge Proof Strategyを定義する。
+ADR-0006はこれらを横断するゼロ知識証明戦略を定義する。
 
 ```text
-ADR-0002 Sortition ───────┐
-ADR-0003 Rights ──────────┤
-ADR-0004 Distribution ────┼──> ADR-0006 ZKP Strategy
-ADR-0005 Usage Oracle ────┘
+ADR-0002 抽選 ───────┐
+ADR-0003 権利 ──────────┤
+ADR-0004 分配 ────┼──> ADR-0006 ZKP 戦略
+ADR-0005 利用実績オラクル ────┘
                               ↓
-                     Proof Specifications
+                     証明 Specifications
                               ↓
-                     Prover / Verifier
+                     証明者 / 検証者
 ```
 
 ---
 
-## 32. Related Documents
+## 32. 関連文書
 
-- Whitepaper: Vision
-- Whitepaper: Platform Architecture
-- Whitepaper: Governance
-- Whitepaper: Technology
-- Whitepaper: Security
-- Whitepaper: Infrastructure / Cost
-- ADR-0002: Verifiable Sortition
-- ADR-0003: Rights Registry
-- ADR-0004: 音楽クリエーター分配 Model
-- ADR-0005: Usage Oracle
+- ホワイトペーパー: ビジョン
+- ホワイトペーパー: プラットフォームアーキテクチャ
+- ホワイトペーパー: ガバナンス
+- ホワイトペーパー: Technology
+- ホワイトペーパー: セキュリティ
+- ホワイトペーパー: インフラ / コスト
+- ADR-0002: 検証可能抽選
+- ADR-0003: 権利登録台帳
+- ADR-0004: 音楽クリエーター分配モデル
+- ADR-0005: 利用実績オラクル
 
 ---
 
-## 33. Follow-up Specifications
+## 33. 後続仕様
 
-本ADRの採択後、少なくとも次のSpecificationを作成する。
+本ADRの採択後、少なくとも次の仕様を作成する。
 
 - `protocol/zk-proof-interface-spec.md`
 - `protocol/usage-proof-spec.md`
@@ -929,12 +929,12 @@ ADR-0005 Usage Oracle ────┘
 - `protocol/rights-proof-spec.md`
 - `protocol/eligibility-proof-spec.md`
 
-さらに、最初のZKP PrototypeについてProof Systemを比較し、必要に応じて、
+さらに、最初のZKP Prototypeについて証明システムを比較し、必要に応じて、
 
 - STARK implementation ADR
 - Recursive proof ADR
-- On-chain verifier ADR
+- オンチェーン verifier ADR
 
 を追加する。
 
-最初の実証対象としてはADR-0005 Usage OracleのUsage Snapshot Proofを優先する。
+最初の実証対象としてはADR-0005 利用実績オラクルの利用実績スナップショット証明を優先する。

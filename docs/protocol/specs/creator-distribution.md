@@ -1,6 +1,6 @@
 ---
 title: SPEC-DISTRIBUTION-001 音楽クリエーター分配
-description: Revenue・Usage・Rights・Policyから音楽クリエーター分配 Allocationを決定論的に算出するDraft プロトコル仕様
+description: 収益・利用実績・権利・ポリシーから音楽クリエーター分配配分を決定論的に算出する草案プロトコル仕様
 editLink: false
 ---
 

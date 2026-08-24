@@ -1,84 +1,84 @@
 ---
-description: Web2アカウント、Wallet、本人確認、権限、Recoveryを分離して接続するIdentity Architectureの設計案。
+description: Web2アカウント、ウォレット、本人確認、権限、復旧を分離して接続するアイデンティティアーキテクチャの設計案。
 ---
 
-# ADR-0008: Account / Wallet / Identity Strategy
+# ADR-0008: アカウント / ウォレット / アイデンティティ戦略
 
-**Status:** Proposed  
-**Date:** 2026-07-29
-**Last Updated:** 2026-08-23
+**状態:** 提案
+**日付:** 2026-07-29
+**最終更新日:** 2026-08-23
 
-## 1. Context
+## 1. 背景
 
-Creator First Platform は、音楽クリエーター と ユーザ がコンテンツを利用し、権利を管理し、Stablecoinで支払いを行い、音楽クリエーター分配を受け取り、Governanceへ参加できるPlatformを目指す。
+Creator First Platform は、音楽クリエーターとユーザがコンテンツを利用し、権利を管理し、ステーブルコインで支払いを行い、音楽クリエーター分配を受け取り、ガバナンスへ参加できるプラットフォームを目指す。
 
 これまでのADRでは、
 
-- ADR-0002 Verifiable Sortition
-- ADR-0003 Rights Registry
-- ADR-0004 音楽クリエーター分配 Model
-- ADR-0005 Usage Oracle
-- ADR-0006 Zero-Knowledge Proof Strategy
-- ADR-0007 Blockchain / L2 Strategy
+- ADR-0002 検証可能抽選
+- ADR-0003 権利登録台帳
+- ADR-0004 音楽クリエーター分配モデル
+- ADR-0005 利用実績オラクル
+- ADR-0006 ゼロ知識証明戦略
+- ADR-0007 ブロックチェーン / L2 戦略
 
 を定義した。
 
-これらを実際のApplicationへ接続するためには、
+これらを実際のアプリケーションへ接続するためには、
 
 - ユーザアカウント
 - 音楽クリエーターアカウント
-- Wallet
-- Payment Authorization
-- Governance Identity
-- 権利者 Identity
-- Credentials
+- ウォレット
+- 決済認可
+- ガバナンスアイデンティティ
+- 権利者アイデンティティ
+- 資格証明
 
 の関係を明確にする必要がある。
 
 単純に、
 
 ```text
-Wallet Address = ユーザ本人性
+ウォレットアドレス = ユーザ本人性
 ```
 
 とすると、
 
-- Wallet変更時のAccount継続
-- 複数Wallet利用
-- Wallet紛失
-- Sybil Resistance
-- Privacy
-- Governance Eligibility
-- 音楽クリエーター／権利者 Verification
-- Account Recovery
+- ウォレット変更時のアカウント継続
+- 複数ウォレット利用
+- ウォレット紛失
+- シビル耐性
+- プライバシー
+- ガバナンス適格性
+- 音楽クリエーター／権利者検証
+- アカウント復旧
 
 を適切に扱えない。
 
-逆に、従来型のEmail / Password Accountだけでは、Stablecoin SettlementやSelf-custody Walletとの接続が不十分になる。
+逆に、従来型のEmail / Password アカウントだけでは、ステーブルコイン精算やSelf-custody ウォレットとの接続が不十分になる。
 
-したがってCreator First Platformでは、Account、Wallet、Identity、Credentialを分離したArchitectureが必要である。
+したがってCreator First Platformでは、アカウント、ウォレット、アイデンティティ、資格証明を分離したアーキテクチャが必要である。
 
 ---
 
-## 2. Decision
+## 2. 決定
 
 Creator First Platform は、
 
-> **Account ≠ Wallet ≠ Legal Identity ≠ Governance Identity**
+> **アカウント ≠ ウォレット ≠ 法務アイデンティティ ≠ ガバナンスアイデンティティ**
 
 を基本原則とする。
 
-Application Accountを中心に、複数のWalletおよびCredentialを関連付けられる構造を採用する。
+アプリケーションアカウントを中心に、複数のウォレットおよび資格証明を関連付けられる構造を採用する。
 
 ```mermaid
 flowchart TD
-    ACCOUNT[Platform Account]
-    WALLET1[Wallet A]
-    WALLET2[Wallet B]
+    ACCOUNT[プラットフォームアカウント]
+    WALLET1[ウォレット A]
+    WALLET2[ウォレット B]
     CREATOR[音楽クリエーター資格証明]
-    RIGHTS[Rights Credential]
-    GOV[Governance Credential]
-    LEGAL[Verified Legal Identity]
+    RIGHTS[権利資格証明]
+    GOV[ガバナンス資格証明]
+    LEGAL[検証済み法務アイデンティティ]
 
     ACCOUNT --> WALLET1
     ACCOUNT --> WALLET2
@@ -88,46 +88,46 @@ flowchart TD
     ACCOUNT -. restricted link .-> LEGAL
 ```
 
-Legal Identity等の機密情報は、必要な場合のみ適切なAccess Controlの下で管理し、Public Blockchainへ直接記録しない。
+法務アイデンティティ等の機密情報は、必要な場合のみ適切なアクセス制御の下で管理し、公開ブロックチェーンへ直接記録しない。
 
 ---
 
-## 3. Account
+## 3. アカウント
 
-AccountはCreator First Platform上で継続的なService利用を表すApplication-level Entityとする。
+アカウントはCreator First Platform上で継続的なサービス利用を表すApplication-level 主体とする。
 
-Accountは、
+アカウントは、
 
-- Profile
-- Subscription State
-- Content Library
+- プロフィール
+- サブスクリプション状態
+- コンテンツライブラリ
 - 音楽クリエーター登録
 - Rights-related References
-- Governance Eligibility Reference
-- Linked Wallets
-- Security Settings
+- ガバナンス適格性参照
+- 連携済み Wallets
+- セキュリティ Settings
 
 等を関連付ける。
 
-Account IdentifierをPublic Wallet Addressへ固定しない。
+アカウント Identifierを公開ウォレットアドレスへ固定しない。
 
 ---
 
-## 4. Wallet
+## 4. ウォレット
 
-WalletはBlockchain上のAsset ControlおよびSignatureを担当する。
+ウォレットはブロックチェーン上の資産制御および署名を担当する。
 
-Walletは、
+ウォレットは、
 
-- Stablecoin Payment
-- Distribution Receipt
-- On-chain Authorization
-- スマートコントラクト Interaction
-- Cryptographic Signature
+- ステーブルコイン決済
+- 分配 Receipt
+- オンチェーン認可
+- スマートコントラクト連携
+- Cryptographic 署名
 
 等に利用する。
 
-ただしWallet Addressだけから、
+ただしウォレットアドレスだけから、
 
 - 一人のユーザである
 - 音楽クリエーターである
@@ -137,63 +137,63 @@ Walletは、
 と判断してはならない。
 
 ```text
-Wallet
+ウォレット
     =
-Cryptographic / Asset Control
+Cryptographic / 資産制御
 
-Wallet
+ウォレット
     ≠
-Complete Identity
+Complete アイデンティティ
 ```
 
 ---
 
-## 5. Multiple Wallets
+## 5. 複数ウォレット
 
-一つのAccountに複数Walletを関連付けられるようにする。
+一つのアカウントに複数ウォレットを関連付けられるようにする。
 
 例えば、
 
 ```text
-Account
-├── Payment Wallet
-├── Distribution Wallet
-└── Governance Wallet
+アカウント
+├── 決済ウォレット
+├── 分配ウォレット
+└── ガバナンスウォレット
 ```
 
 を分離できる。
 
-同一Walletを複数用途に使用することも許容できるが、Protocolがそれを強制しない。
+同一ウォレットを複数用途に使用することも許容できるが、プロトコルがそれを強制しない。
 
-これによりPrivacy、Security、Operational Flexibilityを向上させる。
+これによりプライバシー、セキュリティ、運用事項 Flexibilityを向上させる。
 
 ---
 
-## 6. Wallet Linking
+## 6. ウォレット連携
 
-WalletをAccountへ追加する際は、Wallet ControlをCryptographic Signatureによって確認する。
+ウォレットをアカウントへ追加する際は、ウォレット制御をCryptographic 署名によって確認する。
 
 概念的には、
 
 ```text
-Account Session
+アカウントセッション
       ↓
-Link Wallet Request
+連携ウォレットリクエスト
       ↓
-Server Challenge
+サーバー異議申立て
       ↓
-Wallet Signature
+ウォレット署名
       ↓
-Signature Verification
+署名検証
       ↓
-Wallet Linked
+ウォレット連携済み
 ```
 
 とする。
 
-Wallet Addressを入力しただけでAccountへ登録してはならない。
+ウォレットアドレスを入力しただけでアカウントへ登録してはならない。
 
-Challengeには、
+異議申立てには、
 
 - nonce
 - domain
@@ -201,118 +201,118 @@ Challengeには、
 - expiration
 - chain context
 
-等を含め、Replay Attackを防止する。
+等を含め、Replay 攻撃を防止する。
 
 ---
 
-## 7. Wallet Unlinking
+## 7. ウォレット連携解除
 
-Walletの関連付け解除もAccount Security Operationとして扱う。
+ウォレットの関連付け解除もアカウントセキュリティ運用として扱う。
 
 特に、
 
-- Distribution Destination
-- Governance Authorization
-- Active Subscription Payment
+- 分配 Destination
+- ガバナンス認可
+- 有効サブスクリプション決済
 
-に利用中のWalletについては、解除前に代替手段の確認を要求できる。
+に利用中のウォレットについては、解除前に代替手段の確認を要求できる。
 
-Wallet履歴は監査可能にするが、不要な個人情報を公開しない。
+ウォレット履歴は監査可能にするが、不要な個人情報を公開しない。
 
 ---
 
-## 8. Wallet Change and Recovery
+## 8. ウォレット変更・復旧
 
-Wallet紛失によってPlatform Account全体が失われる設計を避ける。
+ウォレット紛失によってプラットフォームアカウント全体が失われる設計を避ける。
 
-Account Recovery後、新しいWalletを関連付けられるようにする。
+アカウント復旧後、新しいウォレットを関連付けられるようにする。
 
 ```text
-Old Wallet Lost
+Old ウォレット Lost
       ↓
-Account Recovery
+アカウント復旧
       ↓
-Security Verification
+セキュリティ検証
       ↓
-New Wallet Linked
+新規ウォレット連携済み
 ```
 
-ただし、Blockchain上で旧Walletが保有するSelf-custody AssetをPlatformが勝手に移動できることを意味しない。
+ただし、ブロックチェーン上で旧ウォレットが保有するSelf-custody 資産をプラットフォームが勝手に移動できることを意味しない。
 
-Account RecoveryとBlockchain Asset Recoveryを区別する。
+アカウント復旧とブロックチェーン資産復旧を区別する。
 
 ---
 
-## 9. Authentication
+## 9. 認証
 
-Platform Authenticationは特定方式へ固定しない。
+プラットフォーム認証は特定方式へ固定しない。
 
 候補には、
 
 - Passkey
-- Email-based Authentication
-- Wallet Signature
-- Federated Identity
-- Hardware-backed Authentication
+- Email-based 認証
+- ウォレット署名
+- Federated アイデンティティ
+- Hardware-backed 認証
 
 等がある。
 
-長期的にはPasskey等のPhishing-resistant Authenticationを優先的に評価する。
+長期的にはPasskey等のPhishing-resistant 認証を優先的に評価する。
 
-Wallet Signatureのみを唯一のLogin Methodとしない。
+ウォレット署名のみを唯一のLogin Methodとしない。
 
 ---
 
-## 10. Authentication and Authorization
+## 10. 認証・認可
 
-AuthenticationとAuthorizationを分離する。
+認証と認可を分離する。
 
 ```text
-Authentication:
-"Who controls this Account session?"
+認証:
+"Who controls this アカウント session?"
 
-Authorization:
-"Is this Account allowed to perform this operation?"
+認可:
+"Is this アカウント allowed to perform this operation?"
 ```
 
-例えばAccountへLoginできても、
+例えばアカウントへLoginできても、
 
 - 音楽クリエーターの権利変更
-- Distribution Address変更
-- Governance Vote
-- Treasury Operation
+- 分配アドレス変更
+- ガバナンス投票
+- 資金庫運用
 
-には追加CredentialまたはStep-up Authenticationを要求できる。
+には追加資格証明またはStep-up 認証を要求できる。
 
 ---
 
-## 11. Identity Layers
+## 11. アイデンティティレイヤー
 
-Identityを単一のIdentity Recordへ統合しない。
+アイデンティティを単一のアイデンティティ記録へ統合しない。
 
 概念的に、
 
 ```text
-Application Identity
+アプリケーションアイデンティティ
 音楽クリエーター本人性
-Rights Identity
-Payment Identity
-Governance Identity
-Legal Identity
+権利アイデンティティ
+決済アイデンティティ
+ガバナンスアイデンティティ
+法務アイデンティティ
 ```
 
 を区別する。
 
-同じPersonに関連する場合でも、必要のないLayer間で情報を共有しない。
+同じPersonに関連する場合でも、必要のないレイヤー間で情報を共有しない。
 
 ---
 
 ## 12. 音楽クリエーター本人性
 
-音楽クリエーターとしてContentを登録するためには、音楽クリエーター登録 Processを経る。
+音楽クリエーターとしてコンテンツを登録するためには、音楽クリエーター登録手続を経る。
 
 ```text
-Account
+アカウント
    ↓
 音楽クリエーター登録
    ↓
@@ -321,7 +321,7 @@ Account
 
 音楽クリエーター資格証明は、
 
-> このAccountがPlatform上で音楽クリエーターとして承認されている
+> このアカウントがプラットフォーム上で音楽クリエーターとして承認されている
 
 ことを表す。
 
@@ -330,56 +330,56 @@ Account
 ```text
 音楽クリエーター資格証明
     ≠
-Rights Ownership
+権利所有
 ```
 
 とする。
 
 ---
 
-## 13. Rights Identity
+## 13. 権利アイデンティティ
 
-権利者としての資格はRights Registryによって管理する。
+権利者としての資格は権利登録台帳によって管理する。
 
-Legal IdentityやContract Evidenceが必要な場合でも、それらをApplication Profileへ無条件に公開しない。
+法務アイデンティティやコントラクト証跡が必要な場合でも、それらをアプリケーションプロフィールへ無条件に公開しない。
 
-Rights Credentialを利用して、
+権利資格証明を利用して、
 
-> 特定のRights ClaimまたはVerified Rights Stateと関係する主体である
+> 特定の権利主張または検証済み権利状態と関係する主体である
 
 ことを表現できる。
 
 ---
 
-## 14. Governance Identity
+## 14. ガバナンスアイデンティティ
 
-ADR-0002のVerifiable Sortitionでは、
+ADR-0002の検証可能抽選では、
 
-> One Eligible Person = One Sortition Opportunity
+> One 適格 Person = One 抽選機会
 
 を基本原則とする。
 
-したがってGovernance IdentityをWallet Addressだけで表現してはならない。
+したがってガバナンスアイデンティティをウォレットアドレスだけで表現してはならない。
 
 ```text
-Account
+アカウント
    ↓
-Eligibility Verification
+適格性検証
    ↓
-Governance Credential
+ガバナンス資格証明
    ↓
-Sortition Eligibility
+抽選適格性
 ```
 
-Governance CredentialはSybil Resistanceを満たす必要がある。
+ガバナンス資格証明はシビル耐性を満たす必要がある。
 
-具体的なProof of Personhood / Credential方式は別ADRまたはSpecificationで決定する。
+具体的な証明 of 一人性 / 資格証明方式は別ADRまたは仕様で決定する。
 
 ---
 
-## 15. Privacy-preserving Credentials
+## 15. プライバシー保護型資格証明
 
-Creator First Platformは、必要に応じてPrivacy-preserving Credentialを利用できる。
+Creator First Platformは、必要に応じてPrivacy-preserving 資格証明を利用できる。
 
 例えば、
 
@@ -390,124 +390,124 @@ Creator First Platformは、必要に応じてPrivacy-preserving Credentialを�
 - 氏名
 - 生年月日
 - 住所
-- Wallet履歴
+- ウォレット履歴
 
 を公開する必要はない。
 
-ADR-0006に従い、Zero-Knowledge Proof等を利用してCredentialの条件成立のみを証明する方式を検討する。
+ADR-0006に従い、ゼロ知識証明等を利用して資格証明の条件成立のみを証明する方式を検討する。
 
 ---
 
-## 16. Nullifiers
+## 16. 無効化識別子
 
-匿名またはPrivacy-preserving Credentialを利用する場合でも、同一資格の多重使用を防ぐ必要がある。
+匿名またはPrivacy-preserving 資格証明を利用する場合でも、同一資格の多重使用を防ぐ必要がある。
 
-例えばGovernance Sortition Entryに、
+例えばガバナンス抽選登録項目に、
 
 ```text
-Credential
+資格証明
    ↓
 Context-specific Nullifier
    ↓
-One Valid Entry
+One 有効登録項目
 ```
 
 という方式を利用できる。
 
-Nullifierは異なるService Context間でユーザ追跡 Identifierとして再利用しない。
+Nullifierは異なるサービス背景間でユーザ追跡 Identifierとして再利用しない。
 
-具体方式はEligibility Proof Specificationで定義する。
+具体方式は適格性証明仕様で定義する。
 
 ---
 
-## 17. Subscription Payment
+## 17. サブスクリプション決済
 
-ユーザは関連付けられたWalletを使用してJPYC等のApproved Settlement AssetでSubscription Paymentを行える。
+ユーザは関連付けられたウォレットを使用してJPYC等の承認済み精算資産でサブスクリプション決済を行える。
 
-Subscription Price、Payment Intent、Payment Eventおよび会計上の受領額は承認済みSettlement Assetで表現する。ETH等のNative Gas TokenはNetwork Feeであり、Subscription Paymentではない。
+サブスクリプション価格、決済意思、決済イベントおよび会計上の受領額は承認済み精算資産で表現する。ETH等のネイティブガストークンはネットワーク手数料であり、サブスクリプション決済ではない。
 
 概念的には、
 
 ```mermaid
 flowchart LR
     USER[ユーザアカウント]
-    WALLET[Linked Wallet]
-    AUTH[Payment Authorization]
-    CONTRACT[Subscription Contract]
-    ASSET[Approved Stablecoin]
-    STATE[Subscription State]
+    WALLET[連携済みウォレット]
+    AUTH[決済認可]
+    CONTRACT[サブスクリプションコントラクト]
+    ASSET[承認済みステーブルコイン]
+    STATE[サブスクリプション状態]
 
     USER --> WALLET --> AUTH --> CONTRACT
     ASSET --> CONTRACT
     CONTRACT --> STATE
 ```
 
-Wallet保有だけでSubscriptionが有効になるわけではない。
+ウォレット保有だけでサブスクリプションが有効になるわけではない。
 
-指定Asset、Chain、Contract、Amount、WalletおよびPayment Intentに一致するTransferがFinality条件を満たした場合だけ、Paymentの成立とSubscription Stateを明示的に関連付ける。
+指定資産、チェーン、コントラクト、Amount、ウォレットおよび決済意思に一致する転送がファイナリティ条件を満たした場合だけ、決済の成立とサブスクリプション状態を明示的に関連付ける。
 
 ---
 
-## 18. Recurring Payment
+## 18. 継続決済
 
-Blockchain Walletでは従来型Credit Cardと同じ自動引落しを当然には仮定できない。
+ブロックチェーンウォレットでは従来型Credit Cardと同じ自動引落しを当然には仮定できない。
 
-Recurring Subscriptionには、
+継続サブスクリプションには、
 
 - ユーザ-approved allowance
 - Permit-based authorization
-- Smart Account authorization
-- Periodic user approval
-- Other bounded authorization
+- スマートアカウント authorization
+- 定期的 user approval
+- その他 bounded authorization
 
 等を利用できる。
 
 重要な原則は、
 
-> **Platformへ無制限・無期限のAsset Controlを与えない**
+> **プラットフォームへ無制限・無期限の資産制御を与えない**
 
 ことである。
 
-Recurring Payment Authorizationには、
+継続決済認可には、
 
-- Asset
+- 資産
 - Maximum Amount
-- Period
+- 期間
 - Expiration
-- Recipient / Contract
-- Revocation
+- Recipient / コントラクト
+- 失効
 
 を明示できる構造を優先する。
 
 ---
 
-## 19. Payment Authorization Is Not Identity
+## 19. 決済認可ではないアイデンティティ
 
-Stablecoinを支払ったWalletが、そのままGovernance IdentityやLegal Identityになるとは限らない。
+ステーブルコインを支払ったウォレットが、そのままガバナンスアイデンティティや法務アイデンティティになるとは限らない。
 
 例えば、
 
 ```text
 ユーザアカウント
     ↓
-Payment Wallet A
+決済ウォレット A
 
 ユーザアカウント
     ↓
-Governance Credential B
+ガバナンス資格証明 B
 ```
 
 という分離を許容する。
 
-これによりWallet Transaction HistoryからGovernance Participation等が容易に関連付けられることを避けられる。
+これによりウォレットトランザクション履歴からガバナンス参加等が容易に関連付けられることを避けられる。
 
 ---
 
-## 20. 音楽クリエーター分配 Wallet
+## 20. 音楽クリエーター分配ウォレット
 
-音楽クリエーター／権利者はDistributionを受け取るWalletを登録できる。
+音楽クリエーター／権利者は分配を受け取るウォレットを登録できる。
 
-Distribution Wallet変更は重要なSecurity Operationとして扱う。
+分配ウォレット変更は重要なセキュリティ運用として扱う。
 
 少なくとも、
 
@@ -518,156 +518,156 @@ Distribution Wallet変更は重要なSecurity Operationとして扱う。
 
 等を検討する。
 
-Account TakeoverによるPayment Address Substitutionを防止する。
+アカウント乗っ取りによる決済アドレス Substitutionを防止する。
 
 ---
 
-## 21. Smart Accounts / Account Abstraction
+## 21. スマートアカウント・アカウント抽象化
 
-ユーザ体験向上のため、Smart Account / Account Abstractionを利用できる。
+ユーザ体験向上のため、スマートアカウント / アカウント抽象化を利用できる。
 
 期待される機能には、
 
-- Gas Sponsorship
+- ガス代支援
 - Batched Transactions
-- Session Keys
+- セッション Keys
 - Spending Limits
-- Recovery
-- Recurring Authorization
+- 復旧
+- 継続認可
 
 等がある。
 
 ```text
 ユーザ
   ↓
-Simple Application Action
+単純アプリケーション対応
   ↓
-Smart Account
+スマートアカウント
   ↓
-Blockchain Transactions
+ブロックチェーン Transactions
 ```
 
-ただしADR-0007と同様に、Protocol Coreを特定Account Abstraction Providerへ固定しない。
+ただしADR-0007と同様に、プロトコル Coreを特定アカウント抽象化事業者へ固定しない。
 
 ---
 
-## 22. Gas Abstraction
+## 22. ガス抽象化
 
-一般ユーザにGas Tokenの購入を必須としないUXを目標とする。
+一般ユーザにガストークンの購入を必須としないUXを目標とする。
 
-例えばSubscription Payment時に、
+例えばサブスクリプション決済時に、
 
 ```text
 ユーザが支払う JPYC
 ```
 
-だけを意識し、Gas処理は、
+だけを意識し、ガス処理は、
 
-- Paymaster
-- Relayer
-- Sponsored Transaction
-- Fee Conversion
-- Platform Subsidy
+- ペイマスター
+- リレイヤー
+- Sponsored トランザクション
+- 手数料 Conversion
+- プラットフォーム Subsidy
 
 等で抽象化できる。
 
-Gas Sponsorship PolicyはAbuse ResistanceとCost Controlを考慮する。
+ガス代支援ポリシーは不正利用耐性とコスト制御を考慮する。
 
-RelayerまたはPaymasterの受付結果、Transaction HashまたはGas支払だけをSubscription Paymentの証拠としてはならない。Settlement Adapterは承認済みStablecoin Transferを独立に検証する。
+リレイヤーまたはペイマスターの受付結果、トランザクションハッシュまたはガス支払だけをサブスクリプション決済の証拠としてはならない。精算アダプターは承認済みステーブルコイン転送を独立に検証する。
 
-Testnet Demoでは`MockJPYC`を支払資産とし、Faucet由来のNative TokenはRelayerのGasにだけ使用する。ユーザへTestnet ETHの取得を要求せず、Mainnet Asset、本番Walletまたは本番秘密鍵を使用しない。
+テストネットデモでは`MockJPYC`を支払資産とし、Faucet由来のネイティブトークンはリレイヤーのガスにだけ使用する。ユーザへテストネット ETHの取得を要求せず、Mainnet 資産、本番ウォレットまたは本番秘密鍵を使用しない。
 
-2026-08-23の公開テストユーザ利用フローは、Account／Wallet／SubscriptionのUI境界を先行検証する暫定実装である。Same-originの検証済みManifestがSepolia、全Contract AddressおよびSource Commitを`active`として公開した場合だけ書込みを許し、任意Address入力、Mainnet追加または自動接続を認めない。現段階ではRelayer／Paymasterが未実装であるため、Walletによる書込みはユーザのSepolia ETHをGasに必要とし、上記のGas Sponsored終了条件を満たさない。Profile AliasとWallet AddressはPlatform Accountとして永続結合しない。
+2026-08-23の公開テストユーザ利用フローは、アカウント／ウォレット／サブスクリプションのUI境界を先行検証する暫定実装である。Same-originの検証済みマニフェストがSepolia、全コントラクトアドレスおよびソースコミットを`active`として公開した場合だけ書込みを許し、任意アドレス入力、Mainnet追加または自動接続を認めない。現段階ではリレイヤー／ペイマスターが未実装であるため、ウォレットによる書込みはユーザのSepolia ETHをガスに必要とし、上記のガス Sponsored終了条件を満たさない。プロフィール Aliasとウォレットアドレスはプラットフォームアカウントとして永続結合しない。
 
 ---
 
-## 23. Session Authorization
+## 23. セッション認可
 
-Player Appが楽曲再生ごとにWallet Signatureを要求する設計は採用しない。
+プレーヤーアプリが楽曲再生ごとにウォレット署名を要求する設計は採用しない。
 
-Login Sessionまたは限定されたSession Credentialを利用し、
+Login セッションまたは限定されたセッション資格証明を利用し、
 
 ```text
-Strong Authentication
+強固な認証
       ↓
-Session Established
+セッション Established
       ↓
-Normal Playback
+Normal 再生
 ```
 
 とする。
 
-Blockchain SignatureはPayment、Wallet Linking、重要なAuthorization等の必要な操作に限定する。
+ブロックチェーン署名は決済、ウォレット連携、重要な認可等の必要な操作に限定する。
 
 ---
 
-## 24. Device Binding
+## 24. 端末への結付け
 
-必要に応じてAccount SecurityやUsage Fraud ResistanceのためDevice-related Evidenceを利用できる。
+必要に応じてアカウントセキュリティや利用実績不正耐性のためDevice-related 証跡を利用できる。
 
 ただし、
 
 - Permanent Device Fingerprinting
 - Cross-service Tracking
-- Unnecessary Hardware Identifier Collection
+- Unnecessary Hardware Identifier コレクション
 
 を避ける。
 
-Device EvidenceはPrivacy Principleに従って最小化する。
+Device 証跡はプライバシー原則に従って最小化する。
 
 ---
 
-## 25. Personal Information
+## 25. 個人情報
 
-個人情報はPublic Blockchainへ記録しない。
+個人情報は公開ブロックチェーンへ記録しない。
 
 特に、
 
-- Legal Name
-- Address
-- Date of Birth
+- 法務名称
+- アドレス
+- 日付 of Birth
 - Phone Number
-- Email Address
-- Identity Document
-- Bank Information
+- Email アドレス
+- アイデンティティ Document
+- Bank 情報
 
-をOn-chain Dataとして保存してはならない。
+をオンチェーンデータとして保存してはならない。
 
-必要な場合はOff-chainでAccess Control、Encryption、Retention Policyを適用する。
+必要な場合はオフチェーンでアクセス制御、暗号化、保存期間ポリシーを適用する。
 
 ---
 
-## 26. Identity Provider Independence
+## 26. アイデンティティプロバイダーからの独立
 
-Creator First Platformは、単一のIdentity ProviderへPlatform Identity全体を依存させない。
+Creator First Platformは、単一のアイデンティティ事業者へプラットフォームアイデンティティ全体を依存させない。
 
-外部Identity Verification Serviceを利用する場合でも、
+外部アイデンティティ検証サービスを利用する場合でも、
 
 ```text
-Provider Result
+事業者結果
       ↓
-Platform Credential
+プラットフォーム資格証明
 ```
 
 として抽象化する。
 
-Provider変更時に全Accountを作り直す必要がない構造を目指す。
+事業者変更時に全アカウントを作り直す必要がない構造を目指す。
 
 ---
 
-## 27. Credential Lifecycle
+## 27. 資格証明ライフサイクル
 
-CredentialにはLifecycleを持たせる。
+資格証明にはライフサイクルを持たせる。
 
 ```text
 Issued
   ↓
-Active
+有効
   ↓
 Expired / Revoked / Replaced
 ```
 
-Credentialには、
+資格証明には、
 
 - issuer
 - type
@@ -678,44 +678,44 @@ Credentialには、
 
 等を関連付ける。
 
-失効済みCredentialを新しいAuthorizationへ使用してはならない。
+失効済み資格証明を新しい認可へ使用してはならない。
 
 ---
 
-## 28. Revocation
+## 28. 失効
 
-音楽クリエーター資格証明、Rights Credential、Governance Credential等は必要に応じて失効可能にする。
+音楽クリエーター資格証明、権利資格証明、ガバナンス資格証明等は必要に応じて失効可能にする。
 
-ただし、失効によって過去の正当なProtocol Historyを消去してはならない。
+ただし、失効によって過去の正当なプロトコル履歴を消去してはならない。
 
 例えば、
 
 ```text
-Credential valid at T1
-Credential revoked at T2
+資格証明 valid at T1
+資格証明 revoked at T2
 ```
 
 の場合、T1時点で行われた正当な操作は履歴として検証可能にする。
 
 ---
 
-## 29. Account Roles
+## 29. アカウント役割
 
-一つのAccountが複数Roleを持てる。
+一つのアカウントが複数役割を持てる。
 
 ```text
-Account
+アカウント
 ├── ユーザ
 ├── 音楽クリエーター
 ├── 権利者
-└── Governance Participant
+└── ガバナンス参加者
 ```
 
 音楽クリエーターも同時にユーザであり得る。
 
-Roleは排他的に設計しない。
+役割は排他的に設計しない。
 
-ただし各Roleの権限はCredential / Authorizationによって明確に区別する。
+ただし各役割の権限は資格証明 / 認可によって明確に区別する。
 
 ---
 
@@ -723,14 +723,14 @@ Roleは排他的に設計しない。
 
 ガバナンス議員はユーザとは別の固定階級ではない。
 
-ユーザコミュニティからEligibilityを満たすMemberがADR-0002のVerifiable Sortitionによって一時的なRepresentativeとなる。
+ユーザコミュニティから適格性を満たすMemberがADR-0002の検証可能抽選によって一時的なRepresentativeとなる。
 
 ```text
 ユーザ
   ↓
 適格ユーザ
   ↓
-Sortition
+抽選
   ↓
 ユーザ院議会議員
   ↓
@@ -745,39 +745,39 @@ Term Ends
 
 ---
 
-## 31. Identity and Rights Separation
+## 31. アイデンティティ・権利分離
 
-Accountが本人確認済みであることと、作品の権利者であることを混同しない。
+アカウントが本人確認済みであることと、作品の権利者であることを混同しない。
 
 ```text
-Verified Person
+検証済み Person
       ≠
-Verified Copyright Owner
+検証済み著作権 Owner
 ```
 
-Rights OwnershipはADR-0003 Rights RegistryのVerification Processに従う。
+権利所有はADR-0003 権利登録台帳の検証手続に従う。
 
 ---
 
-## 32. Identity and Economic Power Separation
+## 32. アイデンティティ・経済権力分離
 
-Wallet Balance、Stablecoin保有量、株式、STO Token等をGovernance Identityの強さとして使用しない。
+ウォレット均衡、ステーブルコイン保有量、株式、STO トークン等をガバナンスアイデンティティの強さとして使用しない。
 
 ```text
-Economic Assets
+経済 Assets
       ≠
-Identity Weight
+アイデンティティ重み
       ≠
-Governance Weight
+ガバナンス重み
 ```
 
 これはADR-0002およびADR-0004の原則と整合する。
 
 ---
 
-## 33. Auditability
+## 33. 監査可能性
 
-重要なAccount / Identity操作についてAudit Trailを保持する。
+重要なアカウント / アイデンティティ操作について監査 Trailを保持する。
 
 例えば、
 
@@ -794,377 +794,377 @@ ACCOUNT_RECOVERY
 
 等である。
 
-Audit Recordには必要最小限の情報のみを保持し、機密情報そのものをLogへ書き込まない。
+監査記録には必要最小限の情報のみを保持し、機密情報そのものをLogへ書き込まない。
 
 ---
 
-## 34. Security Events
+## 34. セキュリティイベント
 
-Account Securityに関する重要操作についてユーザへ通知できるようにする。
+アカウントセキュリティに関する重要操作についてユーザへ通知できるようにする。
 
 例えば、
 
-- New Wallet Linked
-- Distribution Wallet Changed
-- Recovery Performed
-- New Passkey Added
-- Governance Credential Changed
+- 新規ウォレット連携済み
+- 分配ウォレット Changed
+- 復旧 Performed
+- 新規 Passkey Added
+- ガバナンス資格証明 Changed
 
 等である。
 
-これによりAccount Takeoverを早期に検知できる。
+これによりアカウント乗っ取りを早期に検知できる。
 
 ---
 
-## 35. Account Deletion
+## 35. アカウント削除
 
-ユーザがAccount削除を要求した場合、法的・監査上必要な記録と削除可能なPersonal Dataを区別する。
+ユーザがアカウント削除を要求した場合、法的・監査上必要な記録と削除可能な個人データを区別する。
 
-Blockchain上の確定Transactionを削除することはできないため、On-chain Dataには最初から個人情報を記録しない。
+ブロックチェーン上の確定トランザクションを削除することはできないため、オンチェーンデータには最初から個人情報を記録しない。
 
-Off-chain Personal DataについてはApplicable LawおよびRetention Policyに従う。
+オフチェーン個人データについては適用法令および保存期間ポリシーに従う。
 
 ---
 
-## 36. Pseudonymous Participation
+## 36. 仮名参加
 
-法的本人確認が不要なService領域では、Pseudonymous Accountを許容できる。
+法的本人確認が不要なサービス領域では、仮名アカウントを許容できる。
 
 ただし、
 
-- Rights Claim
+- 権利主張
 - 法的契約
 - 規制上必要な取引
-- Governance Sybil Resistance
+- ガバナンスシビル耐性
 
-等では追加Credentialが必要になる場合がある。
+等では追加資格証明が必要になる場合がある。
 
 全ユーザに不要なKYCを一律要求する設計は採用しない。
 
 ---
 
-## 37. Regulatory Boundary
+## 37. 規制上の境界
 
-Identity Verificationの要否は、
+アイデンティティ検証の要否は、
 
-- Payment
-- Stablecoin
-- Rights Contract
+- 決済
+- ステーブルコイン
+- 権利コントラクト
 - STO
-- Tax
+- 税務
 - AML / CFT
-- Applicable Jurisdiction
+- 適用 Jurisdiction
 
 等によって異なる。
 
-そのため本ADRでは「全AccountをKYCする」「KYCしない」のどちらにも固定しない。
+そのため本ADRでは「全アカウントをKYCする」「KYCしない」のどちらにも固定しない。
 
-必要なOperationに対して必要なCredentialを要求する **Progressive Verification** を基本方針とする。
+必要な運用に対して必要な資格証明を要求する **段階的検証** を基本方針とする。
 
 ---
 
-## 38. Progressive Verification
+## 38. 段階的検証
 
-Account作成時にすべてのIdentity Verificationを要求せず、Service利用に応じて必要なCredentialを追加する。
+アカウント作成時にすべてのアイデンティティ検証を要求せず、サービス利用に応じて必要な資格証明を追加する。
 
 ```text
 Basic ユーザ
     ↓
-Subscription ユーザ
+サブスクリプションユーザ
     ↓
 音楽クリエーター
     ↓
 権利者
     ↓
-Governance Eligible Member
+ガバナンス適格 Member
 ```
 
-各段階で必要なVerificationを明示する。
+各段階で必要な検証を明示する。
 
-これによりUXとPrivacyを維持しながら、法務・Security Requirementsへ対応する。
+これによりUXとプライバシーを維持しながら、法務・セキュリティ要件へ対応する。
 
 ---
 
-## 39. MVP Strategy
+## 39. MVP 戦略
 
-MVPではIdentity Infrastructureを過度に複雑化しない。
+MVPではアイデンティティインフラを過度に複雑化しない。
 
 最初の実装目標を、
 
-> **JPYC等のStablecoin Walletを持つユーザがPlatform Accountを作成し、Walletを安全に関連付け、Subscription Paymentを行える**
+> **JPYC等のステーブルコインウォレットを持つユーザがプラットフォームアカウントを作成し、ウォレットを安全に関連付け、サブスクリプション決済を行える**
 
 こととする。
 
 段階的に、
 
 ```text
-Phase 1
-Platform Account
-+ Authentication
+フェーズ 1
+プラットフォームアカウント
++ 認証
 
-Phase 2
-Wallet Linking
-+ Signature Verification
+フェーズ 2
+ウォレット連携
++ 署名検証
 
-Phase 3
-Stablecoin Subscription Payment
+フェーズ 3
+ステーブルコインサブスクリプション決済
 
-Phase 4
+フェーズ 4
 音楽クリエーター登録
-+ Distribution Wallet
++ 分配ウォレット
 
-Phase 5
-Rights Credentials
+フェーズ 5
+権利資格証明
 
-Phase 6
-Governance Credentials
-+ Privacy-preserving Eligibility Proof
+フェーズ 6
+ガバナンス資格証明
++ Privacy-preserving 適格性証明
 ```
 
 と進める。
 
 ---
 
-## 40. MVP Registration Flow
+## 40. MVP 登録フロー
 
-最初のユーザ登録 Flowは概念的に、
+最初のユーザ登録フローは概念的に、
 
 ```mermaid
 sequenceDiagram
     participant U as ユーザ
-    participant A as Application
-    participant W as Wallet
+    participant A as アプリケーション
+    participant W as ウォレット
     participant B as Backend
 
-    U->>A: Create Account
-    A->>B: Create Account Session
-    U->>A: Link Wallet
-    A->>B: Request Challenge
-    B-->>A: Nonce / Challenge
-    A->>W: Request Signature
-    W-->>A: Signature
-    A->>B: Submit Signature
-    B->>B: Verify Signature
-    B-->>A: Wallet Linked
+    U->>A: 創作アカウント
+    A->>B: 創作アカウントセッション
+    U->>A: 連携ウォレット
+    A->>B: リクエスト異議申立て
+    B-->>A: Nonce / 異議申立て
+    A->>W: リクエスト署名
+    W-->>A: 署名
+    A->>B: Submit 署名
+    B->>B: 検証署名
+    B-->>A: ウォレット連携済み
 ```
 
 とする。
 
-このFlowを最初のCodex実装単位として利用できる。
+このフローを最初のCodex実装単位として利用できる。
 
 ---
 
-## 41. MVP Subscription Flow
+## 41. MVP サブスクリプションフロー
 
-Wallet Linking後、
+ウォレット連携後、
 
 ```mermaid
 sequenceDiagram
     participant U as ユーザ
-    participant A as Application
-    participant W as Wallet
-    participant C as Subscription Contract
+    participant A as アプリケーション
+    participant W as ウォレット
+    participant C as サブスクリプションコントラクト
     participant B as Backend
 
     U->>A: Subscribe
-    A->>W: Request Payment Authorization
-    W->>C: Stablecoin Payment / Authorization
-    C-->>B: Payment Event
-    B->>B: Verify Settlement
-    B-->>A: Subscription Active
-    A-->>U: Access Enabled
+    A->>W: リクエスト決済認可
+    W->>C: ステーブルコイン決済 / 認可
+    C-->>B: 決済イベント
+    B->>B: 検証精算
+    B-->>A: サブスクリプション有効
+    A-->>U: アクセス有効
 ```
 
 とする。
 
-BackendがWallet画面の表示だけを見てPayment済みと判断してはならず、Blockchain Settlementを検証する。
+Backendがウォレット画面の表示だけを見て決済済みと判断してはならず、ブロックチェーン精算を検証する。
 
 ---
 
-## 42. Invariants
+## 42. 不変条件
 
-### Invariant 1
+### 不変条件 1
 
-Wallet AddressをPerson Identityと同一視してはならない。
+ウォレットアドレスをPerson アイデンティティと同一視してはならない。
 
-### Invariant 2
+### 不変条件 2
 
-音楽クリエーター資格証明をRights Ownershipの証明として扱ってはならない。
+音楽クリエーター資格証明を権利所有の証明として扱ってはならない。
 
-### Invariant 3
+### 不変条件 3
 
-Wallet BalanceをGovernance Weightとして使用してはならない。
+ウォレット均衡をガバナンス重みとして使用してはならない。
 
-### Invariant 4
+### 不変条件 4
 
-Wallet LinkingにはWallet ControlのCryptographic Verificationを必要とする。
+ウォレット連携にはウォレット制御のCryptographic 検証を必要とする。
 
-### Invariant 5
+### 不変条件 5
 
-Personal InformationをPublic Blockchainへ記録してはならない。
+個人情報を公開ブロックチェーンへ記録してはならない。
 
-### Invariant 6
+### 不変条件 6
 
-Wallet紛失によってApplication Accountそのものを必ず失う設計にしてはならない。
+ウォレット紛失によってアプリケーションアカウントそのものを必ず失う設計にしてはならない。
 
-### Invariant 7
+### 不変条件 7
 
-Recurring PaymentのためにPlatformへ無制限・無期限のAsset Controlを当然に要求してはならない。
+継続決済のためにプラットフォームへ無制限・無期限の資産制御を当然に要求してはならない。
 
-### Invariant 8
+### 不変条件 8
 
-Governance Eligibilityで同一Personが複数Walletを使って抽選確率を増加させることを許容してはならない。
+ガバナンス適格性で同一Personが複数ウォレットを使って抽選確率を増加させることを許容してはならない。
 
-### Invariant 9
+### 不変条件 9
 
-Distribution Wallet変更を通常のProfile編集と同等の低Security操作として扱ってはならない。
+分配ウォレット変更を通常のプロフィール編集と同等の低セキュリティ操作として扱ってはならない。
 
-### Invariant 10
+### 不変条件 10
 
-Credential失効によって過去の正当なProtocol Historyを消去してはならない。
-
----
-
-## 43. Alternatives Considered
-
-### Wallet-only Identity
-
-Wallet AddressをAccount Identifierとして使用する。
-
-実装は単純だが、Recovery、Multiple Wallet、Privacy、Sybil Resistance、Role Separationの問題があるため採用しない。
-
-### Traditional Account Only
-
-Email / Password等のAccountだけを利用しWalletをProtocol Identityから切り離す。
-
-Stablecoin Settlement、On-chain Authorization、Self-custodyとの統合が弱いため採用しない。
-
-### Mandatory KYC for Every ユーザ
-
-全ユーザにAccount作成時から法的本人確認を要求する。
-
-不要なPersonal Data収集、UX、Privacyの問題があるため基本方式として採用しない。
-
-### One Wallet for Every Role
-
-Payment、Distribution、Governanceを同一Walletへ固定する。
-
-PrivacyとSecurity Separationを損なうため採用しない。
-
-### Token-based Governance Identity
-
-Token保有量をIdentity / Eligibilityとして使用する。
-
-Economic PowerとGovernance Representationを混同するため採用しない。
+資格証明失効によって過去の正当なプロトコル履歴を消去してはならない。
 
 ---
 
-## 44. Consequences
+## 43. 検討した代替案
 
-### Positive
+### ウォレットだけのアイデンティティ
 
-- Wallet変更・追加に対応できる
-- ユーザアカウントをWallet紛失から分離できる
-- Payment、Rights、GovernanceのIdentityを分離できる
-- Privacyを保護しやすい
-- Sybil ResistanceをGovernance Layerへ導入できる
-- JPYC等のStablecoin Subscriptionへ自然に接続できる
-- 音楽クリエーター／権利者のRoleを明確に管理できる
-- Progressive Verificationが可能になる
-- Account Abstractionを将来導入しやすい
+ウォレットアドレスをアカウント Identifierとして使用する。
 
-### Negative
+実装は単純だが、復旧、Multiple ウォレット、プライバシー、シビル耐性、役割分離の問題があるため採用しない。
 
-- Identity ModelがWallet-only方式より複雑になる
-- Account Recovery Infrastructureが必要になる
-- Credential Lifecycle管理が必要になる
-- Wallet Linking Securityが必要になる
-- Identity ProviderとのIntegrationが必要になる可能性がある
-- Privacy-preserving Governance Identityの実装難度が高い
-- AccountとOn-chain Stateの整合性管理が必要になる
+### 従来型アカウントのみ
+
+Email / Password等のアカウントだけを利用しウォレットをプロトコルアイデンティティから切り離す。
+
+ステーブルコイン精算、オンチェーン認可、Self-custodyとの統合が弱いため採用しない。
+
+### 全ユーザへのKYC義務付け
+
+全ユーザにアカウント作成時から法的本人確認を要求する。
+
+不要な個人データ収集、UX、プライバシーの問題があるため基本方式として採用しない。
+
+### すべての役割で一つのウォレット
+
+決済、分配、ガバナンスを同一ウォレットへ固定する。
+
+プライバシーとセキュリティ分離を損なうため採用しない。
+
+### トークン基準のガバナンス・アイデンティティ
+
+トークン保有量をアイデンティティ / 適格性として使用する。
+
+経済権力とガバナンス代表性を混同するため採用しない。
 
 ---
 
-## 45. Security Considerations
+## 44. 影響
 
-Account / Wallet / Identity Layerは少なくとも次のリスクを考慮する。
+### 利点
 
-- Account Takeover
+- ウォレット変更・追加に対応できる
+- ユーザアカウントをウォレット紛失から分離できる
+- 決済、権利、ガバナンスのアイデンティティを分離できる
+- プライバシーを保護しやすい
+- シビル耐性をガバナンスレイヤーへ導入できる
+- JPYC等のステーブルコインサブスクリプションへ自然に接続できる
+- 音楽クリエーター／権利者の役割を明確に管理できる
+- 段階的検証が可能になる
+- アカウント抽象化を将来導入しやすい
+
+### 欠点
+
+- アイデンティティモデルがWallet-only方式より複雑になる
+- アカウント復旧インフラが必要になる
+- 資格証明ライフサイクル管理が必要になる
+- ウォレット連携セキュリティが必要になる
+- アイデンティティ事業者との連携が必要になる可能性がある
+- Privacy-preserving ガバナンスアイデンティティの実装難度が高い
+- アカウントとオンチェーン状態の整合性管理が必要になる
+
+---
+
+## 45. セキュリティ上の考慮事項
+
+アカウント / ウォレット / アイデンティティレイヤーは少なくとも次のリスクを考慮する。
+
+- アカウント乗っ取り
 - Phishing
-- Wallet Signature Phishing
-- Replay Attack
-- Session Hijacking
-- Credential Theft
-- Wallet Address Substitution
-- Distribution Address Substitution
-- Recovery Abuse
-- Sybil Attack
-- Identity Provider Compromise
-- Credential Forgery
-- Unauthorized Wallet Linking
-- Smart Account Vulnerability
-- Paymaster Abuse
-- Privacy Leakage
+- ウォレット署名 Phishing
+- Replay 攻撃
+- セッション Hijacking
+- 資格証明 Theft
+- ウォレットアドレス Substitution
+- 分配アドレス Substitution
+- 復旧不正利用
+- シビル攻撃
+- アイデンティティ事業者 Compromise
+- 資格証明 Forgery
+- Unauthorized ウォレット連携
+- スマートアカウント Vulnerability
+- ペイマスター不正利用
+- プライバシー Leakage
 - Cross-role Correlation
 
-具体的なThreat ModelはSecurity Specificationで定義する。
+具体的な脅威モデルはセキュリティ仕様で定義する。
 
 ---
 
-## 46. Relationship to Other ADRs
+## 46. 他のADRとの関係
 
-ADR-0002はGovernance EligibilityとVerifiable Sortitionを定義する。
+ADR-0002はガバナンス適格性と検証可能抽選を定義する。
 
-ADR-0003は権利者とRights Stateを定義する。
+ADR-0003は権利者と権利状態を定義する。
 
-ADR-0004は音楽クリエーター／権利者へのDistributionを定義する。
+ADR-0004は音楽クリエーター／権利者への分配を定義する。
 
-ADR-0005はユーザのUsage Eventを扱う。
+ADR-0005はユーザの利用実績イベントを扱う。
 
-ADR-0006はIdentity / EligibilityをPrivacy-preservingに証明する技術戦略を提供する。
+ADR-0006はアイデンティティ / 適格性をPrivacy-preservingに証明する技術戦略を提供する。
 
-ADR-0007はWalletが利用するBlockchain / L2 Infrastructureを定義する。
+ADR-0007はウォレットが利用するブロックチェーン / L2 インフラを定義する。
 
-ADR-0008はこれらをApplication Account、Wallet、Identity、Credentialとして接続する。
+ADR-0008はこれらをアプリケーションアカウント、ウォレット、アイデンティティ、資格証明として接続する。
 
 ```text
-                     Platform Account
+                     プラットフォームアカウント
                            │
           ┌────────────────┼────────────────┐
           ↓                ↓                ↓
-       Wallet         Credentials        Session
+       ウォレット資格証明セッション
           │                │
           ↓          ┌─────┼─────┐
- Blockchain / L2     ↓     ↓     ↓
-                  音楽クリエーターの権利 Governance
+ ブロックチェーン / L2     ↓     ↓     ↓
+                  音楽クリエーターの権利ガバナンス
 ```
 
 ---
 
-## 47. Related Documents
+## 47. 関連文書
 
-- Whitepaper: Vision
-- Whitepaper: Rights and Funds
-- Whitepaper: Platform Architecture
-- Whitepaper: 音楽クリエーター登録
-- Whitepaper: Economic Model
-- Whitepaper: Governance
-- Whitepaper: Technology
-- Whitepaper: Security
-- Whitepaper: Legal / STO / Tax
-- ADR-0002: Verifiable Sortition
-- ADR-0003: Rights Registry
-- ADR-0004: 音楽クリエーター分配 Model
-- ADR-0005: Usage Oracle
-- ADR-0006: Zero-Knowledge Proof Strategy
-- ADR-0007: Blockchain / L2 Strategy
+- ホワイトペーパー: ビジョン
+- ホワイトペーパー: 権利・資金
+- ホワイトペーパー: プラットフォームアーキテクチャ
+- ホワイトペーパー: 音楽クリエーター登録
+- ホワイトペーパー: 経済モデル
+- ホワイトペーパー: ガバナンス
+- ホワイトペーパー: Technology
+- ホワイトペーパー: セキュリティ
+- ホワイトペーパー: 法務 / STO / 税務
+- ADR-0002: 検証可能抽選
+- ADR-0003: 権利登録台帳
+- ADR-0004: 音楽クリエーター分配モデル
+- ADR-0005: 利用実績オラクル
+- ADR-0006: ゼロ知識証明戦略
+- ADR-0007: ブロックチェーン / L2 戦略
 - ADR-0014: 公開テストネットユーザ利用フロー
 
 ---
 
-## 48. Follow-up Specifications
+## 48. 後続仕様
 
-本ADRの採択後、少なくとも次のSpecificationを作成する。
+本ADRの採択後、少なくとも次の仕様を作成する。
 
 - `protocol/account-spec.md`
 - `protocol/wallet-linking-spec.md`
@@ -1173,20 +1173,20 @@ ADR-0008はこれらをApplication Account、Wallet、Identity、Credentialと�
 - `protocol/credential-spec.md`
 - `protocol/account-recovery-spec.md`
 
-さらに、MVP実装の最初のVertical Sliceとして、
+さらに、MVP実装の最初の最小縦断実装として、
 
 ```text
-Account Registration
+アカウント登録
       ↓
-Wallet Linking
+ウォレット連携
       ↓
-JPYC Payment Authorization
+JPYC 決済認可
       ↓
-Subscription Settlement
+サブスクリプション精算
       ↓
-Subscription Activation
+サブスクリプション有効化
 ```
 
 を実装する。
 
-このVertical Sliceは、Creator First PlatformのApplication Layer、Wallet Layer、Blockchain Layerを最小構成でEnd-to-End接続する最初の実装単位とする。
+この最小縦断実装は、Creator First Platformのアプリケーションレイヤー、ウォレットレイヤー、ブロックチェーンレイヤーを最小構成でエンドツーエンド接続する最初の実装単位とする。

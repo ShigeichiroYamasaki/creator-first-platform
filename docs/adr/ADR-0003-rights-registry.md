@@ -1,18 +1,18 @@
 ---
-description: 楽曲、権利者、権利種別、持分、許諾範囲、証憑を追跡可能に管理するRights Registryの設計案。
+description: 楽曲、権利者、権利種別、持分、許諾範囲、証憑を追跡可能に管理する権利登録台帳の設計案。
 ---
 
-# ADR-0003: Rights Registry
+# ADR-0003: 権利登録台帳
 
-**Status:** Proposed  
-**Date:** 2026-07-29
-**Last Updated:** 2026-08-20
+**状態:** 提案
+**日付:** 2026-07-29
+**最終更新日:** 2026-08-20
 
-## 1. Context
+## 1. 背景
 
-Creator First Platform は、音楽を中心とするコンテンツ配信において、音楽クリエーター の権利と利益を優先し、利用実績に基づく透明で検証可能な分配を実現することを目標とする。
+Creator First Platform は、音楽を中心とするコンテンツ配信において、音楽クリエーターの権利と利益を優先し、利用実績に基づく透明で検証可能な分配を実現することを目標とする。
 
-このためには、Platform が扱う各作品について、
+このためには、プラットフォームが扱う各作品について、
 
 - 何の作品であるか
 - 誰がどの権利を持つか
@@ -38,104 +38,104 @@ Creator First Platform は、音楽を中心とするコンテンツ配信にお
 
 が関係し、それぞれ異なる権利者や管理主体が存在し得る。
 
-したがって Creator First Platform には、作品、権利者、権利関係、許諾、分配条件を管理する **Rights Registry** が必要である。
+したがって Creator First Platform には、作品、権利者、権利関係、許諾、分配条件を管理する **権利登録台帳** が必要である。
 
-Rights Registry は単なる作品データベースではなく、Platform における利用許諾、収益分配、監査、紛争処理の基礎となる。
+権利登録台帳は単なる作品データベースではなく、プラットフォームにおける利用許諾、収益分配、監査、紛争処理の基礎となる。
 
 ---
 
-## 2. Decision
+## 2. 決定
 
-Creator First Platform は、作品とその権利関係を管理するために **Rights Registry** を設ける。
+Creator First Platform は、作品とその権利関係を管理するために **権利登録台帳** を設ける。
 
-Rights Registry は、
+権利登録台帳は、
 
-> **Content Identity → Rights Claims → Verification → Active Rights State → Usage → Distribution**
+> **コンテンツアイデンティティ → 権利主張 → 検証 → 有効権利状態 → 利用実績 → 分配**
 
 という流れの基礎となる。
 
 ```mermaid
 flowchart LR
-    WORK[Work / Recording]
-    CLAIM[Rights Claims]
-    VERIFY[Verification]
-    REG[Rights Registry]
-    USAGE[Verified Usage]
-    DIST[Distribution]
+    WORK[作業 / 原盤]
+    CLAIM[権利主張]
+    VERIFY[検証]
+    REG[権利登録台帳]
+    USAGE[検証済み利用実績]
+    DIST[分配]
 
     WORK --> CLAIM --> VERIFY --> REG --> USAGE --> DIST
 ```
 
-Rights Registry は、少なくとも次の情報を論理的に管理する。
+権利登録台帳は、少なくとも次の情報を論理的に管理する。
 
-- Content Identifier
+- コンテンツ Identifier
 - 権利者 Identifier
-- Rights Type
-- Rights Share
-- Territory
-- Validity Period
-- Licensing Status
-- Distribution Instructions
-- Verification Status
-- Dispute Status
-- Version / History
+- 権利 Type
+- 権利比率
+- 地域
+- 有効性期間
+- Licensing 状態
+- 分配指示
+- 検証状態
+- 紛争状態
+- 版 / 履歴
 
 ---
 
-## 3. Rights Registry Is Not a Copyright Authority
+## 3. 権利登録台帳は著作権認定機関ではない
 
-Rights Registry への登録そのものによって、著作権その他の権利が創設されるものとはしない。
+権利登録台帳への登録そのものによって、著作権その他の権利が創設されるものとはしない。
 
-Rights Registry は、
+権利登録台帳は、
 
-> **Platform が利用許諾・分配・監査のために採用している権利情報の記録**
+> **プラットフォームが利用許諾・分配・監査のために採用している権利情報の記録**
 
 である。
 
 したがって、
 
 ```text
-Registry Entry
+登録台帳登録項目
 ≠
-Legal Creation of Copyright
+法務創作 of 著作権
 ```
 
 とする。
 
 権利の成立、帰属、移転等は適用される法令および契約によって決定される。
 
-Platform は Rights Registry を「法的権利そのもの」ではなく、権利関係を検証可能に管理するための技術・業務基盤として扱う。
+プラットフォームは権利登録台帳を「法的権利そのもの」ではなく、権利関係を検証可能に管理するための技術・業務基盤として扱う。
 
 ---
 
-## 4. Separation of Work and Recording
+## 4. 著作物と原盤の分離
 
 音楽では、楽曲そのものと録音物を区別する必要がある。
 
-Rights Registry では少なくとも、
+権利登録台帳では少なくとも、
 
 ```text
-Musical Work
+Musical 作業
 ```
 
 と、
 
 ```text
-Sound Recording
+原盤
 ```
 
-を別のEntityとして管理できなければならない。
+を別の主体として管理できなければならない。
 
 概念的には、
 
 ```mermaid
 flowchart TD
-    WORK[Musical Work]
-    LYRICS[Lyrics Rights]
-    COMP[Composition Rights]
-    RECORDING[Sound Recording]
-    MASTER[Master Rights]
-    PERFORMANCE[Performance Rights]
+    WORK[Musical 作業]
+    LYRICS[歌詞権利]
+    COMP[楽曲権利]
+    RECORDING[原盤]
+    MASTER[原盤権利]
+    PERFORMANCE[実演権利]
 
     WORK --> LYRICS
     WORK --> COMP
@@ -146,15 +146,15 @@ flowchart TD
 
 とする。
 
-同じMusical Workに複数のRecordingが存在する場合も、それぞれ独立して識別可能にする。
+同じMusical 作業に複数の原盤が存在する場合も、それぞれ独立して識別可能にする。
 
 ---
 
-## 5. Rights Claims
+## 5. 権利主張
 
-権利者 は、自身が保有または管理すると主張する権利について Rights Claim を提出できる。
+権利者は、自身が保有または管理すると主張する権利について権利主張を提出できる。
 
-Rights Claim は少なくとも、
+権利主張は少なくとも、
 
 - claimant
 - content identifier
@@ -167,77 +167,77 @@ Rights Claim は少なくとも、
 
 を持つ。
 
-Claimが提出されたことと、Platformによって権利がVerifiedされたことは区別する。
+主張が提出されたことと、プラットフォームによって権利が検証済みされたことは区別する。
 
 ```text
 Claimed
    ↓
-Verification
+検証
    ↓
-Verified / Rejected / Disputed
+検証済み / Rejected / 紛争中
 ```
 
-未検証Claimを自動的な収益分配の根拠として使用してはならない。
+未検証主張を自動的な収益分配の根拠として使用してはならない。
 
 ---
 
-## 6. Verification
+## 6. 検証
 
-Creator First Platform は、音楽クリエーター登録 と Rights Registration を分離する。
+Creator First Platform は、音楽クリエーター登録と権利登録を分離する。
 
-音楽クリエーターとしてPlatformへ登録済みであっても、その音楽クリエーターが任意の作品の権利者であることを意味しない。
+音楽クリエーターとしてプラットフォームへ登録済みであっても、その音楽クリエーターが任意の作品の権利者であることを意味しない。
 
 ```text
 音楽クリエーター登録
         ≠
-Rights Verification
+権利検証
 ```
 
-Rights Verification では、必要に応じて、
+権利検証では、必要に応じて、
 
 - 契約
 - 権利管理情報
 - ISRC / ISWC 等の識別情報
 - 出版・原盤情報
 - 権利管理事業者等から得られる情報
-- 権利者 による署名
+- 権利者による署名
 - その他の検証可能な証拠
 
 を利用する。
 
-具体的な審査方法および外部権利管理主体との連携方法は別Specificationで定義する。
+具体的な審査方法および外部権利管理主体との連携方法は別仕様で定義する。
 
 ---
 
-## 7. Rights Types
+## 7. 権利種別
 
-Rights Registry は、単一のOwnerフィールドではなく複数のRights Typeを表現できなければならない。
+権利登録台帳は、単一のOwnerフィールドではなく複数の権利 Typeを表現できなければならない。
 
 例えば、
 
 ```text
-Composition
-Lyrics
+楽曲
+歌詞
 Arrangement
-Master Recording
-Performance
+原盤原盤
+実演
 Publishing
-Distribution License
+分配 License
 ```
 
 などである。
 
-Rights TypeはProtocol上でVersion管理し、将来的な権利種別の追加を可能にする。
+権利 Typeはプロトコル上で版管理し、将来的な権利種別の追加を可能にする。
 
-ただし、Rights Typeの追加によって既存のRights Recordの意味を事後的に変更してはならない。
+ただし、権利 Typeの追加によって既存の権利記録の意味を事後的に変更してはならない。
 
 ---
 
-## 8. Fractional Rights
+## 8. 権利持分
 
 一つの権利を複数の権利者が共有する場合を扱う。
 
-権利種別 $r$ に対する各権利者のShareを $s_i$ とすると、原則として、
+権利種別 $r$ に対する各権利者の比率を $s_i$ とすると、原則として、
 
 $$
 0 \leq s_i \leq 1
@@ -251,26 +251,26 @@ $$
 
 となる。
 
-ただし、権利関係が未確定の場合には、Registryは不完全なRights Stateを表現できなければならない。
+ただし、権利関係が未確定の場合には、登録台帳は不完全な権利状態を表現できなければならない。
 
 その場合、未確定部分を自動的に特定の権利者へ割り当ててはならない。
 
 ---
 
-## 9. Distribution Instructions
+## 9. 分配指示
 
-Rights Registry は、Legal Rights と Distribution Instructions を区別する。
+権利登録台帳は、法務権利と分配指示を区別する。
 
 例えば、
 
 ```text
-Copyright Share
+著作権比率
 ```
 
 と、
 
 ```text
-Platform Revenue Distribution Share
+プラットフォーム収益分配比率
 ```
 
 は必ずしも同一ではない。
@@ -279,8 +279,8 @@ Platform Revenue Distribution Share
 
 - 権利者
 - 音楽クリエーター
-- Publisher
-- Label
+- 音楽出版社
+- レーベル
 - Distributor
 - Collaborator
 
@@ -290,10 +290,10 @@ Platform Revenue Distribution Share
 
 ```mermaid
 flowchart LR
-    RIGHTS[Rights State]
-    CONTRACT[Contractual Rules]
-    POLICY[Platform Economic Rules]
-    DIST[Distribution Instructions]
+    RIGHTS[権利状態]
+    CONTRACT[契約ルール]
+    POLICY[プラットフォーム経済ルール]
+    DIST[分配指示]
 
     RIGHTS --> DIST
     CONTRACT --> DIST
@@ -302,13 +302,13 @@ flowchart LR
 
 とする。
 
-Rights Registry は権利情報を提供するが、最終的な分配計算は Economic Model および Distribution Specification に従う。
+権利登録台帳は権利情報を提供するが、最終的な分配計算は経済モデルおよび分配仕様に従う。
 
 ---
 
-## 10. Versioning and History
+## 10. バージョン管理と履歴
 
-Rights Information は変更可能である。
+権利情報は変更可能である。
 
 例えば、
 
@@ -316,42 +316,42 @@ Rights Information は変更可能である。
 - 契約変更
 - 出版契約
 - 管理委託
-- Rights Share変更
+- 権利比率変更
 - 紛争解決
 
 などが発生する。
 
-Rights Registry は現在状態だけでなく、変更履歴を保持する。
+権利登録台帳は現在状態だけでなく、変更履歴を保持する。
 
 概念的には、
 
 ```text
-Rights State v1
+権利状態 v1
       ↓
-Rights Change
+権利変更
       ↓
-Rights State v2
+権利状態 v2
       ↓
-Rights Change
+権利変更
       ↓
-Rights State v3
+権利状態 v3
 ```
 
 とする。
 
-過去の利用実績に対して、後からRights Stateが変更された場合でも、
+過去の利用実績に対して、後から権利状態が変更された場合でも、
 
-> **その利用が発生した時点で適用されていたRights State**
+> **その利用が発生した時点で適用されていた権利状態**
 
 を再現可能にする。
 
 ---
 
-## 11. Effective Time
+## 11. 効力発生時点
 
-Rights ChangeにはEffective Timeを持たせる。
+権利変更には効力発生時点を持たせる。
 
-利用イベント $u$ が時刻 $t_u$ に発生した場合、その利用に適用されるRights Stateは、
+利用イベント $u$ が時刻 $t_u$ に発生した場合、その利用に適用される権利状態は、
 
 $$
 R(t_u)
@@ -359,51 +359,51 @@ $$
 
 によって決定される。
 
-現在のRights Stateを過去の利用へ無条件に遡及適用してはならない。
+現在の権利状態を過去の利用へ無条件に遡及適用してはならない。
 
 ただし、法的判断、紛争解決、訂正等によって遡及修正が必要となる場合は、修正理由と履歴を監査可能な形で記録する。
 
 ---
 
-## 12. Disputes
+## 12. 紛争
 
-同一の権利について競合するClaimsが存在する場合、RegistryはDisputed Stateを表現できなければならない。
+同一の権利について競合するClaimsが存在する場合、登録台帳は紛争中状態を表現できなければならない。
 
 ```text
-Claim A
+主張 A
    +
-Claim B
+主張 B
    ↓
-Conflict Detection
+Conflict 検知
    ↓
-Disputed
+紛争中
 ```
 
-Disputed Rightsについては、原則として自動分配を停止または保留する。
+紛争中権利については、原則として自動分配を停止または保留する。
 
 ```text
-Verified Rights
+検証済み権利
       ↓
-Automatic Distribution
+自動分配
 
-Disputed Rights
+紛争中権利
       ↓
-Escrow / Hold
+Escrow / 保留
       ↓
-Resolution
+解決
       ↓
-Distribution
+分配
 ```
 
-Platform運営者が根拠なく一方のClaimを優先して支払うことを避ける。
+プラットフォーム運営者が根拠なく一方の主張を優先して支払うことを避ける。
 
-具体的なDispute Resolution Procedureは法務・Governance・Rights Managementの別Specificationで定義する。
+具体的な紛争解決 Procedureは法務・ガバナンス・権利管理の別仕様で定義する。
 
 ---
 
-## 13. On-chain / Off-chain Separation
+## 13. オンチェーン・オフチェーンの分離
 
-Rights Registry の全情報をBlockchain上へ保存しない。
+権利登録台帳の全情報をブロックチェーン上へ保存しない。
 
 特に、
 
@@ -415,60 +415,60 @@ Rights Registry の全情報をBlockchain上へ保存しない。
 - 非公開の契約条件
 - その他の個人情報・機密情報
 
-をPublic Blockchainへ記録してはならない。
+を公開ブロックチェーンへ記録してはならない。
 
 基本構造は、
 
 ```mermaid
 flowchart LR
-    OFF[Off-chain Rights Database]
-    HASH[Commitment / Hash]
-    CHAIN[On-chain Registry / Anchor]
+    OFF[オフチェーン権利データベース]
+    HASH[コミットメント / ハッシュ]
+    CHAIN[オンチェーン登録台帳 / アンカー]
 
     OFF --> HASH --> CHAIN
 ```
 
 とする。
 
-On-chainには必要に応じて、
+オンチェーンには必要に応じて、
 
 - Identifier
-- Hash / Commitment
-- Version
+- ハッシュ / コミットメント
+- 版
 - Timestamp
-- Status
-- Verification Proof
+- 状態
+- 検証証明
 
 等の検証用情報を記録する。
 
-詳細な権利情報は適切なアクセス制御を持つOff-chain Systemで管理する。
+詳細な権利情報は適切なアクセス制御を持つオフチェーンシステムで管理する。
 
 ---
 
-## 14. Privacy
+## 14. プライバシー
 
-Rights Registry はTransparencyとPrivacyを両立させる。
+権利登録台帳は透明性とプライバシーを両立させる。
 
 公開情報と非公開情報を分離し、
 
 ```text
-Public
-├── Content Identifier
-├── Rights Status
-├── Registry Version
-└── Verification Commitment
+公開
+├── コンテンツ Identifier
+├── 権利状態
+├── 登録台帳版
+└── 検証コミットメント
 
 Restricted
-├── Legal Identity
-├── Contracts
-├── Evidence
-├── Payment Information
-└── Personal Information
+├── 法務アイデンティティ
+├── 契約
+├── 証跡
+├── 決済情報
+└── 個人情報
 ```
 
 のような構造を採用する。
 
-将来的にはZero-Knowledge Proof等を利用し、
+将来的にはゼロ知識証明等を利用し、
 
 > 必要な権利条件が満たされている
 
@@ -476,9 +476,9 @@ Restricted
 
 ---
 
-## 15. External Rights Management
+## 15. 外部権利管理
 
-Creator First Platform は、Rights Registryだけで既存の著作権管理制度を置き換えることを目的としない。
+Creator First Platform は、権利登録台帳だけで既存の著作権管理制度を置き換えることを目的としない。
 
 必要に応じて、
 
@@ -486,28 +486,28 @@ Creator First Platform は、Rights Registryだけで既存の著作権管理制
 - 出版社
 - レコード会社
 - Distributor
-- Rights Management Service
-- 標準識別子Registry
+- 権利管理サービス
+- 標準識別子登録台帳
 
 等と連携する。
 
 外部情報を取り込む場合は、
 
-- Source
+- ソース
 - Timestamp
-- Verification Method
-- Confidence / Status
-- Version
+- 検証 Method
+- Confidence / 状態
+- 版
 
 を追跡可能にする。
 
-外部情報とPlatform内のClaimが矛盾する場合は、自動的に上書きせずConflictとして扱う。
+外部情報とプラットフォーム内の主張が矛盾する場合は、自動的に上書きせずConflictとして扱う。
 
 ---
 
-## 16. Auditability
+## 16. 監査可能性
 
-Rights Registryの重要な操作は監査可能にする。
+権利登録台帳の重要な操作は監査可能にする。
 
 少なくとも、
 
@@ -537,45 +537,45 @@ CHANGE DISTRIBUTION INSTRUCTION
 
 ---
 
-## 17. Governance
+## 17. ガバナンス
 
-Rights RegistryのProtocol RulesはGovernance対象とする。
+権利登録台帳のプロトコルルールはガバナンス対象とする。
 
 例えば、
 
-- Rights Type
-- Verification Rules
-- Registry Schema
-- Dispute Status
-- Required Proof
-- External Registry Integration
+- 権利 Type
+- 検証ルール
+- 登録台帳 Schema
+- 紛争状態
+- 必要証明
+- 外部登録台帳連携
 
-等の変更は、プロトコル仕様およびGovernance Processに従う。
+等の変更は、プロトコル仕様およびガバナンス手続に従う。
 
-ただしGovernanceは、
+ただしガバナンスは、
 
 > 特定作品の著作権者を多数決で決定する
 
 ための仕組みではない。
 
-個別の法的権利関係と、Protocol RulesのGovernanceを区別する。
+個別の法的権利関係と、プロトコルルールのガバナンスを区別する。
 
 ---
 
-## 18. スマートコントラクト Relationship
+## 18. スマートコントラクト関係
 
-スマートコントラクトはRights RegistryのVerified Stateを利用して分配等を実行できる。
+スマートコントラクトは権利登録台帳の検証済み状態を利用して分配等を実行できる。
 
 概念的には、
 
 ```mermaid
 flowchart LR
-    CONTENT[Content]
-    RIGHTS[Rights Registry]
-    USAGE[Usage Oracle]
-    ECON[Economic Model]
-    DIST[Distribution Contract]
-    PAY[Payment]
+    CONTENT[コンテンツ]
+    RIGHTS[権利登録台帳]
+    USAGE[利用実績オラクル]
+    ECON[経済モデル]
+    DIST[分配コントラクト]
+    PAY[決済]
 
     CONTENT --> RIGHTS
     RIGHTS --> DIST
@@ -584,157 +584,157 @@ flowchart LR
     DIST --> PAY
 ```
 
-ただし、スマートコントラクトがRights Registryの唯一のSource of Truthになるとは限らない。
+ただし、スマートコントラクトが権利登録台帳の唯一の正本になるとは限らない。
 
-法的情報、契約、個人情報等はOff-chainで管理し、スマートコントラクトには実行に必要なVerified StateまたはCommitmentのみを提供する。
-
----
-
-## 19. Invariants
-
-Rights Registryは少なくとも次の不変条件を満たす。
-
-### Invariant 1
-
-未検証Rights ClaimをVerified Rightsとして扱ってはならない。
-
-### Invariant 2
-
-Disputed Rightsを通常のVerified Rightsと同じ方法で自動分配してはならない。
-
-### Invariant 3
-
-Rights Stateの変更履歴を追跡可能にしなければならない。
-
-### Invariant 4
-
-過去の利用に適用されたRights Stateを再現可能にしなければならない。
-
-### Invariant 5
-
-Public Blockchainに不要な個人情報または機密契約情報を保存してはならない。
-
-### Invariant 6
-
-音楽クリエーター登録だけをRights Ownershipの証明として扱ってはならない。
-
-### Invariant 7
-
-Rights Registryへの登録そのものを、法的権利を創設する行為として扱ってはならない。
+法的情報、契約、個人情報等はオフチェーンで管理し、スマートコントラクトには実行に必要な検証済み状態またはコミットメントのみを提供する。
 
 ---
 
-## 20. Alternatives Considered
+## 19. 不変条件
 
-### 音楽クリエーター = Owner Model
+権利登録台帳は少なくとも次の不変条件を満たす。
+
+### 不変条件 1
+
+未検証権利主張を検証済み権利として扱ってはならない。
+
+### 不変条件 2
+
+紛争中権利を通常の検証済み権利と同じ方法で自動分配してはならない。
+
+### 不変条件 3
+
+権利状態の変更履歴を追跡可能にしなければならない。
+
+### 不変条件 4
+
+過去の利用に適用された権利状態を再現可能にしなければならない。
+
+### 不変条件 5
+
+公開ブロックチェーンに不要な個人情報または機密契約情報を保存してはならない。
+
+### 不変条件 6
+
+音楽クリエーター登録だけを権利所有の証明として扱ってはならない。
+
+### 不変条件 7
+
+権利登録台帳への登録そのものを、法的権利を創設する行為として扱ってはならない。
+
+---
+
+## 20. 検討した代替案
+
+### 音楽クリエーター = 所有者モデル
 
 音楽クリエーター登録者を自動的に全権利のOwnerとする方式。
 
 音楽の複雑な権利構造を表現できないため採用しない。
 
-### Fully On-chain Rights Registry
+### 完全オンチェーン権利登録台帳
 
-すべての権利情報と契約情報をBlockchainへ保存する方式。
+すべての権利情報と契約情報をブロックチェーンへ保存する方式。
 
-Privacy、個人情報、契約機密性、訂正、法的運用の観点から採用しない。
+プライバシー、個人情報、契約機密性、訂正、法的運用の観点から採用しない。
 
-### Centralized Mutable Database Only
+### 中央集権型の変更可能データベースのみ
 
-Platform運営者だけが変更可能な通常のDatabaseのみをSource of Truthとする方式。
+プラットフォーム運営者だけが変更可能な通常のデータベースのみを正本とする方式。
 
 変更履歴や第三者検証性が弱いため、単独では採用しない。
 
-### Immutable Rights State
+### 変更不能な権利状態
 
-一度登録したRights Stateを変更不能にする方式。
+一度登録した権利状態を変更不能にする方式。
 
 権利譲渡、契約変更、紛争解決等を扱えないため採用しない。
 
 ---
 
-## 21. Consequences
+## 21. 影響
 
-### Positive
+### 利点
 
 - 音楽クリエーターの権利を明示的に扱える
-- 複数権利者・複数Rights Typeを表現できる
+- 複数権利者・複数権利 Typeを表現できる
 - 利用実績から分配までを追跡しやすくなる
-- Rights ClaimとVerified Rightsを区別できる
+- 権利主張と検証済み権利を区別できる
 - 紛争中の誤分配を抑制できる
 - 権利変更履歴を監査できる
 - スマートコントラクトによる分配と法的権利管理を接続できる
 
-### Negative
+### 欠点
 
-- Rights Data Modelが複雑になる
-- Verification業務が必要になる
+- 権利データモデルが複雑になる
+- 検証業務が必要になる
 - 外部権利管理主体との連携が必要になる
-- Rights Conflict処理が必要になる
-- PrivacyとAuditabilityの両立が必要になる
-- On-chain / Off-chain整合性管理が必要になる
+- 権利 Conflict処理が必要になる
+- プライバシーと監査可能性の両立が必要になる
+- オンチェーン / オフチェーン整合性管理が必要になる
 
 ---
 
-## 22. Security Considerations
+## 22. セキュリティ上の考慮事項
 
-Rights Registryは少なくとも次のリスクを考慮する。
+権利登録台帳は少なくとも次のリスクを考慮する。
 
-- False Rights Claim
-- Identity Fraud
-- Rights Share Manipulation
-- Unauthorized Rights Update
-- Registry History Tampering
-- Oracle / External Data Manipulation
-- Duplicate Content Registration
-- Contract Evidence Leakage
-- Personal Data Leakage
-- Payment Address Substitution
-- Dispute Resolution Abuse
+- 偽の権利主張
+- アイデンティティ不正
+- 権利比率操作
+- Unauthorized 権利更新
+- 登録台帳履歴 Tampering
+- オラクル / 外部データ操作
+- Duplicate コンテンツ登録
+- コントラクト証跡 Leakage
+- 個人データ Leakage
+- 決済アドレス Substitution
+- 紛争解決不正利用
 
-具体的なThreat ModelはSecurity Specificationで定義する。
+具体的な脅威モデルはセキュリティ仕様で定義する。
 
 ---
 
-## 23. Relationship to Other ADRs
+## 23. 他のADRとの関係
 
-ADR-0001はGovernance Architectureを定義する。
+ADR-0001はガバナンスアーキテクチャを定義する。
 
-ADR-0002はガバナンス議員のVerifiable Sortitionを定義する。
+ADR-0002はガバナンス議員の検証可能抽選を定義する。
 
 ADR-0003は、Creator First Platformが扱う作品と権利関係をどのように記録し、検証し、分配システムへ接続するかを定義する。
 
 ```text
-ADR-0001 Governance Model
-ADR-0002 Verifiable Sortition
-ADR-0003 Rights Registry
+ADR-0001 ガバナンスモデル
+ADR-0002 検証可能抽選
+ADR-0003 権利登録台帳
             ↓
 プロトコル仕様s
             ↓
-Implementation
+実装
 ```
 
 ---
 
-## 24. Related Documents
+## 24. 関連文書
 
-- Whitepaper: Vision
-- Whitepaper: Rights and Funds
-- Whitepaper: 音楽クリエーター登録
-- Whitepaper: Economic Model
-- Whitepaper: Governance
-- Whitepaper: Technology
-- Whitepaper: Security
-- Whitepaper: Legal / STO / Tax
+- ホワイトペーパー: ビジョン
+- ホワイトペーパー: 権利・資金
+- ホワイトペーパー: 音楽クリエーター登録
+- ホワイトペーパー: 経済モデル
+- ホワイトペーパー: ガバナンス
+- ホワイトペーパー: Technology
+- ホワイトペーパー: セキュリティ
+- ホワイトペーパー: 法務 / STO / 税務
 
 ---
 
-## 25. Follow-up Specifications
+## 25. 後続仕様
 
-本ADRの採択後、少なくとも次のSpecificationを作成する。
+本ADRの採択後、少なくとも次の仕様を作成する。
 
 - `protocol/rights-registry-spec.md`
 - `protocol/rights-verification-spec.md`
 - `protocol/rights-dispute-spec.md`
 - `protocol/distribution-spec.md`
 
-必要に応じて、外部Rights Management ServiceとのIntegration Specificationも作成する。
+必要に応じて、外部権利管理サービスとの連携仕様も作成する。

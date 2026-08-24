@@ -1,84 +1,84 @@
 ---
-title: Testnet Demo
-description: Creator First Platformの本番実装前に、合成データと金銭的価値を持たないTestnetでVertical Sliceを検証するデモ入口。
+title: テストネットデモ
+description: Creator First Platformの本番実装前に、合成データと金銭的価値を持たないテストネットで最小縦断実装を検証するデモ入口。
 ---
 
-# Testnet Demo
+# テストネットデモ
 
-Creator First Platformは、まずTestnet上のデモシステムでProtocol、Streaming Gateway、スマートコントラクト連携、失敗時の挙動を検証し、その証拠をレビューした後に本番系を実装します。
+Creator First Platformは、まずテストネット上のデモシステムでプロトコル、ストリーミングゲートウェイ、スマートコントラクト連携、失敗時の挙動を検証し、その証拠をレビューした後に本番系を実装します。
 
-::: warning 公開Testnetは実験環境です
-Ethereum SepoliaのContract AddressとSource Commitを公開しましたが、Gateway、Navidrome、Indexer、本番Accountおよび本番決済とは未接続です。本ページ以外が提示する送金先、TokenまたはWallet接続を公式Demoとして扱わず、本番資産や実在JPYCを使用しないでください。
+::: warning 公開テストネットは実験環境です
+Ethereum Sepoliaのコントラクトアドレスとソースコミットを公開しましたが、ゲートウェイ、Navidrome、インデクサー、本番アカウントおよび本番決済とは未接続です。本ページ以外が提示する送金先、トークンまたはウォレット接続を公式デモとして扱わず、本番資産や実在JPYCを使用しないでください。
 :::
 
 ## 実装順序
 
 ```mermaid
 flowchart LR
-    SPEC[Draft Specification]
-    MOCK[Local Mock]
-    DEMO[Testnet Demo]
-    REVIEW[Security / Rights / Legal Review]
-    AUDIT[Independent Audit]
-    PROD[Production Implementation]
+    SPEC[草案仕様]
+    MOCK[ローカルモック]
+    DEMO[テストネットデモ]
+    REVIEW[セキュリティ / 権利 / 法務レビュー]
+    AUDIT[独立監査]
+    PROD[本番実装]
 
     SPEC --> MOCK --> DEMO --> REVIEW --> AUDIT --> PROD
 ```
 
-1. 合成Account、Mock Rights、Mock音源、金銭的価値を持たないTestnet AssetでVertical Sliceを実装する。
+1. 合成アカウント、モック権利、モック音源、金銭的価値を持たないテストネット資産で最小縦断実装を実装する。
 2. 正常系だけでなく、replay、duplicate、delay、outage、取消し、権利停止、緊急停止を検証する。
-3. 使用Network、Contract Address、Source Commit、既知の制約、データ取扱いを公開する。
-4. 法務・Rights・Privacy・Securityレビューとスマートコントラクト監査を終える。
-5. Testnet成果物をそのまま本番へ流用せず、本番用の鍵、権限、インフラ、契約、監視、復旧手順を別Gateで実装する。
+3. 使用ネットワーク、コントラクトアドレス、ソースコミット、既知の制約、データ取扱いを公開する。
+4. 法務・権利・プライバシー・セキュリティレビューとスマートコントラクト監査を終える。
+5. テストネット成果物をそのまま本番へ流用せず、本番用の鍵、権限、インフラ、契約、監視、復旧手順を別ゲートで実装する。
 
 ## サービスを選ぶ
 
-ユーザ向けと音楽クリエータ向けの入口を分離しました。テストユーザ登録は、公開ページ上でProfile、Sepolia Wallet、mockJPYC Subscription、合成音源Playerを順に試すJourneyへ拡張しています。
+ユーザ向けと音楽クリエータ向けの入口を分離しました。テストユーザ登録は、公開ページ上でプロフィール、Sepolia ウォレット、mockJPYC サブスクリプション、合成音源プレーヤーを順に試す利用フローへ拡張しています。
 
 <DemoServiceChoices kind="entry" />
 
-テストユーザのAliasとIDは現在のタブのSession Storageだけに保存されます。Walletを明示接続した後のAddressとTransactionはSepoliaの公開情報になりますが、ProfileとWallet AddressをPlatform Accountとして結合しません。テスト音楽クリエーターの登録もPlatform Account、本人確認、Rights、配信公開または報酬受取資格を作成しません。
+テストユーザのAliasとIDは現在のタブのセッションストレージだけに保存されます。ウォレットを明示接続した後のアドレスとトランザクションはSepoliaの公開情報になりますが、プロフィールとウォレットアドレスをプラットフォームアカウントとして結合しません。テスト音楽クリエーターの登録もプラットフォームアカウント、本人確認、権利、配信公開または報酬受取資格を作成しません。
 
-Alias Profileの登録だけを、Playback、Wallet Link、SubscriptionまたはSBT資格の認可条件にも使用しません。公開Journeyの限定合成Trackは、Contract公開後にSepolia上の確定済みSubscription状態だけを参照するUI Gateであり、GatewayのStreaming Authorizationを成立させるものではありません。
+Alias プロフィールの登録だけを、再生、ウォレット連携、サブスクリプションまたはSBT資格の認可条件にも使用しません。公開利用フローの限定合成楽曲は、コントラクト公開後にSepolia上の確定済みサブスクリプション状態だけを参照するUI ゲートであり、ゲートウェイのストリーミング認可を成立させるものではありません。
 
 ## 音楽クリエータ向け機能デモ
 
-音楽クリエータは、実名や実在作品を使わずに仮名の音楽クリエータープロフィールを登録し、テスト音楽クリエーター利用フローでSepolia Wallet、音楽クリエーターコミットメントと作品の権利自己申告Commitmentを試せます。最初に登録画面を試す場合と、登録済みProfileからTestnet機能を利用する場合の入口を分けています。
+音楽クリエータは、実名や実在作品を使わずに仮名の音楽クリエータープロフィールを登録し、テスト音楽クリエーター利用フローでSepolia ウォレット、音楽クリエーターコミットメントと作品の権利自己申告コミットメントを試せます。最初に登録画面を試す場合と、登録済みプロフィールからテストネット機能を利用する場合の入口を分けています。
 
 <DemoServiceChoices kind="creator" />
 
-「登録する」は[テスト音楽クリエーター登録デモ](/demo/creator-registration)、「利用する」は[テスト音楽クリエーター利用フロー](/demo/creator-workspace)へ移動します。Profile入力は現在のTabだけ、Wallet AddressとCommitment TransactionはSepoliaへ記録されるが、本人確認、権利確認、音源Upload、配信公開、報酬計算または支払処理を行いません。
+「登録する」は[テスト音楽クリエーター登録デモ](/demo/creator-registration)、「利用する」は[テスト音楽クリエーター利用フロー](/demo/creator-workspace)へ移動します。プロフィール入力は現在のTabだけ、ウォレットアドレスとコミットメントトランザクションはSepoliaへ記録されるが、本人確認、権利確認、音源アップロード、配信公開、報酬計算または支払処理を行いません。
 
-Gateway APIとCookie Sessionを含む開発者向け検証は、[ローカルStreaming Gateway](/demo/local-gateway)を起動してPlayerを利用します。
+ゲートウェイ APIとCookie セッションを含む開発者向け検証は、[ローカルストリーミングゲートウェイ](/demo/local-gateway)を起動してプレーヤーを利用します。
 
 ## 現在の状態
 
 | 項目 | 状態 |
 | --- | --- |
 | 公開デモURL | [テストユーザ利用フロー](/demo/test-user-registration) |
-| 対象Testnet | Ethereum Sepolia（Chain ID `11155111`） |
-| Demo Contract Address | [公開Deployment一覧](/demo/testnet-contracts#公開deployment) |
-| Streaming Gateway | [ローカルMock実装済み](/demo/local-gateway)、公開環境未デプロイ |
-| Navidrome Media Adapter | Adapter実装済み、専用ユーザ・非公開Network・Canonical Mapping未設定 |
-| Player PWA | ローカルGateway接続済み、公開環境未デプロイ |
-| テストユーザサービス | GitHub PagesにProfile／Sepolia Wallet／mockJPYC課金／合成Player Journeyを実装・公開。Gateway認可・本番Authenticator未実装 |
-| テスト音楽クリエーターサービス | [仮名Profile、Sepolia Wallet、音楽クリエーター／Release Commitment Journey](/demo/creator-workspace)と音楽クリエーター登録台帳を公開。本人／権利／公開／支払処理は未実装 |
-| Testnet スマートコントラクト | [Ethereum Sepoliaへデプロイ・公開検証済み](/demo/testnet-contracts)、Gateway／Indexer未接続 |
-| Testnet決済 | 一回限りのMockJPYC Test Faucet、exact-amount Approve、Subscriptionを公開。無価値・償還不可、本番決済ではない |
-| Rights / Usage / Distribution | Draft仕様、未実装 |
+| 対象テストネット | Ethereum Sepolia（チェーン ID `11155111`） |
+| デモコントラクトアドレス | [公開デプロイ一覧](/demo/testnet-contracts#public-deployment) |
+| ストリーミングゲートウェイ | [ローカルモック実装済み](/demo/local-gateway)、公開環境未デプロイ |
+| Navidrome メディアアダプター | アダプター実装済み、専用ユーザ・非公開ネットワーク・正規対応付け未設定 |
+| プレーヤー PWA | ローカルゲートウェイ接続済み、公開環境未デプロイ |
+| テストユーザサービス | GitHub Pagesにプロフィール／Sepolia ウォレット／mockJPYC課金／合成プレーヤー利用フローを実装・公開。ゲートウェイ認可・本番認証器未実装 |
+| テスト音楽クリエーターサービス | [仮名プロフィール、Sepolia ウォレット、音楽クリエーター／リリースコミットメント利用フロー](/demo/creator-workspace)と音楽クリエーター登録台帳を公開。本人／権利／公開／支払処理は未実装 |
+| テストネットスマートコントラクト | [Ethereum Sepoliaへデプロイ・公開検証済み](/demo/testnet-contracts)、ゲートウェイ／インデクサー未接続 |
+| テストネット決済 | 一回限りのMockJPYC テスト Faucet、exact-amount Approve、サブスクリプションを公開。無価値・償還不可、本番決済ではない |
+| 権利 / 利用実績 / 分配 | 草案仕様、未実装 |
 
-進捗と成立条件は[現在の状況](/status)、[Vertical Slice Implementation Plan](/protocol/implementation-plan)、[Decision Baseline](/protocol/decision-baseline)で確認できます。
+進捗と成立条件は[現在の状況](/status)、[最小縦断実装実装計画](/protocol/implementation-plan)、[決定基準](/protocol/decision-baseline)で確認できます。
 
-公開Testnetの前段階として、[ローカル音楽ストリーミング](/demo/local-streaming)と[ローカルStreaming Gateway](/demo/local-gateway)で合成試験音を検証できます。
+公開テストネットの前段階として、[ローカル音楽ストリーミング](/demo/local-streaming)と[ローカルストリーミングゲートウェイ](/demo/local-gateway)で合成試験音を検証できます。
 
 ## 本番移行の禁止条件
 
-次の条件が一つでも残る間は、本番資金、実在Rights、未公開音源、個人情報または本番Walletを扱いません。
+次の条件が一つでも残る間は、本番資金、実在権利、未公開音源、個人情報または本番ウォレットを扱いません。
 
-- Blocking Open Questionまたは未失効のMock Assumptionが残る
-- Chain、Asset、Contract、Rights、Usage、Distributionの照合が再現できない
-- Threat Model、独立Security Review、スマートコントラクト監査が完了していない
-- 法務・Rights・税務・Privacy・OSS Licenseの承認記録がない
-- Incident response、停止、復旧、鍵Rotation、Rollbackが訓練されていない
+- Blocking 未解決事項または未失効のモック仮定が残る
+- チェーン、資産、コントラクト、権利、利用実績、分配の照合が再現できない
+- 脅威モデル、独立セキュリティレビュー、スマートコントラクト監査が完了していない
+- 法務・権利・税務・プライバシー・OSS Licenseの承認記録がない
+- インシデント response、停止、復旧、鍵ローテーション、Rollbackが訓練されていない
 
-デモが公開された時点で、このページの「公開デモURL」「対象Testnet」「Contract Address」「Source Commit」を更新します。
+デモが公開された時点で、このページの「公開デモURL」「対象テストネット」「コントラクトアドレス」「ソースコミット」を更新します。

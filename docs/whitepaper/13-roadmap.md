@@ -1,8 +1,8 @@
 ---
-description: 法的基盤、Music MVP、音楽クリエーター経済、検証可能性、DAO、STOへ進むStage-Gate方式の実装計画。
+description: 法的基盤、音楽 MVP、音楽クリエーター経済、検証可能性、DAO、STOへ進むStage-Gate方式の実装計画。
 ---
 
-# 13. ロードマップ — Roadmap
+# 13. ロードマップ
 
 > [!NOTE]
 > 本章は Creator First Platform の理念、権利、経済、技術、ガバナンス、法務、セキュリティ、インフラを実装へ接続するロードマップである。
@@ -11,24 +11,24 @@ description: 法的基盤、Music MVP、音楽クリエーター経済、検証�
 
 ## 13.1 ロードマップの基本思想
 
-Creator First Platformは、最初から完成したDAO、STO、Zero-Knowledge基盤、国際サービスを一度に構築するものではない。
+Creator First Platformは、最初から完成したDAO、STO、ゼロ知識基盤、国際サービスを一度に構築するものではない。
 
 基本順序を、
 
-> **理念・憲章 → 法的基盤 → Music MVP → 音楽クリエーター経済 → Verifiable Platform → 抽選議会と熟議 → プロトコルガバナンス → STO & Scale → International Expansion**
+> **理念・憲章 → 法的基盤 → 音楽 MVP → 音楽クリエーター経済 → 検証可能プラットフォーム → 抽選議会と熟議 → プロトコルガバナンス → STO & 規模拡大 → 国際展開**
 
 とする。
 
 ```mermaid
 flowchart LR
-    P0[Phase 0<br/>Foundation]
-    P1[Phase 1<br/>Music MVP]
-    P2[Phase 2<br/>音楽クリエーター経済]
-    P3[Phase 3<br/>Verifiable Platform]
-    P4[Phase 4<br/>Governance Pilot]
-    P5[Phase 5<br/>プロトコルガバナンス]
-    P6[Phase 6<br/>STO & Scale]
-    P7[Phase 7<br/>International]
+    P0[フェーズ 0<br/>基盤]
+    P1[フェーズ 1<br/>音楽 MVP]
+    P2[フェーズ 2<br/>音楽クリエーター経済]
+    P3[フェーズ 3<br/>検証可能プラットフォーム]
+    P4[フェーズ 4<br/>ガバナンス試行]
+    P5[フェーズ 5<br/>プロトコルガバナンス]
+    P6[フェーズ 6<br/>STO & 規模拡大]
+    P7[フェーズ 7<br/>International]
 
     P0 --> P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7
 ```
@@ -37,7 +37,7 @@ flowchart LR
 
 ## 13.2 最終的な統治モデル
 
-ロードマップ全体が目指すGovernanceの中心構造は、
+ロードマップ全体が目指すガバナンスの中心構造は、
 
 > **音楽クリエーター／ユーザ → 抽選議会 → 熟議 → プロトコル仕様 → スマートコントラクト → 自動執行**
 
@@ -46,13 +46,13 @@ flowchart LR
 ```mermaid
 flowchart LR
     COMMUNITY[音楽クリエーター／ユーザ]
-    ELIGIBLE[Eligible Community]
-    SORT[Verifiable Sortition]
+    ELIGIBLE[適格コミュニティ]
+    SORT[検証可能抽選]
     HOUSES[音楽クリエータ院議会 / ユーザ院議会]
-    DELIB[Deliberation]
+    DELIB[熟議]
     SPEC[プロトコル仕様]
-    CODE[Verified スマートコントラクト]
-    EXEC[Automatic Execution]
+    CODE[検証済みスマートコントラクト]
+    EXEC[自動実行]
 
     COMMUNITY --> ELIGIBLE --> SORT --> HOUSES --> DELIB --> SPEC --> CODE --> EXEC
 ```
@@ -81,55 +81,55 @@ flowchart TD
     COMMUNITY[音楽クリエーター／ユーザコミュニティ]
 
     COMMUNITY --> HOUSES[Sortition-based Houses]
-    COMMUNITY --> REFERENDUM[Direct Referendum]
+    COMMUNITY --> REFERENDUM[直接全体投票]
 
     HOUSES --> ORDINARY[Ordinary プロトコルガバナンス]
-    REFERENDUM --> CONSTITUTION[Constitutional Decisions]
+    REFERENDUM --> CONSTITUTION[憲章適合 Decisions]
 ```
 
-通常のProtocol変更は議会が担当し、憲章変更などの重大事項ではCommunity全体によるReferendumを利用する。
+通常のプロトコル変更は議会が担当し、憲章変更などの重大事項ではコミュニティ全体による全体投票を利用する。
 
 ---
 
 ## 13.4 規範の階層
 
-すべてのPhaseで次の関係を維持する。
+すべてのフェーズで次の関係を維持する。
 
 ```mermaid
 flowchart TD
-    LAW[Applicable Law / Regulation]
-    CHARTER[Three Charters]
+    LAW[適用法令 / 規制]
+    CHARTER[三憲章]
     GOV[音楽クリエーター + ユーザガバナンス]
     SPEC[プロトコル仕様]
     CODE[スマートコントラクト]
-    EXEC[Execution]
+    EXEC[実行]
 
     LAW --> CHARTER --> GOV --> SPEC --> CODE --> EXEC
 ```
 
 すなわち、
 
-> **Law > Three Charters > Governance > プロトコル仕様 > Code**
+> **法令 > 三憲章 > ガバナンス > プロトコル仕様 > コード**
 
 である。
 
-Codeの正統性はCode自身ではなく、その上位にある正統なGovernance Processから生じる。
+コードの正統性はコード自身ではなく、その上位にある正統なガバナンス手続から生じる。
 
 ---
 
-## 13.5 Phase 0 — Foundation
+## 13.5 フェーズ 0 — 基盤
 
-Phase 0では、何を作るかだけでなく、**誰が責任を持ち、誰が将来統治するのか**を定義する。
+フェーズ 0では、何を作るかだけでなく、**誰が責任を持ち、誰が将来統治するのか**を定義する。
 
 ```mermaid
 flowchart TD
-    VISION[Vision]
-    CHARTER[Three Charters]
+    VISION[ビジョン]
+    CHARTER[三憲章]
     DEFINITIONS[音楽クリエーター／ユーザ定義]
-    CORP[Corporate Structure]
-    RIGHTS[Rights Model]
-    SPEC[Initial Specifications]
-    REPO[GitHub / Documentation]
+    CORP[法人構造]
+    RIGHTS[権利モデル]
+    SPEC[初期 Specifications]
+    REPO[GitHub / 文書]
 
     VISION --> CHARTER
     CHARTER --> DEFINITIONS
@@ -141,19 +141,19 @@ flowchart TD
 
 ### 主な成果物
 
-- Whitepaper v1.0
+- ホワイトペーパー v1.0
 - 音楽クリエーター憲章
 - ユーザ憲章
-- Ecosystem Charter
+- エコシステム憲章
 - 音楽クリエーター／権利者の定義
 - ユーザ / ガバナンス適格ユーザ / ガバナンス議員の定義
 - 株式会社の基本設計
 - 音楽クリエーター契約案
 - 利用規約案
-- Privacy Policy案
-- Rights Model
+- プライバシーポリシー案
+- 権利モデル
 - プロトコル仕様の初期構造
-- GitHub Repository
+- GitHub リポジトリ
 - VitePress公開文書
 - AI共同開発ルール
 
@@ -161,28 +161,28 @@ flowchart TD
 
 ## 13.6 3つの憲章
 
-3つの憲章はPlatform内部の最上位規範である。
+3つの憲章はプラットフォーム内部の最上位規範である。
 
 ```mermaid
 flowchart TD
-    CHARTER[Three Charters]
+    CHARTER[三憲章]
 
     CHARTER --> CC[音楽クリエーター憲章]
     CHARTER --> UC[ユーザ憲章]
-    CHARTER --> EC[Ecosystem Charter]
+    CHARTER --> EC[エコシステム憲章]
 
-    CC --> GOV[Governance]
+    CC --> GOV[ガバナンス]
     UC --> GOV
     EC --> GOV
 ```
 
-通常のGovernance Proposalによって憲章を実質的に無効化できない制度を構築する。
+通常のガバナンス提案によって憲章を実質的に無効化できない制度を構築する。
 
 ---
 
 ## 13.7 音楽クリエーターとユーザを先に定義する
 
-Governanceを設計する前に、Governanceの正統性の源泉となる主体を定義する。
+ガバナンスを設計する前に、ガバナンスの正統性の源泉となる主体を定義する。
 
 ### 音楽クリエーター
 
@@ -192,48 +192,48 @@ Governanceを設計する前に、Governanceの正統性の源泉となる主体
 
 ### ユーザ
 
-Platformを利用してコンテンツを聴取、発見、評価、共有、支援等する参加者。
+プラットフォームを利用してコンテンツを聴取、発見、評価、共有、支援等する参加者。
 
 ### ガバナンス適格ユーザ
 
-実利用、Sybil耐性等の条件を満たし、ユーザ院議会の抽選母集団へ参加できるユーザ。
+実利用、シビル耐性等の条件を満たし、ユーザ院議会の抽選母集団へ参加できるユーザ。
 
 ### ガバナンス議員
 
-Eligible Communityから抽選され、一定期間だけ熟議と意思決定を委ねられた代表者。
+適格コミュニティから抽選され、一定期間だけ熟議と意思決定を委ねられた代表者。
 
 ---
 
-## 13.8 WhitepaperからCodeへ
+## 13.8 ホワイトペーパーからコードへ
 
 開発フローを、
 
 ```mermaid
 flowchart LR
-    WP[Whitepaper]
-    SPEC[Specification]
-    ISSUE[GitHub Issue]
-    CODE[Implementation]
-    TEST[Test]
-    PR[Pull Request]
-    RELEASE[Release]
+    WP[ホワイトペーパー]
+    SPEC[仕様]
+    ISSUE[GitHub課題]
+    CODE[実装]
+    TEST[テスト]
+    PR[プルリクエスト]
+    RELEASE[リリース]
 
     WP --> SPEC --> ISSUE --> CODE --> TEST --> PR --> RELEASE
 ```
 
 とする。
 
-将来Governanceが稼働した後は、
+将来ガバナンスが稼働した後は、
 
 ```mermaid
 flowchart LR
     GOV[ガバナンス決定]
     SPEC[プロトコル仕様]
-    ISSUE[GitHub Issue]
-    CODE[Implementation]
-    VERIFY[Verification]
-    AUDIT[Audit]
-    RELEASE[Protocol Release]
+    ISSUE[GitHub課題]
+    CODE[実装]
+    VERIFY[検証]
+    AUDIT[監査]
+    RELEASE[プロトコルリリース]
 
     GOV --> SPEC --> ISSUE --> CODE --> VERIFY --> AUDIT --> RELEASE
 ```
@@ -242,17 +242,17 @@ flowchart LR
 
 ---
 
-## 13.9 Phase 0 Gate
+## 13.9 フェーズ 0 ゲート
 
-Phase 1へ進む条件は、
+フェーズ 1へ進む条件は、
 
-- Visionが明文化されている
+- ビジョンが明文化されている
 - 3つの憲章が定義されている
 - 音楽クリエーター／ユーザ等の主体定義がある
-- Rights Modelが説明できる
-- Corporate Governanceとプロトコルガバナンスが区別されている
-- MVP Scopeが定義されている
-- RepositoryとCIが動作する
+- 権利モデルが説明できる
+- 法人ガバナンスとプロトコルガバナンスが区別されている
+- MVP 範囲が定義されている
+- リポジトリとCIが動作する
 - 法務上の主要論点が整理されている
 - MVP予算の概算がある
 
@@ -260,36 +260,36 @@ Phase 1へ進む条件は、
 
 ---
 
-## 13.10 Phase 1 — Music MVP
+## 13.10 フェーズ 1 — 音楽 MVP
 
-Phase 1では音楽サービスとしての価値を検証する。
+フェーズ 1では音楽サービスとしての価値を検証する。
 
-> BlockchainやGovernanceを実装することではなく、音楽クリエーターとユーザが実際に利用したいサービスを成立させることが目的である。
+> ブロックチェーンやガバナンスを実装することではなく、音楽クリエーターとユーザが実際に利用したいサービスを成立させることが目的である。
 
-実装は、**Local Mock → 公開Testnetデモ → Review／Audit → 本番系**の順序で進める。本番系を先行実装したり、Testnet用の鍵、Contract、Token、Rights Fixture、運用権限をそのまま本番へ流用したりしない。
+実装は、**ローカルモック → 公開テストネットデモ → レビュー／監査 → 本番系**の順序で進める。本番系を先行実装したり、テストネット用の鍵、コントラクト、トークン、権利 Fixture、運用権限をそのまま本番へ流用したりしない。
 
 ```mermaid
 flowchart LR
-    MOCK[Local Mock]
-    TESTNET[Testnet Demo]
-    EVIDENCE[Failure / Security Evidence]
-    REVIEW[Legal / Rights / Privacy Review]
-    AUDIT[Independent Audit]
-    PROD[Production Implementation]
+    MOCK[ローカルモック]
+    TESTNET[テストネットデモ]
+    EVIDENCE[Failure / セキュリティ証跡]
+    REVIEW[法務 / 権利 / プライバシーレビュー]
+    AUDIT[独立監査]
+    PROD[本番実装]
 
     MOCK --> TESTNET --> EVIDENCE --> REVIEW --> AUDIT --> PROD
 ```
 
-Testnetデモでは、金銭的価値を持たないAsset、合成Account、Mock Rights、公開可能な音源Fixtureを使用する。対象Network、Contract Address、Source Commit、既知の制約を公開し、ユーザが本番サービスと誤認しない表示を行う。
+テストネットデモでは、金銭的価値を持たない資産、合成アカウント、モック権利、公開可能な音源Fixtureを使用する。対象ネットワーク、コントラクトアドレス、ソースコミット、既知の制約を公開し、ユーザが本番サービスと誤認しない表示を行う。
 
-現在のLocal MockはPhase 1のPlayer／Gateway再生境界と署名UIに加え、Hardhat 3上のTestnet専用MockJPYC決済、Treasury、Supporter SBTおよび音楽クリエーター登録台帳 Contractの一部を検証している。全ContractをEthereum Sepoliaへデプロイし、公開テストユーザ利用フローからMockJPYC Subscription、テスト音楽クリエーター利用フローから仮名音楽クリエーターと作品／権利自己申告Commitmentを操作できる。いずれも本番Account、Rights、Payeeまたは配信公開の代替ではなく、Gateway／音楽クリエーターBFF／Indexerも未接続であるため、Authenticator、本番決済、Rights／Credential Read Model、Usage／Distribution連携を完了したものとして数えない。
+現在のローカルモックはフェーズ 1のプレーヤー／ゲートウェイ再生境界と署名UIに加え、Hardhat 3上のテストネット専用MockJPYC決済、資金庫、サポーター SBTおよび音楽クリエーター登録台帳コントラクトの一部を検証している。全コントラクトをEthereum Sepoliaへデプロイし、公開テストユーザ利用フローからMockJPYC サブスクリプション、テスト音楽クリエーター利用フローから仮名音楽クリエーターと作品／権利自己申告コミットメントを操作できる。いずれも本番アカウント、権利、受取人または配信公開の代替ではなく、ゲートウェイ／音楽クリエーターBFF／インデクサーも未接続であるため、認証器、本番決済、権利／資格証明参照モデル、利用実績／分配連携を完了したものとして数えない。
 
 ```mermaid
 flowchart LR
     CREATOR[音楽クリエーター]
-    UPLOAD[Upload]
-    CATALOG[Catalog]
-    PLAYER[Player]
+    UPLOAD[アップロード]
+    CATALOG[カタログ]
+    PLAYER[プレーヤー]
     USER[ユーザ]
 
     CREATOR --> UPLOAD --> CATALOG --> PLAYER --> USER
@@ -304,25 +304,25 @@ flowchart LR
 - アカウント
 - 楽曲検索
 - 楽曲再生
-- Playlist
+- プレイリスト
 - 音楽クリエーターページ
-- Subscription
+- サブスクリプション
 
 ### 音楽クリエーター
 
 - 音楽クリエーター登録
 - 作品登録
-- Rights Metadata
-- Artwork / Audio Upload
-- 基本Analytics
+- 権利メタデータ
+- Artwork / 音声アップロード
+- 基本分析
 
-### Platform
+### プラットフォーム
 
-- Catalog
-- Audio Delivery
-- Usage Event
-- Admin
-- Monitoring
+- カタログ
+- 音声配信
+- 利用実績イベント
+- 管理
+- 監視
 
 ---
 
@@ -331,7 +331,7 @@ flowchart LR
 初期MVPでは、
 
 - 完全オンチェーン分配
-- 本格的Zero-Knowledge Proof
+- 本格的ゼロ知識証明
 - 完全な二院制プロトコルガバナンス
 - STO
 - 世界同時展開
@@ -341,65 +341,65 @@ flowchart LR
 ```mermaid
 flowchart LR
     MVP[MVP]
-    VALIDATE[Validate Product Value]
-    COMMUNITY[Build Real Community]
-    ADVANCED[Advanced Protocol]
+    VALIDATE[Validate プロダクト Value]
+    COMMUNITY[ビルド Real コミュニティ]
+    ADVANCED[Advanced プロトコル]
 
     MVP --> VALIDATE --> COMMUNITY --> ADVANCED
 ```
 
-Governanceを先に作るのではなく、Governanceが代表すべき実際の音楽クリエーター／ユーザコミュニティを先に成立させる。
+ガバナンスを先に作るのではなく、ガバナンスが代表すべき実際の音楽クリエーター／ユーザコミュニティを先に成立させる。
 
 ---
 
 ## 13.13 MVPで測定するもの
 
-- Active ユーザ
-- Paid Conversion
-- Listening Hours
-- Playback Start p95
+- 有効ユーザ
+- 有料 Conversion
+- 聴取時間
+- 再生開始 p95
 - Buffering Ratio
 - 音楽クリエーター登録数
-- Active 音楽クリエーター
-- Upload数
-- Repeat Listening
+- 有効音楽クリエーター
+- アップロード数
+- Repeat 聴取
 - 新人音楽クリエーター発見
 
 を測る。
 
-この段階から将来のGovernance設計のため、
+この段階から将来のガバナンス設計のため、
 
-- ユーザ活動 Distribution
-- 音楽クリエーターActivity Distribution
+- ユーザ活動分配
+- 音楽クリエーター活動分配
 - 地域的分布
 - 利用形態
 
-も匿名性・Privacyに配慮しながら分析する。
+も匿名性・プライバシーに配慮しながら分析する。
 
 ---
 
-## 13.14 Phase 1 Gate
+## 13.14 フェーズ 1 ゲート
 
-Phase 2へ進む条件は、
+フェーズ 2へ進む条件は、
 
 > **音楽サービスとして継続利用される兆候と、実際の音楽クリエーター／ユーザコミュニティが存在すること**
 
 である。
 
-加えて、本番系の実装へ進む前に、Testnetデモの再現可能なSource Commit、Network／Contract情報、失敗試験、Security Review、Rights／Legal／Privacy上の承認条件、鍵と権限の本番分離を確認する。
+加えて、本番系の実装へ進む前に、テストネットデモの再現可能なソースコミット、ネットワーク／コントラクト情報、失敗試験、セキュリティレビュー、権利／法務／プライバシー上の承認条件、鍵と権限の本番分離を確認する。
 
 ---
 
-## 13.15 Phase 2 — 音楽クリエーター経済
+## 13.15 フェーズ 2 — 音楽クリエーター経済
 
-Phase 2では音楽クリエーターへの経済的価値還元を実装する。
+フェーズ 2では音楽クリエーターへの経済的価値還元を実装する。
 
 ```mermaid
 flowchart LR
-    SUB[Subscription]
-    USAGE[Usage]
-    RIGHTS[Rights]
-    ECON[Distribution Engine]
+    SUB[サブスクリプション]
+    USAGE[利用実績]
+    RIGHTS[権利]
+    ECON[分配エンジン]
     CREATOR[音楽クリエーター／権利者]
 
     SUB --> ECON
@@ -410,48 +410,48 @@ flowchart LR
 
 ---
 
-## 13.16 Rights Registry
+## 13.16 権利登録台帳
 
-音楽クリエーター情報と法的Rights情報を区別して管理する。
+音楽クリエーター情報と法的権利情報を区別して管理する。
 
 ```mermaid
 flowchart TD
-    WORK[Work / Recording]
+    WORK[作業 / 原盤]
 
     WORK --> CREATOR[音楽クリエーター関係]
-    WORK --> RIGHTS[Legal Rights]
+    WORK --> RIGHTS[法務権利]
 
-    RIGHTS --> DB[Off-chain Rights DB]
-    DB --> COMMIT[Rights State / Commitment]
-    COMMIT --> CHAIN[Blockchain]
+    RIGHTS --> DB[オフチェーン権利 DB]
+    DB --> COMMIT[権利状態 / コミットメント]
+    COMMIT --> CHAIN[ブロックチェーン]
 ```
 
-個人情報、契約全文、税務情報等を無条件にBlockchainへ保存しない。
+個人情報、契約全文、税務情報等を無条件にブロックチェーンへ保存しない。
 
 ---
 
-## 13.17 Distribution Engine
+## 13.17 分配エンジン
 
 第6章の経済モデルを実装する。
 
 考慮対象には、
 
-- Usage
-- Rights
-- Fraud Detection
-- Discovery
+- 利用実績
+- 権利
+- 不正検知
+- 発見
 - 音楽クリエーター支援
-- Community Policy
+- コミュニティポリシー
 
 を含む。
 
 ```mermaid
 flowchart LR
-    USAGE[Usage]
-    RIGHTS[Rights]
-    FRAUD[Fraud Detection]
-    POLICY[Distribution Policy]
-    ENGINE[Distribution Engine]
+    USAGE[利用実績]
+    RIGHTS[権利]
+    FRAUD[不正検知]
+    POLICY[分配ポリシー]
+    ENGINE[分配エンジン]
 
     USAGE --> ENGINE
     RIGHTS --> ENGINE
@@ -459,20 +459,20 @@ flowchart LR
     POLICY --> ENGINE
 ```
 
-この段階ではDistribution Policyの最終決定権を直ちに抽選議会へ移さず、Community Consultationを開始する。
+この段階では分配ポリシーの最終決定権を直ちに抽選議会へ移さず、コミュニティ協議を開始する。
 
 ---
 
-## 13.18 Community Consultation
+## 13.18 コミュニティ協議
 
-音楽クリエーター経済の運用開始と同時に、将来のGovernanceのための公開Consultationを行う。
+音楽クリエーター経済の運用開始と同時に、将来のガバナンスのための公開協議を行う。
 
 ```mermaid
 flowchart LR
     CREATORS[音楽クリエーター]
     USERS[ユーザ]
-    CONSULT[Community Consultation]
-    POLICY[Policy Feedback]
+    CONSULT[コミュニティ協議]
+    POLICY[ポリシー Feedback]
 
     CREATORS --> CONSULT
     USERS --> CONSULT
@@ -483,49 +483,49 @@ flowchart LR
 
 - 分配への理解
 - 音楽クリエーター／ユーザの利害対立
-- Governanceへの参加意欲
+- ガバナンスへの参加意欲
 - 重要と考える政策領域
 
 を観察する。
 
 ---
 
-## 13.19 Phase 2 Gate
+## 13.19 フェーズ 2 ゲート
 
-Phase 3へ進む条件は、
+フェーズ 3へ進む条件は、
 
-- Rights Registryが実運用できる
+- 権利登録台帳が実運用できる
 - 音楽クリエーターへの分配が正確
 - 会計照合が可能
-- Fraud Detectionが機能
+- 不正検知が機能
 - 音楽クリエーターの理解と信頼が得られる
 - Unit Economicsを計測できる
-- Governance対象となる実際の政策課題が見えている
+- ガバナンス対象となる実際の政策課題が見えている
 
 ことである。
 
 ---
 
-## 13.20 Phase 3 — Verifiable Platform
+## 13.20 フェーズ 3 — 検証可能プラットフォーム
 
-Phase 3では、
+フェーズ 3では、
 
-> **Platformを信用してください**
+> **プラットフォームを信用してください**
 
 から、
 
-> **Platformの重要な計算を検証できます**
+> **プラットフォームの重要な計算を検証できます**
 
 へ進む。
 
 ```mermaid
 flowchart LR
-    EVENTS[Usage Events]
-    VALID[Validation]
-    AGG[Aggregation]
-    ROOT[Commitment]
-    PROOF[Verifiable Proof]
-    CHAIN[L2 / Verification Layer]
+    EVENTS[利用実績イベント]
+    VALID[検証]
+    AGG[集約]
+    ROOT[コミットメント]
+    PROOF[検証可能証明]
+    CHAIN[L2 / 検証レイヤー]
 
     EVENTS --> VALID --> AGG --> ROOT
     AGG --> PROOF --> CHAIN
@@ -534,25 +534,25 @@ flowchart LR
 
 ---
 
-## 13.21 Auditable Ledger
+## 13.21 監査可能な台帳
 
-最初にUsage Eventと分配計算を再現可能にする。
+最初に利用実績イベントと分配計算を再現可能にする。
 
 ```mermaid
 flowchart LR
-    EVENT[Usage Event]
-    LOG[Audit Log]
-    CALC[Distribution]
-    AUDIT[Independent Audit]
+    EVENT[利用実績イベント]
+    LOG[監査 Log]
+    CALC[分配]
+    AUDIT[独立監査]
 
     EVENT --> LOG --> CALC --> AUDIT
 ```
 
 ---
 
-## 13.22 Commitment
+## 13.22 コミットメント
 
-Usage集合等についてCommitmentを生成する。
+利用実績集合等についてコミットメントを生成する。
 
 例えば、
 
@@ -564,11 +564,11 @@ $$
 
 ---
 
-## 13.23 Zero-Knowledge Proof
+## 13.23 ゼロ知識証明
 
 要求仕様は、
 
-> **Privacy-preserving Verifiable Usage / Distribution**
+> **Privacy-preserving 検証可能利用実績 / 分配**
 
 である。
 
@@ -576,61 +576,61 @@ zk-STARKは現時点での有力な実装候補だが、特定方式を憲章上
 
 ```mermaid
 flowchart TD
-    REQ[Verifiable + Privacy-preserving Computation]
+    REQ[検証可能 + Privacy-preserving Computation]
 
     REQ --> STARK[zk-STARK]
     REQ --> SNARK[zk-SNARK]
-    REQ --> FUTURE[Future Proof Systems]
+    REQ --> FUTURE[Future 証明 Systems]
 ```
 
-Proof SystemはSecurity、Cost、Privacy、Performance、長期保守性を比較して選択する。
+証明システムはセキュリティ、コスト、プライバシー、実演、長期保守性を比較して選択する。
 
 ---
 
-## 13.24 Phase 3 Gate
+## 13.24 フェーズ 3 ゲート
 
-Phase 4へ進む条件は、
+フェーズ 4へ進む条件は、
 
-- Usage Pipelineが安定
-- Commitmentが再現可能
-- Distribution Calculationが監査可能
-- Proof Systemの実証がある
-- Proof Costが許容範囲
-- Security Reviewが完了
-- Governanceに必要なデータの検証可能性が確立し始めている
+- 利用実績パイプラインが安定
+- コミットメントが再現可能
+- 分配計算が監査可能
+- 証明システムの実証がある
+- 証明コストが許容範囲
+- セキュリティレビューが完了
+- ガバナンスに必要なデータの検証可能性が確立し始めている
 
 ことである。
 
 ---
 
-## 13.25 Phase 4 — Governance Pilot
+## 13.25 フェーズ 4 — ガバナンス試行
 
 ここから抽選議会を実証する。
 
-最初からスマートコントラクト変更権限を与えず、**Advisory Governance**として開始する。
+最初からスマートコントラクト変更権限を与えず、**助言型ガバナンス**として開始する。
 
 ```mermaid
 flowchart LR
     COMMUNITY[音楽クリエーター／ユーザコミュニティ]
-    ELIGIBLE[Eligibility]
-    SORT[Sortition]
-    HOUSES[Advisory Houses]
-    DELIB[Deliberation]
-    RECOMMEND[Recommendation]
+    ELIGIBLE[適格性]
+    SORT[抽選]
+    HOUSES[助言型 Houses]
+    DELIB[熟議]
+    RECOMMEND[推薦]
 
     COMMUNITY --> ELIGIBLE --> SORT --> HOUSES --> DELIB --> RECOMMEND
 ```
 
 ---
 
-## 13.26 Eligibilityの実証
+## 13.26 適格性の実証
 
 ユーザ院議会では、
 
 ```text
 ユーザ
  ↓
-Active / 検証済みユーザ
+有効 / 検証済みユーザ
  ↓
 ガバナンス適格ユーザ
 ```
@@ -651,8 +651,8 @@ Active / 検証済みユーザ
 
 目的は政治参加を狭めることではなく、
 
-- Sybil Attack
-- Bot
+- シビル攻撃
+- ボット
 - 架空音楽クリエーター
 - 資本による大量アカウント支配
 
@@ -660,45 +660,45 @@ Active / 検証済みユーザ
 
 ---
 
-## 13.27 Verifiable Sortition
+## 13.27 検証可能抽選
 
 抽選は運営会社の非公開処理にしない。
 
 ```mermaid
 flowchart LR
-    POOL[Eligible Pool]
-    RAND[Verifiable Randomness]
-    ALG[Open Sortition Algorithm]
-    MEMBERS[Selected Members]
+    POOL[適格プール]
+    RAND[検証可能乱数]
+    ALG[公開抽選アルゴリズム]
+    MEMBERS[選出議員]
 
     POOL --> ALG
     RAND --> ALG
     ALG --> MEMBERS
 ```
 
-抽選母集団、Randomness、Algorithm、結果を可能な範囲で検証可能にする。
+抽選母集団、乱数、アルゴリズム、結果を可能な範囲で検証可能にする。
 
 ---
 
 ## 13.28 抽選議会
 
-Pilotでは、
+試行では、
 
 - 音楽クリエータ院議会
 - ユーザ院議会
 
 を一定人数で構成し、任期制とする。
 
-MemberはGovernance専門家である必要はない。
+Memberはガバナンス専門家である必要はない。
 
-Platform側は、
+プラットフォーム側は、
 
 - Orientation
-- Technical Briefing
-- Legal Briefing
-- Economic Simulation
+- 技術 Briefing
+- 法務 Briefing
+- 経済シミュレーション
 - Neutral Secretariat
-- AI Assistance
+- AI 支援
 
 を提供する。
 
@@ -708,17 +708,17 @@ Platform側は、
 
 ```mermaid
 flowchart LR
-    PROP[Proposal]
-    INFO[Evidence / Briefing]
-    HEAR[Stakeholder Hearing]
-    SIM[Simulation]
-    DELIB[Deliberation]
-    REC[Recommendation]
+    PROP[提案]
+    INFO[証跡 / Briefing]
+    HEAR[利害関係者ヒアリング]
+    SIM[シミュレーション]
+    DELIB[熟議]
+    REC[推薦]
 
     PROP --> INFO --> HEAR --> SIM --> DELIB --> REC
 ```
 
-このPhaseでは、
+このフェーズでは、
 
 > 「抽選で選ばれた普通の音楽クリエーター／ユーザが、十分な情報提供によって合理的な熟議を行えるか」
 
@@ -726,22 +726,22 @@ flowchart LR
 
 ---
 
-## 13.30 Representation Audit
+## 13.30 代表性監査
 
-抽選結果がCommunityを極端に歪めていないか監査する。
+抽選結果がコミュニティを極端に歪めていないか監査する。
 
 ユーザ院議会では、
 
 - 利用頻度
 - 地域
-- Subscription形態
+- サブスクリプション形態
 - 利用傾向
 
 音楽クリエータ院議会では、
 
 - 音楽クリエーター役割
 - 活動規模
-- Genre
+- ジャンル
 - 地域
 
 等の偏りを評価する。
@@ -750,79 +750,79 @@ flowchart LR
 
 ---
 
-## 13.31 Governance Pilot KPI
+## 13.31 ガバナンス試行 KPI
 
-- Member Participation
-- Deliberation Completion
-- Community Trust
-- Representation
+- Member 参加
+- 熟議 Completion
+- コミュニティ信頼
+- 代表性
 - Member Turnover
-- Proposal理解度
-- Recommendation Quality
-- Governance Cost
-- Sybil Resistance
+- 提案理解度
+- 推薦品質
+- ガバナンスコスト
+- シビル耐性
 
 を評価する。
 
 ---
 
-## 13.32 Phase 4 Gate
+## 13.32 フェーズ 4 ゲート
 
 本格的プロトコルガバナンスへ進む条件は、
 
-- Eligibilityが機能
+- 適格性が機能
 - 抽選が検証可能
 - 音楽クリエーター／ユーザ代表性が許容範囲
 - Memberが熟議へ参加できる
 - 利益相反管理が機能
-- Sybil対策がある
-- Governance Costが持続可能
-- Communityから一定の正統性が認められる
+- シビル対策がある
+- ガバナンスコストが持続可能
+- コミュニティから一定の正統性が認められる
 
 ことである。
 
 ---
 
-## 13.33 Phase 5 — プロトコルガバナンス
+## 13.33 フェーズ 5 — プロトコルガバナンス
 
-Phase 5で抽選議会へ実際のプロトコルガバナンス権限を段階的に移す。
+フェーズ 5で抽選議会へ実際のプロトコルガバナンス権限を段階的に移す。
 
 ```mermaid
 flowchart TD
-    CHARTER[Three Charters]
+    CHARTER[三憲章]
     CREATOR[音楽クリエーターコミュニティ]
     USER[ユーザコミュニティ]
 
-    CREATOR --> CSORT[Sortition]
-    USER --> USORT[Sortition]
+    CREATOR --> CSORT[抽選]
+    USER --> USORT[抽選]
 
     CSORT --> CH[音楽クリエータ院議会]
     USORT --> UH[ユーザ院議会]
 
-    CH --> DELIB[Joint Deliberation]
+    CH --> DELIB[共同熟議]
     UH --> DELIB
 
     CHARTER --> DELIB
 
     DELIB --> SPEC[プロトコル仕様]
-    SPEC --> CODE[Verified Code]
-    CODE --> EXEC[Automatic Execution]
+    SPEC --> CODE[検証済みコード]
+    CODE --> EXEC[自動実行]
 ```
 
 ---
 
 ## 13.34 権限移譲の順序
 
-いきなりスマートコントラクト Upgrade権限を移さない。
+いきなりスマートコントラクトアップグレード権限を移さない。
 
 ```mermaid
 flowchart LR
-    COMMUNITY[Community Policy]
-    DISCOVERY[Discovery Policy]
-    ECON[Economic Parameters]
-    TREASURY[Treasury]
-    PROTOCOL[Protocol Changes]
-    CODE[Code Governance]
+    COMMUNITY[コミュニティポリシー]
+    DISCOVERY[発見ポリシー]
+    ECON[経済パラメータ]
+    TREASURY[資金庫]
+    PROTOCOL[プロトコル Changes]
+    CODE[コードガバナンス]
 
     COMMUNITY --> DISCOVERY --> ECON --> TREASURY --> PROTOCOL --> CODE
 ```
@@ -831,61 +831,61 @@ flowchart LR
 
 ---
 
-## 13.35 プロトコル仕様 First
+## 13.35 プロトコル仕様優先
 
-議会が直接Source Codeを編集するのではない。
+議会が直接ソースコードを編集するのではない。
 
 ```mermaid
 flowchart LR
-    DELIB[Deliberation]
-    DECISION[Decision]
+    DELIB[熟議]
+    DECISION[決定]
     SPEC[プロトコル仕様]
-    DEV[Implementation]
-    TEST[Test / Formal Verification]
-    AUDIT[Audit]
-    TIME[Timelock]
-    DEPLOY[Deployment]
+    DEV[実装]
+    TEST[テスト / 形式検証]
+    AUDIT[監査]
+    TIME[タイムロック]
+    DEPLOY[デプロイ]
 
     DELIB --> DECISION --> SPEC --> DEV --> TEST --> AUDIT --> TIME --> DEPLOY
 ```
 
-Governanceは「何を実現するか」を決め、Software Engineering Processが「安全にどう実装するか」を担う。
+ガバナンスは「何を実現するか」を決め、Software エンジニアリング手続が「安全にどう実装するか」を担う。
 
 ---
 
-## 13.36 株式会社によるReview
+## 13.36 株式会社によるレビュー
 
 両院承認後、株式会社は自由な政策拒否権を持つのではなく、
 
-- Legal
+- 法務
 - Contractual
-- Security
-- Technical Safety
+- セキュリティ
+- 技術安全性
 
 の観点から執行可能性を確認する。
 
 ```mermaid
 flowchart TD
-    APPROVE[Two-House Approval]
-    REVIEW[Legal / Security Review]
+    APPROVE[両院承認]
+    REVIEW[法務 / セキュリティレビュー]
 
     APPROVE --> REVIEW
     REVIEW -->|Executable| IMPLEMENT[Implement]
-    REVIEW -->|Illegal / Unsafe| RETURN[Reasoned Return]
-    RETURN --> DELIB[Re-deliberation]
+    REVIEW -->|Illegal / Unsafe| RETURN[理由付き差戻し]
+    RETURN --> DELIB[再熟議]
 ```
 
 執行停止時には理由を公開する。
 
 ---
 
-## 13.37 Referendum
+## 13.37 全体投票
 
 3つの憲章等の重大事項は抽選議会だけで変更しない。
 
 ```mermaid
 flowchart TD
-    CHANGE[Constitutional Proposal]
+    CHANGE[憲章適合提案]
     CH[音楽クリエータ院議会の特別多数]
     UH[ユーザ院議会の特別多数]
     CR[音楽クリエーターコミュニティ直接投票]
@@ -895,43 +895,43 @@ flowchart TD
     CHANGE --> UH
     CH --> CR
     UH --> UR
-    CR --> FINAL[Constitutional Approval]
+    CR --> FINAL[憲章適合承認]
     UR --> FINAL
 ```
 
-これにより議会は熟議機関でありながら、主権の源泉をCommunityに残す。
+これにより議会は熟議機関でありながら、主権の源泉をコミュニティに残す。
 
 ---
 
-## 13.38 Emergency Governance
+## 13.38 緊急ガバナンス
 
-攻撃等に対する限定的Emergency Authorityを整備する。
+攻撃等に対する限定的緊急権限を整備する。
 
 ```mermaid
 flowchart LR
-    INCIDENT[Critical Incident]
-    PAUSE[Limited Pause]
-    DISCLOSE[Disclosure]
-    REVIEW[House Review]
-    DECIDE[Resume / Upgrade]
+    INCIDENT[重大インシデント]
+    PAUSE[限定停止]
+    DISCLOSE[開示]
+    REVIEW[House レビュー]
+    DECIDE[再開 / アップグレード]
 
     INCIDENT --> PAUSE --> DISCLOSE --> REVIEW --> DECIDE
 ```
 
-Pause権限、最大期間、再開条件をプロトコル仕様に記述する。
+停止権限、最大期間、再開条件をプロトコル仕様に記述する。
 
 ---
 
 ## 13.39 AIとプロトコルガバナンス
 
-AI Agentは、
+AI エージェントは、
 
-- Proposal Analysis
-- Simulation
-- Specification Draft
-- Code Generation
-- Test Generation
-- Security Analysis
+- 提案 Analysis
+- シミュレーション
+- 仕様草案
+- コード世代
+- テスト世代
+- セキュリティ Analysis
 
 を支援できる。
 
@@ -940,10 +940,10 @@ AI Agentは、
 ```mermaid
 flowchart LR
     HUMAN[音楽クリエーター／ユーザガバナンス]
-    SPEC[Approved Specification]
-    AI[AI Implementation Support]
-    REVIEW[Human + Automated Review]
-    CODE[Code]
+    SPEC[承認済み仕様]
+    AI[AI 実装支援]
+    REVIEW[人間 + 自動レビュー]
+    CODE[コード]
 
     HUMAN --> SPEC --> AI --> REVIEW --> CODE
 ```
@@ -952,29 +952,29 @@ flowchart LR
 
 ---
 
-## 13.40 Phase 5 Gate
+## 13.40 フェーズ 5 ゲート
 
-STO & Scaleへ進む条件は、
+STO & 規模拡大へ進む条件は、
 
 - 音楽クリエータ院議会が実運用
 - ユーザ院議会が実運用
-- 抽選とEligibilityが検証可能
-- Representation Auditが機能
-- 複数のProposal実績
-- Specification → Codeの追跡が可能
-- Timelock / Emergency Processが機能
-- Governance Attack対策がある
-- CommunityがGovernanceを正統なものとして受け入れている
+- 抽選と適格性が検証可能
+- 代表性監査が機能
+- 複数の提案実績
+- 仕様 → コードの追跡が可能
+- タイムロック / 緊急手続が機能
+- ガバナンス攻撃対策がある
+- コミュニティがガバナンスを正統なものとして受け入れている
 
 ことである。
 
 ---
 
-## 13.41 Phase 6 — STO & Scale
+## 13.41 フェーズ 6 — STO & 規模拡大
 
-STOはPlatform Governanceを作るための前提ではない。
+STOはプラットフォームガバナンスを作るための前提ではない。
 
-> **事業・音楽クリエーター経済・検証可能性・Governanceが実証された後の成長資金調達手段**
+> **事業・音楽クリエーター経済・検証可能性・ガバナンスが実証された後の成長資金調達手段**
 
 として位置付ける。
 
@@ -982,24 +982,24 @@ STOはPlatform Governanceを作るための前提ではない。
 flowchart LR
     MVP[MVP]
     ECON[音楽クリエーター経済]
-    VERIFY[Verifiability]
-    GOV[Governance]
+    VERIFY[検証可能性]
+    GOV[ガバナンス]
     STO[STO]
-    SCALE[Scale]
+    SCALE[規模拡大]
 
     MVP --> ECON --> VERIFY --> GOV --> STO --> SCALE
 ```
 
 ---
 
-## 13.42 STOとProtocol支配を分離する
+## 13.42 STOとプロトコル支配を分離する
 
 STO後も、
 
 ```mermaid
 flowchart TD
-    INVESTORS[Shareholders / STO Investors]
-    COMPANY[Corporate Governance]
+    INVESTORS[株主 / STO 投資家]
+    COMPANY[法人ガバナンス]
 
     CREATORS[音楽クリエーター]
     USERS[ユーザ]
@@ -1026,98 +1026,98 @@ STO前に、
 - 株式会社の事業実績
 - 財務情報
 - 音楽クリエーター経済
-- Governance実績
-- Security
-- Legal Structure
-- Tokenと株主権の関係
+- ガバナンス実績
+- セキュリティ
+- 法務構造
+- トークンと株主権の関係
 - 資金使途
 
 を明確化する。
 
 ---
 
-## 13.44 Scale Infrastructure
+## 13.44 規模拡大インフラ
 
 成長資金は需要に応じて、
 
-- Global CDN
+- 国際 CDN
 - Autoscaling
-- Event Infrastructure
-- Rights Infrastructure
-- Proof Infrastructure
-- Security
-- Observability
+- イベントインフラ
+- 権利インフラ
+- 証明インフラ
+- セキュリティ
+- 可観測性
 
 へ投資する。
 
 第12章で定義した、
 
-- Cost / ユーザ
-- Cost / Play
-- Cost / Listening Hour
+- コスト / ユーザ
+- コスト / Play
+- コスト / 聴取 Hour
 
-を監視しながらScaleする。
+を監視しながら規模拡大する。
 
 ---
 
-## 13.45 Phase 6 Gate
+## 13.45 フェーズ 6 ゲート
 
 国際展開へ進む条件は、
 
 - 国内事業モデルが成立
 - 音楽クリエーター分配が持続可能
-- Governanceが安定
-- InfrastructureがScale可能
-- Security Incident Responseが成熟
+- ガバナンスが安定
+- インフラが規模拡大可能
+- セキュリティインシデント対応が成熟
 - 国際展開資金が確保
-- 国際Governanceの設計方針がある
+- 国際ガバナンスの設計方針がある
 
 ことである。
 
 ---
 
-## 13.46 Phase 7 — International Expansion
+## 13.46 フェーズ 7 — 国際展開
 
 国際展開では、
 
-- Rights
-- Tax
+- 権利
+- 税務
 - Payments
-- Privacy
-- Financial Regulation
+- プライバシー
+- 財務規制
 - 音楽クリエーターコミュニティ
-- Governance Representation
+- ガバナンス代表性
 
 を地域ごとに検討する。
 
 ```mermaid
 flowchart TD
-    GLOBAL[International Expansion]
+    GLOBAL[国際展開]
 
-    GLOBAL --> RIGHTS[Rights]
-    GLOBAL --> TAX[Tax]
+    GLOBAL --> RIGHTS[権利]
+    GLOBAL --> TAX[税務]
     GLOBAL --> PAY[Payments]
-    GLOBAL --> PRIVACY[Privacy]
-    GLOBAL --> FIN[Financial Regulation]
-    GLOBAL --> GOV[Governance Representation]
+    GLOBAL --> PRIVACY[プライバシー]
+    GLOBAL --> FIN[財務規制]
+    GLOBAL --> GOV[ガバナンス代表性]
 ```
 
 ---
 
-## 13.47 Global Governance
+## 13.47 国際ガバナンス
 
 音楽クリエータ院議会/ユーザ院議会が国際化すると、単純な世界一律抽選では代表性の問題が起こり得る。
 
 ```mermaid
 flowchart TD
-    GLOBAL[Global Eligible Community]
+    GLOBAL[国際適格コミュニティ]
 
-    GLOBAL --> REGION[Regional Representation]
-    GLOBAL --> LANGUAGE[Language Access]
+    GLOBAL --> REGION[地域代表性]
+    GLOBAL --> LANGUAGE[Language アクセス]
     GLOBAL --> CREATOR[音楽クリエーターの多様性]
     GLOBAL --> USER[ユーザの多様性]
 
-    REGION --> SORT[Stratified / Verifiable Sortition]
+    REGION --> SORT[Stratified / 検証可能抽選]
     LANGUAGE --> SORT
     CREATOR --> SORT
     USER --> SORT
@@ -1131,41 +1131,41 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    DOC[Whitepaper]
+    DOC[ホワイトペーパー]
     MVP[MVP]
-    EVENT[Usage Pipeline]
-    RIGHTS[Rights Graph]
-    DIST[Distribution]
-    COMMIT[Commitment]
-    ZK[Verifiable Proof]
-    GOV[Governance Infrastructure]
-    CODE[Protocol Code Governance]
-    GLOBAL[Global Scale]
+    EVENT[利用実績パイプライン]
+    RIGHTS[権利 Graph]
+    DIST[分配]
+    COMMIT[コミットメント]
+    ZK[検証可能証明]
+    GOV[ガバナンスインフラ]
+    CODE[プロトコルコードガバナンス]
+    GLOBAL[国際規模拡大]
 
     DOC --> MVP --> EVENT --> RIGHTS --> DIST --> COMMIT --> ZK --> GOV --> CODE --> GLOBAL
 ```
 
 ---
 
-## 13.49 Governanceロードマップ
+## 13.49 ガバナンスロードマップ
 
 ```mermaid
 flowchart LR
-    CHARTER[Three Charters]
-    CONSULT[Community Consultation]
-    ELIG[Eligibility]
-    SORT[Advisory Sortition]
-    DELIB[Deliberative Houses]
-    POLICY[Policy Governance]
-    ECON[Economic Governance]
-    CODE[Code Governance]
+    CHARTER[三憲章]
+    CONSULT[コミュニティ協議]
+    ELIG[適格性]
+    SORT[助言型抽選]
+    DELIB[熟議型 Houses]
+    POLICY[ポリシーガバナンス]
+    ECON[経済ガバナンス]
+    CODE[コードガバナンス]
 
     CHARTER --> CONSULT --> ELIG --> SORT --> DELIB --> POLICY --> ECON --> CODE
 ```
 
 ここが従来のロードマップからの重要な変更点である。
 
-**二院制を宣言して即座に権限を渡すのではなく、代表性と熟議能力を実証してからCode Governanceへ進む。**
+**二院制を宣言して即座に権限を渡すのではなく、代表性と熟議能力を実証してからコードガバナンスへ進む。**
 
 ---
 
@@ -1173,11 +1173,11 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    EARLY[Early 音楽クリエーター]
+    EARLY[初期音楽クリエーター]
     VERIFIED[検証済み音楽クリエーター]
     ECON[音楽クリエーター経済]
-    CONSULT[Governance Consultation]
-    SORT[Sortition Pool]
+    CONSULT[ガバナンス協議]
+    SORT[抽選プール]
     HOUSE[音楽クリエータ院議会]
     GLOBAL[国際音楽クリエーターネットワーク]
 
@@ -1191,12 +1191,12 @@ flowchart LR
 ```mermaid
 flowchart LR
     ALPHA[Alpha ユーザ]
-    ACTIVE[Active ユーザ]
-    PAID[Paid / Active Community]
+    ACTIVE[有効ユーザ]
+    PAID[有料 / 有効コミュニティ]
     ELIG[ガバナンス適格ユーザ]
-    SORT[Sortition Pool]
+    SORT[抽選プール]
     HOUSE[ユーザ院議会]
-    GLOBAL[Global ユーザコミュニティ]
+    GLOBAL[国際ユーザコミュニティ]
 
     ALPHA --> ACTIVE --> PAID --> ELIG --> SORT --> HOUSE --> GLOBAL
 ```
@@ -1209,52 +1209,52 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    STRUCT[Legal Structure]
-    TERMS[Contracts / Terms]
-    RIGHTS[Rights Compliance]
-    PAY[Payment Compliance]
-    GOV[Governance Legal Design]
-    STO[STO Compliance]
-    GLOBAL[International Compliance]
+    STRUCT[法務構造]
+    TERMS[契約 / 条件]
+    RIGHTS[権利法令遵守]
+    PAY[決済法令遵守]
+    GOV[ガバナンス法務 Design]
+    STO[STO 法令遵守]
+    GLOBAL[International 法令遵守]
 
     STRUCT --> TERMS --> RIGHTS --> PAY --> GOV --> STO --> GLOBAL
 ```
 
-法務は最後に確認するものではなく、すべてのPhaseと並行する。
+法務は最後に確認するものではなく、すべてのフェーズと並行する。
 
 ---
 
-## 13.53 Securityロードマップ
+## 13.53 セキュリティロードマップ
 
 ```mermaid
 flowchart LR
-    BASE[Secure Development]
+    BASE[安全な開発]
     IAM[IAM / Secrets]
-    AUDIT[Audit Logs]
-    CONTRACT[Contract Audit]
-    PROOF[Proof System Review]
-    SORT[Sortition Security]
-    GOV[Governance Security]
-    RED[Incident Drills]
+    AUDIT[監査ログ]
+    CONTRACT[コントラクト監査]
+    PROOF[証明システムレビュー]
+    SORT[抽選セキュリティ]
+    GOV[ガバナンスセキュリティ]
+    RED[インシデント Drills]
 
     BASE --> IAM --> AUDIT --> CONTRACT --> PROOF --> SORT --> GOV --> RED
 ```
 
-GovernanceがProtocol権限を持つ段階では、Governance Attack自体がSecurity Threatになる。
+ガバナンスがプロトコル権限を持つ段階では、ガバナンス攻撃自体がセキュリティ Threatになる。
 
 ---
 
-## 13.54 Infrastructureロードマップ
+## 13.54 インフラロードマップ
 
 ```mermaid
 flowchart LR
-    SIMPLE[Managed MVP]
+    SIMPLE[マネージド MVP]
     SCALE[Autoscaling]
-    STREAM[Event Streaming]
-    PROOF[Proof Infrastructure]
-    GOV[Governance Infrastructure]
-    HA[High Availability]
-    GLOBAL[Multi-region / Global Edge]
+    STREAM[イベントストリーミング]
+    PROOF[証明インフラ]
+    GOV[ガバナンスインフラ]
+    HA[高可用性]
+    GLOBAL[Multi-region / 国際エッジ]
 
     SIMPLE --> SCALE --> STREAM --> PROOF --> GOV --> HA --> GLOBAL
 ```
@@ -1265,46 +1265,46 @@ flowchart LR
 
 AIは、
 
-- Documentation
-- Requirements
-- Specification
+- 文書
+- 要件
+- 仕様
 - Coding
 - Testing
-- Security Review支援
-- Operations
-- Governance Analysis
+- セキュリティレビュー支援
+- 運用
+- ガバナンス Analysis
 
 へ利用する。
 
 ```mermaid
 flowchart LR
-    DOC[Documentation AI]
-    SPEC[Specification AI]
-    DEV[Development AI]
-    TEST[Test AI]
-    OPS[Operations AI]
-    GOV[Governance Support AI]
+    DOC[文書 AI]
+    SPEC[仕様 AI]
+    DEV[開発 AI]
+    TEST[テスト AI]
+    OPS[運用 AI]
+    GOV[ガバナンス支援 AI]
 
     DOC --> SPEC --> DEV --> TEST --> OPS --> GOV
 ```
 
-ただしAIは音楽クリエーター／ユーザからGovernanceの正統性を奪わない。
+ただしAIは音楽クリエーター／ユーザからガバナンスの正統性を奪わない。
 
 ---
 
-## 13.56 GitHubを制度とCodeの履歴にする
+## 13.56 GitHubを制度とコードの履歴にする
 
 GitHubには、
 
-- Whitepaper
+- ホワイトペーパー
 - Charters
-- Governance Proposals
+- ガバナンス Proposals
 - ガバナンス決定s
 - プロトコル仕様s
 - ADR
 - スマートコントラクトs
-- Tests
-- Infrastructure
+- テスト
+- インフラ
 
 を保存する。
 
@@ -1312,20 +1312,20 @@ GitHubには、
 flowchart TD
     GIT[GitHub]
 
-    GIT --> WP[Whitepaper]
+    GIT --> WP[ホワイトペーパー]
     GIT --> CHARTER[Charters]
-    GIT --> GOV[Governance]
+    GIT --> GOV[ガバナンス]
     GIT --> SPEC[Specifications]
     GIT --> ADR[ADR]
-    GIT --> CODE[Code]
-    GIT --> TEST[Tests]
+    GIT --> CODE[コード]
+    GIT --> TEST[テスト]
 ```
 
-理念から実行Codeまで変更理由を追跡できるようにする。
+理念から実行コードまで変更理由を追跡できるようにする。
 
 ---
 
-## 13.57 推奨Repository構造
+## 13.57 推奨リポジトリ構造
 
 ```text
 creator-first-platform/
@@ -1350,36 +1350,36 @@ creator-first-platform/
 └── .github/
 ```
 
-将来、ガバナンス決定と実装Commitを機械的に関連付けられる構造を目指す。
+将来、ガバナンス決定と実装コミットを機械的に関連付けられる構造を目指す。
 
 ---
 
-## 13.58 Versioning
+## 13.58 バージョン管理
 
-Whitepaper、Charters、ProtocolをVersion管理する。
+ホワイトペーパー、Charters、プロトコルを版管理する。
 
 ```text
-Whitepaper v1.0
+ホワイトペーパー v1.0
 Charters v1.0
-Protocol v0.1
+プロトコル v0.1
 
-Whitepaper v1.1
-Protocol v0.2
+ホワイトペーパー v1.1
+プロトコル v0.2
 
-Protocol v1.0
+プロトコル v1.0
 ```
 
 重要変更は、
 
 ```mermaid
 flowchart LR
-    PROP[Proposal]
-    DELIB[Deliberation]
-    DECISION[Decision]
-    SPEC[Specification]
-    PR[Pull Request]
-    REVIEW[Verification]
-    VERSION[Protocol Version]
+    PROP[提案]
+    DELIB[熟議]
+    DECISION[決定]
+    SPEC[仕様]
+    PR[プルリクエスト]
+    REVIEW[検証]
+    VERSION[プロトコル版]
 
     PROP --> DELIB --> DECISION --> SPEC --> PR --> REVIEW --> VERSION
 ```
@@ -1388,46 +1388,46 @@ flowchart LR
 
 ---
 
-## 13.59 WhitepaperはLiving Document
+## 13.59 ホワイトペーパーは継続更新文書
 
-Whitepaperは完成後変更しない宣言文ではない。
+ホワイトペーパーは完成後変更しない宣言文ではない。
 
-> **理念を維持しながら、実証、法律、技術、音楽クリエーター／ユーザコミュニティの変化を反映するLiving Document**
+> **理念を維持しながら、実証、法律、技術、音楽クリエーター／ユーザコミュニティの変化を反映する継続更新文書**
 
 とする。
 
-ただし過去Versionを保存し、重要な思想変更を履歴から消さない。
+ただし過去版を保存し、重要な思想変更を履歴から消さない。
 
 ---
 
-## 13.60 Phase別KPI
+## 13.60 フェーズ別KPI
 
-| Phase | 主要KPI |
+| フェーズ | 主要KPI |
 | --- | --- |
-| Foundation | 仕様完成度・法務論点・開発準備 |
-| Music MVP | Active ユーザ・Listening・UX・Active 音楽クリエーター |
-| 音楽クリエーター経済 | 音楽クリエーター収益・Rights精度・Unit Economics |
-| Verifiable Platform | Auditability・Proof Cost・Fraud Rate |
-| Governance Pilot | Representation・Participation・Deliberation Quality |
-| プロトコルガバナンス | Proposal Quality・Execution Safety・Community Trust |
-| STO & Scale | Growth・資本効率・Infrastructure Efficiency |
-| International | 地域別ユーザ・音楽クリエーター・Rights Coverage・Representation |
+| 基盤 | 仕様完成度・法務論点・開発準備 |
+| 音楽 MVP | 有効ユーザ・聴取・UX・有効音楽クリエーター |
+| 音楽クリエーター経済 | 音楽クリエーター収益・権利精度・Unit Economics |
+| 検証可能プラットフォーム | 監査可能性・証明コスト・不正率 |
+| ガバナンス試行 | 代表性・参加・熟議品質 |
+| プロトコルガバナンス | 提案品質・実行安全性・コミュニティ信頼 |
+| STO & 規模拡大 | 成長・資本効率・インフラ効率 |
+| International | 地域別ユーザ・音楽クリエーター・権利 Coverage・代表性 |
 
 ---
 
-## 13.61 Governance Health KPI
+## 13.61 ガバナンス健全性 KPI
 
-特にGovernanceでは、
+特にガバナンスでは、
 
-- Representation
-- Participation
-- Deliberation Quality
+- 代表性
+- 参加
+- 熟議品質
 - Member Turnover
-- Sybil Resistance
-- Delegation Concentration
-- Proposal Completion
-- Execution Safety
-- Community Trust
+- シビル耐性
+- 委任 Concentration
+- 提案 Completion
+- 実行安全性
+- コミュニティ信頼
 
 を追跡する。
 
@@ -1435,50 +1435,50 @@ Whitepaperは完成後変更しない宣言文ではない。
 
 ---
 
-## 13.62 North Star
+## 13.62 最重要指標
 
-Creator First PlatformのNorth Starは、再生回数や企業価値だけではない。
+Creator First Platformの最重要指標は、再生回数や企業価値だけではない。
 
 ```mermaid
 flowchart TD
     VALUE[Sustainable 音楽クリエーター-ユーザエコシステム]
 
     VALUE --> CREATOR[音楽クリエーターの持続可能性]
-    VALUE --> USER[ユーザ価値 & Autonomy]
-    VALUE --> DISCOVERY[Discovery / Diversity]
-    VALUE --> TRUST[Trust / Verifiability]
+    VALUE --> USER[ユーザ価値 & 自律性]
+    VALUE --> DISCOVERY[発見 / 多様性]
+    VALUE --> TRUST[信頼 / 検証可能性]
     VALUE --> GOV[Democratic Legitimacy]
 ```
 
 ---
 
-## 13.63 Kill / Pivot Criteria
+## 13.63 中止・方向転換基準
 
-各Phaseでは進む条件だけでなく、見直す条件を定める。
+各フェーズでは進む条件だけでなく、見直す条件を定める。
 
 例えば、
 
 - 音楽クリエーターが価値を感じない
 - ユーザ継続率が成立しない
-- Rights Costが持続不能
-- Infrastructure Costが収益を超える
+- 権利コストが持続不能
+- インフラコストが収益を超える
 - 抽選議会の代表性が成立しない
-- Governance参加が維持できない
+- ガバナンス参加が維持できない
 - プロトコルガバナンスが安全に運用できない
 
-場合は自動的に次Phaseへ進まない。
+場合は自動的に次フェーズへ進まない。
 
 ```mermaid
 flowchart LR
-    RESULT[Measured Result]
+    RESULT[Measured 結果]
     CHECK{Sustainable?}
-    NEXT[Next Phase]
+    NEXT[Next フェーズ]
     PIVOT[Redesign]
     STOP[Stop]
 
     RESULT --> CHECK
-    CHECK -->|Yes| NEXT
-    CHECK -->|Needs Change| PIVOT
+    CHECK -->|はい| NEXT
+    CHECK -->|Needs 変更| PIVOT
     CHECK -->|No| STOP
 ```
 
@@ -1488,22 +1488,22 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    VISION[Vision]
-    CHARTER[Three Charters]
+    VISION[ビジョン]
+    CHARTER[三憲章]
 
     VISION --> CHARTER
-    CHARTER --> FOUNDATION[Phase 0 Foundation]
-    FOUNDATION --> MVP[Phase 1 Music MVP]
-    MVP --> ECON[Phase 2 音楽クリエーター経済]
-    ECON --> VERIFY[Phase 3 Verifiable Platform]
-    VERIFY --> PILOT[Phase 4 Governance Pilot]
-    PILOT --> GOV[Phase 5 プロトコルガバナンス]
-    GOV --> STO[Phase 6 STO & Scale]
-    STO --> GLOBAL[Phase 7 International]
+    CHARTER --> FOUNDATION[フェーズ 0 基盤]
+    FOUNDATION --> MVP[フェーズ 1 音楽 MVP]
+    MVP --> ECON[フェーズ 2 音楽クリエーター経済]
+    ECON --> VERIFY[フェーズ 3 検証可能プラットフォーム]
+    VERIFY --> PILOT[フェーズ 4 ガバナンス試行]
+    PILOT --> GOV[フェーズ 5 プロトコルガバナンス]
+    GOV --> STO[フェーズ 6 STO & 規模拡大]
+    STO --> GLOBAL[フェーズ 7 International]
 
-    PILOT --> SORT[Eligibility + Sortition]
+    PILOT --> SORT[適格性 + 抽選]
     GOV --> HOUSES[音楽クリエータ院議会 + ユーザ院議会]
-    HOUSES --> DELIB[Deliberation]
+    HOUSES --> DELIB[熟議]
     DELIB --> SPEC[プロトコル仕様]
     SPEC --> CODE[スマートコントラクト]
 ```
@@ -1514,8 +1514,8 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    LAW[Applicable Law]
-    CHARTER[Three Charters]
+    LAW[適用法令]
+    CHARTER[三憲章]
 
     LAW --> CHARTER
 
@@ -1525,34 +1525,34 @@ flowchart TD
     CREATOR --> CELIG[適格音楽クリエーター]
     USER --> UELIG[適格ユーザ]
 
-    CELIG --> CSORT[Verifiable Sortition]
-    UELIG --> USORT[Verifiable Sortition]
+    CELIG --> CSORT[検証可能抽選]
+    UELIG --> USORT[検証可能抽選]
 
     CSORT --> CH[音楽クリエータ院議会]
     USORT --> UH[ユーザ院議会]
 
-    CH --> DELIB[Joint Deliberation]
+    CH --> DELIB[共同熟議]
     UH --> DELIB
 
     CHARTER --> DELIB
 
     DELIB --> SPEC[プロトコル仕様]
-    SPEC --> REVIEW[Legal / Security Review]
-    REVIEW --> CODE[Verified スマートコントラクト]
-    CODE --> EXEC[Automatic Execution]
+    SPEC --> REVIEW[法務 / セキュリティレビュー]
+    REVIEW --> CODE[検証済みスマートコントラクト]
+    CODE --> EXEC[自動実行]
 
-    CREATOR --> REFERENDUM[Constitutional Referendum]
+    CREATOR --> REFERENDUM[憲章適合全体投票]
     USER --> REFERENDUM
     CHARTER --> REFERENDUM
 
-    CORP[Corporation]
-    CORP --> LEGAL[Legal / Rights / Business Responsibility]
-    LEGAL --> PLATFORM[Music Platform]
+    CORP[株式会社]
+    CORP --> LEGAL[法務 / 権利 / 事業責任]
+    LEGAL --> PLATFORM[音楽プラットフォーム]
 
     EXEC --> PLATFORM
 ```
 
-株式会社は現実社会で責任を負い、音楽クリエーター／ユーザコミュニティはプロトコルガバナンスの正統性を生み、抽選議会は熟議し、SpecificationがRuleを定義し、スマートコントラクトがそれを執行する。
+株式会社は現実社会で責任を負い、音楽クリエーター／ユーザコミュニティはプロトコルガバナンスの正統性を生み、抽選議会は熟議し、仕様がルールを定義し、スマートコントラクトがそれを執行する。
 
 ---
 
@@ -1563,13 +1563,13 @@ Creator First Platformの成功とは、
 1. 音楽クリエーターが持続可能な収益を得られる
 2. ユーザが高品質な音楽体験を得られる
 3. 新人・Long Tail 音楽クリエーターが発見される
-4. Rightsと分配が透明である
-5. Platformの重要な計算が検証可能である
-6. 音楽クリエーター／ユーザがGovernanceの主権の源泉であり続ける
+4. 権利と分配が透明である
+5. プラットフォームの重要な計算が検証可能である
+6. 音楽クリエーター／ユーザがガバナンスの主権の源泉であり続ける
 7. 抽選された代表が十分な情報のもとで熟議できる
-8. ガバナンス決定がSpecificationとCodeへ追跡可能に変換される
+8. ガバナンス決定が仕様とコードへ追跡可能に変換される
 9. 株式会社が現実社会で法的責任を果たす
-10. 資本保有がProtocol支配へ直結しない
+10. 資本保有がプロトコル支配へ直結しない
 11. 事業として持続可能である
 
 状態である。
@@ -1581,50 +1581,50 @@ Creator First Platformの成功とは、
 Creator First Platformのロードマップは、
 
 ```text
-Vision
+ビジョン
   ↓
-Three Charters
+三憲章
   ↓
-Foundation
+基盤
   ↓
-Music MVP
+音楽 MVP
   ↓
 音楽クリエーター経済
   ↓
-Verifiable Platform
+検証可能プラットフォーム
   ↓
-Governance Pilot
+ガバナンス試行
   ↓
 音楽クリエーター／ユーザ
   ↓
-Eligibility
+適格性
   ↓
-Verifiable Sortition
+検証可能抽選
   ↓
 音楽クリエータ院議会 / ユーザ院議会
   ↓
-Deliberation
+熟議
   ↓
 プロトコル仕様
   ↓
-Verified スマートコントラクト
+検証済みスマートコントラクト
   ↓
-Automatic Execution
+自動実行
   ↓
-STO & Scale
+STO & 規模拡大
   ↓
-International Expansion
+国際展開
 ```
 
 という順序を採る。
 
-重要なのは、GovernanceをWhitepaper上で宣言するだけではなく、
+重要なのは、ガバナンスをホワイトペーパー上で宣言するだけではなく、
 
-> **実際の音楽クリエーター／ユーザコミュニティから正統性を形成し、抽選と熟議を実証してからProtocol Codeの統治へ進む**
+> **実際の音楽クリエーター／ユーザコミュニティから正統性を形成し、抽選と熟議を実証してからプロトコルコードの統治へ進む**
 
 ことである。
 
-Blockchain、Zero-Knowledge Proof、DAO、STO、AIは目的ではない。
+ブロックチェーン、ゼロ知識証明、DAO、STO、AIは目的ではない。
 
 これらは、
 
@@ -1634,18 +1634,18 @@ Blockchain、Zero-Knowledge Proof、DAO、STO、AIは目的ではない。
 
 ---
 
-## 13.68 Whitepaper v1.0から次の段階へ
+## 13.68 ホワイトペーパー v1.0から次の段階へ
 
-Whitepaper v1.0確定後は、内容を実装可能な仕様へ変換する。
+ホワイトペーパー v1.0確定後は、内容を実装可能な仕様へ変換する。
 
 ```mermaid
 flowchart LR
-    WP[Whitepaper v1.0]
+    WP[ホワイトペーパー v1.0]
     CHARTER[Charters]
-    REQ[Requirements]
+    REQ[要件]
     SPEC[プロトコル仕様s]
-    ADR[Architecture Decisions]
-    BACKLOG[Development Backlog]
+    ADR[アーキテクチャ Decisions]
+    BACKLOG[開発 Backlog]
     MVP[MVP]
 
     WP --> CHARTER --> REQ --> SPEC --> ADR --> BACKLOG --> MVP
@@ -1682,8 +1682,8 @@ docs/adr/
 
 によって、
 
-> **誰が音楽クリエーター／ユーザなのか → 誰が抽選母集団に入るのか → どう抽選するのか → どう熟議するのか → どうCodeへ変換するのか**
+> **誰が音楽クリエーター／ユーザなのか → 誰が抽選母集団に入るのか → どう抽選するのか → どう熟議するのか → どうコードへ変換するのか**
 
 を実装可能な仕様へ落とし込む。
 
-これがWhitepaperからCreator First Platformの実装へ移行する次の段階となる。
+これがホワイトペーパーからCreator First Platformの実装へ移行する次の段階となる。

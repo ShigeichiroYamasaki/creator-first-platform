@@ -1,6 +1,6 @@
 ---
-title: Protocol README
-description: Creator First Platform Protocolの目的、文書階層、開発フロー、仕様一覧、AI実装ルール。
+title: プロトコル README
+description: Creator First Platform プロトコルの目的、文書階層、開発フロー、仕様一覧、AI実装ルール。
 editLink: false
 ---
 

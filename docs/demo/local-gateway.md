@@ -1,29 +1,29 @@
 ---
-title: ローカルStreaming Gateway
-description: 合成音源、Mock Subscription、Mock RightsおよびWallet署名を使ってPlayerからGateway経由の再生を検証する手順。
+title: ローカルストリーミングゲートウェイ
+description: 合成音源、モックサブスクリプション、モック権利およびウォレット署名を使ってプレーヤーからゲートウェイ経由の再生を検証する手順。
 search: false
 ---
 
-# ローカルStreaming Gateway
+# ローカルストリーミングゲートウェイ
 
-音楽クリエーター中心 PlayerとStreaming Gatewayを同一Originの開発Proxyで接続し、短命Playback Session、SBT資格、Range配信、Owner BindingおよびDelivery Evidenceを検証できます。
+音楽クリエーター中心プレーヤーとストリーミングゲートウェイを同一オリジンの開発プロキシで接続し、短命再生セッション、SBT資格、範囲配信、Owner 結付けおよび配信証跡を検証できます。
 
-::: warning Local Mock専用です
-実JPYC、実SBT、実Subscription、実Rightsまたは価値のある特権を扱いません。既定のMedia AdapterはRepositoryが生成する5秒の合成WAVだけを読みます。InternetやLANへ公開しないでください。
+::: warning ローカルモック専用です
+実JPYC、実SBT、実サブスクリプション、実権利または価値のある特権を扱いません。既定のメディアアダプターはリポジトリが生成する5秒の合成WAVだけを読みます。インターネットやLANへ公開しないでください。
 :::
 
-テストユーザ登録はAlias表示とNotice確認のUIを検証するTest-only Profileです。Gatewayが自動生成する合成Demo Principalとは別のProfileであり、Protocol上のPlatform Account、Authenticator、Wallet Link、SubscriptionまたはSBT資格を作成しません。登録の有無は再生認可を変更しません。
+テストユーザ登録はAlias表示と通知確認のUIを検証するTest-only プロフィールです。ゲートウェイが自動生成する合成デモ Principalとは別のプロフィールであり、プロトコル上のプラットフォームアカウント、認証器、ウォレット連携、サブスクリプションまたはSBT資格を作成しません。登録の有無は再生認可を変更しません。
 
 ## 起動
 
-Node.js 24を使用し、Repository Rootで依存関係を準備します。
+Node.js 24を使用し、リポジトリルートで依存関係を準備します。
 
 ```sh
 nvm use 24
 npm ci
 ```
 
-2つのTerminalを開きます。
+2つのターミナルを開きます。
 
 ```sh
 # Terminal 1
@@ -35,33 +35,33 @@ npm run gateway:dev
 npm run player:dev:gateway
 ```
 
-`http://127.0.0.1:5173`を開きます。Viteの`/api` Proxyだけが`127.0.0.1:8787`のGatewayへ接続し、PlayerはMedia Adapter URLまたは内部IDを受け取りません。
+`http://127.0.0.1:5173`を開きます。Viteの`/api` プロキシだけが`127.0.0.1:8787`のゲートウェイへ接続し、プレーヤーはメディアアダプター URLまたは内部IDを受け取りません。
 
 ## 確認シナリオ
 
-1. `First Light`を選び、Gatewayが発行した短命Playback Sessionで合成音を再生する。
+1. `First Light`を選び、ゲートウェイが発行した短命再生セッションで合成音を再生する。
 2. 未登録状態で`Supporter Signal`を選び、`SUPPORTER_REQUIRED`で拒否されることを確認する。
-3. EIP-1193対応Walletを接続し、SIWE messageへ署名する。
-4. Support Intentの公開範囲、譲渡不能性、音楽クリエーター、Gas SponsorshipおよびJPYCを含まないことを確認してEIP-712へ署名する。
-5. Mock `EARLY_SUPPORTER`がActiveになった後、限定曲とCommunity Capabilityを確認する。
+3. EIP-1193対応ウォレットを接続し、SIWE messageへ署名する。
+4. 支援意思の公開範囲、譲渡不能性、音楽クリエーター、ガス代支援およびJPYCを含まないことを確認してEIP-712へ署名する。
+5. モック `EARLY_SUPPORTER`が有効になった後、限定曲とコミュニティ Capabilityを確認する。
 
-通常再生ではWallet署名を要求しません。秘密鍵はPlayerまたはGatewayへ渡しません。
+通常再生ではウォレット署名を要求しません。秘密鍵はプレーヤーまたはゲートウェイへ渡しません。
 
 ## 実装済みの境界
 
-- Canonical Trackと非公開Media Referenceの分離
-- 固定Mock Subscription／Rightsを前提とするfail-closed Policy評価
-- 5分のOpaque Playback SessionとAccount Owner Binding
-- Accountあたり1本のConcurrency Lease
-- 単一HTTP Range、`206 Partial Content`、SeekおよびClient切断時の中断
-- SIWE署名とEIP-712 Support Intent署名の復元検証
-- Alias限定テストユーザプロフィールと、同意Versionを含むローカル監査記録（Account登録・Authenticatorではない）
-- SQLiteへのAuthorization Decision、SessionおよびDelivery Evidence記録
-- 月間800 MiB到達後の新規Session停止
-- 任意Upstream URL、内部Media ID、Query token、`Remote-User`および複数Rangeの拒否
+- 正規楽曲と非公開メディア参照の分離
+- 固定モックサブスクリプション／権利を前提とするfail-closed ポリシー評価
+- 5分のOpaque 再生セッションとアカウント Owner 結付け
+- アカウントあたり1本のConcurrency Lease
+- 単一HTTP 範囲、`206 Partial Content`、Seekおよびクライアント切断時の中断
+- SIWE署名とEIP-712 支援意思署名の復元検証
+- Alias限定テストユーザプロフィールと、同意版を含むローカル監査記録（アカウント登録・認証器ではない）
+- SQLiteへの認可決定、セッションおよび配信証跡記録
+- 月間800 MiB到達後の新規セッション停止
+- 任意Upstream URL、内部メディア ID、Query token、`Remote-User`および複数範囲の拒否
 
 ## Navidromeとの接続
 
-GatewayにはNavidrome Media Adapterも実装されています。ただし利用には、Gateway専用Navidrome ユーザ、非公開Network、Rights確認済みCanonical MappingおよびCredential管理が必要です。設定例と制限はRepositoryの[`apps/gateway/README.md`](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/apps/gateway/README.md)を参照してください。
+ゲートウェイにはNavidrome メディアアダプターも実装されています。ただし利用には、ゲートウェイ専用Navidrome ユーザ、非公開ネットワーク、権利確認済み正規対応付けおよび資格証明管理が必要です。設定例と制限はリポジトリの[`apps/gateway/README.md`](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/apps/gateway/README.md)を参照してください。
 
-現段階ではAAC等の実楽曲を登録せず、合成試験音でGateway境界を検証します。
+現段階ではAAC等の実楽曲を登録せず、合成試験音でゲートウェイ境界を検証します。

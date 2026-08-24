@@ -1,71 +1,71 @@
 ---
-description: 決済、権利、利用証明、分配、ガバナンスを支えるBlockchainとL2の選定・抽象化方針案。
+description: 決済、権利、利用証明、分配、ガバナンスを支えるブロックチェーンとL2の選定・抽象化方針案。
 ---
 
-# ADR-0007: Blockchain / L2 Strategy
+# ADR-0007: ブロックチェーン / L2 戦略
 
-**Status:** Proposed  
-**Date:** 2026-07-29
-**Last Updated:** 2026-08-23
+**状態:** 提案
+**日付:** 2026-07-29
+**最終更新日:** 2026-08-23
 
-## 1. Context
+## 1. 背景
 
-Creator First Platform は、音楽クリエーター／ユーザを中心とするGovernance、Rights Registry、Usage Oracle、音楽クリエーター分配、Zero-Knowledge Proofを組み合わせたコンテンツ配信Protocolを構築する。
+Creator First Platform は、音楽クリエーター／ユーザを中心とするガバナンス、権利登録台帳、利用実績オラクル、音楽クリエーター分配、ゼロ知識証明を組み合わせたコンテンツ配信プロトコルを構築する。
 
 これまでのADRでは、
 
-- ADR-0002 Verifiable Sortition
-- ADR-0003 Rights Registry
-- ADR-0004 音楽クリエーター分配 Model
-- ADR-0005 Usage Oracle
-- ADR-0006 Zero-Knowledge Proof Strategy
+- ADR-0002 検証可能抽選
+- ADR-0003 権利登録台帳
+- ADR-0004 音楽クリエーター分配モデル
+- ADR-0005 利用実績オラクル
+- ADR-0006 ゼロ知識証明戦略
 
 を定義した。
 
-これらを実装するには、少なくとも次のBlockchain機能が必要となる。
+これらを実装するには、少なくとも次のブロックチェーン機能が必要となる。
 
-- Stablecoinによる決済
+- ステーブルコインによる決済
 - 音楽クリエーター／権利者への分配
-- Distribution Commitmentの記録
-- Governance Resultの確定
-- Rights State CommitmentのAnchor
-- ZK Proofの検証
-- Protocol Contractの実行
+- 分配コミットメントの記録
+- ガバナンス結果の確定
+- 権利状態コミットメントのアンカー
+- ZK 証明の検証
+- プロトコルコントラクトの実行
 - 監査可能な履歴
 
-一方、音楽配信Platformでは大量のPlayback Eventが発生するため、すべてをBlockchain上で処理することは現実的ではない。
+一方、音楽配信プラットフォームでは大量の再生イベントが発生するため、すべてをブロックチェーン上で処理することは現実的ではない。
 
-また、特定Blockchainや特定L2へProtocol全体を強く依存させると、
+また、特定ブロックチェーンや特定L2へプロトコル全体を強く依存させると、
 
-- Transaction Cost
-- Network Congestion
-- Sequencer Failure
-- Bridge Risk
-- Chain Governance Risk
-- Stablecoin Availability
+- トランザクションコスト
+- ネットワーク Congestion
+- シーケンサー Failure
+- ブリッジリスク
+- チェーンガバナンスリスク
+- ステーブルコイン可用性
 - Vendor Lock-in
 
-等がPlatform全体のRiskとなる。
+等がプラットフォーム全体のリスクとなる。
 
-したがってCreator First Platformは、Blockchainを「すべての処理を行うDatabase」としてではなく、
+したがってCreator First Platformは、ブロックチェーンを「すべての処理を行うデータベース」としてではなく、
 
-> **Settlement、Commitment、Verification、Governance ExecutionのためのTrust-Minimized Infrastructure**
+> **精算、コミットメント、検証、ガバナンス実行のためのTrust-Minimized インフラ**
 
 として位置付ける。
 
 ---
 
-## 2. Decision
+## 2. 決定
 
-Creator First Platform は、**Ethereum-compatible L2をPrimary Execution Layerとし、EthereumをSettlement / Security Anchorとして利用可能な構造**を基本戦略とする。
+Creator First Platform は、**Ethereum-compatible L2を主実行レイヤーとし、Ethereumを精算 / セキュリティアンカーとして利用可能な構造**を基本戦略とする。
 
-ただし、Protocol Coreを単一のL2固有機能へ固定しない。
+ただし、プロトコル Coreを単一のL2固有機能へ固定しない。
 
 ```mermaid
 flowchart TD
     APP[音楽クリエーター／ユーザアプリ]
-    OFF[Off-chain Services]
-    PROOF[Proof / Commitment Layer]
+    OFF[オフチェーンサービス]
+    PROOF[証明 / コミットメントレイヤー]
     L2[Ethereum-compatible L2]
     ETH[Ethereum]
 
@@ -75,51 +75,51 @@ flowchart TD
     L2 --> ETH
 ```
 
-Primary L2は、実装・運用時点のSecurity、Cost、ZK Compatibility、Stablecoin Support、Developer Ecosystem等を評価して別ADRで決定する。
+主 L2は、実装・運用時点のセキュリティ、コスト、ZK Compatibility、ステーブルコイン支援、開発者エコシステム等を評価して別ADRで決定する。
 
 ---
 
-## 3. Role of Blockchain
+## 3. ブロックチェーンの役割
 
-Blockchain Layerの責務を限定する。
+ブロックチェーンレイヤーの責務を限定する。
 
-Blockchainは主として、
+ブロックチェーンは主として、
 
-- Settlement
-- Asset Transfer
-- Distribution Execution
-- Protocol Parameter Commitment
-- Governance Result Recording
-- Rights Commitment Anchoring
-- Proof Verification
-- Audit Trail
+- 精算
+- 資産転送
+- 分配実行
+- プロトコル Parameter コミットメント
+- ガバナンス結果原盤
+- 権利コミットメントアンカー記録
+- 証明検証
+- 監査 Trail
 
 を担当する。
 
-Blockchainは原則として、
+ブロックチェーンは原則として、
 
-- Raw Playback Events
-- ユーザ閲覧 History
-- Personal Information
-- Contract Documents
-- Audio Files
-- Large Rights Metadata
+- 生の再生イベント
+- ユーザ閲覧履歴
+- 個人情報
+- コントラクト Documents
+- 音声 Files
+- Large 権利メタデータ
 
 を保存しない。
 
 ---
 
-## 4. Layered Architecture
+## 4. レイヤー構成
 
-Creator First Platformは概念的に次のLayerを持つ。
+Creator First Platformは概念的に次のレイヤーを持つ。
 
 ```mermaid
 flowchart TD
-    UI[Application Layer]
-    SERVICE[Service / Oracle Layer]
-    DATA[Private Data Layer]
-    ZK[Proof / Commitment Layer]
-    L2[Execution / Settlement L2]
+    UI[アプリケーションレイヤー]
+    SERVICE[サービス / オラクルレイヤー]
+    DATA[非公開データレイヤー]
+    ZK[証明 / コミットメントレイヤー]
+    L2[実行 / 精算 L2]
     L1[Ethereum L1]
 
     UI --> SERVICE
@@ -129,256 +129,256 @@ flowchart TD
     L2 --> L1
 ```
 
-各Layerの責務を分離し、Application Business LogicをBlockchainへ過剰に移さない。
+各レイヤーの責務を分離し、アプリケーション業務ロジックをブロックチェーンへ過剰に移さない。
 
 ---
 
-## 5. Why L2
+## 5. L2を採用する理由
 
 Creator First Platformでは、
 
-- Subscription Settlement
+- サブスクリプション精算
 - 音楽クリエーター分配
-- Rights-related State Update
-- Governance Execution
-- Proof Verification
+- Rights-related 状態更新
+- ガバナンス実行
+- 証明検証
 
-等のBlockchain Transactionが発生する。
+等のブロックチェーントランザクションが発生する。
 
-Ethereum L1だけでこれらを処理すると、Transaction CostやThroughputがユーザ体験とDistribution Efficiencyへ影響する可能性がある。
+Ethereum L1だけでこれらを処理すると、トランザクションコストやThroughputがユーザ体験と分配効率へ影響する可能性がある。
 
-そのため通常のProtocol ExecutionはL2で行い、L1はSecurity / Settlement Anchorとして利用する。
+そのため通常のプロトコル実行はL2で行い、L1はセキュリティ / 精算アンカーとして利用する。
 
 ---
 
-## 6. Ethereum Compatibility
+## 6. Ethereum互換性
 
-Primary L2は原則としてEthereum-compatibleであることを重視する。
+主 L2は原則としてEthereum-compatibleであることを重視する。
 
 理由は、
 
 - Solidity ecosystem
 - スマートコントラクト tooling
-- Wallet ecosystem
-- Stablecoin integration
-- Security tooling
-- Audit ecosystem
-- Developer availability
+- ウォレット ecosystem
+- ステーブルコイン integration
+- セキュリティ tooling
+- 監査 ecosystem
+- 開発者 availability
 
 を利用できるためである。
 
-ただしEVM Compatibilityを目的そのものとはせず、SecurityやProtocol Requirementsが優先される。
+ただしEVM Compatibilityを目的そのものとはせず、セキュリティやプロトコル要件が優先される。
 
 ---
 
-## 7. L2 Selection Criteria
+## 7. L2 選定基準
 
-Primary L2は少なくとも次の基準で評価する。
+主 L2は少なくとも次の基準で評価する。
 
 | Criterion | Description |
 |---|---|
-| Security | L1依存関係、Proof System、Upgrade Risk |
-| Cost | ユーザ支払、distribution、proof verification cost |
-| Finality | Settlement確定までの時間 |
-| Availability | Network / Sequencer availability |
-| Data Availability | Transaction dataの検証可能性 |
-| ZK Support | ZKP verifierおよびproof infrastructureとの適合性 |
+| セキュリティ | L1依存関係、証明システム、アップグレードリスク |
+| コスト | ユーザ支払、distribution、proof verification cost |
+| ファイナリティ | 精算確定までの時間 |
+| 可用性 | ネットワーク / シーケンサー availability |
+| データ可用性 | トランザクション dataの検証可能性 |
+| ZK 支援 | ZKP verifierおよびproof infrastructureとの適合性 |
 | EVM Compatibility | Solidity / toolingとの互換性 |
-| Stablecoin Support | JPYC等の利用可能性 |
-| Bridge Security | L1 / L2間Asset移動Risk |
-| Decentralization | Sequencer / operator依存度 |
-| Governance | Protocol upgrade governance |
+| ステーブルコイン支援 | JPYC等の利用可能性 |
+| ブリッジセキュリティ | L1 / L2間資産移動リスク |
+| 分散化 | シーケンサー / operator依存度 |
+| ガバナンス | プロトコル upgrade governance |
 | Exit Path | L2障害時の資産回収可能性 |
-| Developer Ecosystem | SDK、RPC、indexer、monitoring |
+| 開発者エコシステム | SDK、RPC、indexer、monitoring |
 | Longevity | 長期運用可能性 |
 
 選択理由は独立したADRに記録する。
 
 ---
 
-## 8. No Chain-specific Business Logic
+## 8. No チェーン固有業務ロジック
 
-音楽クリエーター分配、Rights Model、Usage Verification等のProtocol Ruleを特定Chain固有機能に直接依存させない。
+音楽クリエーター分配、権利モデル、利用実績検証等のプロトコルルールを特定チェーン固有機能に直接依存させない。
 
 例えば、
 
 ```text
-Distribution Policy
+分配ポリシー
       ↓
-Chain-independent Specification
+Chain-independent 仕様
       ↓
-スマートコントラクト Implementation
+スマートコントラクト実装
       ↓
 Selected L2
 ```
 
 とする。
 
-Chain変更時にもプロトコル仕様の意味が維持されることを目標とする。
+チェーン変更時にもプロトコル仕様の意味が維持されることを目標とする。
 
 ---
 
-## 9. Stablecoin Settlement
+## 9. ステーブルコイン精算
 
-Subscriptionおよび音楽クリエーター分配には、法的・技術的要件を満たすJPYC等のStablecoinを使用する。ETH等のネイティブトークンはGasまたはNetwork Feeの精算にだけ使用し、Subscription Priceまたは音楽クリエーター分配 Assetとして暗黙に採用しない。
+サブスクリプションおよび音楽クリエーター分配には、法的・技術的要件を満たすJPYC等のステーブルコインを使用する。ETH等のネイティブトークンはガスまたはネットワーク手数料の精算にだけ使用し、サブスクリプション価格または音楽クリエーター分配資産として暗黙に採用しない。
 
-JPYCは重要な候補であるが、Protocol Coreを特定Stablecoin Contract Addressへ固定しない。
+JPYCは重要な候補であるが、プロトコル Coreを特定ステーブルコインコントラクトアドレスへ固定しない。
 
 概念的には、
 
 ```text
-Approved Settlement Asset
+承認済み精算資産
 ├── JPYC
-└── Other Governance-approved Stablecoin
+└── その他 Governance-approved ステーブルコイン
 ```
 
 とする。
 
-Settlement Asset Registryを設け、
+精算資産登録台帳を設け、
 
-- Chain
-- Contract Address
-- Token Standard
+- チェーン
+- コントラクトアドレス
+- トークン標準
 - Decimals
-- Status
-- Activation Period
-- Allowed Operation Type
+- 状態
+- 有効化期間
+- Allowed 運用 Type
 
-等をVersion管理する。
+等を版管理する。
 
-Testnetでは、金銭的価値、償還請求権または実在JPYCとの交換可能性を持たない`MockJPYC`だけをDemo SubscriptionのSettlement Assetとして承認する。Mainnet JPYCとTest Tokenは異なるAsset ID、Contract Address、Networkおよび表示を持たなければならない。
+テストネットでは、金銭的価値、償還請求権または実在JPYCとの交換可能性を持たない`MockJPYC`だけをデモサブスクリプションの精算資産として承認する。Mainnet JPYCとテストトークンは異なる資産 ID、コントラクトアドレス、ネットワークおよび表示を持たなければならない。
 
-最初のスマートコントラクト開発Profileは、Hardhat 3、Viem、Infura RPCおよびEthereum Sepolia（Chain ID `11155111`）とする。これはTestnet ToolingとEVM上のContract境界を検証する選択であり、本番ChainまたはPrimary L2の決定ではない。SepoliaではETHをGasにだけ使用し、SubscriptionとTreasuryのTest Assetには無価値・償還不可の`MockJPYC`だけを使用する。
+最初のスマートコントラクト開発プロフィールは、Hardhat 3、Viem、Infura RPCおよびEthereum Sepolia（チェーン ID `11155111`）とする。これはテストネット ToolingとEVM上のコントラクト境界を検証する選択であり、本番チェーンまたは主 L2の決定ではない。SepoliaではETHをガスにだけ使用し、サブスクリプションと資金庫のテスト資産には無価値・償還不可の`MockJPYC`だけを使用する。
 
-2026-08-23時点で、`MockJPYC`、Subscription、Test Treasury、一般／Early Supporter SBT、ERC-1967／UUPS Proxy、音楽クリエーター登録台帳およびIgnition ModuleをRepositoryへ実装し、公開構成Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`をEthereum Sepoliaへデプロイした。公開RPCでBytecode、Contract接続、Plan、Proxy実装先および音楽クリエーター登録台帳 Noticeを検証済みである。Etherscan Source Verification、Role分離、Indexer／Gateway接続、Threat Modelおよび独立監査は未完了である。
+2026-08-23時点で、`MockJPYC`、サブスクリプション、テスト資金庫、一般／初期サポーター SBT、ERC-1967／UUPS プロキシ、音楽クリエーター登録台帳およびIgnition Moduleをリポジトリへ実装し、公開構成ソースコミット `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`をEthereum Sepoliaへデプロイした。公開RPCでBytecode、コントラクト接続、計画、プロキシ実装先および音楽クリエーター登録台帳通知を検証済みである。Etherscan ソース検証、役割分離、インデクサー／ゲートウェイ接続、脅威モデルおよび独立監査は未完了である。
 
 ---
 
-## 10. Asset Abstraction
+## 10. 資産抽象化
 
-Distribution Engineは原則として、
+分配エンジンは原則として、
 
 ```text
-Amount + Asset Identifier
+Amount + 資産 Identifier
 ```
 
 を扱う。
 
-これにより、将来Settlement Assetが追加・変更された場合でも音楽クリエーター分配 Logic自体を変更しない構造を目指す。
+これにより、将来精算資産が追加・変更された場合でも音楽クリエーター分配 Logic自体を変更しない構造を目指す。
 
-ただし異なるStablecoin間の価値同等性をProtocolが自動的に仮定してはならない。
+ただし異なるステーブルコイン間の価値同等性をプロトコルが自動的に仮定してはならない。
 
 ---
 
-## 11. スマートコントラクト Scope
+## 11. スマートコントラクト範囲
 
 スマートコントラクトは主として、
 
-- Subscription Settlement
-- Distribution Escrow
-- 音楽クリエーター／権利者 Payment
-- Governance-approved Parameter Activation
-- Commitment Registry
-- Proof Verification
-- Treasury Control
+- サブスクリプション精算
+- 分配 Escrow
+- 音楽クリエーター／権利者決済
+- Governance-approved Parameter 有効化
+- コミットメント登録台帳
+- 証明検証
+- 資金庫制御
 
 等を担当する。
 
 スマートコントラクト自身が、
 
-- Raw Usage Validation
-- Copyright Legal Judgment
-- Identity Verification
-- Fraud AI Inference
+- 生の利用実績検証
+- 著作権法務 Judgment
+- アイデンティティ検証
+- 不正 AI Inference
 
 を直接実行することを前提としない。
 
 ---
 
-## 12. Rights Registry Anchoring
+## 12. 権利登録台帳アンカー記録
 
-ADR-0003 Rights Registryの詳細情報はOff-chainで管理する。
+ADR-0003 権利登録台帳の詳細情報はオフチェーンで管理する。
 
-Blockchainには必要に応じて、
+ブロックチェーンには必要に応じて、
 
 ```text
-Rights Snapshot
+権利スナップショット
       ↓
-Commitment / Root
+コミットメント / ルート
       ↓
-L2 Anchor
+L2 アンカー
 ```
 
 を記録する。
 
-これにより、Rights Dataそのものを公開せず、特定時点のRights Stateが事後改ざんされていないことを検証できる。
+これにより、権利データそのものを公開せず、特定時点の権利状態が事後改ざんされていないことを検証できる。
 
 ---
 
-## 13. Usage Oracle Integration
+## 13. 利用実績オラクル連携
 
-ADR-0005 Usage OracleはRaw Playback EventをOff-chainで処理する。
+ADR-0005 利用実績オラクルは生の再生イベントをオフチェーンで処理する。
 
 L2へは、
 
-- Usage Snapshot Identifier
-- Commitment
+- 利用実績スナップショット Identifier
+- コミットメント
 - Aggregate
-- Proof
-- Verification Status
+- 証明
+- 検証状態
 
 等の必要情報のみを提供する。
 
 ```mermaid
 flowchart LR
-    EVENTS[Playback Events]
-    ORACLE[Usage Oracle]
-    SNAP[Usage Snapshot]
-    PROOF[Proof / Commitment]
-    L2[L2 Contract]
+    EVENTS[再生イベント]
+    ORACLE[利用実績オラクル]
+    SNAP[利用実績スナップショット]
+    PROOF[証明 / コミットメント]
+    L2[L2 コントラクト]
 
     EVENTS --> ORACLE --> SNAP --> PROOF --> L2
 ```
 
 ---
 
-## 14. ZK Proof Integration
+## 14. ZK 証明連携
 
-ADR-0006に従い、L2はZK Proof VerificationのExecution Layerとして利用できる。
+ADR-0006に従い、L2はZK 証明検証の実行レイヤーとして利用できる。
 
-ただし、Proof Verification Costが高い場合は、
+ただし、証明検証コストが高い場合は、
 
 ```text
-Large Proof
+Large 証明
     ↓
-Off-chain Verification / Recursion
+オフチェーン検証 / Recursion
     ↓
-Compact Proof
+Compact 証明
     ↓
-L2 Verification
+L2 検証
 ```
 
 等の方式を許容する。
 
-Proof SystemとL2の選択を過度に結合しない。
+証明システムとL2の選択を過度に結合しない。
 
 ---
 
-## 15. Distribution Settlement
+## 15. 分配精算
 
-ADR-0004 音楽クリエーター分配 ModelによるDistribution ResultをL2上でSettlementする。
+ADR-0004 音楽クリエーター分配モデルによる分配結果をL2上で精算する。
 
 概念的には、
 
 ```mermaid
 flowchart LR
-    REV[Revenue]
-    USAGE[Verified Usage]
-    RIGHTS[Rights Snapshot]
-    POLICY[Policy]
-    ENGINE[Distribution Engine]
-    ROOT[Distribution Root]
-    CONTRACT[L2 Distribution Contract]
+    REV[収益]
+    USAGE[検証済み利用実績]
+    RIGHTS[権利スナップショット]
+    POLICY[ポリシー]
+    ENGINE[分配エンジン]
+    ROOT[分配ルート]
+    CONTRACT[L2 分配コントラクト]
     PAY[音楽クリエーター／権利者]
 
     REV --> ENGINE
@@ -388,59 +388,59 @@ flowchart LR
     ENGINE --> ROOT --> CONTRACT --> PAY
 ```
 
-大量のRecipientへ一度に送金することが非効率な場合、Claim-based DistributionやMerkle Distribution等を検討する。
+大量のRecipientへ一度に送金することが非効率な場合、申請方式分配やMerkle 分配等を検討する。
 
 ---
 
-## 16. Claim-based Distribution
+## 16. 申請方式分配
 
 多数の音楽クリエーター／権利者への分配では、
 
 ```text
-Distribution Result
+分配結果
        ↓
-Merkle Root
+マークルルート
        ↓
-Distribution Contract
+分配コントラクト
        ↓
-Recipient Claim + Proof
+Recipient 主張 + 証明
        ↓
-Payment
+決済
 ```
 
 のような方式を利用できる。
 
-これによりPlatform側が全Recipientへの個別Transactionを送信する必要を減らせる。
+これによりプラットフォーム側が全Recipientへの個別トランザクションを送信する必要を減らせる。
 
-ただし、ユーザ体験や未請求残高の扱いはDistribution Specificationで定義する。
+ただし、ユーザ体験や未請求残高の扱いは分配仕様で定義する。
 
 ---
 
-## 17. L1 Anchoring
+## 17. L1 アンカー記録
 
-重要なProtocol Stateについて、必要に応じてEthereum L1へAnchorする。
+重要なプロトコル状態について、必要に応じてEthereum L1へアンカーする。
 
 候補には、
 
-- Governance Checkpoint
-- Distribution Root
-- Rights Registry Root
-- Protocol Version
-- Critical Upgrade Commitment
+- ガバナンス Checkpoint
+- 分配ルート
+- 権利登録台帳ルート
+- プロトコル版
+- 重大アップグレードコミットメント
 
 等がある。
 
-すべてのL2 Stateを独自にL1へ再記録する必要はなく、利用するL2のSecurity Modelを踏まえて必要性を判断する。
+すべてのL2 状態を独自にL1へ再記録する必要はなく、利用するL2のセキュリティモデルを踏まえて必要性を判断する。
 
 ---
 
-## 18. Sequencer Risk
+## 18. シーケンサーリスク
 
-L2ではSequencer障害またはCensorship Riskを考慮する。
+L2ではシーケンサー障害またはCensorship リスクを考慮する。
 
-Primary L2選択時には、
+主 L2選択時には、
 
-- Sequencer architecture
+- シーケンサー architecture
 - forced inclusion
 - escape hatch
 - L1 withdrawal
@@ -449,206 +449,206 @@ Primary L2選択時には、
 
 等を評価する。
 
-Sequencer停止によって音楽クリエーターの確定済み資産が永久に失われる設計を許容しない。
+シーケンサー停止によって音楽クリエーターの確定済み資産が永久に失われる設計を許容しない。
 
 ---
 
-## 19. Bridge Risk
+## 19. ブリッジリスク
 
-L1 / L2および異なるChain間のBridgeは重大なSecurity Boundaryである。
+L1 / L2および異なるチェーン間のブリッジは重大なセキュリティ境界である。
 
-Creator First Platformは不要なCross-chain Transferを最小化する。
+Creator First Platformは不要なCross-chain 転送を最小化する。
 
 ```text
 Preferred:
-ユーザ → Primary L2 → 音楽クリエーター
+ユーザ → 主 L2 → 音楽クリエーター
 
 Avoid where unnecessary:
-ユーザ → Chain A → Bridge → Chain B → Bridge → Chain C
+ユーザ → チェーン A → ブリッジ → チェーン B → ブリッジ → チェーン C
 ```
 
-Native / Canonical Bridgeを優先的に評価し、第三者Bridgeへの依存をProtocol Coreへ組み込まない。
+ネイティブ / 正規ブリッジを優先的に評価し、第三者ブリッジへの依存をプロトコル Coreへ組み込まない。
 
 ---
 
-## 20. Multi-chain Strategy
+## 20. マルチチェーン戦略
 
-初期段階ではPrimary L2を一つ選択する。
+初期段階では主 L2を一つ選択する。
 
-最初から複数Chainへ同一Protocol Stateを展開すると、
+最初から複数チェーンへ同一プロトコル状態を展開すると、
 
-- State Synchronization
+- 状態 Synchronization
 - Double Spending
-- Governance Consistency
-- Rights Snapshot Consistency
+- ガバナンス Consistency
+- 権利スナップショット Consistency
 - Liquidity Fragmentation
-- Operational Complexity
+- 運用事項 Complexity
 
 が増大するためである。
 
 ```text
 MVP
-Single Primary L2
+Single 主 L2
 
         ↓
 
-Mature Protocol
-Optional Multi-chain Access
+Mature プロトコル
+任意マルチチェーンアクセス
 ```
 
-Multi-chain化が必要になった場合は別ADRで決定する。
+マルチチェーン化が必要になった場合は別ADRで決定する。
 
 ---
 
-## 21. Canonical Protocol State
+## 21. 正規プロトコル状態
 
-Multi-chain展開を将来行う場合でも、Canonical Protocol Stateを明確にする。
+マルチチェーン展開を将来行う場合でも、正規プロトコル状態を明確にする。
 
 例えば、
 
 ```text
-Canonical Governance State
-Canonical Rights Commitment
-Canonical Distribution Period
-Canonical Protocol Version
+正規ガバナンス状態
+正規権利コミットメント
+正規分配期間
+正規プロトコル版
 ```
 
-が複数Chain上で競合して存在する状態を避ける。
+が複数チェーン上で競合して存在する状態を避ける。
 
-Canonical Stateの所在は将来のCross-chain ADRで定義する。
+正規状態の所在は将来のCross-chain ADRで定義する。
 
 ---
 
-## 22. Upgradeability
+## 22. アップグレード可能性
 
-スマートコントラクト Upgradeは必要最小限にする。
+スマートコントラクトアップグレードは必要最小限にする。
 
-Upgrade可能なContractを利用する場合、
+アップグレード可能なコントラクトを利用する場合、
 
-- Upgrade Authority
-- Governance Approval
-- Timelock
-- Emergency Procedure
-- Version
-- Migration Plan
+- アップグレード Authority
+- ガバナンス Approval
+- タイムロック
+- 緊急 Procedure
+- 版
+- Migration 計画
 
 を明示する。
 
 ```text
 ガバナンス決定
       ↓
-Timelock
+タイムロック
       ↓
-Upgrade
+アップグレード
       ↓
-Public Verification
+公開検証
 ```
 
-Platform運営者の単独Keyだけで音楽クリエーター分配 Logicを変更できる構造を最終形としない。
+プラットフォーム運営者の単独鍵だけで音楽クリエーター分配 Logicを変更できる構造を最終形としない。
 
 ---
 
-## 23. Emergency Controls
+## 23. 緊急制御
 
-重大なスマートコントラクト Vulnerability等に備えてEmergency Pauseを設けることができる。
+重大なスマートコントラクト Vulnerability等に備えて緊急停止を設けることができる。
 
-ただしEmergency Authorityは、
+ただし緊急権限は、
 
-- Scope
+- 範囲
 - Duration
 - Trigger Condition
-- Required Signatures
-- Audit Log
-- Governance Review
+- 必要 Signatures
+- 監査 Log
+- ガバナンスレビュー
 
 を明示する。
 
-Emergency Pauseを資金没収やGovernance回避の手段として使用できない設計とする。
+緊急停止を資金没収やガバナンス回避の手段として使用できない設計とする。
 
 ---
 
-## 24. Key Management
+## 24. 鍵管理
 
-Treasury、Upgrade、Emergency等の重要権限を単一の個人Keyへ依存させない。
+資金庫、アップグレード、緊急等の重要権限を単一の個人鍵へ依存させない。
 
 段階的に、
 
 ```text
 MVP
-Multisig
-
-↓ 
-
-Governance + Timelock
+マルチシグ
 
 ↓
 
-Protocol-controlled Execution
+ガバナンス + タイムロック
+
+↓
+
+Protocol-controlled 実行
 ```
 
 へ移行する。
 
-Hardware-backed Key ManagementやOperational Securityを別Security Specificationで定義する。
+Hardware-backed 鍵管理や運用事項セキュリティを別セキュリティ仕様で定義する。
 
 ---
 
-## 25. Data Availability
+## 25. データ可用性
 
-L2選択ではData Availabilityを重要なSecurity要件として評価する。
+L2選択ではデータ可用性を重要なセキュリティ要件として評価する。
 
-Creator First Platformが検証に必要なProtocol Dataを、特定Operatorだけが保持する構造を避ける。
+Creator First Platformが検証に必要なプロトコルデータを、特定運用者だけが保持する構造を避ける。
 
 特に、
 
-- Distribution Commitment
-- Governance Transaction
-- Rights Anchor
-- Proof Verification Result
+- 分配コミットメント
+- ガバナンストランザクション
+- 権利アンカー
+- 証明検証結果
 
 について、長期監査可能性を確保する。
 
 ---
 
-## 26. Finality
+## 26. ファイナリティ
 
-音楽クリエーター分配やGovernance Executionでは、Transaction InclusionとEconomic Finalityを区別する。
+音楽クリエーター分配やガバナンス実行では、トランザクション Inclusionと経済ファイナリティを区別する。
 
-Applicationは、
+アプリケーションは、
 
 ```text
 Submitted
 Included
 Confirmed
-Finalized
+確定済み
 ```
 
 等の状態を扱えるようにする。
 
-音楽クリエーターへ「確定済み」と表示した支払いが通常のChain Reorganization等で容易に消失することを避ける。
+音楽クリエーターへ「確定済み」と表示した支払いが通常のチェーン Reorganization等で容易に消失することを避ける。
 
 ---
 
-## 27. Chain Failure
+## 27. チェーン障害
 
-Primary L2が長期間利用不能になった場合のMigration Pathを設計する。
+主 L2が長期間利用不能になった場合のMigration Pathを設計する。
 
 少なくとも、
 
-- Asset Recovery
-- Rights Snapshot Recovery
-- Distribution State Recovery
-- Governance State Recovery
-- Protocol Version Recovery
+- 資産復旧
+- 権利スナップショット復旧
+- 分配状態復旧
+- ガバナンス状態復旧
+- プロトコル版復旧
 
 を可能にする。
 
-Off-chain DataとBlockchain Stateを組み合わせてProtocolを再構築できるよう、SnapshotとCommitmentを保持する。
+オフチェーンデータとブロックチェーン状態を組み合わせてプロトコルを再構築できるよう、スナップショットとコミットメントを保持する。
 
 ---
 
-## 28. Observability
+## 28. 可観測性
 
-Blockchain Infrastructureについて、
+ブロックチェーンインフラについて、
 
 - RPC availability
 - transaction latency
@@ -661,31 +661,31 @@ Blockchain Infrastructureについて、
 
 等を監視する。
 
-Blockchainが動いていることだけでPlatformが正常とは判断しない。
+ブロックチェーンが動いていることだけでプラットフォームが正常とは判断しない。
 
 ---
 
-## 29. Cost Strategy
+## 29. コスト戦略
 
-Blockchain Costは音楽クリエーター分配を圧迫しないよう管理する。
+ブロックチェーンコストは音楽クリエーター分配を圧迫しないよう管理する。
 
-主なCost Driverは、
+主なコスト Driverは、
 
-- Settlement Transactions
-- Proof Verification
-- Contract Storage
-- Distribution Claims
-- L1 Data Cost
-- Bridge Cost
+- 精算 Transactions
+- 証明検証
+- コントラクトストレージ
+- 分配 Claims
+- L1 データコスト
+- ブリッジコスト
 
 である。
 
-大量のPlayback EventをOn-chain化せず、Aggregation、Commitment、Batchingを利用する。
+大量の再生イベントをオンチェーン化せず、集約、コミットメント、Batchingを利用する。
 
 ```text
-Millions of Playback Events
+Millions of 再生イベント
           ↓
-Off-chain Aggregation
+オフチェーン集約
           ↓
 One / Few Commitments
           ↓
@@ -700,58 +700,58 @@ L2
 
 一般ユーザが、
 
-- Gas Tokenの取得
-- Network Switching
-- Bridge操作
+- ガストークンの取得
+- ネットワーク Switching
+- ブリッジ操作
 - Nonce管理
 
-等を意識しなくてもPlatformを利用できることを目標とする。
+等を意識しなくてもプラットフォームを利用できることを目標とする。
 
-Account Abstraction、Relayer、Paymaster、Gas Sponsorship、Bundling等を利用できる。ユーザが確認する支払額はJPYC等の承認済みSettlement Assetで固定し、Sponsorが支払うNative FeeをSubscription Paymentとして記録しない。具体方式とSponsorship PolicyはADR-0008および各Deployment Policyで決定する。
+アカウント抽象化、リレイヤー、ペイマスター、ガス代支援、Bundling等を利用できる。ユーザが確認する支払額はJPYC等の承認済み精算資産で固定し、Sponsorが支払うネイティブ手数料をサブスクリプション決済として記録しない。具体方式とSponsorship ポリシーはADR-0008および各デプロイポリシーで決定する。
 
-Blockchainはユーザ体験を複雑化する目的で導入しない。
+ブロックチェーンはユーザ体験を複雑化する目的で導入しない。
 
 ---
 
 ## 31. 音楽クリエーター体験
 
-音楽クリエーターもBlockchainの専門知識を前提としない。
+音楽クリエーターもブロックチェーンの専門知識を前提としない。
 
 音楽クリエーターは、
 
 ```text
-Register
-Upload / Manage Rights
-Receive Distribution
-Withdraw / Use Funds
+登録簿
+アップロード / Manage 権利
+Receive 分配
+Withdraw / Use 資金
 ```
 
-というService Flowを利用できるようにする。
+というサービスフローを利用できるようにする。
 
-Wallet管理やSettlement Assetの選択は、SecurityとSelf-custodyの選択肢を維持しつつ簡素化する。
+ウォレット管理や精算資産の選択は、セキュリティとSelf-custodyの選択肢を維持しつつ簡素化する。
 
 ---
 
-## 32. Governance Relationship
+## 32. ガバナンス関係
 
-BlockchainはGovernanceの正統性を生成するものではない。
+ブロックチェーンはガバナンスの正統性を生成するものではない。
 
-ADR-0001およびADR-0002で決定されたGovernance Processの結果を、
+ADR-0001およびADR-0002で決定されたガバナンス手続の結果を、
 
 - 記録
 - 検証
 - 実行
 
-するInfrastructureとして利用する。
+するインフラとして利用する。
 
 ```text
 音楽クリエーター／ユーザ
       ↓
-Sortition + Deliberation
+抽選 + 熟議
       ↓
-Protocol Decision
+プロトコル決定
       ↓
-Blockchain Execution
+ブロックチェーン実行
 ```
 
 とする。
@@ -760,213 +760,213 @@ Blockchain Execution
 
 ---
 
-## 33. Infrastructure Neutrality
+## 33. インフラ中立性
 
-Creator First Platformの理念は特定Blockchain Projectの成功に依存させない。
+Creator First Platformの理念は特定ブロックチェーンプロジェクトの成功に依存させない。
 
-Ethereum / L2 Strategyは現時点で最も適切と判断するTechnical Architectureであり、Protocol Principleそのものではない。
+Ethereum / L2 戦略は現時点で最も適切と判断する技術アーキテクチャであり、プロトコル原則そのものではない。
 
 将来、
 
-- Security
-- Regulation
-- Cost
+- セキュリティ
+- 規制
+- コスト
 - Technology
-- Ecosystem
+- エコシステム
 
-が大きく変化した場合、Governance Processを経てMigrationできる。
+が大きく変化した場合、ガバナンス手続を経てMigrationできる。
 
 ---
 
-## 34. MVP Strategy
+## 34. MVP 戦略
 
-MVPでは複雑なMulti-chain Architectureを構築しない。
+MVPでは複雑なマルチチェーンアーキテクチャを構築しない。
 
 段階的に、
 
 ```text
-Phase 1
-Local Development Chain
+フェーズ 1
+ローカル開発チェーン
 
-Phase 2
-Ethereum-compatible Testnet / L2 Test Environment
+フェーズ 2
+Ethereum-compatible テストネット / L2 テスト環境
 
-Phase 3
-Selected Primary L2
+フェーズ 3
+Selected 主 L2
 
-Phase 4
-Production Settlement
+フェーズ 4
+本番精算
 
-Phase 5
-Optional L1 Anchoring / Advanced ZK Verification
+フェーズ 5
+任意 L1 アンカー記録 / Advanced ZK 検証
 
-Phase 6
-Multi-chain only if justified
+フェーズ 6
+マルチチェーン only if justified
 ```
 
 と進める。
 
-まずSubscription → Usage → Distribution → SettlementのEnd-to-End Flowを一つのExecution Environmentで成立させる。
+まずサブスクリプション → 利用実績 → 分配 → 精算のエンドツーエンドフローを一つの実行環境で成立させる。
 
 ---
 
-## 35. Invariants
+## 35. 不変条件
 
-### Invariant 1
+### 不変条件 1
 
-Raw Playback HistoryをPublic Blockchainへ保存してはならない。
+生の再生履歴を公開ブロックチェーンへ保存してはならない。
 
-### Invariant 2
+### 不変条件 2
 
-個人情報やPrivate ContractをPublic Blockchainへ保存してはならない。
+個人情報や非公開コントラクトを公開ブロックチェーンへ保存してはならない。
 
-### Invariant 3
+### 不変条件 3
 
-音楽クリエーター分配 Policyを特定L2固有仕様だけで定義してはならない。
+音楽クリエーター分配ポリシーを特定L2固有仕様だけで定義してはならない。
 
-### Invariant 4
+### 不変条件 4
 
-Primary L2障害によって確定済みProtocol Stateを復旧不能にしてはならない。
+主 L2障害によって確定済みプロトコル状態を復旧不能にしてはならない。
 
-### Invariant 5
+### 不変条件 5
 
-Bridgeを不要にProtocol Coreへ組み込んではならない。
+ブリッジを不要にプロトコル Coreへ組み込んではならない。
 
-### Invariant 6
+### 不変条件 6
 
-Platform運営者の単独Keyだけで重要なDistribution Logicを恒久的に変更できてはならない。
+プラットフォーム運営者の単独鍵だけで重要な分配 Logicを恒久的に変更できてはならない。
 
-### Invariant 7
+### 不変条件 7
 
-Governanceの正統性をToken保有量だけで決定してはならない。
+ガバナンスの正統性をトークン保有量だけで決定してはならない。
 
-### Invariant 8
+### 不変条件 8
 
-Blockchain Transaction Costを理由としてRaw Usage Verificationの正確性を犠牲にしてはならない。
+ブロックチェーントランザクションコストを理由として生の利用実績検証の正確性を犠牲にしてはならない。
 
-### Invariant 9
+### 不変条件 9
 
-Chain Migration時にも過去のDistribution、Rights Commitment、Governance Resultを検証可能にしなければならない。
-
----
-
-## 36. Alternatives Considered
-
-### Ethereum L1 Only
-
-SecurityとEcosystemは強いが、Platformの日常的なExecution LayerとしてCostとScalabilityの制約が大きくなる可能性があるため基本方式として採用しない。
-
-### Fully Off-chain Platform
-
-CostとUXは単純化できるが、Settlement、Governance Execution、Distribution AuditのTrust Minimizationを実現しにくいため採用しない。
-
-### Custom Blockchain
-
-Protocolに最適化できるが、Validator Network、Security、Bridge、Wallet、Developer Ecosystemを独自構築する必要があり、初期段階では採用しない。
-
-### Multi-chain from Launch
-
-可用性やユーザ到達範囲を拡大できる可能性があるが、State Consistency、Bridge Risk、Operational Complexityが大きいため採用しない。
-
-### Store Everything On-chain
-
-最大限の公開性は得られるが、Privacy、Cost、Scalability、Legal Requirementsに適合しないため採用しない。
+チェーン Migration時にも過去の分配、権利コミットメント、ガバナンス結果を検証可能にしなければならない。
 
 ---
 
-## 37. Consequences
+## 36. 検討した代替案
 
-### Positive
+### Ethereum L1のみ
+
+セキュリティとエコシステムは強いが、プラットフォームの日常的な実行レイヤーとしてコストと拡張性の制約が大きくなる可能性があるため基本方式として採用しない。
+
+### 完全オフチェーン型プラットフォーム
+
+コストとUXは単純化できるが、精算、ガバナンス実行、分配監査の信頼最小化を実現しにくいため採用しない。
+
+### 独自ブロックチェーン
+
+プロトコルに最適化できるが、Validator ネットワーク、セキュリティ、ブリッジ、ウォレット、開発者エコシステムを独自構築する必要があり、初期段階では採用しない。
+
+### 開始時からのマルチチェーン
+
+可用性やユーザ到達範囲を拡大できる可能性があるが、状態 Consistency、ブリッジリスク、運用事項 Complexityが大きいため採用しない。
+
+### すべてをオンチェーンへ保存
+
+最大限の公開性は得られるが、プライバシー、コスト、拡張性、法務要件に適合しないため採用しない。
+
+---
+
+## 37. 影響
+
+### 利点
 
 - Ethereum ecosystemを活用できる
-- L1のみよりCostを抑えやすい
-- Stablecoin Settlementとスマートコントラクト Distributionを統合しやすい
-- ZKP Verificationとの接続が可能
-- Raw UsageをOff-chainに維持できる
-- Protocolを特定L2から一定程度分離できる
-- 将来のChain Migration余地を残せる
+- L1のみよりコストを抑えやすい
+- ステーブルコイン精算とスマートコントラクト分配を統合しやすい
+- ZKP 検証との接続が可能
+- 生の利用実績をオフチェーンに維持できる
+- プロトコルを特定L2から一定程度分離できる
+- 将来のチェーン Migration余地を残せる
 
-### Negative
+### 欠点
 
-- L2固有のSecurity Modelを理解する必要がある
-- Sequencer Riskがある
-- Bridge Riskを管理する必要がある
-- L1 / L2 Finalityの違いを扱う必要がある
-- スマートコントラクト Upgrade Securityが必要になる
-- Chain Migration Strategyが必要になる
-- Infrastructure Monitoringが複雑になる
+- L2固有のセキュリティモデルを理解する必要がある
+- シーケンサーリスクがある
+- ブリッジリスクを管理する必要がある
+- L1 / L2 ファイナリティの違いを扱う必要がある
+- スマートコントラクトアップグレードセキュリティが必要になる
+- チェーン Migration 戦略が必要になる
+- インフラ監視が複雑になる
 
 ---
 
-## 38. Security Considerations
+## 38. セキュリティ上の考慮事項
 
-Blockchain / L2 Layerは少なくとも次のリスクを考慮する。
+ブロックチェーン / L2 レイヤーは少なくとも次のリスクを考慮する。
 
 - スマートコントラクト Vulnerability
-- Upgrade Key Compromise
-- Treasury Key Compromise
-- Sequencer Failure
-- Sequencer Censorship
-- L2 Proof Failure
-- Data Availability Failure
-- Bridge Exploit
-- RPC Manipulation
-- Chain Reorganization
-- Stablecoin Contract Risk
-- Governance Execution Attack
-- Proof Verifier Vulnerability
+- アップグレード鍵 Compromise
+- 資金庫鍵 Compromise
+- シーケンサー Failure
+- シーケンサー Censorship
+- L2 証明 Failure
+- データ可用性 Failure
+- ブリッジ Exploit
+- RPC 操作
+- チェーン Reorganization
+- ステーブルコインコントラクトリスク
+- ガバナンス実行攻撃
+- 証明検証者 Vulnerability
 - Cross-chain Replay
 - Migration Failure
 
-具体的なThreat ModelはSecurity Specificationで定義する。
+具体的な脅威モデルはセキュリティ仕様で定義する。
 
 ---
 
-## 39. Relationship to Other ADRs
+## 39. 他のADRとの関係
 
-ADR-0003 Rights RegistryはRights StateのCommitmentをBlockchainへAnchorできる。
+ADR-0003 権利登録台帳は権利状態のコミットメントをブロックチェーンへアンカーできる。
 
-ADR-0004 音楽クリエーター分配 ModelはDistribution ResultをL2でSettlementする。
+ADR-0004 音楽クリエーター分配モデルは分配結果をL2で精算する。
 
-ADR-0005 Usage OracleはVerified Usage Snapshot / ProofをL2へ提供する。
+ADR-0005 利用実績オラクルは検証済み利用実績スナップショット / 証明をL2へ提供する。
 
-ADR-0006 Zero-Knowledge Proof StrategyはProof Verification Layerを提供する。
+ADR-0006 ゼロ知識証明戦略は証明検証レイヤーを提供する。
 
-ADR-0007はこれらを実行・決済・AnchorするBlockchain / L2 Infrastructure Strategyを定義する。
+ADR-0007はこれらを実行・決済・アンカーするブロックチェーン / L2 インフラ戦略を定義する。
 
 ```text
-Rights Registry ──────────┐
-Usage Oracle ─────────────┤
-Distribution Model ───────┼──> Blockchain / L2
-ZK Proof Strategy ────────┘
+権利登録台帳 ──────────┐
+利用実績オラクル ─────────────┤
+分配モデル ───────┼──> ブロックチェーン / L2
+ZK 証明戦略 ────────┘
                                 ↓
-                         Settlement / Anchor
+                         精算 / アンカー
                                 ↓
                              Ethereum
 ```
 
 ---
 
-## 40. Related Documents
+## 40. 関連文書
 
-- Whitepaper: Vision
-- Whitepaper: Rights and Funds
-- Whitepaper: Platform Architecture
-- Whitepaper: Economic Model
-- Whitepaper: Governance
-- Whitepaper: Technology
-- Whitepaper: Security
-- Whitepaper: Infrastructure / Cost
-- ADR-0003: Rights Registry
-- ADR-0004: 音楽クリエーター分配 Model
-- ADR-0005: Usage Oracle
-- ADR-0006: Zero-Knowledge Proof Strategy
+- ホワイトペーパー: ビジョン
+- ホワイトペーパー: 権利・資金
+- ホワイトペーパー: プラットフォームアーキテクチャ
+- ホワイトペーパー: 経済モデル
+- ホワイトペーパー: ガバナンス
+- ホワイトペーパー: Technology
+- ホワイトペーパー: セキュリティ
+- ホワイトペーパー: インフラ / コスト
+- ADR-0003: 権利登録台帳
+- ADR-0004: 音楽クリエーター分配モデル
+- ADR-0005: 利用実績オラクル
+- ADR-0006: ゼロ知識証明戦略
 
 ---
 
-## 41. Follow-up Specifications
+## 41. 後続仕様
 
-本ADRの採択後、少なくとも次のSpecificationを作成する。
+本ADRの採択後、少なくとも次の仕様を作成する。
 
 - `protocol/blockchain-interface-spec.md`
 - `protocol/settlement-spec.md`
@@ -974,17 +974,17 @@ ZK Proof Strategy ────────┘
 - `protocol/chain-state-spec.md`
 - `protocol/asset-registry-spec.md`
 
-さらに、実際のPrimary L2選定について独立したADRを作成する。
+さらに、実際の主 L2選定について独立したADRを作成する。
 
 候補L2を、
 
-- Security
-- Cost
-- Finality
+- セキュリティ
+- コスト
+- ファイナリティ
 - ZK Compatibility
-- JPYC / Stablecoin Support
-- Bridge Risk
-- Developer Tooling
-- Decentralization
+- JPYC / ステーブルコイン支援
+- ブリッジリスク
+- 開発者 Tooling
+- 分散化
 
-の観点から比較し、Production Deployment前に決定する。
+の観点から比較し、本番デプロイ前に決定する。

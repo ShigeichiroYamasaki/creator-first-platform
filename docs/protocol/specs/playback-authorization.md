@@ -1,6 +1,6 @@
 ---
-title: SPEC-STREAMING-001 Playback Authorization
-description: SubscriptionとRightsを短時間Playback Sessionへ変換し、Media Adapterを非公開境界で制御するDraft プロトコル仕様
+title: SPEC-STREAMING-001 再生認可
+description: サブスクリプションと権利を短時間再生セッションへ変換し、メディアアダプターを非公開境界で制御する草案プロトコル仕様
 editLink: false
 ---
 

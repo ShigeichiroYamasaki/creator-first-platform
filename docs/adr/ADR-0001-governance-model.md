@@ -2,22 +2,22 @@
 description: 音楽クリエーターとユーザの抽選代表による二院制の熟議を、プロトコル仕様と自動執行へ接続するガバナンス設計案。
 ---
 
-# ADR-0001: Governance Model
+# ADR-0001: ガバナンスモデル
 
-**Status:** Proposed  
-**Date:** 2026-07-27
-**Last Updated:** 2026-08-24
+**状態:** 提案
+**日付:** 2026-07-27
+**最終更新日:** 2026-08-24
 
-## Context
+## 背景
 
 Creator First Platformでは、
 音楽クリエーターとユーザをプロトコルガバナンスの正統性の源泉とする。
 
-資本保有量によるToken Votingではなく、
+資本保有量によるトークン投票ではなく、
 音楽クリエーター／ユーザコミュニティから抽選された代表による
-熟議型Governanceを採用する必要がある。
+熟議型ガバナンスを採用する必要がある。
 
-## Decision
+## 決定
 
 Creator First Platformは、
 
@@ -25,60 +25,60 @@ Creator First Platformは、
 
 をプロトコルガバナンスの基本構造として採用する。
 
-Governanceは二院制とし、
+ガバナンスは二院制とし、
 
 - 音楽クリエータ院議会
 - ユーザ院議会
 
 によって構成する。
 
-ガバナンス議員はEligible Communityから
+ガバナンス議員は適格コミュニティから
 検証可能な抽選によって選出する。
 
-各院内のProposal評価には、各議員へ同量の購入不能・譲渡不能なVoice Creditを付与するQuadratic Votingを採用する。重要変更は両院の票を合算せず、各院が独立したQuorumとApproval Thresholdを満たす必要がある。具体的なContract変更手続と実行境界はADR-0016およびGovernance プロトコル仕様で定義する。
+各院内の提案評価には、各議員へ同量の購入不能・譲渡不能な投票クレジットを付与する二次投票を採用する。重要変更は両院の票を合算せず、各院が独立した定足数とApproval しきい値を満たす必要がある。具体的なコントラクト変更手続と実行境界はADR-0016およびガバナンスプロトコル仕様で定義する。
 
-## Alternatives Considered
+## 検討した代替案
 
-### Token Voting
+### トークン投票
 
-資本保有量がGovernance支配力へ直結するため採用しない。
+資本保有量がガバナンス支配力へ直結するため採用しない。
 
-### Direct Democracy
+### 直接民主制
 
 すべての意思決定への全員参加は、
 参加負担と熟議品質の問題がある。
 
-### Election-based Representation
+### 選挙代表制
 
 知名度、資金、組織力による代表選出への影響が大きいため、
 基本方式として採用しない。
 
-## Consequences
+## 影響
 
-### Positive
+### 利点
 
-- 資本によるGovernance Captureを抑制できる
-- 一般音楽クリエーター／ユーザがGovernanceへ参加できる
+- 資本によるガバナンス Captureを抑制できる
+- 一般音楽クリエーター／ユーザがガバナンスへ参加できる
 - 熟議を制度化できる
 
-### Negative
+### 欠点
 
 - 抽選代表への教育が必要
-- Representative Qualityが一定しない
-- Governance運営コストが必要
+- Representative 品質が一定しない
+- ガバナンス運営コストが必要
 
-## Constraints
+## 制約
 
-このGovernance Modelは3つの憲章に従う。
+このガバナンスモデルは3つの憲章に従う。
 
 重大な憲章変更は、
 音楽クリエータ院議会 / ユーザ院議会だけでは決定せず、
-Community Referendumを必要とする。
+コミュニティ全体投票を必要とする。
 
-## Related Documents
+## 関連文書
 
-- Whitepaper: Vision
-- Whitepaper: Governance
-- Whitepaper: Roadmap
-- ADR-0016: Bicameral Quadratic Governance for Contract Changes
-- Protocol: Contract Change Governance
+- ホワイトペーパー: ビジョン
+- ホワイトペーパー: ガバナンス
+- ホワイトペーパー: ロードマップ
+- ADR-0016: コントラクト変更の二院制・二次投票ガバナンス
+- プロトコル: コントラクト変更ガバナンス

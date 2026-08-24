@@ -9,7 +9,7 @@ const buildCommit = githubCommit && /^[0-9a-f]{40}$/.test(githubCommit)
 export default defineConfig({
     lang: 'ja-JP',
     title: 'Creator First Platform',
-    description: 'CreatorとUserが共同統治する、クリエイター中心の音楽配信プラットフォーム構想',
+    description: '音楽クリエーターとユーザが共同統治する、音楽クリエーター中心の音楽配信プラットフォーム構想',
 
     base: '/creator-first-platform/',
     srcExclude: ['**/* 2.md'],
@@ -116,7 +116,7 @@ export default defineConfig({
           '@type': 'WebSite',
           name: 'Creator First Platform',
           url: 'https://shigeichiroyamasaki.github.io/creator-first-platform/',
-          description: 'CreatorとUserが共同統治する、クリエイター中心の音楽配信プラットフォーム構想',
+          description: '音楽クリエーターとユーザが共同統治する、音楽クリエーター中心の音楽配信プラットフォーム構想',
           inLanguage: 'ja-JP',
           image: 'https://shigeichiroyamasaki.github.io/creator-first-platform/creator-first-platform-symbol.png',
           sameAs: 'https://github.com/ShigeichiroYamasaki/creator-first-platform'
@@ -174,12 +174,12 @@ export default defineConfig({
 
       nav: [
         { text: 'ホーム', link: '/' },
-        { text: 'Testnetデモ', link: '/demo/' },
+        { text: 'テストネットデモ', link: '/demo/' },
         { text: '現在の状況', link: '/status' },
         { text: '用語表', link: '/terminology' },
         { text: 'ホワイトペーパー', link: '/whitepaper/' },
-        { text: 'Governance', link: '/governance/' },
-        { text: 'Protocol', link: '/protocol/' },
+        { text: 'ガバナンス', link: '/governance/' },
+        { text: 'プロトコル', link: '/protocol/' },
         { text: 'CFP', link: '/proposals/' },
         { text: 'ADR 一覧', link: '/adr/' }
       ],
@@ -187,19 +187,19 @@ export default defineConfig({
       sidebar: {
         '/demo/': [
           {
-            text: 'Demo',
+            text: 'デモ',
             items: [
-              { text: 'Testnetデモ入口', link: '/demo/' },
+              { text: 'テストネットデモ入口', link: '/demo/' },
               { text: 'ユーザ向けサービス', link: '/demo/user-services' },
-              { text: 'Test User登録デモ', link: '/demo/test-user-registration' },
+              { text: 'テストユーザ登録デモ', link: '/demo/test-user-registration' },
               { text: 'ユーザ向け利用デモ', link: '/demo/user-service' },
-              { text: '音楽クリエータサービス', link: '/demo/creator-services' },
-              { text: 'Test Creator登録デモ', link: '/demo/creator-registration' },
-              { text: 'Creator Workspaceデモ', link: '/demo/creator-workspace' },
+              { text: '音楽クリエーター向けサービス', link: '/demo/creator-services' },
+              { text: 'テスト音楽クリエーター登録デモ', link: '/demo/creator-registration' },
+              { text: '音楽クリエーター作業画面デモ', link: '/demo/creator-workspace' },
               { text: '資金フロー可視化デモ', link: '/demo/treasury-dashboard' },
-              { text: 'Sepolia Smart Contract', link: '/demo/testnet-contracts' },
+              { text: 'Sepoliaスマートコントラクト', link: '/demo/testnet-contracts' },
               { text: 'ローカル音楽ストリーミング', link: '/demo/local-streaming' },
-              { text: 'ローカルStreaming Gateway', link: '/demo/local-gateway' }
+              { text: 'ローカルストリーミングゲートウェイ', link: '/demo/local-gateway' }
             ]
           }
         ],
@@ -226,64 +226,64 @@ export default defineConfig({
         ],
         '/protocol/': [
           {
-            text: 'Protocol Foundation',
+            text: 'プロトコル基盤',
             items: [
               { text: '概要・実装フロー', link: '/protocol/' },
-              { text: 'End-to-End Vertical Slice', link: '/protocol/vertical-slice' },
-              { text: 'Vertical Slice実装計画', link: '/protocol/implementation-plan' },
-              { text: 'Decision Baseline', link: '/protocol/decision-baseline' },
+              { text: 'エンドツーエンド最小縦断実装', link: '/protocol/vertical-slice' },
+              { text: '最小縦断実装計画', link: '/protocol/implementation-plan' },
+              { text: '決定基準', link: '/protocol/decision-baseline' },
               { text: '決定待ち一覧', link: '/protocol/open-questions' },
-              { text: 'Protocol README', link: '/protocol/foundation/overview' },
-              { text: 'Conventions', link: '/protocol/foundation/conventions' },
-              { text: 'Glossary', link: '/protocol/foundation/glossary' },
-              { text: 'Global Invariants', link: '/protocol/foundation/invariants' }
+              { text: 'プロトコルREADME', link: '/protocol/foundation/overview' },
+              { text: '規約', link: '/protocol/foundation/conventions' },
+              { text: '用語集', link: '/protocol/foundation/glossary' },
+              { text: '全体不変条件', link: '/protocol/foundation/invariants' }
             ]
           },
           {
-            text: 'Protocol Specifications',
+            text: 'プロトコル仕様',
             items: [
               {
-                text: 'Account Lifecycle (Draft)',
+                text: 'アカウントライフサイクル（草案）',
                 link: '/protocol/specs/account-lifecycle'
               },
               {
-                text: 'Wallet Linking (Draft)',
+                text: 'ウォレット連携（草案）',
                 link: '/protocol/specs/wallet-linking'
               },
               {
-                text: 'Early Supporter Credential (Draft)',
+                text: '初期サポーター資格証明（草案）',
                 link: '/protocol/specs/early-supporter-credential'
               },
               {
-                text: 'Subscription Settlement (Draft)',
+                text: 'サブスクリプション決済（草案）',
                 link: '/protocol/specs/subscription-settlement'
               },
               {
-                text: 'Settlement Asset Registry (Draft)',
+                text: '決済資産登録簿（草案）',
                 link: '/protocol/specs/settlement-asset-registry'
               },
               {
-                text: 'Rights Registry (Draft)',
+                text: '権利登録簿（草案）',
                 link: '/protocol/specs/rights-registry'
               },
               {
-                text: 'Playback Authorization (Draft)',
+                text: '再生認可（草案）',
                 link: '/protocol/specs/playback-authorization'
               },
               {
-                text: 'Player Client (Draft)',
+                text: 'プレーヤークライアント（草案）',
                 link: '/protocol/specs/player-client'
               },
               {
-                text: 'Playback Verification (Draft)',
+                text: '再生検証（草案）',
                 link: '/protocol/specs/playback-verification'
               },
               {
-                text: 'Creator Distribution (Draft)',
+                text: '音楽クリエーター分配（草案）',
                 link: '/protocol/specs/creator-distribution'
               },
               {
-                text: 'Governance Change (Draft)',
+                text: 'ガバナンス変更（草案）',
                 link: '/protocol/specs/governance-change'
               }
             ]
@@ -291,24 +291,24 @@ export default defineConfig({
         ],
         '/adr/': [
           {
-            text: 'Architecture Decision Records',
+            text: 'アーキテクチャ意思決定記録',
             items: [
               { text: 'ADR一覧', link: '/adr/' },
-              { text: '0001 Governance Model', link: '/adr/ADR-0001-governance-model' },
-              { text: '0002 Verifiable Sortition', link: '/adr/ADR-0002-verifiable-sortition' },
-              { text: '0003 Rights Registry', link: '/adr/ADR-0003-rights-registry' },
-              { text: '0004 Creator Distribution', link: '/adr/ADR-0004-creator-distribution-model' },
-              { text: '0005 Usage Oracle', link: '/adr/ADR-0005-usage-oracle' },
-              { text: '0006 Zero-Knowledge Proof', link: '/adr/ADR-0006-zero-knowledge-proof-strategy' },
-              { text: '0007 Blockchain / L2', link: '/adr/ADR-0007-blockchain-l2-strategy' },
-              { text: '0008 Account / Wallet / Identity', link: '/adr/ADR-0008-account-wallet-identity-strategy' },
-              { text: '0009 Navidrome / Streaming Gateway', link: '/adr/ADR-0009-navidrome-streaming-gateway' },
-              { text: '0010 Early Supporter SBT', link: '/adr/ADR-0010-early-supporter-sbt-privileges' },
-              { text: '0011 Integrated Player Client', link: '/adr/ADR-0011-integrated-player-client' },
-              { text: '0013 Treasury Flow Transparency', link: '/adr/ADR-0013-treasury-flow-transparency' },
-              { text: '0014 Public Testnet User Journey', link: '/adr/ADR-0014-public-testnet-user-journey' },
-              { text: '0015 Public Testnet Creator Journey', link: '/adr/ADR-0015-public-testnet-creator-journey' },
-              { text: '0016 Bicameral Governance', link: '/adr/ADR-0016-bicameral-quadratic-governance' }
+              { text: '0001 ガバナンスモデル', link: '/adr/ADR-0001-governance-model' },
+              { text: '0002 検証可能な抽選代表制', link: '/adr/ADR-0002-verifiable-sortition' },
+              { text: '0003 権利登録簿', link: '/adr/ADR-0003-rights-registry' },
+              { text: '0004 音楽クリエーター分配', link: '/adr/ADR-0004-creator-distribution-model' },
+              { text: '0005 利用実績オラクル', link: '/adr/ADR-0005-usage-oracle' },
+              { text: '0006 ゼロ知識証明', link: '/adr/ADR-0006-zero-knowledge-proof-strategy' },
+              { text: '0007 ブロックチェーン／L2', link: '/adr/ADR-0007-blockchain-l2-strategy' },
+              { text: '0008 アカウント／ウォレット／本人性', link: '/adr/ADR-0008-account-wallet-identity-strategy' },
+              { text: '0009 Navidrome／ストリーミングゲートウェイ', link: '/adr/ADR-0009-navidrome-streaming-gateway' },
+              { text: '0010 初期サポーターSBT', link: '/adr/ADR-0010-early-supporter-sbt-privileges' },
+              { text: '0011 統合プレーヤークライアント', link: '/adr/ADR-0011-integrated-player-client' },
+              { text: '0013 資金フローの透明性', link: '/adr/ADR-0013-treasury-flow-transparency' },
+              { text: '0014 公開テストネットのユーザ体験経路', link: '/adr/ADR-0014-public-testnet-user-journey' },
+              { text: '0015 公開テストネットの音楽クリエーター体験経路', link: '/adr/ADR-0015-public-testnet-creator-journey' },
+              { text: '0016 二院制ガバナンス', link: '/adr/ADR-0016-bicameral-quadratic-governance' }
             ]
           }
         ],
@@ -317,15 +317,15 @@ export default defineConfig({
             text: '二院制ガバナンス',
             items: [
               { text: '議会・投票システム', link: '/governance/' },
-              { text: 'Creator First Proposal', link: '/proposals/' },
-              { text: 'Governance Protocol', link: '/protocol/specs/governance-change' },
+              { text: '音楽クリエーター中心提案', link: '/proposals/' },
+              { text: 'ガバナンスプロトコル', link: '/protocol/specs/governance-change' },
               { text: '設計判断 ADR-0016', link: '/adr/ADR-0016-bicameral-quadratic-governance' }
             ]
           }
         ],
         '/proposals/': [
           {
-            text: 'Creator First Proposal',
+            text: '音楽クリエーター中心提案',
             items: [{ text: 'CFP制度・一覧', link: '/proposals/' }]
           }
         ]
@@ -339,7 +339,7 @@ export default defineConfig({
       ],
 
       footer: {
-        message: 'CreatorとUserのための、検証可能な音楽プラットフォーム',
+        message: '音楽クリエーターとユーザのための、検証可能な音楽プラットフォーム',
         copyright: 'Creator First Platform'
       },
 
@@ -397,6 +397,15 @@ export default defineConfig({
                 )
               : withoutCredentialArtwork
 
+            // 長大なインフラ章の後半は、実装時に参照する運用詳細であるため、
+            // ページ本文には残しつつローカル検索索引から除外する。
+            if (environment.relativePath === 'whitepaper/12-infrastructure-cost.md') {
+              return searchableDocument.replace(
+                /<h2[^>]*id="_12-47-[^"]*"[^>]*>[\s\S]*$/,
+                ''
+              )
+            }
+
             if (environment.relativePath?.startsWith('protocol/specs/')) {
               return searchableDocument
                 .replace(
@@ -420,15 +429,15 @@ export default defineConfig({
             if (environment.relativePath?.startsWith('adr/ADR-')) {
               return searchableDocument
                 .replace(
-                  /<h2[^>]*id="[^"]*alternatives-considered[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  /<h2[^>]*id="[^"]*(?:alternatives-considered|検討した代替案)[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
                   ''
                 )
                 .replace(
-                  /<h2[^>]*id="[^"]*(?:testnet-acceptance-criteria|validation-gates)[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  /<h2[^>]*id="[^"]*(?:testnet-acceptance-criteria|validation-gates|テストネット受入基準|検証ゲート|受入基準)[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
                   ''
                 )
                 .replace(
-                  /<h2[^>]*id="[^"]*related-documents[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
+                  /<h2[^>]*id="[^"]*(?:related-documents|関連文書)[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
                   ''
                 )
             }

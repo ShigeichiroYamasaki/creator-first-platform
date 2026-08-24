@@ -2,7 +2,7 @@
 description: 配信、認証、権利、決済、分配、ガバナンスを責任境界ごとに分離したプラットフォーム構成。
 ---
 
-# 4. プラットフォーム構成 — Platform Architecture
+# 4. プラットフォーム構成
 
 ## 4.1 本章の目的
 
@@ -31,15 +31,15 @@ Creator First Platform は、単一のブロックチェーンアプリケーシ
 
 ```mermaid
 flowchart TD
-    USER[ユーザ / Listeners]
+    USER[ユーザ / ユーザ]
     CREATOR[音楽クリエーター／権利者]
-    APP[Player / 音楽クリエーターアプリ]
-    CLOUD[Cloud Streaming Platform]
-    ORACLE[Usage Oracle]
-    RIGHTS[Rights Registry]
-    GOV[Governance]
+    APP[プレーヤー / 音楽クリエーターアプリ]
+    CLOUD[クラウドストリーミングプラットフォーム]
+    ORACLE[利用実績オラクル]
+    RIGHTS[権利登録台帳]
+    GOV[ガバナンス]
     SC[スマートコントラクトs]
-    CORP[Operating Corporation]
+    CORP[運営株式会社]
 
     USER --> APP
     CREATOR --> APP
@@ -68,23 +68,23 @@ flowchart TD
 
 Creator First Platform は、大きく次の7つのレイヤーから構成する。
 
-1. Client Layer
-2. Streaming & Content Layer
-3. Identity & Rights Layer
-4. Usage Verification Layer
-5. Payment & Distribution Layer
-6. Governance Layer
-7. Corporate & Compliance Layer
+1. クライアントレイヤー
+2. ストリーミング & コンテンツレイヤー
+3. アイデンティティ & 権利レイヤー
+4. 利用実績検証レイヤー
+5. 決済 & 分配レイヤー
+6. ガバナンスレイヤー
+7. 法人 & 法令遵守レイヤー
 
 ```mermaid
 flowchart TB
-    L1[1. Client Layer<br/>Player / 音楽クリエーターポータル]
-    L2[2. Streaming & Content Layer<br/>Storage / CDN / Metadata]
-    L3[3. Identity & Rights Layer<br/>Identity / Rights Registry]
-    L4[4. Usage Verification Layer<br/>Usage Oracle / Fraud Detection]
-    L5[5. Payment & Distribution Layer<br/>Payment / スマートコントラクトs]
-    L6[6. Governance Layer<br/>音楽クリエータ院議会 / ユーザ院議会]
-    L7[7. Corporate & Compliance Layer<br/>Contracts / Tax / Legal]
+    L1[1. クライアントレイヤー<br/>プレーヤー / 音楽クリエーターポータル]
+    L2[2. ストリーミング & コンテンツレイヤー<br/>ストレージ / CDN / メタデータ]
+    L3[3. アイデンティティ & 権利レイヤー<br/>アイデンティティ / 権利登録台帳]
+    L4[4. 利用実績検証レイヤー<br/>利用実績オラクル / 不正検知]
+    L5[5. 決済 & 分配レイヤー<br/>決済 / スマートコントラクトs]
+    L6[6. ガバナンスレイヤー<br/>音楽クリエータ院議会 / ユーザ院議会]
+    L7[7. 法人 & 法令遵守レイヤー<br/>契約 / 税務 / 法務]
 
     L1 --> L2
     L2 --> L4
@@ -100,14 +100,14 @@ flowchart TB
 
 ---
 
-## 4.3 Client Layer
+## 4.3 クライアントレイヤー
 
-Client Layer は、ユーザと音楽クリエーターが Creator First Platform に接するインターフェースである。
+クライアントレイヤーは、ユーザと音楽クリエーターが Creator First Platform に接するインターフェースである。
 
 主なクライアントとして、
 
 - 音楽プレーヤーアプリ
-- Webプレーヤー
+- ウェブプレーヤー
 - 音楽クリエーターポータル
 - ガバナンスポータル
 - 管理・権利確認画面
@@ -116,17 +116,17 @@ Client Layer は、ユーザと音楽クリエーターが Creator First Platfor
 
 ```mermaid
 flowchart LR
-    USER[Listener]
+    USER[ユーザ]
     CREATOR[音楽クリエーター]
-    ADMIN[Operator]
+    ADMIN[運用者]
 
-    USER --> PLAYER[Music Player]
+    USER --> PLAYER[音楽プレーヤー]
     CREATOR --> PORTAL[音楽クリエーターポータル]
-    USER --> GOVUI[Governance UI]
+    USER --> GOVUI[ガバナンス UI]
     CREATOR --> GOVUI
-    ADMIN --> ADMINUI[Admin / Rights UI]
+    ADMIN --> ADMINUI[管理 / 権利 UI]
 
-    PLAYER --> API[Platform APIs]
+    PLAYER --> API[プラットフォーム API]
     PORTAL --> API
     GOVUI --> API
     ADMINUI --> API
@@ -151,29 +151,29 @@ Creator First Platform では、
 - プレイリスト
 - 音楽クリエーター支援
 - 利用イベント生成
-- Usage Oracle への情報提供
+- 利用実績オラクルへの情報提供
 
 など、プラットフォームの重要な接点となる。
 
 ```mermaid
 flowchart TD
-    PLAYER[Player App]
+    PLAYER[プレーヤーアプリ]
 
-    PLAYER --> AUTH[Authentication]
-    PLAYER --> STREAM[Streaming]
-    PLAYER --> DISC[Discovery / Recommendation]
-    PLAYER --> LIST[Playlist]
+    PLAYER --> AUTH[認証]
+    PLAYER --> STREAM[ストリーミング]
+    PLAYER --> DISC[発見 / 推薦]
+    PLAYER --> LIST[プレイリスト]
     PLAYER --> SUPPORT[音楽クリエーター支援]
-    PLAYER --> EVENT[Playback Events]
+    PLAYER --> EVENT[再生イベント]
 ```
 
 ただし、クライアントが自己申告する再生イベントだけをそのまま分配に利用することはしない。
 
-Usage Verification Layer で検証を行う。
+利用実績検証レイヤーで検証を行う。
 
 ---
 
-## 4.5 Streaming & Content Layer
+## 4.5 ストリーミング & コンテンツレイヤー
 
 音楽データは、大容量かつ低遅延で配信する必要がある。
 
@@ -183,11 +183,11 @@ Usage Verification Layer で検証を行う。
 
 ```mermaid
 flowchart LR
-    MASTER[Master Audio]
-    STORAGE[Object Storage]
-    PROCESS[Transcoding / Packaging]
+    MASTER[原盤音声]
+    STORAGE[オブジェクトストレージ]
+    PROCESS[トランスコード・パッケージ化]
     CDN[CDN]
-    PLAYER[Player]
+    PLAYER[プレーヤー]
 
     MASTER --> STORAGE
     STORAGE --> PROCESS
@@ -221,18 +221,18 @@ Creator First Platform では、クラウドと分散ストレージを競合技
 
 ```mermaid
 flowchart TD
-    CONTENT[Content]
+    CONTENT[コンテンツ]
 
-    CONTENT --> CLOUD[Cloud Storage / CDN]
-    CONTENT --> IPFS[IPFS / Content Addressing]
+    CONTENT --> CLOUD[クラウドストレージ / CDN]
+    CONTENT --> IPFS[IPFS / コンテンツアドレス指定]
 
     CLOUD --> STREAM[高速ストリーミング]
-    CLOUD --> DRM[Access Control]
+    CLOUD --> DRM[アクセス制御]
     CLOUD --> REGION[地域制御]
 
-    IPFS --> HASH[Integrity]
-    IPFS --> AUDIT[Audit Evidence]
-    IPFS --> META[Public Metadata / Manifests]
+    IPFS --> HASH[完全性]
+    IPFS --> AUDIT[監査証跡]
+    IPFS --> META[公開メタデータ / マニフェスト]
 ```
 
 ### クラウドが担うもの
@@ -262,45 +262,45 @@ flowchart TD
 
 ---
 
-## 4.7 Content Metadata
+## 4.7 コンテンツメタデータ
 
 音源そのものと、メタデータは分離する。
 
 メタデータには例えば、
 
-- Track ID
+- 楽曲 ID
 - Title
-- Artist
+- アーティスト
 - Album
-- Genre
+- ジャンル
 - Duration
 - ISRC等の外部識別子
-- Rights Registry 参照
+- 権利登録台帳参照
 - 配信地域
 - 配信開始・終了
-- Content Hash
+- コンテンツハッシュ
 
 などを持たせる。
 
 ```mermaid
 flowchart LR
-    TRACK[Track ID]
+    TRACK[楽曲 ID]
 
-    TRACK --> AUDIO[Audio Object]
-    TRACK --> META[Metadata]
-    TRACK --> RIGHTS[Rights Registry]
-    TRACK --> HASH[Content Hash]
+    TRACK --> AUDIO[音声オブジェクト]
+    TRACK --> META[メタデータ]
+    TRACK --> RIGHTS[権利登録台帳]
+    TRACK --> HASH[コンテンツハッシュ]
 
     AUDIO --> CDN[CDN]
-    META --> API[Metadata API]
-    RIGHTS --> SC[Distribution]
+    META --> API[メタデータ API]
+    RIGHTS --> SC[分配]
 ```
 
-同一のTrack IDを中心に、配信、権利、利用実績、分配を接続する。
+同一の楽曲 IDを中心に、配信、権利、利用実績、分配を接続する。
 
 ---
 
-## 4.8 Identity Layer
+## 4.8 アイデンティティレイヤー
 
 Creator First Platform には複数種類の主体が存在する。
 
@@ -315,32 +315,32 @@ Creator First Platform には複数種類の主体が存在する。
 
 ```mermaid
 flowchart TD
-    ACCOUNT[Platform Account]
+    ACCOUNT[プラットフォームアカウント]
 
-    ACCOUNT --> USER[Listener]
+    ACCOUNT --> USER[ユーザ]
     ACCOUNT --> CREATOR[音楽クリエーター]
     ACCOUNT --> RIGHTS[権利者]
-    ACCOUNT --> ORG[Organization]
+    ACCOUNT --> ORG[組織]
 
-    CREATOR --> KYC[Identity Verification]
+    CREATOR --> KYC[アイデンティティ検証]
     RIGHTS --> KYC
-    ORG --> KYB[Organization Verification]
+    ORG --> KYB[組織検証]
 ```
 
 一般の音楽ユーザに過剰な本人確認を要求しない一方、金銭の受取や権利登録を行う主体については、必要な本人・法人確認を行う。
 
 ---
 
-## 4.9 Wallet Abstraction
+## 4.9 ウォレット抽象化
 
 ブロックチェーンを利用する場合でも、ユーザがウォレットを直接管理することを必須としない。
 
 ```mermaid
 flowchart LR
     USER[ユーザ]
-    UX[Normal App UX]
-    WALLET[Wallet Abstraction]
-    CHAIN[Blockchain]
+    UX[Normal アプリ UX]
+    WALLET[ウォレット抽象化]
+    CHAIN[ブロックチェーン]
 
     USER --> UX
     UX --> WALLET
@@ -349,11 +349,11 @@ flowchart LR
 
 例えば、
 
-- Embedded Wallet
-- Account Abstraction
+- 組込みウォレット
+- アカウント抽象化
 - Custodial / Non-custodial の選択
 - Social Login
-- Recovery
+- 復旧
 
 などを検討する。
 
@@ -361,54 +361,54 @@ Creator First Platform の利用条件を「暗号資産利用経験があるこ
 
 ---
 
-## 4.10 Rights Registry Layer
+## 4.10 権利登録台帳レイヤー
 
-Rights Registry は、権利情報をプラットフォーム全体から参照する共通レイヤーである。
+権利登録台帳は、権利情報をプラットフォーム全体から参照する共通レイヤーである。
 
 ```mermaid
 flowchart TD
     CREATOR[音楽クリエーター]
-    CORP[Corporation]
-    CMO[CMO / Publisher / Label]
+    CORP[株式会社]
+    CMO[CMO / 音楽出版社 / レーベル]
 
-    CREATOR --> VERIFY[Rights Verification]
+    CREATOR --> VERIFY[権利検証]
     CMO --> VERIFY
     CORP --> VERIFY
 
-    VERIFY --> REG[Rights Registry]
+    VERIFY --> REG[権利登録台帳]
 
-    REG --> PLAYER[Distribution Eligibility]
-    REG --> ORACLE[Usage Association]
-    REG --> SC[Revenue Split]
+    REG --> PLAYER[分配適格性]
+    REG --> ORACLE[利用実績 Association]
+    REG --> SC[収益分割]
 ```
 
-Rights Registry は、オンチェーンのみで構成する必要はない。
+権利登録台帳は、オンチェーンのみで構成する必要はない。
 
 個人情報、契約文書、係争情報などはオフチェーンで安全に保管し、スマートコントラクトには分配に必要な識別子・状態・ハッシュ等のみを渡す。
 
 ---
 
-## 4.11 Usage Verification Layer
+## 4.11 利用実績検証レイヤー
 
 Creator First Platform の経済モデルでは、利用実績が資金分配に影響する。
 
-したがって Playback Event をそのまま信頼せず、検証レイヤーを設ける。
+したがって再生イベントをそのまま信頼せず、検証レイヤーを設ける。
 
 ```mermaid
 flowchart LR
-    PLAYER[Player]
+    PLAYER[プレーヤー]
     CDN[CDN]
-    AUTH[Auth]
+    AUTH[認証]
 
-    PLAYER --> EVENT[Playback Event]
-    CDN --> LOG[Delivery Logs]
-    AUTH --> SESSION[Session Data]
+    PLAYER --> EVENT[再生イベント]
+    CDN --> LOG[配信ログ]
+    AUTH --> SESSION[セッションデータ]
 
-    EVENT --> VERIFY[Usage Verification]
+    EVENT --> VERIFY[利用実績検証]
     LOG --> VERIFY
     SESSION --> VERIFY
 
-    VERIFY --> ORACLE[Usage Oracle]
+    VERIFY --> ORACLE[利用実績オラクル]
 ```
 
 検証要素には、
@@ -417,7 +417,7 @@ flowchart LR
 - 音源取得実績
 - 再生時間
 - 重複イベント
-- Bot / Fraud
+- ボット / 不正
 - レート制限
 - 異常パターン
 
@@ -425,19 +425,19 @@ flowchart LR
 
 ---
 
-## 4.12 Usage Oracle
+## 4.12 利用実績オラクル
 
-Usage Oracle は、オフチェーンで発生した利用実績をスマートコントラクトが利用できる形式へ変換する。
+利用実績オラクルは、オフチェーンで発生した利用実績をスマートコントラクトが利用できる形式へ変換する。
 
 ```mermaid
 flowchart TD
-    RAW[Raw Usage Data]
-    RAW --> VERIFY[Verification / Fraud Detection]
-    VERIFY --> AGG[Aggregation]
-    AGG --> COMMIT[Commitment / Merkle Root]
-    COMMIT --> PROOF[Proof]
-    PROOF --> ORACLE[Usage Oracle]
-    ORACLE --> SC[Distribution Contract]
+    RAW[生の利用実績データ]
+    RAW --> VERIFY[検証 / 不正検知]
+    VERIFY --> AGG[集約]
+    AGG --> COMMIT[コミットメント / マークルルート]
+    COMMIT --> PROOF[証明]
+    PROOF --> ORACLE[利用実績オラクル]
+    ORACLE --> SC[分配コントラクト]
 ```
 
 すべての再生イベントを直接ブロックチェーンへ記録することは想定しない。
@@ -458,64 +458,64 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    PRIVATE[Private Playback Data]
-    PRIVATE --> ZK[ZK Circuit / Proof]
-    ZK --> PUBLIC[Public Statement]
-    PUBLIC --> SC[スマートコントラクト Verification]
+    PRIVATE[非公開再生データ]
+    PRIVATE --> ZK[ZK回路 / 証明]
+    ZK --> PUBLIC[公開ステートメント]
+    PUBLIC --> SC[スマートコントラクト検証]
 ```
 
 公開する情報は例えば、
 
 - 集計期間
-- Track ID
+- 楽曲 ID
 - 有効利用数
 - コミットメント
-- Proof
+- 証明
 
 などに限定し、個々のユーザの再生履歴は公開しない。
 
 ---
 
-## 4.14 Payment Layer
+## 4.14 決済レイヤー
 
-ユーザのサブスクリプション決済は、JPYC等の承認済みステーブルコインを使用する。Payment Layerは、Asset Registry、Payment Intent、Wallet Authorization、Settlement AdapterおよびFinality確認を分離し、ETH等のネイティブトークンをSubscription Priceとして扱わない。
+ユーザのサブスクリプション決済は、JPYC等の承認済みステーブルコインを使用する。決済レイヤーは、資産登録台帳、決済意思、ウォレット認可、精算アダプターおよびファイナリティ確認を分離し、ETH等のネイティブトークンをサブスクリプション価格として扱わない。
 
 ```mermaid
 flowchart LR
-    USER[Listener]
-    WALLET[Wallet / Smart Account]
-    INTENT[Payment Intent]
-    ASSET[Approved JPYC等]
-    RELAYER[Relayer / Paymaster]
-    CHAIN[Settlement Contract]
-    SUB[Active Subscription]
+    USER[ユーザ]
+    WALLET[ウォレット / スマートアカウント]
+    INTENT[決済意思]
+    ASSET[承認済み JPYC等]
+    RELAYER[リレイヤー / ペイマスター]
+    CHAIN[精算コントラクト]
+    SUB[有効サブスクリプション]
 
     USER --> WALLET --> INTENT
     ASSET --> INTENT --> CHAIN --> SUB
-    RELAYER -->|Gas Sponsorship| CHAIN
+    RELAYER -->|ガス代支援| CHAIN
 ```
 
-RelayerまたはPaymasterはユーザのGas操作を抽象化できるが、料金を支払ったことのSource of Truthにはならない。指定されたAsset、Chain、Contract、Amount、WalletおよびPayment Intentに一致するTransferがFinality条件を満たした場合だけSubscriptionを有効化する。
+リレイヤーまたはペイマスターはユーザのガス操作を抽象化できるが、料金を支払ったことの正本にはならない。指定された資産、チェーン、コントラクト、Amount、ウォレットおよび決済意思に一致する転送がファイナリティ条件を満たした場合だけサブスクリプションを有効化する。
 
-テスト系では実在JPYCと交換できず金銭的価値を持たない`MockJPYC`を用い、本番系では具体的なJPYC商品・発行者・Contract Address・Networkを法務、技術およびSecurity審査後にAsset Registryへ登録する。
+テスト系では実在JPYCと交換できず金銭的価値を持たない`MockJPYC`を用い、本番系では具体的なJPYC商品・発行者・コントラクトアドレス・ネットワークを法務、技術およびセキュリティ審査後に資産登録台帳へ登録する。
 
 ---
 
-## 4.15 Settlement & Distribution Layer
+## 4.15 精算 & 分配レイヤー
 
 決済された資金から、税・決済コスト・必要な契約上の支払い等を処理した上で、分配可能額を生成する。
 
 ```mermaid
 flowchart TD
-    REV[Subscription Revenue]
-    REV --> CORP[Corporate Accounting]
-    CORP --> COST[Taxes / Payment / Required Costs]
-    CORP --> NET[Distributable Revenue]
+    REV[サブスクリプション収益]
+    REV --> CORP[法人会計]
+    CORP --> COST[税金 / 決済 / 必要経費]
+    CORP --> NET[分配可能収益]
 
-    NET --> POOL[Distribution Pools]
-    POOL --> USAGE[Usage-based Pool]
-    POOL --> GROWTH[Growth Pool]
-    POOL --> OPS[Operation Pool]
+    NET --> POOL[分配プール]
+    POOL --> USAGE[利用実績連動プール]
+    POOL --> GROWTH[成長支援プール]
+    POOL --> OPS[運用プール]
 
     USAGE --> SC[スマートコントラクトs]
     GROWTH --> SC
@@ -525,22 +525,22 @@ flowchart TD
 
 ---
 
-## 4.16 スマートコントラクト Layer
+## 4.16 スマートコントラクトレイヤー
 
-スマートコントラクト Layer は Creator First Platform における検証可能な経済ルールを実行する。
+スマートコントラクトレイヤーは Creator First Platform における検証可能な経済ルールを実行する。
 
 主なコントラクト群として、将来的に次を想定する。
 
 ```mermaid
 flowchart TD
-    GOV[Governance Contract]
-    RIGHTS[Rights Reference]
-    USAGE[Usage Commitment]
-    DIST[Distribution Contract]
-    GROWTH[Growth Pool Contract]
-    TREASURY[Treasury / Settlement]
-    SUBSCRIPTION[Subscription Settlement]
-    SBT[Early Supporter SBT]
+    GOV[ガバナンスコントラクト]
+    RIGHTS[権利参照]
+    USAGE[利用実績コミットメント]
+    DIST[分配コントラクト]
+    GROWTH[成長支援プールコントラクト]
+    TREASURY[資金庫 / 精算]
+    SUBSCRIPTION[サブスクリプション精算]
+    SBT[初期サポーター SBT]
 
     GOV --> DIST
     GOV --> GROWTH
@@ -558,31 +558,31 @@ flowchart TD
 
 ---
 
-## 4.17 Governance Layer
+## 4.17 ガバナンスレイヤー
 
 Creator First Platform のガバナンスは、単一のトークン投票ではなく、
 
-- Constitution
+- 憲章
 - 音楽クリエータ院議会
 - ユーザ院議会
-- Corporate Responsibility
+- 法人責任
 
 を組み合わせる。
 
 ```mermaid
 flowchart TD
-    CONST[Constitution]
+    CONST[憲章]
 
     CONST --> CH[音楽クリエータ院議会]
     CONST --> UH[ユーザ院議会]
 
-    CH --> DEC[Protocol Decision]
+    CH --> DEC[プロトコル決定]
     UH --> DEC
 
-    DEC --> TIME[Timelock / Review]
-    TIME --> CODE[スマートコントラクト Upgrade]
+    DEC --> TIME[タイムロック / レビュー]
+    TIME --> CODE[スマートコントラクトアップグレード]
 
-    CORP[Corporation] --> LEGAL[Legal Compliance]
+    CORP[株式会社] --> LEGAL[法務法令遵守]
     LEGAL --> TIME
 ```
 
@@ -590,28 +590,28 @@ flowchart TD
 
 ---
 
-## 4.18 Corporation Layer
+## 4.18 株式会社レイヤー
 
 株式会社はプラットフォーム全体の法的・事業上の責任主体である。
 
 ```mermaid
 flowchart TD
-    CORP[Operating Corporation]
+    CORP[運営株式会社]
 
-    CORP --> LEGAL[Legal]
-    CORP --> RIGHTS[Rights Management]
-    CORP --> TAX[Accounting / Tax]
-    CORP --> SECURITY[Security]
-    CORP --> OPS[Operations]
-    CORP --> CUSTOMER[Customer Support]
-    CORP --> PARTNER[External Partners]
+    CORP --> LEGAL[法務]
+    CORP --> RIGHTS[権利管理]
+    CORP --> TAX[会計・税務]
+    CORP --> SECURITY[セキュリティ]
+    CORP --> OPS[運用]
+    CORP --> CUSTOMER[顧客支援]
+    CORP --> PARTNER[外部パートナー]
 ```
 
 技術レイヤーを運用する主体でもあるが、プロトコルルールについてはガバナンスによる制約を受ける。
 
 ---
 
-## 4.19 Admin Layer
+## 4.19 管理レイヤー
 
 現実のサービスには管理機能も必要になる。
 
@@ -632,11 +632,11 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    ADMIN[Admin]
-    ADMIN --> OFFCHAIN[Operational Systems]
-    ADMIN --> EMERGENCY[Emergency Controls]
+    ADMIN[管理]
+    ADMIN --> OFFCHAIN[運用事項 Systems]
+    ADMIN --> EMERGENCY[緊急制御]
 
-    EMERGENCY --> REVIEW[Governance / Audit]
+    EMERGENCY --> REVIEW[ガバナンス / 監査]
     REVIEW --> SC[スマートコントラクトs]
 ```
 
@@ -644,21 +644,21 @@ flowchart LR
 
 ---
 
-## 4.20 API Layer
+## 4.20 API レイヤー
 
 各レイヤーを疎結合に保つため、API境界を明確にする。
 
 ```mermaid
 flowchart LR
-    CLIENT[Clients]
-    CLIENT --> API[API Gateway]
+    CLIENT[クライアント]
+    CLIENT --> API[API ゲートウェイ]
 
-    API --> AUTH[Auth Service]
-    API --> META[Metadata Service]
-    API --> RIGHTS[Rights Service]
-    API --> DISC[Discovery Service]
-    API --> PLAY[Playback Service]
-    API --> GOV[Governance Service]
+    API --> AUTH[認証サービス]
+    API --> META[メタデータサービス]
+    API --> RIGHTS[権利サービス]
+    API --> DISC[発見サービス]
+    API --> PLAY[再生サービス]
+    API --> GOV[ガバナンスサービス]
 ```
 
 スマートコントラクトへ直接アクセスする必要がない機能までオンチェーンAPIに依存させない。
@@ -671,20 +671,20 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    PLAYER[Playback]
-    RIGHTS[Rights Update]
-    GOV[Governance]
-    PAYMENT[Payment]
+    PLAYER[再生]
+    RIGHTS[権利更新]
+    GOV[ガバナンス]
+    PAYMENT[決済]
 
-    PLAYER --> BUS[Event Bus]
+    PLAYER --> BUS[イベント Bus]
     RIGHTS --> BUS
     GOV --> BUS
     PAYMENT --> BUS
 
-    BUS --> ANALYTICS[Analytics]
-    BUS --> ORACLE[Usage Oracle]
-    BUS --> AUDIT[Audit]
-    BUS --> NOTIFY[Notifications]
+    BUS --> ANALYTICS[分析]
+    BUS --> ORACLE[利用実績オラクル]
+    BUS --> AUDIT[監査]
+    BUS --> NOTIFY[通知]
 ```
 
 イベント駆動により、各サービスを独立に拡張しやすくする。
@@ -697,12 +697,12 @@ Creator First Platform では、すべてのコンポーネントを同一の信
 
 ```mermaid
 flowchart TD
-    INTERNET[Internet]
-    INTERNET --> EDGE[CDN / WAF / API Gateway]
-    EDGE --> APP[Application Services]
-    APP --> DATA[Private Data Layer]
-    APP --> ORACLE[Oracle Layer]
-    ORACLE --> CHAIN[Blockchain]
+    INTERNET[インターネット]
+    INTERNET --> EDGE[CDN / WAF / API ゲートウェイ]
+    EDGE --> APP[アプリケーションサービス]
+    APP --> DATA[非公開データレイヤー]
+    APP --> ORACLE[オラクルレイヤー]
+    ORACLE --> CHAIN[ブロックチェーン]
 ```
 
 特に、
@@ -725,12 +725,12 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    PLAYER[Player]
-    PLAYER --> STREAM[Streaming Platform]
-    STREAM --> MUSIC[Music Playback]
+    PLAYER[プレーヤー]
+    PLAYER --> STREAM[ストリーミングプラットフォーム]
+    STREAM --> MUSIC[音楽再生]
 
-    STREAM --> ASYNC[Async Usage Processing]
-    ASYNC --> CHAIN[Blockchain]
+    STREAM --> ASYNC[非同期利用実績処理]
+    ASYNC --> CHAIN[ブロックチェーン]
 ```
 
 ブロックチェーンや分配コントラクトが一時停止しても、法的・契約的に許される範囲で音楽再生サービス自体は継続できる設計とする。
@@ -758,7 +758,7 @@ flowchart LR
 - 処理性能
 - ステーブルコイン対応
 - 開発環境
-- Account Abstraction
+- アカウント抽象化
 - ZK技術との親和性
 - 長期的なエコシステム
 - 規制・事業リスク
@@ -767,14 +767,14 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    REQUIRE[Requirements]
-    REQUIRE --> SEC[Security]
-    REQUIRE --> COST[Cost]
-    REQUIRE --> SCALE[Scalability]
+    REQUIRE[要件]
+    REQUIRE --> SEC[セキュリティ]
+    REQUIRE --> COST[コスト]
+    REQUIRE --> SCALE[拡張性]
     REQUIRE --> UX[ユーザ体験]
-    REQUIRE --> ECOSYSTEM[Ecosystem]
+    REQUIRE --> ECOSYSTEM[エコシステム]
 
-    SEC --> SELECT[Chain Selection]
+    SEC --> SELECT[チェーン Selection]
     COST --> SELECT
     SCALE --> SELECT
     UX --> SELECT
@@ -791,36 +791,36 @@ EVM互換チェーンを有力候補とするが、ホワイトペーパー段�
 
 ```mermaid
 flowchart LR
-    P1[Phase 1<br/>Conventional DSP + Auditability]
-    P2[Phase 2<br/>スマートコントラクト Distribution]
-    P3[Phase 3<br/>Usage Oracle / ZK]
-    P4[Phase 4<br/>DAO Governance]
+    P1[フェーズ 1<br/>従来型DSP + 監査可能性]
+    P2[フェーズ 2<br/>スマートコントラクト分配]
+    P3[フェーズ 3<br/>利用実績オラクル / ZK]
+    P4[フェーズ 4<br/>DAO ガバナンス]
 
     P1 --> P2 --> P3 --> P4
 ```
 
-### Phase 1
+### フェーズ 1
 
 - 音楽配信
 - 音楽クリエーター登録
-- Rights Registry
+- 権利登録台帳
 - 利用実績
 - 法人による分配
 - 監査可能なログ
 
-### Phase 2
+### フェーズ 2
 
 - スマートコントラクト分配
 - オンチェーン監査
-- Growth Pool
+- 成長支援プール
 
-### Phase 3
+### フェーズ 3
 
-- Usage Oracle
+- 利用実績オラクル
 - 不正検出高度化
-- ZK Proof
+- ZK 証明
 
-### Phase 4
+### フェーズ 4
 
 - 音楽クリエータ院議会
 - ユーザ院議会
@@ -837,23 +837,23 @@ Creator First Platform の基本的な処理を、一つの流れとして示す
 ```mermaid
 sequenceDiagram
     participant C as 音楽クリエーター
-    participant Corp as Corporation
-    participant R as Rights Registry
-    participant S as Streaming Platform
-    participant U as Listener
-    participant O as Usage Oracle
+    participant Corp as 株式会社
+    participant R as 権利登録台帳
+    participant S as ストリーミングプラットフォーム
+    participant U as ユーザ
+    participant O as 利用実績オラクル
     participant SC as スマートコントラクト
 
-    C->>Corp: Rights declaration / contract
-    Corp->>R: Register verified rights
-    Corp->>S: Publish track
-    U->>S: Request playback
-    S-->>U: Audio stream
-    S->>O: Usage data
-    O->>O: Verify / aggregate
-    O->>SC: Usage commitment / proof
-    R->>SC: Rights / split reference
-    SC->>C: Distribution
+    C->>Corp: 権利 declaration / contract
+    Corp->>R: 登録簿 verified rights
+    Corp->>S: 公開 track
+    U->>S: リクエスト playback
+    S-->>U: 音声 stream
+    S->>O: 利用実績 data
+    O->>O: 検証 / aggregate
+    O->>SC: 利用実績 commitment / proof
+    R->>SC: 権利 / split reference
+    SC->>C: 分配
 ```
 
 これは最終実装を固定するものではないが、各レイヤーの責任境界を示す基本モデルとなる。
@@ -864,35 +864,35 @@ sequenceDiagram
 
 Creator First Platform の技術構成は、次の原則に従う。
 
-### Right Tool for the Right Layer
+### 各レイヤーに適した技術
 
 すべてをブロックチェーンへ置かない。
 
-### Streaming First
+### ストリーミング優先
 
 音楽再生の性能と可用性を最優先する。
 
-### Verifiable Money
+### 検証可能な資金
 
 価値分配は可能な限り検証可能にする。
 
-### Privacy by Design
+### プライバシー・バイ・デザイン
 
 利用履歴や個人情報を不必要に公開しない。
 
-### Rights before Distribution
+### 分配より権利を優先
 
 権利確認なしに自動分配しない。
 
-### Governance over Critical Rules
+### 重要ルールをガバナンスで統治
 
 重要な経済ルールは運営企業だけで変更しない。
 
-### Corporate Responsibility
+### 法人責任
 
 法人が現実世界での責任を負う。
 
-### Progressive Decentralization
+### 段階的分散化
 
 必要性が確認された部分から段階的に分散化する。
 
@@ -902,19 +902,19 @@ Creator First Platform の技術構成は、次の原則に従う。
 
 Creator First Platform の技術設計は、
 
-> **ブロックチェーンを中心にサービスを作るのではなく、音楽クリエーター中心 の制度を実現するために必要な技術を組み合わせる**
+> **ブロックチェーンを中心にサービスを作るのではなく、音楽クリエーター中心の制度を実現するために必要な技術を組み合わせる**
 
 ことを基本とする。
 
 ```mermaid
 flowchart LR
     USER[ユーザ体験]
-    CLOUD[Cloud Streaming]
-    RIGHTS[Rights]
-    ORACLE[Usage Verification]
+    CLOUD[クラウドストリーミング]
+    RIGHTS[権利]
+    ORACLE[利用実績検証]
     CHAIN[スマートコントラクトs]
-    GOV[Governance]
-    CORP[Corporate Responsibility]
+    GOV[ガバナンス]
+    CORP[法人責任]
 
     USER --> CLOUD
     CLOUD --> ORACLE
@@ -927,9 +927,9 @@ flowchart LR
 
 クラウドは音楽を届ける。
 
-Rights Registry は権利を接続する。
+権利登録台帳は権利を接続する。
 
-Usage Oracle は利用を検証する。
+利用実績オラクルは利用を検証する。
 
 スマートコントラクトは価値を分配する。
 

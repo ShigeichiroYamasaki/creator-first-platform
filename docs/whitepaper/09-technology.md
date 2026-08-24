@@ -2,7 +2,7 @@
 description: 音楽配信性能、プライバシー、検証可能性、透明な分配を実現するオフチェーン・オンチェーン技術設計。
 ---
 
-# 9. 技術 — Technology
+# 9. 技術
 
 ## 9.1 本章の目的
 
@@ -29,12 +29,12 @@ Creator First Platform の技術設計は、ブロックチェーンを使うこ
 
 ```mermaid
 flowchart TD
-    APP[Player / Web App]
-    API[Application Services]
-    DATA[Off-chain Data]
-    ZK[ZK Proof Layer]
+    APP[プレーヤー / ウェブアプリ]
+    API[アプリケーションサービス]
+    DATA[オフチェーンデータ]
+    ZK[ZK 証明レイヤー]
     SC[スマートコントラクトs]
-    CHAIN[Blockchain]
+    CHAIN[ブロックチェーン]
 
     APP --> API
     API --> DATA
@@ -47,27 +47,27 @@ flowchart TD
 
 ## 9.2 技術設計の原則
 
-### Appropriate Decentralization
+### 適切な分散化
 
 分散化が価値を持つ部分だけを分散化する。
 
-### Verifiability
+### 検証可能性
 
 重要な計算結果を第三者が検証できるようにする。
 
-### Privacy by Design
+### プライバシー・バイ・デザイン
 
 再生履歴などの個人データを不用意に公開しない。
 
-### Open Protocol
+### オープンプロトコル
 
 重要なプロトコル仕様とスマートコントラクトを公開する。
 
-### Upgradeability with Governance
+### ガバナンスを伴うアップグレード可能性
 
 アップグレード可能性を残しつつ、一企業が自由に変更できる構造にはしない。
 
-### Technology Neutrality
+### 技術的中立性
 
 特定のブロックチェーンやクラウドへ永久に依存しない。
 
@@ -79,15 +79,15 @@ Creator First Platform は大きく次のレイヤーから構成する。
 
 ```mermaid
 flowchart TD
-    CLIENT[Client Layer<br/>Player / Web / Mobile]
-    SERVICE[Service Layer<br/>API / Search / Discovery]
-    RIGHTS[Rights Layer<br/>音楽クリエーター / Rights Metadata]
-    USAGE[Usage Layer<br/>Playback Events]
-    PROOF[Proof Layer<br/>ZK / Aggregation]
-    CONTRACT[Protocol Layer<br/>スマートコントラクトs]
-    SETTLE[Settlement Layer<br/>Payment / Stablecoin]
-    GOV[Governance Layer]
-    CORP[Corporate / Legal Layer]
+    CLIENT[クライアントレイヤー<br/>プレーヤー / ウェブ / モバイル]
+    SERVICE[サービスレイヤー<br/>API / 検索 / 発見]
+    RIGHTS[権利レイヤー<br/>音楽クリエーター / 権利メタデータ]
+    USAGE[利用実績レイヤー<br/>再生イベント]
+    PROOF[証明レイヤー<br/>ZK / 集約]
+    CONTRACT[プロトコルレイヤー<br/>スマートコントラクトs]
+    SETTLE[精算レイヤー<br/>決済 / ステーブルコイン]
+    GOV[ガバナンスレイヤー]
+    CORP[法人 / 法務レイヤー]
 
     CLIENT --> SERVICE
     SERVICE --> RIGHTS
@@ -105,36 +105,36 @@ flowchart TD
 
 ---
 
-## 9.4 Client Layer
+## 9.4 クライアントレイヤー
 
 ユーザはブロックチェーンを意識せず音楽を利用できることが望ましい。
 
-Client Layer は、
+クライアントレイヤーは、
 
-- Web Player
-- Mobile App
-- Desktop App
+- ウェブプレーヤー
+- モバイルアプリ
+- Desktop アプリ
 - 音楽クリエーターダッシュボード
-- Governance UI
+- ガバナンス UI
 
 などから構成する。
 
 ```mermaid
 flowchart LR
-    USER[Listener]
+    USER[ユーザ]
     CREATOR[音楽クリエーター]
     MEMBER[ガバナンス議員]
 
-    USER --> PLAYER[Player]
+    USER --> PLAYER[プレーヤー]
     CREATOR --> DASH[音楽クリエーターダッシュボード]
-    MEMBER --> GOVUI[Governance UI]
+    MEMBER --> GOVUI[ガバナンス UI]
 
-    PLAYER --> API[Platform API]
+    PLAYER --> API[プラットフォーム API]
     DASH --> API
     GOVUI --> API
 ```
 
-ウォレット操作やGas Feeを通常の音楽再生ごとに要求しない。
+ウォレット操作やガス手数料を通常の音楽再生ごとに要求しない。
 
 ---
 
@@ -144,7 +144,7 @@ flowchart LR
 
 音楽コンテンツは、
 
-- Object Storage
+- オブジェクトストレージ
 - CDN
 - 必要に応じた分散ストレージ
 
@@ -152,22 +152,22 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    AUDIO[Audio Master]
-    STORAGE[Object Storage]
+    AUDIO[音声原盤]
+    STORAGE[オブジェクトストレージ]
     CDN[CDN]
-    PLAYER[Player]
+    PLAYER[プレーヤー]
 
     AUDIO --> STORAGE --> CDN --> PLAYER
 
-    AUDIO --> HASH[Content Hash]
-    HASH --> META[Rights / Content Metadata]
+    AUDIO --> HASH[コンテンツハッシュ]
+    HASH --> META[権利 / コンテンツメタデータ]
 ```
 
 オンチェーンには必要に応じてコンテンツハッシュや識別子を記録し、データと権利情報の対応を検証できるようにする。
 
 ---
 
-## 9.6 Content Identifier
+## 9.6 コンテンツ識別子
 
 作品・録音・権利情報を単純なファイル名だけで管理しない。
 
@@ -191,9 +191,9 @@ $$
 
 ---
 
-## 9.7 Rights Layer
+## 9.7 権利レイヤー
 
-Rights Layer は、
+権利レイヤーは、
 
 > **誰が、どの作品について、どの権利を持ち、どの比率で分配を受けるか**
 
@@ -201,9 +201,9 @@ Rights Layer は、
 
 ```mermaid
 flowchart TD
-    WORK[Work]
-    RECORDING[Recording]
-    RIGHTS[Rights Metadata]
+    WORK[作業]
+    RECORDING[原盤]
+    RIGHTS[権利メタデータ]
 
     WORK --> RIGHTS
     RECORDING --> RIGHTS
@@ -212,7 +212,7 @@ flowchart TD
     RIGHTS --> B[音楽クリエーターB]
     RIGHTS --> C[権利者 C]
 
-    RIGHTS --> CONTRACT[Distribution Contract]
+    RIGHTS --> CONTRACT[分配コントラクト]
 ```
 
 権利情報そのものをすべてオンチェーンへ公開する必要はない。
@@ -221,7 +221,7 @@ flowchart TD
 
 ---
 
-## 9.8 Rights Split
+## 9.8 権利分割
 
 作品 $i$ の分配対象額を $D_i$ とし、権利者 $k$ の分配比率を $s_{i,k}$ とする。
 
@@ -241,7 +241,7 @@ $$
 
 ---
 
-## 9.9 Usage Layer
+## 9.9 利用実績レイヤー
 
 音楽再生を一回ごとにブロックチェーンへ記録する方式は採用しない。
 
@@ -256,11 +256,11 @@ $$
 
 ```mermaid
 flowchart LR
-    PLAYER[Player]
-    EVENT[Playback Event]
-    PIPE[Event Pipeline]
-    STORE[Usage Store]
-    AGG[Aggregation]
+    PLAYER[プレーヤー]
+    EVENT[再生イベント]
+    PIPE[イベントパイプライン]
+    STORE[利用実績保存]
+    AGG[集約]
 
     PLAYER --> EVENT --> PIPE --> STORE --> AGG
 ```
@@ -269,17 +269,17 @@ flowchart LR
 
 ---
 
-## 9.10 Playback Event
+## 9.10 再生イベント
 
 再生イベントには例えば、
 
-- Track ID
+- 楽曲 ID
 - 匿名化・仮名化された利用主体情報
 - 再生開始
 - 再生時間
 - 完了率
-- Client Integrity 情報
-- Event ID
+- クライアント完全性情報
+- イベント ID
 
 などを含めることができる。
 
@@ -291,19 +291,19 @@ flowchart LR
 
 ---
 
-## 9.11 Usage Oracle
+## 9.11 利用実績オラクル
 
 スマートコントラクトは、現実世界で誰がどの曲を聴いたかを直接知ることができない。
 
-そのため Usage Oracle が必要になる。
+そのため利用実績オラクルが必要になる。
 
 ```mermaid
 flowchart LR
-    PLAYER[Player]
-    EVENTS[Usage Events]
-    VERIFY[Validation]
-    AGG[Aggregation]
-    ORACLE[Usage Oracle]
+    PLAYER[プレーヤー]
+    EVENTS[利用実績イベント]
+    VERIFY[検証]
+    AGG[集約]
+    ORACLE[利用実績オラクル]
     CONTRACT[スマートコントラクト]
 
     PLAYER --> EVENTS --> VERIFY --> AGG --> ORACLE --> CONTRACT
@@ -319,11 +319,11 @@ flowchart LR
 
 ---
 
-## 9.12 Commitments
+## 9.12 コミットメント
 
-大量の利用データそのものをオンチェーンへ送る代わりに、データ集合への Commitment を作る。
+大量の利用データそのものをオンチェーンへ送る代わりに、データ集合へのコミットメントを作る。
 
-例えば利用イベント集合を Merkle Tree にまとめ、そのRootを、
+例えば利用イベント集合を Merkle Tree にまとめ、そのルートを、
 
 $$
 R = \operatorname{MerkleRoot}(e_1,e_2,\ldots,e_n)
@@ -333,29 +333,29 @@ $$
 
 ```mermaid
 flowchart TD
-    E1[Event 1]
-    E2[Event 2]
-    E3[Event 3]
-    EN[Event n]
+    E1[イベント 1]
+    E2[イベント 2]
+    E3[イベント 3]
+    EN[イベント n]
 
     E1 --> TREE[Merkle Tree]
     E2 --> TREE
     E3 --> TREE
     EN --> TREE
 
-    TREE --> ROOT[Merkle Root]
-    ROOT --> CHAIN[Blockchain]
+    TREE --> ROOT[マークルルート]
+    ROOT --> CHAIN[ブロックチェーン]
 ```
 
-Rootを記録すれば、後から特定データがコミットされた集合に含まれていたことを証明できる。
+ルートを記録すれば、後から特定データがコミットされた集合に含まれていたことを証明できる。
 
-ただし、Merkle Rootだけでは「集計計算が正しかった」ことまでは証明できない。
+ただし、マークルルートだけでは「集計計算が正しかった」ことまでは証明できない。
 
 ---
 
-## 9.13 Zero-Knowledge Proof
+## 9.13 ゼロ知識証明
 
-Zero-Knowledge Proof（ZKP）は、ある命題が正しいことを、その根拠となる秘密情報をすべて公開せずに証明する技術である。
+ゼロ知識証明（ZKP）は、ある命題が正しいことを、その根拠となる秘密情報をすべて公開せずに証明する技術である。
 
 Creator First Platform では、
 
@@ -365,11 +365,11 @@ Creator First Platform では、
 
 ```mermaid
 flowchart LR
-    PRIVATE[Private Usage Data]
-    RULE[Public Rules]
-    PROVER[Prover]
-    PROOF[ZK Proof]
-    VERIFIER[Verifier]
+    PRIVATE[非公開利用実績データ]
+    RULE[公開ルール]
+    PROVER[証明者]
+    PROOF[ZK 証明]
+    VERIFIER[検証者]
 
     PRIVATE --> PROVER
     RULE --> PROVER
@@ -399,7 +399,7 @@ flowchart LR
 
 という点である。
 
-端末やアカウントが偽のイベントを生成する問題には、別途 Client Integrity、不正検出、Sybil Resistance 等が必要である。
+端末やアカウントが偽のイベントを生成する問題には、別途クライアント完全性、不正検出、シビル耐性等が必要である。
 
 ---
 
@@ -425,18 +425,18 @@ $$
 
 ```mermaid
 flowchart LR
-    X[Public Input x]
-    W[Private Witness w]
+    X[公開入力 x]
+    W[非公開 Witness w]
     F[Computation F]
-    Y[Result y]
-    P[Proof]
+    Y[結果 y]
+    P[証明]
 
     X --> F
     W --> F
     F --> Y
     F --> P
 
-    X --> V[Verifier]
+    X --> V[検証者]
     Y --> V
     P --> V
 ```
@@ -447,14 +447,14 @@ flowchart LR
 
 zk-STARK は、
 
-**Zero-Knowledge Scalable Transparent Argument of Knowledge**
+**ゼロ知識拡張可能透明 Argument of Knowledge**
 
 の略である。
 
 Creator First Platform にとって重要な特徴は、
 
 1. 大規模計算に適した証明方式
-2. Trusted Setupを必要としない
+2. 信頼された Setupを必要としない
 3. ハッシュ関数を中心とした構成が可能
 4. 将来的な耐量子性の観点でも有力
 
@@ -462,13 +462,13 @@ Creator First Platform にとって重要な特徴は、
 
 ```mermaid
 flowchart TD
-    COMPUTE[Large Off-chain Computation]
-    TRACE[Execution Trace]
-    AIR[AIR Constraints]
-    COMMIT[Polynomial Commitments]
+    COMPUTE[Large オフチェーン Computation]
+    TRACE[実行トレース]
+    AIR[AIR 制約]
+    COMMIT[多項式 Commitments]
     FRI[FRI]
-    PROOF[STARK Proof]
-    VERIFY[Verification]
+    PROOF[STARK 証明]
+    VERIFY[検証]
 
     COMPUTE --> TRACE
     TRACE --> AIR
@@ -482,7 +482,7 @@ flowchart TD
 
 ## 9.17 STARK の基本的な考え方
 
-STARKでは、プログラムの実行を巨大な **Execution Trace** として表現する。
+STARKでは、プログラムの実行を巨大な **実行トレース** として表現する。
 
 例えば再生イベントを集計する計算が、
 
@@ -503,11 +503,11 @@ $$
 
 ---
 
-## 9.18 Execution Trace
+## 9.18 実行トレース
 
 単純な例として、
 
-| Step | Valid Play | Total |
+| Step | 有効 Play | Total |
 | ---: | ---: | ---: |
 | 0 | — | 0 |
 | 1 | 1 | 1 |
@@ -529,11 +529,11 @@ $$
 
 ---
 
-## 9.19 AIR — Algebraic Intermediate Representation
+## 9.19 AIR — 代数的中間表現
 
 STARKでは、計算が正しいことを代数的な制約として表現する。
 
-これを **AIR — Algebraic Intermediate Representation** と呼ぶ。
+これを **AIR — Algebraic Intermediate 代表性** と呼ぶ。
 
 例えば、
 
@@ -551,9 +551,9 @@ $$
 
 ```mermaid
 flowchart LR
-    PROGRAM[Program Logic]
-    TRACE[Execution Trace]
-    CONSTRAINT[Polynomial Constraints]
+    PROGRAM[計画 Logic]
+    TRACE[実行トレース]
+    CONSTRAINT[多項式制約]
     AIR[AIR]
 
     PROGRAM --> TRACE
@@ -561,13 +561,13 @@ flowchart LR
     CONSTRAINT --> AIR
 ```
 
-STARKは、Execution Trace全体を公開する代わりに、この制約が正しく満たされていることを確率的・暗号学的に検証可能にする。
+STARKは、実行トレース全体を公開する代わりに、この制約が正しく満たされていることを確率的・暗号学的に検証可能にする。
 
 ---
 
-## 9.20 多項式としてのExecution Trace
+## 9.20 多項式としての実行トレース
 
-Execution Trace の各列を有限体上の多項式として扱う。
+実行トレースの各列を有限体上の多項式として扱う。
 
 ある列の値、
 
@@ -587,29 +587,29 @@ $$
 
 ---
 
-## 9.21 Merkle Commitment
+## 9.21 Merkle コミットメント
 
 証明者は、多項式の評価値などを Merkle Tree にコミットする。
 
 ```mermaid
 flowchart TD
-    VALUES[Polynomial Evaluations]
+    VALUES[多項式 Evaluations]
     TREE[Merkle Tree]
-    ROOT[Merkle Root]
+    ROOT[マークルルート]
 
     VALUES --> TREE --> ROOT
 
-    QUERY[Verifier Query] --> PATH[Merkle Proof]
+    QUERY[検証者 Query] --> PATH[Merkle 証明]
     PATH --> ROOT
 ```
 
-証明者は後から都合の良い値へ変更できず、検証者は一部の値だけを問い合わせてCommitmentとの整合性を確認できる。
+証明者は後から都合の良い値へ変更できず、検証者は一部の値だけを問い合わせてコミットメントとの整合性を確認できる。
 
 ---
 
 ## 9.22 FRI
 
-STARKの中心技術の一つが **FRI — Fast Reed-Solomon Interactive Oracle Proof of Proximity** である。
+STARKの中心技術の一つが **FRI — 迅速 Reed-Solomon Interactive オラクル証明 of Proximity** である。
 
 FRIは、大まかに言えば、
 
@@ -619,11 +619,11 @@ FRIは、大まかに言えば、
 
 ```mermaid
 flowchart LR
-    POLY[Polynomial Evaluations]
+    POLY[多項式 Evaluations]
     FOLD1[FRI Folding]
     FOLD2[FRI Folding]
-    SMALL[Small Polynomial]
-    CHECK[Verifier Checks]
+    SMALL[Small 多項式]
+    CHECK[検証者検査]
 
     POLY --> FOLD1 --> FOLD2 --> SMALL --> CHECK
 ```
@@ -648,16 +648,16 @@ $$
 r = H(C_1,C_2,\ldots,C_k)
 $$
 
-のように、これまでのCommitmentからチャレンジ $r$ を導出する。
+のように、これまでのコミットメントからチャレンジ $r$ を導出する。
 
 これにより、
 
 ```mermaid
 flowchart LR
     COMMIT[Commitments]
-    HASH[Cryptographic Hash]
-    CHALLENGE[Challenge]
-    PROOF[Non-interactive Proof]
+    HASH[Cryptographic ハッシュ]
+    CHALLENGE[異議申立て]
+    PROOF[Non-interactive 証明]
 
     COMMIT --> HASH --> CHALLENGE --> PROOF
 ```
@@ -668,16 +668,16 @@ flowchart LR
 
 ## 9.24 なぜ STARK が Creator First Platform に適するのか
 
-Usage Oracle では、月間・日次などで非常に大量のイベントを処理する可能性がある。
+利用実績オラクルでは、月間・日次などで非常に大量のイベントを処理する可能性がある。
 
 すべてのイベントをスマートコントラクトで再計算するのは非現実的である。
 
 ```mermaid
 flowchart TD
-    EVENTS[Millions / Billions of Events]
-    OFF[Off-chain Computation]
-    STARK[STARK Proof]
-    CHAIN[On-chain Verification]
+    EVENTS[Millions / Billions of イベント]
+    OFF[オフチェーン Computation]
+    STARK[STARK 証明]
+    CHAIN[オンチェーン検証]
 
     EVENTS --> OFF
     OFF --> STARK
@@ -692,22 +692,22 @@ STARKを利用すれば、
 
 ---
 
-## 9.25 Trusted Setup を必要としない
+## 9.25 信頼されたセットアップを必要としない
 
-一部のZK証明系では、初期パラメータ生成に Trusted Setup が必要になる場合がある。
+一部のZK証明系では、初期パラメータ生成に信頼された Setup が必要になる場合がある。
 
 STARKは基本的にそのような秘密パラメータ生成を必要としない。
 
 ```mermaid
 flowchart LR
     SNARK[Some SNARK Systems]
-    SETUP[Trusted Setup]
-    PARAM[Public Parameters]
+    SETUP[信頼された Setup]
+    PARAM[公開パラメータ]
 
     SNARK --> SETUP --> PARAM
 
     STARK[STARK]
-    HASH[Public Hash-based Construction]
+    HASH[公開 Hash-based Construction]
 
     STARK --> HASH
 ```
@@ -718,7 +718,7 @@ flowchart LR
 
 ことは重要な設計上の利点となる。
 
-なお、SNARKにもTrusted Setupを必要としない方式が存在するため、これはSNARK一般との絶対的な差ではない。
+なお、SNARKにも信頼された Setupを必要としない方式が存在するため、これはSNARK一般との絶対的な差ではない。
 
 ---
 
@@ -736,17 +736,17 @@ STARKは、楕円曲線ペアリングではなく主に暗号学的ハッシュ
 
 ```mermaid
 flowchart TD
-    STARK[STARK Proof]
-    HASH[Hash Security]
-    PQ[Post-Quantum Direction]
+    STARK[STARK 証明]
+    HASH[ハッシュセキュリティ]
+    PQ[Post-Quantum 方向性]
 
     STARK --> HASH --> PQ
 
-    SYSTEM[Whole Platform]
+    SYSTEM[Whole プラットフォーム]
     SIGN[Signatures]
-    WALLET[Wallet Keys]
+    WALLET[ウォレット Keys]
     TLS[TLS]
-    CHAIN[Blockchain]
+    CHAIN[ブロックチェーン]
 
     SYSTEM --> SIGN
     SYSTEM --> WALLET
@@ -763,7 +763,7 @@ STARKには利点だけでなく課題もある。
 一般に、
 
 - 証明サイズが大きくなりやすい
-- Prover計算量が大きい
+- 証明者計算量が大きい
 - 実装が複雑
 - 証明生成インフラが必要
 - オンチェーン検証コストは対象チェーンに依存する
@@ -773,10 +773,10 @@ STARKには利点だけでなく課題もある。
 ```mermaid
 flowchart LR
     STARK[zk-STARK]
-    STARK --> PLUS[Transparency / Scalability]
-    STARK --> PLUS2[Hash-based Security]
+    STARK --> PLUS[透明性 / 拡張性]
+    STARK --> PLUS2[Hash-based セキュリティ]
     STARK --> MINUS[Larger Proofs]
-    STARK --> MINUS2[Prover Cost]
+    STARK --> MINUS2[証明者コスト]
 ```
 
 したがって「STARKだから採用」ではなく、SNARK等と実測比較した上で選択する。
@@ -793,8 +793,8 @@ Creator First Platform は証明方式をホワイトペーパー段階で固定
 | --- | --- | --- |
 | 証明サイズ | 小さい方式が多い | 比較的大きい |
 | 検証 | 非常に効率的な方式がある | 効率的 |
-| Trusted Setup | 方式による | 原則不要 |
-| Prover | 方式による | 大規模計算向けだが重い |
+| 信頼された Setup | 方式による | 原則不要 |
+| 証明者 | 方式による | 大規模計算向けだが重い |
 | 主な暗号要素 | 楕円曲線等を使う方式が多い | ハッシュ中心 |
 | 耐量子性 | 方式依存 | 有力 |
 | 適用 | オンチェーン検証等 | 大規模計算・透明性 |
@@ -805,7 +805,7 @@ Creator First Platform は証明方式をホワイトペーパー段階で固定
 
 - 証明生成時間
 - 証明サイズ
-- 検証Gas
+- 検証ガス
 - 開発成熟度
 - 監査可能性
 - ライブラリの安全性
@@ -815,30 +815,30 @@ Creator First Platform は証明方式をホワイトペーパー段階で固定
 
 ---
 
-## 9.29 Usage Proof の構造
+## 9.29 利用実績証明の構造
 
-Creator First Platform で想定するUsage Proofを概念化すると、
+Creator First Platform で想定する利用実績証明を概念化すると、
 
 ```mermaid
 flowchart TD
-    RAW[Playback Events]
-    COMMIT[Committed Event Set]
-    VALID[Validation Rules]
-    AGG[Usage Aggregation]
-    DIST[Distribution Calculation]
+    RAW[再生イベント]
+    COMMIT[Committed イベント集合]
+    VALID[検証ルール]
+    AGG[利用実績集約]
+    DIST[分配計算]
 
     RAW --> COMMIT
     COMMIT --> VALID
     VALID --> AGG
     AGG --> DIST
 
-    COMMIT --> PROVER[ZK Prover]
+    COMMIT --> PROVER[ZK 証明者]
     VALID --> PROVER
     AGG --> PROVER
     DIST --> PROVER
 
-    PROVER --> PROOF[Usage Proof]
-    PROOF --> VERIFY[On-chain Verifier]
+    PROVER --> PROOF[利用実績証明]
+    PROOF --> VERIFY[オンチェーン検証者]
 ```
 
 となる。
@@ -847,20 +847,20 @@ flowchart TD
 
 ---
 
-## 9.30 Public Input と Private Witness
+## 9.30 公開入力と秘密入力
 
-Usage Proof の設計では、何を公開し、何を秘密にするかが重要である。
+利用実績証明の設計では、何を公開し、何を秘密にするかが重要である。
 
-### Public Input の例
+### 公開入力の例
 
 - 集計期間
-- Usage Dataset Commitment
-- 集計結果Root
-- 分配Root
-- Protocol Version
-- Rule Hash
+- 利用実績 Dataset コミットメント
+- 集計結果ルート
+- 分配ルート
+- プロトコル版
+- ルールハッシュ
 
-### Private Witness の例
+### 秘密入力の例
 
 - 個々の再生イベント
 - 仮名化されたユーザ情報
@@ -869,10 +869,10 @@ Usage Proof の設計では、何を公開し、何を秘密にするかが重�
 
 ```mermaid
 flowchart LR
-    PUBLIC[Public Inputs]
-    PRIVATE[Private Witness]
-    CIRCUIT[Proof Program]
-    PROOF[Proof]
+    PUBLIC[公開 Inputs]
+    PRIVATE[非公開 Witness]
+    CIRCUIT[証明プログラム]
+    PROOF[証明]
 
     PUBLIC --> CIRCUIT
     PRIVATE --> CIRCUIT
@@ -881,7 +881,7 @@ flowchart LR
 
 ---
 
-## 9.31 Rule Hash
+## 9.31 ルールハッシュ
 
 どのルールで計算された証明なのかを明確にする。
 
@@ -895,11 +895,11 @@ $$
 
 ```mermaid
 flowchart LR
-    GOV[Governance]
-    SPEC[Approved Specification]
-    CODE[Proof Program]
-    HASH[Rule Hash]
-    PROOF[Usage Proof]
+    GOV[ガバナンス]
+    SPEC[承認済み仕様]
+    CODE[証明プログラム]
+    HASH[ルールハッシュ]
+    PROOF[利用実績証明]
 
     GOV --> SPEC --> CODE --> HASH
     HASH --> PROOF
@@ -909,7 +909,7 @@ flowchart LR
 
 ---
 
-## 9.32 分配Root
+## 9.32 分配ルート
 
 作品・権利者ごとの分配額を大量にオンチェーン保存する代わりに、分配表をMerkle Treeへまとめることができる。
 
@@ -919,38 +919,38 @@ flowchart TD
     D2[音楽クリエーターB : Amount]
     D3[音楽クリエーターC : Amount]
 
-    D1 --> TREE[Distribution Merkle Tree]
+    D1 --> TREE[分配 Merkle Tree]
     D2 --> TREE
     D3 --> TREE
 
-    TREE --> ROOT[Distribution Root]
+    TREE --> ROOT[分配ルート]
     ROOT --> CONTRACT[スマートコントラクト]
 ```
 
-各権利者は自分の分配額とMerkle Proofを提示してClaimする方式を検討できる。
+各権利者は自分の分配額とMerkle 証明を提示して主張する方式を検討できる。
 
 ---
 
-## 9.33 スマートコントラクト Layer
+## 9.33 スマートコントラクトレイヤー
 
 スマートコントラクトは、
 
 - 分配ルール
-- Pool管理
-- Rights Split
-- Governance Execution
-- Treasury
-- Claim
+- プール管理
+- 権利分割
+- ガバナンス実行
+- 資金庫
+- 主張
 
 などをモジュール化する。
 
 ```mermaid
 flowchart TD
-    TREASURY[Treasury]
-    DIST[Distribution]
-    RIGHTS[Rights Registry]
-    GOV[Governance]
-    VERIFY[Proof Verifier]
+    TREASURY[資金庫]
+    DIST[分配]
+    RIGHTS[権利登録台帳]
+    GOV[ガバナンス]
+    VERIFY[証明検証者]
 
     GOV --> TREASURY
     GOV --> DIST
@@ -965,19 +965,19 @@ flowchart TD
 
 ---
 
-## 9.34 Upgradeability
+## 9.34 アップグレード可能性
 
 サービス初期からコードを完全に不変にすると、バグ修正や法制度変更への対応が困難になる。
 
-一方、運営会社が管理者鍵一本で自由にアップグレードできるなら、Code Governanceの意味がなくなる。
+一方、運営会社が管理者鍵一本で自由にアップグレードできるなら、コードガバナンスの意味がなくなる。
 
 ```mermaid
 flowchart LR
-    PROPOSAL[Governance Proposal]
-    APPROVE[Two-House Approval]
-    REVIEW[Legal / Security Review]
-    TIME[Timelock]
-    UPGRADE[Contract Upgrade]
+    PROPOSAL[ガバナンス提案]
+    APPROVE[両院承認]
+    REVIEW[法務 / セキュリティレビュー]
+    TIME[タイムロック]
+    UPGRADE[コントラクトアップグレード]
 
     PROPOSAL --> APPROVE --> REVIEW --> TIME --> UPGRADE
 ```
@@ -986,9 +986,9 @@ flowchart LR
 
 ---
 
-## 9.35 Emergency Pause
+## 9.35 緊急停止
 
-重大な脆弱性が発見された場合には限定的なPause機能が必要になる可能性がある。
+重大な脆弱性が発見された場合には限定的な停止機能が必要になる可能性がある。
 
 ただし、
 
@@ -1000,11 +1000,11 @@ flowchart LR
 
 を明確にする。
 
-Emergency Keyを「何でもできる管理者鍵」にしない。
+緊急鍵を「何でもできる管理者鍵」にしない。
 
 ---
 
-## 9.36 Stablecoin Settlement
+## 9.36 ステーブルコイン精算
 
 ユーザのサブスクリプション支払いと音楽クリエーターへの分配には、価格変動の大きいETH等ではなく、JPYC等の承認済み法定通貨連動型ステーブルコインを使用する。
 
@@ -1012,41 +1012,41 @@ Emergency Keyを「何でもできる管理者鍵」にしない。
 
 ```mermaid
 flowchart LR
-    USER[Subscriber Wallet]
-    INTENT[Payment Intent]
-    STABLE[Approved JPYC等]
-    FINAL[Finalized Settlement]
-    TREASURY[Treasury / Accounting]
+    USER[Subscriber ウォレット]
+    INTENT[決済意思]
+    STABLE[承認済み JPYC等]
+    FINAL[確定済み精算]
+    TREASURY[資金庫 / 会計]
     CREATOR[音楽クリエーター]
 
     USER --> INTENT
     STABLE --> INTENT --> FINAL --> TREASURY --> CREATOR
 ```
 
-支払資産はChain、Contract Address、Issuer、Product、Decimals、利用目的および有効期間をRegistryで固定する。Testnetでは金銭的価値を持たない`MockJPYC`を使用し、実在JPYCとの交換可能性や償還請求権を表示しない。
+支払資産はチェーン、コントラクトアドレス、発行者、プロダクト、Decimals、利用目的および有効期間を登録台帳で固定する。テストネットでは金銭的価値を持たない`MockJPYC`を使用し、実在JPYCとの交換可能性や償還請求権を表示しない。
 
 ---
 
-## 9.37 Blockchain Abstraction
+## 9.37 ブロックチェーン抽象化
 
 ユーザに、
 
-- Network
-- Gas
+- ネットワーク
+- ガス
 - Nonce
-- Bridge
+- ブリッジ
 - RPC
 
 などを意識させない。
 
-特にSubscription PaymentとSBT発行では、Relayer、PaymasterまたはSmart AccountがGasをスポンサーできる。ネイティブトークンはネットワーク手数料にだけ使用し、Subscription Price、Early Supporter資格または音楽クリエーター分配額へ算入しない。
+特にサブスクリプション決済とSBT発行では、リレイヤー、ペイマスターまたはスマートアカウントがガスをスポンサーできる。ネイティブトークンはネットワーク手数料にだけ使用し、サブスクリプション価格、初期サポーター資格または音楽クリエーター分配額へ算入しない。
 
 ```mermaid
 flowchart LR
     USER[ユーザ]
-    APP[Music App]
-    ABSTRACTION[Blockchain Abstraction]
-    CHAIN[Blockchain]
+    APP[音楽アプリ]
+    ABSTRACTION[ブロックチェーン抽象化]
+    CHAIN[ブロックチェーン]
 
     USER --> APP --> ABSTRACTION --> CHAIN
 ```
@@ -1055,15 +1055,15 @@ flowchart LR
 
 ---
 
-## 9.38 Chain Selection
+## 9.38 チェーン選定
 
 対象チェーンは、
 
 - セキュリティ
 - 分散性
-- Gas Cost
-- ZK Verification Cost
-- Stablecoin Ecosystem
+- ガスコスト
+- ZK 検証コスト
+- ステーブルコインエコシステム
 - 開発環境
 - 長期的継続性
 - 法的・事業上の利用可能性
@@ -1074,9 +1074,9 @@ Ethereum L1だけでなくL2の利用も有力である。
 
 ```mermaid
 flowchart TD
-    PROTOCOL[音楽クリエーター中心 Protocol]
+    PROTOCOL[音楽クリエーター中心プロトコル]
     PROTOCOL --> L2[Ethereum L2]
-    L2 --> L1[Ethereum Settlement]
+    L2 --> L1[Ethereum 精算]
 ```
 
 ホワイトペーパー段階では特定L2へ永久固定しない。
@@ -1094,22 +1094,22 @@ flowchart TD
 - AI
 - 不正検出
 - 大規模集計
-- ZK Proof生成
+- ZK 証明生成
 
 ### オンチェーン
 
-- Proof Verification
-- Distribution Root
-- Treasury Rules
-- Governance Execution
-- Protocol Version
-- 必要な権利状態Commitment
+- 証明検証
+- 分配ルート
+- 資金庫ルール
+- ガバナンス実行
+- プロトコル版
+- 必要な権利状態コミットメント
 
 ```mermaid
 flowchart LR
-    OFF[Off-chain]
-    BRIDGE[Cryptographic Proof / Commitment]
-    ON[On-chain]
+    OFF[オフチェーン]
+    BRIDGE[Cryptographic 証明 / コミットメント]
+    ON[オンチェーン]
 
     OFF --> BRIDGE --> ON
 ```
@@ -1127,13 +1127,13 @@ flowchart LR
 ```mermaid
 flowchart TD
     CDN[CDN]
-    API[API Gateway / Load Balancer]
-    APP[Application Services]
-    DB[Database]
-    OBJ[Object Storage]
-    QUEUE[Event Queue]
-    ANALYTICS[Analytics / Usage]
-    PROVER[ZK Prover Cluster]
+    API[API ゲートウェイ / 負荷分散器]
+    APP[アプリケーションサービス]
+    DB[データベース]
+    OBJ[オブジェクトストレージ]
+    QUEUE[イベント一覧]
+    ANALYTICS[分析 / 利用実績]
+    PROVER[ZK 証明者 Cluster]
 
     CDN --> API --> APP
     APP --> DB
@@ -1147,18 +1147,18 @@ flowchart TD
 
 規模の拡大に応じて、証明生成基盤を独立してスケールできるようにする。
 
-### 9.40.1 Streaming GatewayとNavidrome Adapter
+### 9.40.1 ストリーミングゲートウェイとNavidrome アダプター
 
-最初のStreaming Vertical Sliceでは、音楽クリエーター中心 APIの一部としてStreaming Authorization Gatewayを配置し、NavidromeをPrivate Media Adapterとして接続する。
+最初のストリーミング最小縦断実装では、音楽クリエーター中心 APIの一部としてストリーミング認可ゲートウェイを配置し、Navidromeを非公開メディアアダプターとして接続する。
 
 ```mermaid
 flowchart LR
-    CLIENT[Player]
-    GATEWAY[Streaming Authorization Gateway]
-    CACHE[Redis Policy Cache]
-    INDEXER[Blockchain Indexer]
-    NAVI[Navidrome Adapter]
-    EVENT[Playback Event Queue]
+    CLIENT[プレーヤー]
+    GATEWAY[ストリーミング認可ゲートウェイ]
+    CACHE[Redis ポリシーキャッシュ]
+    INDEXER[ブロックチェーンインデクサー]
+    NAVI[Navidrome アダプター]
+    EVENT[再生イベント一覧]
 
     CLIENT --> GATEWAY
     GATEWAY --> CACHE
@@ -1167,39 +1167,39 @@ flowchart LR
     GATEWAY --> EVENT
 ```
 
-GatewayはTypeScript / Node.js等で実装できるが、言語とFrameworkはADR採択後のImplementation Decisionとする。Protocol上必要なのは特定Frameworkではなく、次のInterfaceとInvariantである。
+ゲートウェイはTypeScript / Node.js等で実装できるが、言語とFrameworkはADR採択後の実装決定とする。プロトコル上必要なのは特定Frameworkではなく、次のInterfaceと不変条件である。
 
-- Public Track IDとNavidrome Media IDを分離する
-- Playback SessionをAccount、Track、Plan、Rights VersionおよびExpiryへBindingする
-- Range ResponseをBufferせずBackpressure付きで転送する
-- Client Disconnect時にUpstreamを中断する
-- Navidrome固有のCookie、PasswordおよびAuthorizationを外部へ出さない
-- SubscriptionまたはRights判定不能時の新規再生をFail Closedとする
-- 再生ごとの同期Blockchain RPCを避ける
-- Navidrome Play CountだけをValid Usageにしない
+- 公開楽曲 IDとNavidrome メディア IDを分離する
+- 再生セッションをアカウント、楽曲、計画、権利版およびExpiryへ結付けする
+- 範囲対応をバッファせずBackpressure付きで転送する
+- クライアント Disconnect時にUpstreamを中断する
+- Navidrome固有のCookie、Passwordおよび認可を外部へ出さない
+- サブスクリプションまたは権利判定不能時の新規再生をFail Closedとする
+- 再生ごとの同期ブロックチェーン RPCを避ける
+- Navidrome 再生回数だけを有効利用実績にしない
 
-Blockchain Indexerは確認済みEventからSubscription / Rights Read Modelを構築する。Read Modelはchain ID、block number、block hash、transaction hashおよびlog indexを保持し、Chain Reorganizationへ対応する。
+ブロックチェーンインデクサーは確認済みイベントからサブスクリプション / 権利参照モデルを構築する。参照モデルはchain ID、block number、block hash、transaction hashおよびlog indexを保持し、チェーン Reorganizationへ対応する。
 
-Gatewayの公開APIは専用のCatalog API、Playback Session APIおよびStream APIに限定し、任意のNavidrome Pathを中継する汎用Proxyにはしない。
+ゲートウェイの公開APIは専用のカタログ API、再生セッション APIおよびストリーム APIに限定し、任意のNavidrome Pathを中継する汎用プロキシにはしない。
 
-[ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway)はこの構成を`Proposed`として記録し、負荷、障害、SecurityおよびOSS License検証をAcceptedへのGateとする。
+[ADR-0009](/adr/ADR-0009-navidrome-streaming-gateway)はこの構成を`Proposed`として記録し、負荷、障害、セキュリティおよびOSS License検証をAcceptedへのゲートとする。
 
 ---
 
-## 9.41 Prover Infrastructure
+## 9.41 証明者インフラ
 
-ZK証明生成は通常のWeb APIとは異なる計算特性を持つ。
+ZK証明生成は通常のウェブ APIとは異なる計算特性を持つ。
 
 そこで、
 
 ```mermaid
 flowchart LR
-    EVENTS[Aggregated Events]
-    JOB[Proof Job]
-    QUEUE[Prover Queue]
-    WORKER[Prover Workers]
-    PROOF[Proof]
-    STORE[Proof Store]
+    EVENTS[集約イベント]
+    JOB[証明 Job]
+    QUEUE[証明者一覧]
+    WORKER[証明者 Workers]
+    PROOF[証明]
+    STORE[証明保存]
 
     EVENTS --> JOB --> QUEUE --> WORKER --> PROOF --> STORE
 ```
@@ -1215,29 +1215,29 @@ flowchart LR
 一つのデータベースですべてを管理するのではなく、用途に応じて分離する。
 
 - Transactional DB
-- Search Index
-- Event Store
-- Analytics Store
-- Object Storage
-- Blockchain State
+- 検索索引
+- イベント保存
+- 分析保存
+- オブジェクトストレージ
+- ブロックチェーン状態
 
 などである。
 
 ```mermaid
 flowchart TD
-    API[Application]
+    API[アプリケーション]
     API --> TX[Transactional DB]
-    API --> SEARCH[Search]
-    API --> OBJ[Object Storage]
+    API --> SEARCH[検索]
+    API --> OBJ[オブジェクトストレージ]
 
-    EVENTS[Usage Events] --> EVENT[Event Store]
-    EVENT --> ANALYTICS[Analytics]
-    ANALYTICS --> PROOF[Proof System]
+    EVENTS[利用実績イベント] --> EVENT[イベント保存]
+    EVENT --> ANALYTICS[分析]
+    ANALYTICS --> PROOF[証明システム]
 ```
 
 ---
 
-## 9.43 Privacy
+## 9.43 プライバシー
 
 再生履歴はユーザの嗜好や生活パターンを推測し得る情報である。
 
@@ -1248,15 +1248,15 @@ flowchart TD
 ```mermaid
 flowchart LR
     USER[ユーザ活動]
-    PRIVATE[Private Data Layer]
-    AGG[Aggregation]
-    ZK[Zero-Knowledge Proof]
-    PUBLIC[Public Verification]
+    PRIVATE[非公開データレイヤー]
+    AGG[集約]
+    ZK[ゼロ知識証明]
+    PUBLIC[公開検証]
 
     USER --> PRIVATE --> AGG --> ZK --> PUBLIC
 ```
 
-公開するのは必要な集計結果、Commitment、Proofを中心とする。
+公開するのは必要な集計結果、コミットメント、証明を中心とする。
 
 ---
 
@@ -1264,21 +1264,21 @@ flowchart LR
 
 スマートコントラクトを利用する場合、秘密鍵管理は重大なセキュリティ要件となる。
 
-- Treasury Key
-- Deployment Key
-- Emergency Authority
-- Governance Executor
-- Oracle Signer
+- 資金庫鍵
+- デプロイ鍵
+- 緊急権限
+- ガバナンス実行者
+- オラクル Signer
 
 などを分離する。
 
 ```mermaid
 flowchart TD
-    KEYS[Key Management]
-    KEYS --> HSM[HSM / Secure Signing]
-    KEYS --> MULTI[Multisig]
-    KEYS --> GOV[Governance]
-    KEYS --> ROTATE[Rotation]
+    KEYS[鍵管理]
+    KEYS --> HSM[HSM / 安全な Signing]
+    KEYS --> MULTI[マルチシグ]
+    KEYS --> GOV[ガバナンス]
+    KEYS --> ROTATE[ローテーション]
 ```
 
 単一の開発者PCの秘密鍵で本番資金を管理しない。
@@ -1289,12 +1289,12 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    CLIENT[Client]
-    EDGE[Edge / CDN]
+    CLIENT[クライアント]
+    EDGE[エッジ / CDN]
     API[API]
-    DATA[Data]
-    PROVER[ZK Prover]
-    CHAIN[Blockchain]
+    DATA[データ]
+    PROVER[ZK 証明者]
+    CHAIN[ブロックチェーン]
 
     CLIENT --> EDGE --> API --> DATA
     DATA --> PROVER --> CHAIN
@@ -1302,12 +1302,12 @@ flowchart TD
 
 各境界で、
 
-- Authentication
-- Authorization
-- Encryption
-- Rate Limit
-- Audit Log
-- Integrity Check
+- 認証
+- 認可
+- 暗号化
+- 率制限
+- 監査 Log
+- 完全性検査
 
 を設ける。
 
@@ -1315,27 +1315,27 @@ flowchart TD
 
 ---
 
-## 9.46 Open Source
+## 9.46 オープンソース
 
 プロトコルの信頼性に直接関係するコードは、可能な範囲でオープンソース化する。
 
 特に、
 
 - スマートコントラクトs
-- Proof Program
-- Verifier
-- Governance Logic
-- Distribution Logic
+- 証明プログラム
+- 検証者
+- ガバナンス Logic
+- 分配 Logic
 
 は公開を基本とする。
 
 ```mermaid
 flowchart LR
-    SPEC[Specification]
-    CODE[Open Source Code]
-    TEST[Test]
-    AUDIT[Audit]
-    DEPLOY[Deployment]
+    SPEC[仕様]
+    CODE[オープンソースコード]
+    TEST[テスト]
+    AUDIT[監査]
+    DEPLOY[デプロイ]
 
     SPEC --> CODE --> TEST --> AUDIT --> DEPLOY
 ```
@@ -1344,16 +1344,16 @@ flowchart LR
 
 ---
 
-## 9.47 Reproducible Build
+## 9.47 再現可能ビルド
 
 ガバナンスで承認されたソースコードと実際にデプロイされたバイトコードが一致することを確認できる仕組みを目指す。
 
 ```mermaid
 flowchart LR
-    SOURCE[Approved Source]
-    BUILD[Reproducible Build]
+    SOURCE[承認済みソース]
+    BUILD[再現可能ビルド]
     BYTE[Bytecode]
-    DEPLOY[Deployed Contract]
+    DEPLOY[Deployed コントラクト]
 
     SOURCE --> BUILD --> BYTE --> DEPLOY
 ```
@@ -1366,18 +1366,18 @@ flowchart LR
 
 ---
 
-## 9.48 Protocol Version
+## 9.48 プロトコル版
 
-分配、Proof、Rights、Governanceなどの仕様にはVersionを持たせる。
+分配、証明、権利、ガバナンスなどの仕様には版を持たせる。
 
 例えば、
 
 ```text
-Protocol: CFP
-Version: 1.0
-Usage Proof: 1
-Distribution: 1
-Rights Schema: 1
+プロトコル: CFP
+版: 1.0
+利用実績証明: 1
+分配: 1
+権利 Schema: 1
 ```
 
 のように、どのルールで処理されたデータかを追跡できるようにする。
@@ -1390,12 +1390,12 @@ Rights Schema: 1
 
 ```mermaid
 flowchart TD
-    GOV[Governance]
-    ARCH[Protocol Architecture]
-    DEV[Engineering]
-    IMPLEMENT[Implementation]
+    GOV[ガバナンス]
+    ARCH[プロトコルアーキテクチャ]
+    DEV[エンジニアリング]
+    IMPLEMENT[実装]
 
-    GOV --> RULES[Protocol Rules]
+    GOV --> RULES[プロトコルルール]
     RULES --> ARCH
     ARCH --> DEV --> IMPLEMENT
 ```
@@ -1405,10 +1405,10 @@ flowchart TD
 一方、
 
 - 分配式
-- Proofで保証する性質
-- Upgrade権限
-- Treasury権限
-- Privacy原則
+- 証明で保証する性質
+- アップグレード権限
+- 資金庫権限
+- プライバシー原則
 
 などはガバナンス対象となり得る。
 
@@ -1416,31 +1416,31 @@ flowchart TD
 
 ## 9.50 段階的導入
 
-最初からSTARKベースの完全なUsage Oracleを構築する必要はない。
+最初からSTARKベースの完全な利用実績オラクルを構築する必要はない。
 
 ```mermaid
 flowchart LR
-    P1[Phase 1<br/>Auditable Off-chain]
-    P2[Phase 2<br/>Commitments]
-    P3[Phase 3<br/>ZK Usage Proof]
-    P4[Phase 4<br/>Scalable STARK Infrastructure]
+    P1[フェーズ 1<br/>監査可能オフチェーン]
+    P2[フェーズ 2<br/>Commitments]
+    P3[フェーズ 3<br/>ZK 利用実績証明]
+    P4[フェーズ 4<br/>拡張可能 STARK インフラ]
 
     P1 --> P2 --> P3 --> P4
 ```
 
-### Phase 1
+### フェーズ 1
 
 通常のクラウド基盤で利用実績を集計し、監査ログと透明な分配レポートを提供する。
 
-### Phase 2
+### フェーズ 2
 
-Usage Datasetや分配表へMerkle Commitmentを導入する。
+利用実績 Datasetや分配表へMerkle コミットメントを導入する。
 
-### Phase 3
+### フェーズ 3
 
-重要な集計・分配計算へZK Proofを導入する。
+重要な集計・分配計算へZK 証明を導入する。
 
-### Phase 4
+### フェーズ 4
 
 大規模な利用実績をSTARK等で証明し、世界規模へ拡張する。
 
@@ -1452,11 +1452,11 @@ ZK技術は急速に進化している。
 
 現在最適な、
 
-- Proof System
-- Blockchain
+- 証明システム
+- ブロックチェーン
 - L2
-- Data Availability
-- Prover Hardware
+- データ可用性
+- 証明者 Hardware
 
 が数年後にも最適とは限らない。
 
@@ -1466,12 +1466,12 @@ ZK技術は急速に進化している。
 
 ```mermaid
 flowchart LR
-    PRINCIPLE[Stable Principles]
+    PRINCIPLE[Stable 原則]
     TECH[Replaceable Technology]
 
-    PRINCIPLE --> ZK[ZK System]
-    PRINCIPLE --> CHAIN[Blockchain]
-    PRINCIPLE --> CLOUD[Infrastructure]
+    PRINCIPLE --> ZK[ZK システム]
+    PRINCIPLE --> CHAIN[ブロックチェーン]
+    PRINCIPLE --> CLOUD[インフラ]
 
     ZK --> TECH
     CHAIN --> TECH
@@ -1485,10 +1485,10 @@ flowchart LR
 ```mermaid
 flowchart LR
     MVP[MVP]
-    AUDIT[Auditable Platform]
-    COMMIT[Commitment Layer]
-    ZK[ZK Proof]
-    SCALE[Global Scale]
+    AUDIT[監査可能プラットフォーム]
+    COMMIT[コミットメントレイヤー]
+    ZK[ZK 証明]
+    SCALE[国際規模拡大]
 
     MVP --> AUDIT --> COMMIT --> ZK --> SCALE
 ```
@@ -1503,22 +1503,22 @@ MVPでは音楽サービスとしての成立を優先する。
 
 Creator First Platform の技術的な中心思想は、
 
-> **Trust the company**
+> **信頼 the company**
 
 から、
 
-> **Verify the protocol**
+> **検証 the protocol**
 
 へ徐々に移行することである。
 
 ```mermaid
 flowchart TD
-    MUSIC[Music Service]
-    OFF[Scalable Off-chain Systems]
-    ZK[Zero-Knowledge Proofs]
+    MUSIC[音楽サービス]
+    OFF[拡張可能オフチェーン Systems]
+    ZK[ゼロ知識 Proofs]
     SC[スマートコントラクトs]
-    GOV[Governance]
-    CORP[Corporate Responsibility]
+    GOV[ガバナンス]
+    CORP[法人責任]
 
     MUSIC --> OFF
     OFF --> ZK
@@ -1540,7 +1540,7 @@ flowchart TD
 
 について現実社会で責任を負う。
 
-一方、スマートコントラクトとZK Proofは、
+一方、スマートコントラクトとZK 証明は、
 
 > **会社が定められたルール通りに重要な処理を行ったことを、会社自身を信頼するだけでなく第三者が検証できる状態**
 

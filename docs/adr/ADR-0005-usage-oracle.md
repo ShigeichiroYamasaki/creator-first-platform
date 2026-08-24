@@ -1,79 +1,79 @@
 ---
-description: 再生イベントを検証・集計し、プライバシーを保ちながら分配可能な利用実績へ変換するUsage Oracleの設計案。
+description: 再生イベントを検証・集計し、プライバシーを保ちながら分配可能な利用実績へ変換する利用実績オラクルの設計案。
 ---
 
-# ADR-0005: Usage Oracle
+# ADR-0005: 利用実績オラクル
 
-**Status:** Proposed  
-**Date:** 2026-07-29
-**Last Updated:** 2026-08-20
+**状態:** 提案
+**日付:** 2026-07-29
+**最終更新日:** 2026-08-20
 
-## 1. Context
+## 1. 背景
 
-Creator First Platform は、Subscription Revenue を 音楽クリエーター および 権利者 へ透明かつ検証可能に分配することを目標とする。
+Creator First Platform は、サブスクリプション収益を音楽クリエーターおよび権利者へ透明かつ検証可能に分配することを目標とする。
 
-ADR-0004 音楽クリエーター分配 Model では、音楽クリエーター分配 の基礎として **Verified Usage** を使用することを決定した。
+ADR-0004 音楽クリエーター分配モデルでは、音楽クリエーター分配の基礎として **検証済み利用実績** を使用することを決定した。
 
-しかし、スマートコントラクト はそれ自体では、
+しかし、スマートコントラクトはそれ自体では、
 
-- ユーザ が実際に楽曲を再生したか
+- ユーザが実際に楽曲を再生したか
 - どの作品を利用したか
 - どの程度利用したか
-- Playback Event が重複・偽造されていないか
-- Bot や Self-streaming による不正利用ではないか
-- Client が送信した情報が正しいか
+- 再生イベントが重複・偽造されていないか
+- ボットや Self-streaming による不正利用ではないか
+- クライアントが送信した情報が正しいか
 
 を直接知ることができない。
 
-一方、すべての Playback Event を Public Blockchain に記録すると、
+一方、すべての再生イベントを公開ブロックチェーンに記録すると、
 
-- ユーザ の視聴履歴が公開される
-- Transaction Cost が大きくなる
-- Scalability が低下する
+- ユーザの視聴履歴が公開される
+- トランザクションコストが大きくなる
+- 拡張性が低下する
 - 大量の利用イベントを処理できない
-- Privacy Requirement を満たせない
+- プライバシー Requirement を満たせない
 
 という問題が生じる。
 
-したがって Creator First Platform には、Off-chain の利用実績を検証し、Protocol が利用可能な形へ変換する **Usage Oracle** が必要である。
+したがって Creator First Platform には、オフチェーンの利用実績を検証し、プロトコルが利用可能な形へ変換する **利用実績オラクル** が必要である。
 
 ---
 
-## 2. Decision
+## 2. 決定
 
-Creator First Platform は、利用実績を 音楽クリエーター分配 へ接続するために **Usage Oracle** を設ける。
+Creator First Platform は、利用実績を音楽クリエーター分配へ接続するために **利用実績オラクル** を設ける。
 
-Usage Oracle は、
+利用実績オラクルは、
 
-> **Playback Event → Evidence → Verification → Aggregation → Cryptographic Commitment / Proof → Distribution Engine**
+> **再生イベント → 証跡 → 検証 → 集約 → Cryptographic コミットメント / 証明 → 分配エンジン**
 
 という役割を担う。
 
 ```mermaid
 flowchart LR
-    PLAYER[Player App]
-    EVENT[Playback Event]
-    EVIDENCE[Usage Evidence]
-    VERIFY[Usage Verification]
-    AGG[Aggregation]
-    PROOF[Commitment / Proof]
-    DIST[Distribution Engine]
+    PLAYER[プレーヤーアプリ]
+    EVENT[再生イベント]
+    EVIDENCE[利用実績証跡]
+    VERIFY[利用実績検証]
+    AGG[集約]
+    PROOF[コミットメント / 証明]
+    DIST[分配エンジン]
 
     PLAYER --> EVENT --> EVIDENCE --> VERIFY --> AGG --> PROOF --> DIST
 ```
 
-Usage Oracle は「利用回数を報告する単一の信頼されたServer」ではなく、可能な限り第三者が検証可能なEvidence、Commitment、Proofを生成する仕組みとして設計する。
+利用実績オラクルは「利用回数を報告する単一の信頼されたサーバー」ではなく、可能な限り第三者が検証可能な証跡、コミットメント、証明を生成する仕組みとして設計する。
 
 ---
 
-## 3. Oracle Boundary
+## 3. オラクル境界
 
-Usage Oracle は、利用実績に関する事実をProtocolへ提供する。
+利用実績オラクルは、利用実績に関する事実をプロトコルへ提供する。
 
-ただし、Usage Oracle自身が、
+ただし、利用実績オラクル自身が、
 
-- 音楽クリエーター分配 Policyを決定する
-- Rights Ownershipを決定する
+- 音楽クリエーター分配ポリシーを決定する
+- 権利所有を決定する
 - 音楽クリエーターの価値を評価する
 - ガバナンス決定を行う
 - 法的権利を判断する
@@ -83,28 +83,28 @@ Usage Oracle は、利用実績に関する事実をProtocolへ提供する。
 役割を、
 
 ```text
-Usage Oracle
+利用実績オラクル
     =
-Verified Usage Facts
+検証済み利用実績 Facts
 
-Distribution Engine
+分配エンジン
     =
-Economic Calculation
+経済計算
 
-Rights Registry
+権利登録台帳
     =
-Verified Rights State
+検証済み権利状態
 ```
 
 として分離する。
 
 ---
 
-## 4. Playback Event
+## 4. 再生イベント
 
-Player App は、利用に関するPlayback Eventを生成する。
+プレーヤーアプリは、利用に関する再生イベントを生成する。
 
-Playback Eventは概念的に、
+再生イベントは概念的に、
 
 ```text
 PlaybackEvent
@@ -120,127 +120,127 @@ PlaybackEvent
 
 等を含む。
 
-ただし、具体的なEvent Schemaはプロトコル仕様で定義する。
+ただし、具体的なイベント Schemaはプロトコル仕様で定義する。
 
 個人情報や不要なDevice Fingerprintを収集することを前提としない。
 
 ---
 
-## 5. Event Identity
+## 5. イベントアイデンティティ
 
-各Playback Eventには一意に識別可能なEvent Identifierを付与する。
+各再生イベントには一意に識別可能なイベント Identifierを付与する。
 
 これにより、
 
 ```text
-Same Event
+Same イベント
    ↓
 Multiple Submission
    ↓
-Duplicate Detection
+Duplicate 検知
 ```
 
 を可能にする。
 
-同一Playback Eventを複数回Distributionへ算入してはならない。
+同一再生イベントを複数回分配へ算入してはならない。
 
-Event Identifierの生成方法は、偽造耐性とPrivacyを考慮してSpecificationで定義する。
+イベント Identifierの生成方法は、偽造耐性とプライバシーを考慮して仕様で定義する。
 
 ---
 
-## 6. Authenticated Usage
+## 6. 認証済み利用実績
 
-単純な匿名HTTP RequestだけをVerified Usageとして扱わない。
+単純な匿名HTTP リクエストだけを検証済み利用実績として扱わない。
 
-Playback Eventは、少なくともPlatform上の有効なSessionまたはCredentialと関連付ける。
+再生イベントは、少なくともプラットフォーム上の有効なセッションまたは資格証明と関連付ける。
 
 概念的には、
 
 ```text
-ユーザ / Credential
+ユーザ / 資格証明
       ↓
-Authenticated Session
+認証済みセッション
       ↓
-Playback Event
+再生イベント
       ↓
-Usage Evidence
+利用実績証跡
 ```
 
 とする。
 
 ただし、
 
-> Wallet Address = Playback Identity
+> ウォレットアドレス = 再生アイデンティティ
 
 と固定しない。
 
-Wallet、Platform Account、Privacy-preserving Credential等は分離可能な設計とする。
+ウォレット、プラットフォームアカウント、Privacy-preserving 資格証明等は分離可能な設計とする。
 
 ---
 
-## 7. Valid Usage
+## 7. 有効利用実績
 
-すべてのPlayback EventがDistribution対象になるわけではない。
+すべての再生イベントが分配対象になるわけではない。
 
-Protocolは **Valid Usage** の条件を定義する。
+プロトコルは **有効利用実績** の条件を定義する。
 
 例えば、
 
 - 最小有効再生時間
-- Content Identifierが有効
-- Eventが重複していない
-- Sessionが有効
-- Integrity Checkを満たす
-- 明らかなBot Patternではない
+- コンテンツ Identifierが有効
+- イベントが重複していない
+- セッションが有効
+- 完全性検査を満たす
+- 明らかなボット Patternではない
 
 等を条件にできる。
 
-ただし、具体的な閾値は本ADRでは固定せず、Versioned Usage Verification Specificationで定義する。
+ただし、具体的な閾値は本ADRでは固定せず、Versioned 利用実績検証仕様で定義する。
 
 ---
 
-## 8. Usage States
+## 8. 利用実績状態
 
-Usage Eventは少なくとも次の状態を表現できるようにする。
+利用実績イベントは少なくとも次の状態を表現できるようにする。
 
 ```text
 Observed
    ↓
-Verification
-   ├── Verified
+検証
+   ├── 検証済み
    ├── Rejected
-   └── Disputed
+   └── 紛争中
 ```
 
-### Observed
+### 観測済み
 
-Player App等から受信したが、まだDistributionへ使用できると確定していないEvent。
+プレーヤーアプリ等から受信したが、まだ分配へ使用できると確定していないイベント。
 
-### Verified
+### 検証済み
 
-Protocolの検証条件を満たし、Distribution Calculationへ使用できるEvent。
+プロトコルの検証条件を満たし、分配計算へ使用できるイベント。
 
-### Rejected
+### 却下済み
 
-重複、形式不正、検証失敗等によってDistribution対象外となったEvent。
+重複、形式不正、検証失敗等によって分配対象外となったイベント。
 
-### Disputed
+### 紛争中
 
-Fraud Detectionや異議申立て等により、最終判断を保留しているEvent。
+不正検知や異議申立て等により、最終判断を保留しているイベント。
 
 ---
 
-## 9. No Client-as-Authority
+## 9. クライアントを権威ある記録にしない
 
-Player Appから送信された、
+プレーヤーアプリから送信された、
 
 ```text
 I played this song 100 times.
 ```
 
-という自己申告だけをDistributionへ使用してはならない。
+という自己申告だけを分配へ使用してはならない。
 
-ClientはEvidence Sourceの一つであり、最終的なAuthorityではない。
+クライアントは証跡ソースの一つであり、最終的なAuthorityではない。
 
 可能な範囲で、
 
@@ -256,72 +256,72 @@ ClientはEvidence Sourceの一つであり、最終的なAuthorityではない�
 
 ---
 
-## 10. Privacy by Design
+## 10. プライバシー・バイ・デザイン
 
-Usage Oracle はユーザの音楽利用履歴を扱うため、Privacyを主要な設計要件とする。
+利用実績オラクルはユーザの音楽利用履歴を扱うため、プライバシーを主要な設計要件とする。
 
 特に、
 
 ```text
-ユーザX listened to Artist Y at time T
+ユーザX listened to アーティスト Y at time T
 ```
 
-という情報をPublic Blockchainへ直接記録してはならない。
+という情報を公開ブロックチェーンへ直接記録してはならない。
 
-PublicなProtocol Layerへ提供する情報は、可能な限り、
+公開なプロトコルレイヤーへ提供する情報は、可能な限り、
 
 - Aggregate
-- Commitment
-- Root
-- Proof
-- Period Identifier
+- コミットメント
+- ルート
+- 証明
+- 期間 Identifier
 
 等に限定する。
 
 ```mermaid
 flowchart LR
-    PRIVATE[Private Playback Events]
-    VERIFY[Verification]
-    AGG[Private Aggregation]
-    COMMIT[Commitment / Proof]
-    PUBLIC[Public Verification Layer]
+    PRIVATE[非公開再生イベント]
+    VERIFY[検証]
+    AGG[非公開集約]
+    COMMIT[コミットメント / 証明]
+    PUBLIC[公開検証レイヤー]
 
     PRIVATE --> VERIFY --> AGG --> COMMIT --> PUBLIC
 ```
 
 ---
 
-## 11. Zero-Knowledge Direction
+## 11. ゼロ知識方向性
 
-Creator First Platform は、Usage Verificationの将来的な主要技術としてZero-Knowledge Proofを検討する。
+Creator First Platform は、利用実績検証の将来的な主要技術としてゼロ知識証明を検討する。
 
 目的は、
 
-> **個々のユーザの視聴履歴を公開せず、Distributionに使用したUsage AggregateがProtocol Ruleに従って計算されたことを検証する**
+> **個々のユーザの視聴履歴を公開せず、分配に使用した利用実績 Aggregateがプロトコルルールに従って計算されたことを検証する**
 
 ことである。
 
 概念的には、
 
 ```text
-Private Inputs
-├── Playback Events
-├── ユーザ / Session Credentials
-└── Validation Data
+非公開 Inputs
+├── 再生イベント
+├── ユーザ / セッション資格証明
+└── 検証データ
 
-Public Inputs
-├── Usage Commitment
-├── Period
-├── Verification Rule Version
-└── Aggregate Result
-
-            ↓
-
-        ZK Proof
+公開 Inputs
+├── 利用実績コミットメント
+├── 期間
+├── 検証ルール版
+└── Aggregate 結果
 
             ↓
 
-Verifier confirms:
+        ZK 証明
+
+            ↓
+
+検証者 confirms:
 "Aggregate follows protocol rules"
 ```
 
@@ -329,16 +329,16 @@ Verifier confirms:
 
 ---
 
-## 12. zk-STARK Consideration
+## 12. zk-STARKの検討
 
-Usage Oracleでは、大量のPlayback Eventを一定期間ごとに検証・集約する必要がある。
+利用実績オラクルでは、大量の再生イベントを一定期間ごとに検証・集約する必要がある。
 
-この用途では、透明なProof Systemと大量計算の検証可能性が重要であるため、**zk-STARKを有力候補として評価する**。
+この用途では、透明な証明システムと大量計算の検証可能性が重要であるため、**zk-STARKを有力候補として評価する**。
 
 期待される特性は、
 
-- Trusted Setupへの依存を避けられる
-- 大規模計算のProofを構成できる
+- 信頼された Setupへの依存を避けられる
+- 大規模計算の証明を構成できる
 - Hash-based cryptographyを中心に構成できる
 - 将来的な耐量子性を検討しやすい
 
@@ -346,67 +346,67 @@ Usage Oracleでは、大量のPlayback Eventを一定期間ごとに検証・集
 
 ただし本ADRではzk-STARK採用を確定しない。
 
-zk-STARK、zk-SNARK、その他のProof Systemについて、
+zk-STARK、zk-SNARK、その他の証明システムについて、
 
-- Proving Cost
-- Verification Cost
-- Proof Size
+- Proving コスト
+- 検証コスト
+- 証明 Size
 - Latency
-- Developer Tooling
-- Blockchain Integration
+- 開発者 Tooling
+- ブロックチェーン連携
 - Cryptographic Assumptions
 
-を比較し、別SpecificationまたはADRで決定する。
+を比較し、別仕様またはADRで決定する。
 
 ---
 
-## 13. Aggregation
+## 13. 集約
 
-Distribution Engineは個々のPlayback Eventを直接処理するのではなく、Distribution PeriodごとにVerified Usageを集約する。
+分配エンジンは個々の再生イベントを直接処理するのではなく、分配期間ごとに検証済み利用実績を集約する。
 
 例えば、
 
 ```text
-Verified Playback Events
+検証済み再生イベント
           ↓
-Content / ユーザ集約
+コンテンツ / ユーザ集約
           ↓
-Usage Snapshot
+利用実績スナップショット
           ↓
-Distribution Engine
+分配エンジン
 ```
 
 とする。
 
-ユーザ中心分配のために必要な粒度は維持するが、Public Layerへユーザ単位の詳細履歴を公開しない。
+ユーザ中心分配のために必要な粒度は維持するが、公開レイヤーへユーザ単位の詳細履歴を公開しない。
 
 ---
 
-## 14. Usage Snapshot
+## 14. 利用実績スナップショット
 
-各Distribution PeriodについてUsage Snapshotを確定する。
+各分配期間について利用実績スナップショットを確定する。
 
-Usage Snapshotには概念的に、
+利用実績スナップショットには概念的に、
 
-- Period Identifier
-- Event Set Commitment
-- Verification Rule Version
-- Aggregation Algorithm Version
-- Aggregate Usage Commitment
-- Proof / Verification Reference
-- Finalization Timestamp
+- 期間 Identifier
+- イベント集合コミットメント
+- 検証ルール版
+- 集約アルゴリズム版
+- Aggregate 利用実績コミットメント
+- 証明 / 検証参照
+- 確定 Timestamp
 
 を含める。
 
-ADR-0004のDistribution Engineは、確定済みUsage Snapshotを入力として使用する。
+ADR-0004の分配エンジンは、確定済み利用実績スナップショットを入力として使用する。
 
 ---
 
-## 15. Deterministic Aggregation
+## 15. 決定論的集約
 
-同じVerified Event Setと同じAlgorithm Versionからは、同じUsage Aggregateが生成されなければならない。
+同じ検証済みイベント集合と同じアルゴリズム版からは、同じ利用実績 Aggregateが生成されなければならない。
 
-Verified Event集合を $V$、Aggregation Ruleを $A$ とすると、
+検証済みイベント集合を $V$、集約ルールを $A$ とすると、
 
 $$
 U = A(V)
@@ -418,9 +418,9 @@ $$
 
 ---
 
-## 16. Commitment
+## 16. コミットメント
 
-大量のUsage EventそのものをBlockchainへ保存する代わりに、Event SetまたはAggregateへのCryptographic Commitmentを利用する。
+大量の利用実績イベントそのものをブロックチェーンへ保存する代わりに、イベント集合またはAggregateへのCryptographic コミットメントを利用する。
 
 例えば概念的に、
 
@@ -428,96 +428,96 @@ $$
 C_U = H(\operatorname{MerkleRoot}(V))
 $$
 
-のようなCommitmentを使用できる。
+のようなコミットメントを使用できる。
 
-具体的なCommitment Schemeはプロトコル仕様で決定する。
+具体的なコミットメント Schemeはプロトコル仕様で決定する。
 
-Commitmentは、
+コミットメントは、
 
-- Event Setの事後改ざん検出
-- Distribution Snapshotとの対応
-- Audit
-- Proof Verification
+- イベント集合の事後改ざん検出
+- 分配スナップショットとの対応
+- 監査
+- 証明検証
 
 に利用する。
 
 ---
 
-## 17. Finalization
+## 17. 確定
 
-Usage SnapshotにはFinalization Processを設ける。
+利用実績スナップショットには確定手続を設ける。
 
 概念的には、
 
 ```text
-Collection
+コレクション
    ↓
-Preliminary Verification
+Preliminary 検証
    ↓
-Fraud / Duplicate Check
+不正 / 重複検査
    ↓
-Challenge Window
+異議申立て Window
    ↓
-Finalization
+確定
    ↓
-Distribution
+分配
 ```
 
 とする。
 
-Finalized Usage SnapshotをPlatform運営者が理由なく変更してはならない。
+確定済み利用実績スナップショットをプラットフォーム運営者が理由なく変更してはならない。
 
-訂正が必要な場合は、新しいVersionまたはCorrection Recordとして監査可能にする。
+訂正が必要な場合は、新しい版またはCorrection 記録として監査可能にする。
 
 ---
 
-## 18. Challenge Mechanism
+## 18. 異議申立て機構
 
-音楽クリエーター、ユーザ、Auditor等がUsage Aggregateの異常を指摘できる仕組みを設けることができる。
+音楽クリエーター、ユーザ、Auditor等が利用実績 Aggregateの異常を指摘できる仕組みを設けることができる。
 
-Challenge対象には、
+異議申立て対象には、
 
-- 不自然なUsage Spike
-- Missing Usage
+- 不自然な利用実績 Spike
+- Missing 利用実績
 - Duplicate Inclusion
-- Invalid Event Inclusion
-- Incorrect Aggregation
-- Proof Verification Failure
+- 無効イベント Inclusion
+- Incorrect 集約
+- 証明検証 Failure
 
 等を含む。
 
-Challenge Processの詳細はGovernanceおよびプロトコル仕様で定義する。
+異議申立て手続の詳細はガバナンスおよびプロトコル仕様で定義する。
 
 ---
 
-## 19. Fraud Detection
+## 19. 不正検知
 
-Usage OracleはFraud Detectionを利用できる。
+利用実績オラクルは不正検知を利用できる。
 
 例えば、
 
 - 異常な再生頻度
-- 大量の短時間Session
+- 大量の短時間セッション
 - 同一パターンの反復
-- 不自然なAccount Cluster
+- 不自然なアカウント Cluster
 - Self-streaming Pattern
-- Automated Playback
+- 自動再生
 
 等を検出する。
 
 ただし、
 
-> AI / Fraud Model Output = Final Truth
+> AI / 不正モデル Output = Final Truth
 
 とはしない。
 
-Fraud DetectionはEvidenceまたはRisk Signalとして扱い、必要に応じてRejected / Disputed Stateへ移行する。
+不正検知は証跡またはリスク Signalとして扱い、必要に応じてRejected / 紛争中状態へ移行する。
 
 ---
 
-## 20. AI Role
+## 20. AIの役割
 
-AIはUsage Oracleにおいて、
+AIは利用実績オラクルにおいて、
 
 - anomaly detection
 - bot detection
@@ -526,24 +526,24 @@ AIはUsage Oracleにおいて、
 
 等を支援できる。
 
-しかしAI Modelの出力だけで音楽クリエーターへの分配を不可逆的に停止してはならない。
+しかしAI モデルの出力だけで音楽クリエーターへの分配を不可逆的に停止してはならない。
 
 AIによる判定には、
 
-- Model Version
-- Input Scope
-- Decision / Score
-- Review Status
+- モデル版
+- 入力範囲
+- 決定 / スコア
+- レビュー状態
 
 等を監査可能にすることを検討する。
 
 ---
 
-## 21. Oracle Decentralization
+## 21. オラクル分散化
 
-初期MVPではPlatform運営InfrastructureによるUsage Verificationを許容する。
+初期MVPではプラットフォーム運営インフラによる利用実績検証を許容する。
 
-ただし長期的には、単一Oracle Operatorへの依存を減らす。
+ただし長期的には、単一オラクル運用者への依存を減らす。
 
 候補には、
 
@@ -557,90 +557,90 @@ AIによる判定には、
 
 ```text
 MVP
-Platform Oracle
+プラットフォームオラクル
       ↓
 
 Intermediate
-Platform + Independent Verification
+プラットフォーム + 独立検証
       ↓
 
 Target
-Cryptographically Verifiable Usage Oracle
+Cryptographically 検証可能利用実績オラクル
 ```
 
 という段階的移行を可能にする。
 
 ---
 
-## 22. Availability
+## 22. 可用性
 
-Usage Oracleが一時停止しても、
+利用実績オラクルが一時停止しても、
 
-- Rights Registry
+- 権利登録台帳
 - ユーザアカウント
 - 音楽クリエーターアカウント
-- 過去の確定Distribution
+- 過去の確定分配
 
 が破壊されてはならない。
 
-Oracle Failure時には、未確定PeriodのDistributionを保留できる。
+オラクル Failure時には、未確定期間の分配を保留できる。
 
-不完全なUsage Dataで自動的にDistributionを確定するより、検証可能性を優先する。
+不完全な利用実績データで自動的に分配を確定するより、検証可能性を優先する。
 
 ---
 
-## 23. Data Retention
+## 23. データ保存期間
 
-Raw Playback Dataを無期限保存することを前提としない。
+生の再生データを無期限保存することを前提としない。
 
-Retention Policyは、
+保存期間ポリシーは、
 
-- Distribution Audit
-- Fraud Investigation
-- Legal Requirements
-- Privacy
-- Storage Cost
+- 分配監査
+- 不正 Investigation
+- 法務要件
+- プライバシー
+- ストレージコスト
 
 を考慮して定義する。
 
-Raw Dataを削除した後でも、必要なCommitment、Aggregate、Proof、Audit Recordは保持できる設計とする。
+生のデータを削除した後でも、必要なコミットメント、Aggregate、証明、監査記録は保持できる設計とする。
 
 ---
 
 ## 24. ユーザ透明性
 
-ユーザは可能な範囲で、自身の利用がDistributionへ反映されたか確認できる仕組みを持つ。
+ユーザは可能な範囲で、自身の利用が分配へ反映されたか確認できる仕組みを持つ。
 
 ただし他ユーザの詳細な利用履歴へアクセスできてはならない。
 
 例えば、
 
 ```text
-My Usage
+My 利用実績
    ↓
-Included in Period 2026-07
+Included in 期間 2026-07
    ↓
-Verified
+検証済み
 ```
 
 のような確認を可能にする。
 
-将来的にはMerkle ProofやZero-Knowledge Proof等による個別検証を検討する。
+将来的にはMerkle 証明やゼロ知識証明等による個別検証を検討する。
 
 ---
 
 ## 25. 音楽クリエーター向け透明性
 
-音楽クリエーターは、自身の作品についてDistributionへ使用されたAggregate Usageを確認できる。
+音楽クリエーターは、自身の作品について分配へ使用されたAggregate 利用実績を確認できる。
 
 例えば、
 
 ```text
-Content
-Period
-Verified Usage
-Rejected / Disputed Summary
-Distribution Reference
+コンテンツ
+期間
+検証済み利用実績
+Rejected / 紛争中 Summary
+分配参照
 ```
 
 等を提供できる。
@@ -649,18 +649,18 @@ Distribution Reference
 
 ---
 
-## 26. Relationship to Rights Registry
+## 26. 関係 to 権利登録台帳
 
-Usage Oracleは作品の権利者を判断しない。
+利用実績オラクルは作品の権利者を判断しない。
 
-Content Identifierを通じてADR-0003 Rights Registryと接続する。
+コンテンツ Identifierを通じてADR-0003 権利登録台帳と接続する。
 
 ```mermaid
 flowchart LR
-    USAGE[Verified Usage]
-    CONTENT[Content Identifier]
-    RIGHTS[Rights Registry]
-    DIST[Distribution Engine]
+    USAGE[検証済み利用実績]
+    CONTENT[コンテンツ Identifier]
+    RIGHTS[権利登録台帳]
+    DIST[分配エンジン]
 
     USAGE --> CONTENT
     CONTENT --> RIGHTS
@@ -680,49 +680,49 @@ flowchart LR
 
 ---
 
-## 27. Relationship to 音楽クリエーター分配
+## 27. 関係 to 音楽クリエーター分配
 
-ADR-0004 音楽クリエーター分配 Modelは、Usage Oracleから提供されるVerified Usage Snapshotを使用する。
+ADR-0004 音楽クリエーター分配モデルは、利用実績オラクルから提供される検証済み利用実績スナップショットを使用する。
 
 ```text
-Usage Oracle
+利用実績オラクル
       ↓
-Verified Usage Snapshot
+検証済み利用実績スナップショット
       ↓
-音楽クリエーター分配 Model
+音楽クリエーター分配モデル
       +
-Rights Registry
+権利登録台帳
       +
-Revenue Snapshot
+収益スナップショット
       ↓
-Distribution Result
+分配結果
 ```
 
-Distribution Engineが未確定Raw Eventを直接使用してはならない。
+分配エンジンが未確定生のイベントを直接使用してはならない。
 
 ---
 
-## 28. スマートコントラクト Relationship
+## 28. スマートコントラクト関係
 
-スマートコントラクトは個々のPlayback Eventを処理しない。
+スマートコントラクトは個々の再生イベントを処理しない。
 
-Usage Oracleから得られる、
+利用実績オラクルから得られる、
 
-- Usage Snapshot Commitment
+- 利用実績スナップショットコミットメント
 - Aggregate
-- Proof
-- Period Identifier
-- Verification Status
+- 証明
+- 期間 Identifier
+- 検証状態
 
 等を利用する。
 
 ```mermaid
 flowchart LR
-    EVENTS[Playback Events]
-    ORACLE[Usage Oracle]
-    PROOF[Aggregate + Proof]
-    ENGINE[Distribution Engine]
-    ROOT[Distribution Commitment]
+    EVENTS[再生イベント]
+    ORACLE[利用実績オラクル]
+    PROOF[Aggregate + 証明]
+    ENGINE[分配エンジン]
+    ROOT[分配コミットメント]
     CONTRACT[スマートコントラクト]
 
     EVENTS --> ORACLE --> PROOF --> ENGINE --> ROOT --> CONTRACT
@@ -730,170 +730,170 @@ flowchart LR
 
 ---
 
-## 29. Invariants
+## 29. 不変条件
 
-### Invariant 1
+### 不変条件 1
 
-未検証Playback Eventを通常の音楽クリエーター分配へ使用してはならない。
+未検証再生イベントを通常の音楽クリエーター分配へ使用してはならない。
 
-### Invariant 2
+### 不変条件 2
 
-同一Playback Eventを複数回Distributionへ算入してはならない。
+同一再生イベントを複数回分配へ算入してはならない。
 
-### Invariant 3
+### 不変条件 3
 
-Finalized Usage Snapshotは監査履歴なしに変更してはならない。
+確定済み利用実績スナップショットは監査履歴なしに変更してはならない。
 
-### Invariant 4
+### 不変条件 4
 
-ユーザの詳細な視聴履歴をPublic Blockchainへ直接記録してはならない。
+ユーザの詳細な視聴履歴を公開ブロックチェーンへ直接記録してはならない。
 
-### Invariant 5
+### 不変条件 5
 
-Client自己申告だけをVerified Usageの唯一の根拠としてはならない。
+クライアント自己申告だけを検証済み利用実績の唯一の根拠としてはならない。
 
-### Invariant 6
+### 不変条件 6
 
-同じVerified Event Setと同じAggregation Algorithmから異なるAggregateを生成してはならない。
+同じ検証済みイベント集合と同じ集約アルゴリズムから異なるAggregateを生成してはならない。
 
-### Invariant 7
+### 不変条件 7
 
-Usage OracleがRights Ownershipを決定してはならない。
+利用実績オラクルが権利所有を決定してはならない。
 
-### Invariant 8
+### 不変条件 8
 
-AI Fraud Detectionの出力だけを根拠として不可逆的な分配剥奪を行ってはならない。
-
----
-
-## 30. Alternatives Considered
-
-### Fully Trusted Central Oracle
-
-Platform Serverが再生回数を集計し、その数値を無条件にスマートコントラクトへ渡す。
-
-MVPでは一部利用可能だが、長期的なTrust Modelとしては採用しない。
-
-### Fully On-chain Playback
-
-すべてのPlayback EventをBlockchain Transactionとして記録する。
-
-Privacy、Cost、Throughputの問題から採用しない。
-
-### Client-only Reporting
-
-Player Appの自己申告のみを利用する。
-
-改ざん・Bot・Replayへの耐性が不足するため採用しない。
-
-### Public ユーザ-level Usage Ledger
-
-ユーザごとの利用履歴を公開Ledgerへ保存する。
-
-Privacy上の問題が大きいため採用しない。
-
-### AI-only Verification
-
-AIがPlaybackの正当性を判定し、その出力を最終結果とする。
-
-説明可能性、誤判定、Model Manipulationの問題から採用しない。
+AI 不正検知の出力だけを根拠として不可逆的な分配剥奪を行ってはならない。
 
 ---
 
-## 31. Consequences
+## 30. 検討した代替案
 
-### Positive
+### 全面的に信頼する中央オラクル
+
+プラットフォームサーバーが再生回数を集計し、その数値を無条件にスマートコントラクトへ渡す。
+
+MVPでは一部利用可能だが、長期的な信頼モデルとしては採用しない。
+
+### 完全オンチェーン再生
+
+すべての再生イベントをブロックチェーントランザクションとして記録する。
+
+プライバシー、コスト、Throughputの問題から採用しない。
+
+### クライアントだけによる報告
+
+プレーヤーアプリの自己申告のみを利用する。
+
+改ざん・ボット・Replayへの耐性が不足するため採用しない。
+
+### 公開されたユーザ単位の利用実績台帳
+
+ユーザごとの利用履歴を公開台帳へ保存する。
+
+プライバシー上の問題が大きいため採用しない。
+
+### AIだけによる検証
+
+AIが再生の正当性を判定し、その出力を最終結果とする。
+
+説明可能性、誤判定、モデル操作の問題から採用しない。
+
+---
+
+## 31. 影響
+
+### 利点
 
 - 音楽クリエーター分配の利用根拠を検証可能にできる
-- Raw PlaybackをBlockchainへ保存せずに済む
+- 生の再生をブロックチェーンへ保存せずに済む
 - ユーザプライバシーを保護しやすい
-- Fraud Detectionを組み込める
-- Distribution Periodごとの監査が可能になる
-- ZK Proofによる将来的なTrust Minimizationが可能になる
-- Rights RegistryとDistribution Engineの責務を分離できる
+- 不正検知を組み込める
+- 分配期間ごとの監査が可能になる
+- ZK 証明による将来的な信頼最小化が可能になる
+- 権利登録台帳と分配エンジンの責務を分離できる
 
-### Negative
+### 欠点
 
-- Oracle Infrastructureが必要になる
-- Event Verificationが複雑になる
-- Fraud Detection運用が必要になる
-- ZK Proof導入には計算資源と開発コストが必要になる
-- Client Integrityを完全には保証できない
-- Oracle Decentralizationには追加Infrastructureが必要になる
-- PrivacyとAuditabilityのバランス設計が必要になる
-
----
-
-## 32. Security Considerations
-
-Usage Oracleは少なくとも次の攻撃・障害を考慮する。
-
-- Fake Playback
-- Replay Attack
-- Bot Farming
-- Sybil Attack
-- Client Tampering
-- Session Theft
-- Event Duplication
-- Event Omission
-- Timestamp Manipulation
-- Oracle Operator Manipulation
-- Aggregation Manipulation
-- Commitment Substitution
-- Proof Forgery
-- Fraud Model Manipulation
-- Privacy Leakage
-- Denial of Service
-
-具体的なThreat ModelはSecurity Specificationで定義する。
+- オラクルインフラが必要になる
+- イベント検証が複雑になる
+- 不正検知運用が必要になる
+- ZK 証明導入には計算資源と開発コストが必要になる
+- クライアント完全性を完全には保証できない
+- オラクル分散化には追加インフラが必要になる
+- プライバシーと監査可能性のバランス設計が必要になる
 
 ---
 
-## 33. Relationship to Other ADRs
+## 32. セキュリティ上の考慮事項
 
-ADR-0001はGovernance Architectureを定義する。
+利用実績オラクルは少なくとも次の攻撃・障害を考慮する。
 
-ADR-0002はVerifiable Sortitionを定義する。
+- 偽造再生
+- Replay 攻撃
+- ボット Farming
+- シビル攻撃
+- クライアント Tampering
+- セッション Theft
+- イベント Duplication
+- イベント Omission
+- Timestamp 操作
+- オラクル運用者操作
+- 集約操作
+- コミットメント Substitution
+- 証明 Forgery
+- 不正モデル操作
+- プライバシー Leakage
+- Denial of サービス
 
-ADR-0003はRights Registryを定義する。
+具体的な脅威モデルはセキュリティ仕様で定義する。
 
-ADR-0004は音楽クリエーター分配 Modelを定義する。
+---
 
-ADR-0005は、実世界・Player App上の利用イベントを検証可能なUsage情報へ変換し、音楽クリエーター分配へ提供するOracle Layerを定義する。
+## 33. 他のADRとの関係
+
+ADR-0001はガバナンスアーキテクチャを定義する。
+
+ADR-0002は検証可能抽選を定義する。
+
+ADR-0003は権利登録台帳を定義する。
+
+ADR-0004は音楽クリエーター分配モデルを定義する。
+
+ADR-0005は、実世界・プレーヤーアプリ上の利用イベントを検証可能な利用実績情報へ変換し、音楽クリエーター分配へ提供するオラクルレイヤーを定義する。
 
 ```text
-Player App
+プレーヤーアプリ
     ↓
-ADR-0005 Usage Oracle
+ADR-0005 利用実績オラクル
     ↓
-Verified Usage
+検証済み利用実績
     ↓
-ADR-0004 音楽クリエーター分配 Model
+ADR-0004 音楽クリエーター分配モデル
     +
-ADR-0003 Rights Registry
+ADR-0003 権利登録台帳
     ↓
-Distribution
+分配
 ```
 
 ---
 
-## 34. Related Documents
+## 34. 関連文書
 
-- Whitepaper: Vision
-- Whitepaper: Platform Architecture
-- Whitepaper: Economic Model
-- Whitepaper: Governance
-- Whitepaper: Technology
-- Whitepaper: Security
-- Whitepaper: Infrastructure / Cost
-- ADR-0003: Rights Registry
-- ADR-0004: 音楽クリエーター分配 Model
+- ホワイトペーパー: ビジョン
+- ホワイトペーパー: プラットフォームアーキテクチャ
+- ホワイトペーパー: 経済モデル
+- ホワイトペーパー: ガバナンス
+- ホワイトペーパー: Technology
+- ホワイトペーパー: セキュリティ
+- ホワイトペーパー: インフラ / コスト
+- ADR-0003: 権利登録台帳
+- ADR-0004: 音楽クリエーター分配モデル
 
 ---
 
-## 35. Follow-up Specifications
+## 35. 後続仕様
 
-本ADRの採択後、少なくとも次のSpecificationを作成する。
+本ADRの採択後、少なくとも次の仕様を作成する。
 
 - `protocol/usage-event-spec.md`
 - `protocol/usage-verification-spec.md`
@@ -901,6 +901,6 @@ Distribution
 - `protocol/usage-proof-spec.md`
 - `protocol/usage-fraud-spec.md`
 
-Zero-Knowledge Proof Systemの具体的な選択については、必要に応じて独立したADRを作成する。
+ゼロ知識証明システムの具体的な選択については、必要に応じて独立したADRを作成する。
 
-MVPではまずMock / Local Usage Oracleを実装し、Verified Usage SnapshotからDistribution Engineへ接続するEnd-to-End Testを構築する。
+MVPではまずモック / ローカル利用実績オラクルを実装し、検証済み利用実績スナップショットから分配エンジンへ接続するエンドツーエンドテストを構築する。

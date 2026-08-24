@@ -2,59 +2,59 @@
 description: ユーザ中心の利用実績を基礎に、人気集中を抑えながら音楽クリエーターへ収益を分配する経済モデルの設計案。
 ---
 
-# ADR-0004: 音楽クリエーター分配 Model
+# ADR-0004: 音楽クリエーター分配モデル
 
-**Status:** Proposed  
-**Date:** 2026-07-29
-**Last Updated:** 2026-08-23
+**状態:** 提案
+**日付:** 2026-07-29
+**最終更新日:** 2026-08-23
 
-資金の所在、期間収支、音楽クリエーター未払、税・運営・Promotion・Community予算および残余の横断的な照合は、[ADR-0013](./ADR-0013-treasury-flow-transparency.md)で定義する。
+資金の所在、期間収支、音楽クリエーター未払、税・運営・プロモーション・コミュニティ予算および残余の横断的な照合は、[ADR-0013](./ADR-0013-treasury-flow-transparency.md)で定義する。
 
-## 1. Context
+## 1. 背景
 
-Creator First Platform は、Platform の利益最大化ではなく、音楽クリエーター の権利と持続可能な創作活動を中心に据える。
+Creator First Platform は、プラットフォームの利益最大化ではなく、音楽クリエーターの権利と持続可能な創作活動を中心に据える。
 
-Subscription 等によって得られた利用収入を 音楽クリエーター へ分配する際、単純な総再生回数比例モデルを採用すると、
+サブスクリプション等によって得られた利用収入を音楽クリエーターへ分配する際、単純な総再生回数比例モデルを採用すると、
 
 - 人気作品への分配集中
 - 大規模カタログ保有者への集中
 - 新人・ニッチ音楽クリエーターの発見機会低下
-- Botや不正再生による分配操作
+- ボットや不正再生による分配操作
 - ユーザの実際の支持と分配結果の乖離
 
 が生じる可能性がある。
 
-一方、Creator First Platform は、Rights Registry、検証可能なUsage情報、Governanceを組み合わせることによって、透明性と監査可能性を持つ分配モデルを構築できる。
+一方、Creator First Platform は、権利登録台帳、検証可能な利用実績情報、ガバナンスを組み合わせることによって、透明性と監査可能性を持つ分配モデルを構築できる。
 
-したがって、音楽クリエーター分配 Model は単なる「1再生あたり単価」ではなく、
+したがって、音楽クリエーター分配モデルは単なる「1再生あたり単価」ではなく、
 
-> **ユーザ貢献 → Verified Usage → Rights State → Distribution Policy → 音楽クリエーター分配**
+> **ユーザ貢献 → 検証済み利用実績 → 権利状態 → 分配ポリシー → 音楽クリエーター分配**
 
 として設計する必要がある。
 
 ---
 
-## 2. Decision
+## 2. 決定
 
-Creator First Platform は、音楽クリエーターへの分配に **ユーザ中心分配 を基本原則とするHybrid Distribution Model** を採用する。
+Creator First Platform は、音楽クリエーターへの分配に **ユーザ中心分配を基本原則とするハイブリッド分配モデル** を採用する。
 
 各ユーザの分配対象額は、原則としてそのユーザ自身の検証済み利用実績に基づいて配分する。
 
-同時に、音楽クリエーターの多様性、Discovery、新人音楽クリエーター支援等の公共的目的に使用するCommunity Allocationを分離して設ける。
+同時に、音楽クリエーターの多様性、発見、新人音楽クリエーター支援等の公共的目的に使用するコミュニティ配分を分離して設ける。
 
 概念的には、
 
 ```mermaid
 flowchart LR
-    SUB[Subscription Revenue]
-    COST[Taxes / Fees / Required Costs]
-    NET[Net Distributable Revenue]
-    USER[ユーザ中心 Pool]
-    COMMUNITY[Community Pool]
-    USAGE[Verified Usage]
-    RIGHTS[Rights Registry]
-    POLICY[Distribution Policy]
-    PAY[音楽クリエーター／権利者 Payment]
+    SUB[サブスクリプション収益]
+    COST[税金 / Fees / 必要経費]
+    NET[純額分配可能収益]
+    USER[ユーザ中心プール]
+    COMMUNITY[コミュニティプール]
+    USAGE[検証済み利用実績]
+    RIGHTS[権利登録台帳]
+    POLICY[分配ポリシー]
+    PAY[音楽クリエーター／権利者決済]
 
     SUB --> COST --> NET
     NET --> USER
@@ -66,44 +66,44 @@ flowchart LR
     POLICY --> PAY
 ```
 
-具体的な比率、閾値、重み等はプロトコル仕様およびGovernanceによって管理する。
+具体的な比率、閾値、重み等はプロトコル仕様およびガバナンスによって管理する。
 
 ---
 
-## 3. Distribution Layers
+## 3. 分配レイヤー
 
-Subscription等から得られる収入を、概念的に次の層へ分ける。
+サブスクリプション等から得られる収入を、概念的に次の層へ分ける。
 
 ```text
-Gross Revenue
+総額収益
       ↓
-Mandatory Deductions
+必須 Deductions
       ↓
-Net Distributable Revenue
-      ├── ユーザ中心 Pool
-      ├── Community / Discovery Pool
-      └── Other Approved Allocations
+純額分配可能収益
+      ├── ユーザ中心プール
+      ├── コミュニティ / 発見プール
+      └── その他承認済み Allocations
 ```
 
-Mandatory Deductionsには、適用される制度や契約に応じて、
+必須 Deductionsには、適用される制度や契約に応じて、
 
 - 税
 - 決済手数料
-- Blockchain transaction cost
+- ブロックチェーン transaction cost
 - 法的に必要な控除
-- Governanceによって承認されたPlatform運営費
+- ガバナンスによって承認されたプラットフォーム運営費
 
 等が含まれ得る。
 
-これらの項目は明示的に区分し、音楽クリエーター分配とPlatform Revenueを不透明に混在させない。
+これらの項目は明示的に区分し、音楽クリエーター分配とプラットフォーム収益を不透明に混在させない。
 
 ---
 
 ## 4. ユーザ中心分配
 
-ユーザ $u$ のあるDistribution Periodにおける分配対象額を $D_u$ とする。
+ユーザ $u$ のある分配期間における分配対象額を $D_u$ とする。
 
-ユーザが利用した作品集合を $C_u$ とし、作品 $c$ に対する検証済み利用Weightを $w_{u,c}$ とする。
+ユーザが利用した作品集合を $C_u$ とし、作品 $c$ に対する検証済み利用重みを $w_{u,c}$ とする。
 
 基本配分は、
 
@@ -129,29 +129,29 @@ $$
 
 相当の検証済み利用を行った場合、ユーザAに対応する分配対象額も原則として同じ比率を基礎に配分する。
 
-これは全Platformの総再生回数だけで分配するMarket-Centric Modelとは区別される。
+これは全プラットフォームの総再生回数だけで分配するMarket-Centric モデルとは区別される。
 
 ---
 
-## 5. Verified Usage Only
+## 5. 検証済み利用実績のみ
 
-Distribution計算には、検証済みのUsage Eventのみを使用する。
+分配計算には、検証済みの利用実績イベントのみを使用する。
 
 ```text
-Playback
+再生
    ↓
-Usage Evidence
+利用実績証跡
    ↓
-Validation / Proof
+検証 / 証明
    ↓
-Verified Usage
+検証済み利用実績
    ↓
-Distribution
+分配
 ```
 
-単純なClient自己申告だけを分配根拠として使用してはならない。
+単純なクライアント自己申告だけを分配根拠として使用してはならない。
 
-Usage Verificationは、将来的に、
+利用実績検証は、将来的に、
 
 - signed playback events
 - device / session integrity
@@ -162,13 +162,13 @@ Usage Verificationは、将来的に、
 
 等を組み合わせる。
 
-Usage Oracleの具体方式は別ADRまたはSpecificationで定義する。
+利用実績オラクルの具体方式は別ADRまたは仕様で定義する。
 
 ---
 
-## 6. Usage Weight Is Not Necessarily Raw Play Count
+## 6. 利用実績重みは生の再生回数とは限らない
 
-$w_{u,c}$ は単純なPlay Countだけに固定しない。
+$w_{u,c}$ は単純な再生回数だけに固定しない。
 
 例えば、
 
@@ -180,15 +180,15 @@ $w_{u,c}$ は単純なPlay Countだけに固定しない。
 
 等を考慮できる。
 
-ただし、Distribution Algorithmが恣意的な「おすすめ評価」や音楽クリエーターの知名度を使って分配額を操作してはならない。
+ただし、分配アルゴリズムが恣意的な「おすすめ評価」や音楽クリエーターの知名度を使って分配額を操作してはならない。
 
-Weighting Ruleは公開されたプロトコル仕様としてVersion管理する。
+Weighting ルールは公開されたプロトコル仕様として版管理する。
 
 ---
 
-## 7. Anti-Concentration Principle
+## 7. 集中抑制原則
 
-Creator First Platformは、人気音楽クリエーターへの分配集中を目的としたProtocolを採用しない。
+Creator First Platformは、人気音楽クリエーターへの分配集中を目的としたプロトコルを採用しない。
 
 ただし、実際のユーザ支持によって人気音楽クリエーターへの分配が大きくなること自体を禁止するものではない。
 
@@ -198,39 +198,39 @@ Creator First Platformは、人気音楽クリエーターへの分配集中を�
 
 と、
 
-> **Platform Algorithmによる恣意的な集中**
+> **プラットフォームアルゴリズムによる恣意的な集中**
 
 である。
 
-ユーザ中心 Poolでは、ユーザの検証済み利用選択を基本的に尊重する。
+ユーザ中心プールでは、ユーザの検証済み利用選択を基本的に尊重する。
 
-新人・ニッチ音楽クリエーターへの支援はユーザ中心 Poolを歪めるのではなく、原則としてCommunity / Discovery Poolによって実現する。
+新人・ニッチ音楽クリエーターへの支援はユーザ中心プールを歪めるのではなく、原則としてコミュニティ / 発見プールによって実現する。
 
 ---
 
-## 8. Community / Discovery Pool
+## 8. コミュニティ / 発見プール
 
-Net Distributable Revenueの一部を、Governanceによって承認されたCommunity / Discovery Poolへ割り当てることができる。
+純額分配可能収益の一部を、ガバナンスによって承認されたコミュニティ / 発見プールへ割り当てることができる。
 
 目的には、
 
 - 新人音楽クリエーター支援
-- Discovery
+- 発見
 - 多様性確保
 - 小規模ジャンル支援
 - 公共的・文化的価値
 - 音楽クリエーター育成
-- Community活動
+- コミュニティ活動
 
 等を含めることができる。
 
 ```mermaid
 flowchart TD
-    CP[Community Pool]
-    NEW[Emerging 音楽クリエーター]
-    DISC[Discovery]
-    DIVERSE[Diversity]
-    COMMUNITY[Community Projects]
+    CP[コミュニティプール]
+    NEW[新人音楽クリエーター]
+    DISC[発見]
+    DIVERSE[多様性]
+    COMMUNITY[コミュニティ Projects]
 
     CP --> NEW
     CP --> DISC
@@ -238,38 +238,38 @@ flowchart TD
     CP --> COMMUNITY
 ```
 
-Community Poolの配分ルールは、Platform運営者が自由に変更できるものとせず、Governance Processによって決定する。
+コミュニティプールの配分ルールは、プラットフォーム運営者が自由に変更できるものとせず、ガバナンス手続によって決定する。
 
 ---
 
-## 9. No Pay-to-Govern Distribution Advantage
+## 9. 資金力によるガバナンス・分配上の優位を認めない
 
 音楽クリエーターが、
 
-- Governance Tokenを大量保有している
-- Platform株式を保有している
-- Platformへ多額の資金を提供している
+- ガバナンストークンを大量保有している
+- プラットフォーム株式を保有している
+- プラットフォームへ多額の資金を提供している
 - 広告費等を支払っている
 
-ことを理由として音楽クリエーター分配 Weightを増加させてはならない。
+ことを理由として音楽クリエーター分配重みを増加させてはならない。
 
 ```text
-Capital Power
+資本権力
     ≠
-Distribution Privilege
+分配特権
 ```
 
-STO、株式、Governance Participation、音楽クリエーター分配は、それぞれ異なる制度として扱う。
+STO、株式、ガバナンス参加、音楽クリエーター分配は、それぞれ異なる制度として扱う。
 
 ---
 
-## 10. Rights-Aware Distribution
+## 10. 権利考慮型分配
 
 作品への配分額が決定した後、その金額を単純にUploaderへ送金してはならない。
 
-ADR-0003 Rights Registryで確定したRights StateとDistribution Instructionsを使用する。
+ADR-0003 権利登録台帳で確定した権利状態と分配指示を使用する。
 
-作品 $c$ に割り当てられた額を $D_c$、権利者 $i$ の有効な分配Shareを $s_{c,i}$ とすると、
+作品 $c$ に割り当てられた額を $D_c$、権利者 $i$ の有効な分配比率を $s_{c,i}$ とすると、
 
 $$
 P_{c,i} = D_c s_{c,i}
@@ -287,12 +287,12 @@ $$
 
 ```mermaid
 flowchart LR
-    AMOUNT[Content Allocation]
-    RIGHTS[Rights Registry]
-    SPLIT[Rights-aware Split]
+    AMOUNT[コンテンツ配分]
+    RIGHTS[権利登録台帳]
+    SPLIT[Rights-aware 分割]
     A[音楽クリエーター]
     B[権利者]
-    C[Other Contractual Recipient]
+    C[その他 Contractual Recipient]
 
     AMOUNT --> SPLIT
     RIGHTS --> SPLIT
@@ -303,61 +303,61 @@ flowchart LR
 
 ---
 
-## 11. Disputed Rights
+## 11. 紛争中権利
 
-Rights RegistryでDisputedとなっている部分については、通常の自動分配を行わない。
+権利登録台帳で紛争中となっている部分については、通常の自動分配を行わない。
 
 ```text
-Distribution Amount
+分配 Amount
        ↓
-Rights State
-   ├── Verified → Payment
-   └── Disputed → Hold / Escrow
+権利状態
+   ├── 検証済み → 決済
+   └── 紛争中 → 保留 / Escrow
 ```
 
-紛争解決後、確定したRights Stateに従って保留額を分配する。
+紛争解決後、確定した権利状態に従って保留額を分配する。
 
-Platform運営者が恣意的に受取人を選択してはならない。
+プラットフォーム運営者が恣意的に受取人を選択してはならない。
 
 ---
 
-## 12. Distribution Period
+## 12. 分配期間
 
-分配は明示的なDistribution Period単位で計算する。
+分配は明示的な分配期間単位で計算する。
 
 例えば、
 
 ```text
-2026-07 Distribution Period
+2026-07 分配期間
 ```
 
 について、
 
-- Eligible Revenue
-- Verified Usage
-- Rights Snapshot
-- Distribution Policy Version
-- Calculated Allocation
-- Payment Status
+- 適格収益
+- 検証済み利用実績
+- 権利スナップショット
+- 分配ポリシー版
+- Calculated 配分
+- 決済状態
 
 を関連付ける。
 
-過去のDistributionを再計算できるよう、計算時に使用したVersionとSnapshotを保存する。
+過去の分配を再計算できるよう、計算時に使用した版とスナップショットを保存する。
 
 ---
 
-## 13. Deterministic Calculation
+## 13. 決定論的計算
 
 同じ入力、
 
 ```text
-Revenue Snapshot
-Verified Usage Snapshot
-Rights Snapshot
-Distribution Policy Version
+収益スナップショット
+検証済み利用実績スナップショット
+権利スナップショット
+分配ポリシー版
 ```
 
-からは、同じDistribution Resultが得られなければならない。
+からは、同じ分配結果が得られなければならない。
 
 概念的に、
 
@@ -370,10 +370,10 @@ $$
 
 ここで、
 
-- $R$ = Revenue Snapshot
-- $U$ = Verified Usage Snapshot
-- $G$ = Rights Registry Snapshot
-- $P$ = Distribution Policy
+- $R$ = 収益スナップショット
+- $U$ = 検証済み利用実績スナップショット
+- $G$ = 権利登録台帳スナップショット
+- $P$ = 分配ポリシー
 
 である。
 
@@ -381,92 +381,92 @@ $$
 
 ---
 
-## 14. Rounding and Residual Amounts
+## 14. 丸め処理・残余額
 
-Tokenの最小単位等によって端数が発生する場合、その処理方法をプロトコル仕様で明示する。
+トークンの最小単位等によって端数が発生する場合、その処理方法をプロトコル仕様で明示する。
 
-端数処理によってPlatform運営者へ不透明な利益が発生してはならない。
+端数処理によってプラットフォーム運営者へ不透明な利益が発生してはならない。
 
 Residual Amountについては、
 
-- 次期Distributionへ繰越
-- Community Poolへ移動
+- 次期分配へ繰越
+- コミュニティプールへ移動
 - deterministic rounding rule
 
-等の方法をGovernanceで定義する。
+等の方法をガバナンスで定義する。
 
 ---
 
-## 15. Minimum Payout
+## 15. 最低分配
 
-Blockchain Feeや決済コストが支払額を上回る場合に備え、Minimum Payout Thresholdを設定できる。
+ブロックチェーン手数料や決済コストが支払額を上回る場合に備え、最低分配しきい値を設定できる。
 
-Threshold未満の音楽クリエーター残高は失効させず、原則として次期以降へ繰り越す。
+しきい値未満の音楽クリエーター残高は失効させず、原則として次期以降へ繰り越す。
 
 ```text
 音楽クリエーター残高
       ↓
-Below Threshold → Carry Forward
+Below しきい値 → Carry Forward
       ↓
-At / Above Threshold → Payment
+At / Above しきい値 → 決済
 ```
 
-Threshold値はProtocol Parameterとして管理する。
+しきい値値はプロトコル Parameterとして管理する。
 
 ---
 
-## 16. Stablecoin Settlement
+## 16. ステーブルコイン精算
 
-Creator First Platformは、JPYC等の適切なStablecoinを決済・分配手段として利用できる。
+Creator First Platformは、JPYC等の適切なステーブルコインを決済・分配手段として利用できる。
 
-ただし音楽クリエーター分配 Modelは特定Tokenへ固定しない。
+ただし音楽クリエーター分配モデルは特定トークンへ固定しない。
 
 ```text
-Distribution Amount
+分配 Amount
         ↓
-Settlement Asset
+精算資産
         ↓
-JPYC / Approved Stablecoin
+JPYC / 承認済みステーブルコイン
 ```
 
-使用可能なSettlement Assetは、
+使用可能な精算資産は、
 
 - 法的適合性
 - 流動性
-- スマートコントラクト Risk
-- Reserve / Issuer Risk
-- Network Cost
+- スマートコントラクトリスク
+- 予備 / 発行者リスク
+- ネットワークコスト
 - ユーザ / 音楽クリエーターAccessibility
 
-等を評価し、Governanceおよび法務要件に従って決定する。
+等を評価し、ガバナンスおよび法務要件に従って決定する。
 
 ---
 
-## 17. On-chain / Off-chain Separation
+## 17. オンチェーン・オフチェーンの分離
 
-全Usage Eventや詳細なユーザ行動をPublic Blockchainへ記録してはならない。
+全利用実績イベントや詳細なユーザ行動を公開ブロックチェーンへ記録してはならない。
 
 基本構造は、
 
 ```mermaid
 flowchart LR
-    USAGE[Private Usage Data]
-    VERIFY[Usage Verification]
-    COMMIT[Commitment / Proof]
-    CALC[Distribution Calculation]
-    CONTRACT[Distribution Contract]
-    PAY[Settlement]
+    USAGE[非公開利用実績データ]
+    VERIFY[利用実績検証]
+    COMMIT[コミットメント / 証明]
+    CALC[分配計算]
+    CONTRACT[分配コントラクト]
+    PAY[精算]
 
     USAGE --> VERIFY --> COMMIT --> CALC --> CONTRACT --> PAY
 ```
 
-Public Blockchainには必要に応じて、
+公開ブロックチェーンには必要に応じて、
 
-- Distribution Root
-- Period Identifier
-- Policy Version
-- Commitment
-- Payment State
+- 分配ルート
+- 期間 Identifier
+- ポリシー版
+- コミットメント
+- 決済状態
 
 等を記録する。
 
@@ -474,134 +474,134 @@ Public Blockchainには必要に応じて、
 
 ---
 
-## 18. Privacy
+## 18. プライバシー
 
-ユーザ中心分配ではユーザごとの利用情報を扱うため、Privacyを重要な設計要件とする。
+ユーザ中心分配ではユーザごとの利用情報を扱うため、プライバシーを重要な設計要件とする。
 
 第三者が、
 
 > 特定ユーザがどの音楽クリエーターをどれだけ利用したか
 
-をPublic Blockchainから復元できる構造を避ける。
+を公開ブロックチェーンから復元できる構造を避ける。
 
-将来的にはZero-Knowledge Proofを利用して、
+将来的にはゼロ知識証明を利用して、
 
-> Distribution計算がProtocol Ruleに従っている
+> 分配計算がプロトコルルールに従っている
 
 ことを、個々のユーザの視聴履歴を公開せず検証可能にすることを検討する。
 
 ---
 
-## 19. Fraud Resistance
+## 19. 不正耐性
 
-Distribution Systemは少なくとも、
+分配システムは少なくとも、
 
-- Bot Playback
+- ボット再生
 - Self-streaming
 - Replay Farming
-- Multiple Account Abuse
-- Sybil ユーザ
-- Fake Content
-- Collusive Streaming
-- Usage Oracle Manipulation
+- Multiple アカウント不正利用
+- シビルユーザ
+- 偽造コンテンツ
+- Collusive ストリーミング
+- 利用実績オラクル操作
 
 を考慮する。
 
-疑わしいUsageを単純に削除するだけでなく、
+疑わしい利用実績を単純に削除するだけでなく、
 
 ```text
 Observed
-Verified
+検証済み
 Rejected
-Disputed
+紛争中
 ```
 
 等の状態を追跡可能にする。
 
-不正検知Algorithmだけで最終的な権利剥奪を自動決定しない。
+不正検知アルゴリズムだけで最終的な権利剥奪を自動決定しない。
 
 ---
 
-## 20. Transparency
+## 20. 透明性
 
-各Distribution Periodについて、個人情報や機密情報を公開しない範囲で、少なくとも次を検証可能にする。
+各分配期間について、個人情報や機密情報を公開しない範囲で、少なくとも次を検証可能にする。
 
-- Total Eligible Revenue
-- Total Distributable Revenue
-- Pool Allocation
-- Distribution Policy Version
-- Rights Snapshot Reference
-- Usage Verification Reference
-- Distribution Commitment
-- Payment Completion Status
+- Total 適格収益
+- Total 分配可能収益
+- プール配分
+- 分配ポリシー版
+- 権利スナップショット参照
+- 利用実績検証参照
+- 分配コミットメント
+- 決済 Completion 状態
 
 音楽クリエーターは自身への分配について、
 
 ```text
-Revenue
+収益
 ↓
-Usage Allocation
+利用実績配分
 ↓
-Rights Split
+権利分割
 ↓
 Fees / Adjustments
 ↓
-Final Payment
+Final 決済
 ```
 
 を追跡できるようにする。
 
 ---
 
-## 21. Governance
+## 21. ガバナンス
 
-Distribution PolicyはGovernance対象とする。
+分配ポリシーはガバナンス対象とする。
 
 例えば、
 
-- ユーザ中心 Pool比率
-- Community Pool比率
-- Usage Weighting Rule
-- Minimum Payout
+- ユーザ中心プール比率
+- コミュニティプール比率
+- 利用実績 Weighting ルール
+- 最低分配
 - Residual Handling
-- Fraud Handling Policy
-- Settlement Asset
+- 不正 Handling ポリシー
+- 精算資産
 
 等である。
 
-ただし、Governance変更を過去の確定済みDistribution Periodへ無条件に遡及適用してはならない。
+ただし、ガバナンス変更を過去の確定済み分配期間へ無条件に遡及適用してはならない。
 
-各Distribution Periodは適用されたPolicy Versionを保持する。
+各分配期間は適用されたポリシー版を保持する。
 
 ---
 
-## 22. Platform Revenue Separation
+## 22. プラットフォーム収益分離
 
-Platform運営会社の収益と音楽クリエーター分配 Poolを会計・Protocol上明確に区分する。
+プラットフォーム運営会社の収益と音楽クリエーター分配プールを会計・プロトコル上明確に区分する。
 
 ```text
 ユーザ支払
      ↓
-Revenue Allocation
+収益配分
      ├── 音楽クリエーター分配
-     ├── Community Allocation
-     └── Platform Revenue
+     ├── コミュニティ配分
+     └── プラットフォーム収益
 ```
 
-Platform Revenueの割合や費用構造は明示し、音楽クリエーター分配 Poolから事後的・恣意的に資金を移動できない設計を目指す。
+プラットフォーム収益の割合や費用構造は明示し、音楽クリエーター分配プールから事後的・恣意的に資金を移動できない設計を目指す。
 
-具体的な法的・会計上の資金分別方法はLegal / Accounting Specificationで定義する。
+具体的な法的・会計上の資金分別方法は法務 / 会計仕様で定義する。
 
 ---
 
-## 23. スマートコントラクト Relationship
+## 23. スマートコントラクト関係
 
-Distribution Contractは、確定済みDistribution Resultに基づいてSettlementを実行する。
+分配コントラクトは、確定済み分配結果に基づいて精算を実行する。
 
 スマートコントラクト自身が、
 
 - 著作権判断
-- Usageの真偽判定
+- 利用実績の真偽判定
 - 不正ユーザ判定
 - 法的紛争判断
 
@@ -609,12 +609,12 @@ Distribution Contractは、確定済みDistribution Resultに基づいてSettlem
 
 ```mermaid
 flowchart LR
-    REV[Revenue]
-    USAGE[Verified Usage]
-    RIGHTS[Rights Registry]
-    POLICY[Policy]
-    ENGINE[Distribution Engine]
-    ROOT[Distribution Commitment]
+    REV[収益]
+    USAGE[検証済み利用実績]
+    RIGHTS[権利登録台帳]
+    POLICY[ポリシー]
+    ENGINE[分配エンジン]
+    ROOT[分配コミットメント]
     CONTRACT[スマートコントラクト]
     CREATOR[音楽クリエーター／権利者]
 
@@ -627,172 +627,172 @@ flowchart LR
 
 ---
 
-## 24. Invariants
+## 24. 不変条件
 
-### Invariant 1
+### 不変条件 1
 
-未検証Usageを通常の音楽クリエーター分配へ使用してはならない。
+未検証利用実績を通常の音楽クリエーター分配へ使用してはならない。
 
-### Invariant 2
+### 不変条件 2
 
-Disputed Rightsに対応する金額を通常の確定権利者へ誤って分配してはならない。
+紛争中権利に対応する金額を通常の確定権利者へ誤って分配してはならない。
 
-### Invariant 3
+### 不変条件 3
 
-Distribution Periodごとに適用されたPolicy Versionを再現可能にしなければならない。
+分配期間ごとに適用されたポリシー版を再現可能にしなければならない。
 
-### Invariant 4
+### 不変条件 4
 
-音楽クリエーター分配 PoolからPlatform運営者が恣意的に資金を取得できてはならない。
+音楽クリエーター分配プールからプラットフォーム運営者が恣意的に資金を取得できてはならない。
 
-### Invariant 5
+### 不変条件 5
 
-Token保有量や資本力を理由として音楽クリエーター分配 Weightを増加させてはならない。
+トークン保有量や資本力を理由として音楽クリエーター分配重みを増加させてはならない。
 
-### Invariant 6
+### 不変条件 6
 
-同じ確定入力と同じPolicy Versionから異なるDistribution Resultが生成されてはならない。
+同じ確定入力と同じポリシー版から異なる分配結果が生成されてはならない。
 
-### Invariant 7
+### 不変条件 7
 
-ユーザの詳細な利用履歴をPublic Blockchainへ公開してはならない。
+ユーザの詳細な利用履歴を公開ブロックチェーンへ公開してはならない。
 
-### Invariant 8
+### 不変条件 8
 
-Rights Registryを無視してUploaderへ全額を自動送金してはならない。
+権利登録台帳を無視してUploaderへ全額を自動送金してはならない。
 
 ---
 
-## 25. Alternatives Considered
+## 25. 検討した代替案
 
-### Market-Centric Pro-Rata Model
+### 市場中心比例配分モデル
 
-Platform全体の総再生数に比例して全Subscription Revenueを分配する。
+プラットフォーム全体の総再生数に比例して全サブスクリプション収益を分配する。
 
 実装は単純だが、人気作品への集中やユーザごとの支持と分配結果の乖離が生じやすいため、基本方式として採用しない。
 
-### Equal Distribution to All 音楽クリエーター
+### 均等分配 to 全音楽クリエーター
 
 全音楽クリエーターへ均等配分する。
 
 実際のユーザ利用・支持との関係が弱いため採用しない。
 
-### Algorithmic Merit Distribution
+### アルゴリズム評価評価分配
 
-Platformが音楽クリエーターの「価値」をAIや推薦Algorithmで評価し、分配額を決定する。
+プラットフォームが音楽クリエーターの「価値」をAIや推薦アルゴリズムで評価し、分配額を決定する。
 
-Platformによる恣意的な価値判断につながるため、ユーザ中心 Poolの基本方式として採用しない。
+プラットフォームによる恣意的な価値判断につながるため、ユーザ中心プールの基本方式として採用しない。
 
-### Token-weighted 音楽クリエーター分配
+### トークン保有量加重の音楽クリエーター分配
 
-音楽クリエーターまたはSupporterのToken保有量を分配Weightに利用する。
+音楽クリエーターまたはサポーターのトークン保有量を分配重みに利用する。
 
-Economic Powerと音楽クリエーター分配を混同するため採用しない。
+経済権力と音楽クリエーター分配を混同するため採用しない。
 
-### Fully On-chain Usage Accounting
+### 完全オンチェーン利用実績会計
 
-すべてのPlayback EventをPublic Blockchain上で処理する。
+すべての再生イベントを公開ブロックチェーン上で処理する。
 
-Privacy、Cost、Scalabilityの観点から採用しない。
+プライバシー、コスト、拡張性の観点から採用しない。
 
 ---
 
-## 26. Consequences
+## 26. 影響
 
-### Positive
+### 利点
 
 - ユーザの支払と音楽クリエーターへの分配を対応付けやすい
 - 音楽クリエーターへの分配根拠を説明しやすい
-- 人気集中をPlatform全体の総再生数だけで増幅しにくい
-- Rights Registryと直接接続できる
-- 新人・ニッチ音楽クリエーター支援をCommunity Poolとして明示できる
-- Distribution Algorithmを監査・再現可能にできる
-- Platform運営収益と音楽クリエーター分配を分離できる
+- 人気集中をプラットフォーム全体の総再生数だけで増幅しにくい
+- 権利登録台帳と直接接続できる
+- 新人・ニッチ音楽クリエーター支援をコミュニティプールとして明示できる
+- 分配アルゴリズムを監査・再現可能にできる
+- プラットフォーム運営収益と音楽クリエーター分配を分離できる
 
-### Negative
+### 欠点
 
 - ユーザ中心計算は単純な総再生比例より複雑になる
-- Usage Verification Infrastructureが必要になる
+- 利用実績検証インフラが必要になる
 - Privacy-preserving aggregationが必要になる
-- Rights Registryとの整合性管理が必要になる
-- Fraud Detectionが必要になる
-- 小額支払のSettlement Costを考慮する必要がある
-- Community PoolのGovernance設計が必要になる
+- 権利登録台帳との整合性管理が必要になる
+- 不正検知が必要になる
+- 小額支払の精算コストを考慮する必要がある
+- コミュニティプールのガバナンス設計が必要になる
 
 ---
 
-## 27. Security Considerations
+## 27. セキュリティ上の考慮事項
 
-Distribution Systemは少なくとも次の攻撃・障害を考慮する。
+分配システムは少なくとも次の攻撃・障害を考慮する。
 
-- Fake Playback
-- Bot Farming
-- Sybil Attack
-- Usage Oracle Manipulation
-- Rights Registry Manipulation
-- Distribution Policy Tampering
-- Payment Address Substitution
-- Double Payment
+- 偽造再生
+- ボット Farming
+- シビル攻撃
+- 利用実績オラクル操作
+- 権利登録台帳操作
+- 分配ポリシー Tampering
+- 決済アドレス Substitution
+- Double 決済
 - Unauthorized Withdrawal
-- Rounding Exploitation
+- 丸め処理 Exploitation
 - スマートコントラクト Vulnerability
-- Privacy Leakage
-- Stablecoin / Settlement Asset Failure
+- プライバシー Leakage
+- ステーブルコイン / 精算資産 Failure
 
-具体的なThreat ModelはSecurity Specificationで定義する。
+具体的な脅威モデルはセキュリティ仕様で定義する。
 
 ---
 
-## 28. Relationship to Other ADRs
+## 28. 他のADRとの関係
 
-ADR-0001はGovernance Architectureを定義する。
+ADR-0001はガバナンスアーキテクチャを定義する。
 
-ADR-0002はVerifiable Sortitionを定義する。
+ADR-0002は検証可能抽選を定義する。
 
-ADR-0003はRights Registryを定義する。
+ADR-0003は権利登録台帳を定義する。
 
-ADR-0004は、Revenue、Verified Usage、Rights Registry、Distribution Policyを接続し、音楽クリエーターおよび権利者への分配をどのように決定するかを定義する。
+ADR-0004は、収益、検証済み利用実績、権利登録台帳、分配ポリシーを接続し、音楽クリエーターおよび権利者への分配をどのように決定するかを定義する。
 
 ```text
-ADR-0001 Governance Model
-ADR-0002 Verifiable Sortition
-ADR-0003 Rights Registry
+ADR-0001 ガバナンスモデル
+ADR-0002 検証可能抽選
+ADR-0003 権利登録台帳
               ↓
-ADR-0004 音楽クリエーター分配 Model
+ADR-0004 音楽クリエーター分配モデル
               ↓
 プロトコル仕様s
               ↓
-Distribution Engine
+分配エンジン
               ↓
-スマートコントラクト Settlement
+スマートコントラクト精算
 ```
 
 ---
 
-## 29. Related Documents
+## 29. 関連文書
 
-- Whitepaper: Vision
-- Whitepaper: Rights and Funds
-- Whitepaper: Platform Architecture
-- Whitepaper: 音楽クリエーター登録
-- Whitepaper: Economic Model
-- Whitepaper: Governance
-- Whitepaper: Technology
-- Whitepaper: Security
-- Whitepaper: Legal / STO / Tax
-- ADR-0003: Rights Registry
+- ホワイトペーパー: ビジョン
+- ホワイトペーパー: 権利・資金
+- ホワイトペーパー: プラットフォームアーキテクチャ
+- ホワイトペーパー: 音楽クリエーター登録
+- ホワイトペーパー: 経済モデル
+- ホワイトペーパー: ガバナンス
+- ホワイトペーパー: Technology
+- ホワイトペーパー: セキュリティ
+- ホワイトペーパー: 法務 / STO / 税務
+- ADR-0003: 権利登録台帳
 
 ---
 
-## 30. Follow-up Specifications
+## 30. 後続仕様
 
-本ADRの採択後、少なくとも次のSpecificationを作成する。
+本ADRの採択後、少なくとも次の仕様を作成する。
 
 - `protocol/distribution-spec.md`
 - `protocol/usage-verification-spec.md`
 - `protocol/revenue-allocation-spec.md`
 - `protocol/settlement-spec.md`
 
-Community / Discovery Poolの詳細については、必要に応じて独立したADRまたはSpecificationを作成する。
+コミュニティ / 発見プールの詳細については、必要に応じて独立したADRまたは仕様を作成する。
 
-自動分配に使用するスマートコントラクトについても、Distribution Specification確定後に別途設計する。
+自動分配に使用するスマートコントラクトについても、分配仕様確定後に別途設計する。

@@ -1,11 +1,16 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { englishTermReplacements } from './terminology-rules.mjs';
 
 const docsRoot = new URL('../docs/', import.meta.url);
 const excludedDirectories = new Set(['.vitepress', 'en']);
 const excludedFiles = new Set(['terminology.md']);
 
 const phraseReplacements = [
+  ['未解決ソース', 'オープンソース'],
+  ['未解決選出アルゴリズム', '公開選出アルゴリズム'],
+  ['未解決抽選アルゴリズム', '公開抽選アルゴリズム'],
+  ['未解決プロトコル', 'オープンプロトコル'],
   ['ガバナンス議員hip SBT', 'ガバナンス議員資格SBT'],
   ['ユーザ院議会 Eligibility', 'ユーザ院議会参加資格'],
   ['音楽クリエーター Registry', '音楽クリエーター登録台帳'],
@@ -129,7 +134,9 @@ async function markdownFiles(directoryUrl) {
 
 function normalizeText(text) {
   const housePlaceholder = '\u0000CREATOR_HOUSE\u0000';
+  const brandPlaceholder = '\u0000CREATOR_FIRST_PLATFORM\u0000';
   let normalized = text
+    .replaceAll('Creator First Platform', brandPlaceholder)
     .replaceAll('音楽クリエータ院議会', housePlaceholder)
     .replaceAll('音楽クリエイター', '音楽クリエーター')
     .replace(/(?<!音楽)クリエイター/g, '音楽クリエーター')
@@ -142,16 +149,36 @@ function normalizeText(text) {
     normalized = normalized.replaceAll(source, replacement);
   }
 
-  return normalized
+  for (const [source, replacement] of englishTermReplacements) {
+    const escaped = source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    normalized = normalized.replace(new RegExp(`(?<![A-Za-z0-9_-])${escaped}(?![A-Za-z0-9_-])`, 'g'), replacement);
+  }
+
+  normalized = normalized
     .replace(/音楽クリエーター ([ABCXYZ])/g, '音楽クリエーター$1')
-    .replace(/ユーザ ([ABCXYZ])/g, 'ユーザ$1');
+    .replace(/ユーザ ([ABCXYZ])/g, 'ユーザ$1')
+    .replace(/\s*・\s*/g, '・')
+    .replaceAll(brandPlaceholder, 'Creator First Platform');
+
+  // 英語語句を日本語へ置換した後に残る語間空白を、日本語の組版に合わせて除く。
+  // コード、URL、リンク先は normalizeLine で保護されている。
+  let previous;
+  do {
+    previous = normalized;
+    normalized = normalized.replace(
+      /([\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー]) +([\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}ー])/gu,
+      '$1$2'
+    );
+  } while (normalized !== previous);
+
+  return normalized;
 }
 
 function normalizeLine(line) {
   let output = '';
   let cursor = 0;
 
-  for (const match of line.matchAll(/`[^`]*`/g)) {
+  for (const match of line.matchAll(/`[^`]*`|\]\([^)]+\)|https?:\/\/[^\s)]+/g)) {
     output += normalizeText(line.slice(cursor, match.index));
     output += match[0];
     cursor = match.index + match[0].length;

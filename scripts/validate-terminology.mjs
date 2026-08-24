@@ -1,5 +1,6 @@
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { englishTermReplacements } from './terminology-rules.mjs';
 
 const repositoryRoot = new URL('../', import.meta.url);
 const documentationRoots = [
@@ -12,6 +13,13 @@ const documentationRoots = [
 ];
 const standaloneDocuments = ['docs/index.md', 'docs/status.md'];
 const excludedDirectories = new Set(['en']);
+const canonicalEnglishPatterns = englishTermReplacements.map(([source]) => {
+  const escaped = source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return {
+    label: source,
+    pattern: new RegExp(`(?<![A-Za-z0-9_-])${escaped}(?![A-Za-z0-9_-])`, 'g'),
+  };
+});
 const forbiddenPatterns = [
   { label: 'Creator House', pattern: /\bCreator House\b/g },
   { label: 'User House', pattern: /\bUser House\b/g },
@@ -20,6 +28,7 @@ const forbiddenPatterns = [
   { label: 'クリエイター', pattern: /クリエイター/g },
   { label: 'ユーザー', pattern: /ユーザー/g },
   { label: '利用者', pattern: /利用者/g },
+  ...canonicalEnglishPatterns,
 ];
 
 async function markdownFiles(relativeDirectory) {

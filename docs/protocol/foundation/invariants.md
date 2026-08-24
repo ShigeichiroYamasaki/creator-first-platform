@@ -1,6 +1,6 @@
 ---
-title: Global Protocol Invariants
-description: Identity、Governance、Rights、Payment、Distribution、Privacy等で下位仕様が破ってはならない不変条件。
+title: 国際プロトコル不変条件
+description: アイデンティティ、ガバナンス、権利、決済、分配、プライバシー等で下位仕様が破ってはならない不変条件。
 editLink: false
 ---
 

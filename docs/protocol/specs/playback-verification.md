@@ -1,6 +1,6 @@
 ---
-title: SPEC-USAGE-001 Playback Verification
-description: Playback Eventを検証し、重複とプライバシーを制御してUsage Snapshotを確定するDraft プロトコル仕様
+title: SPEC-USAGE-001 再生検証
+description: 再生イベントを検証し、重複とプライバシーを制御して利用実績スナップショットを確定する草案プロトコル仕様
 editLink: false
 ---
 

@@ -1,37 +1,37 @@
 ---
 title: ADR-0014 公開テストネットユーザ利用フロー
-description: GitHub Pages上でテストユーザ登録、Sepolia Wallet、MockJPYC Subscription、合成Playerを安全に統合する技術判断。
+description: GitHub Pages上でテストユーザ登録、Sepolia ウォレット、MockJPYC サブスクリプション、合成プレーヤーを安全に統合する技術判断。
 ---
 
 # ADR-0014: 公開テストネットユーザ利用フロー
 
-**Status:** Proposed
+**状態:** 提案
 
-**Date:** 2026-08-23
+**日付:** 2026-08-23
 
-**Last Updated:** 2026-08-23
+**最終更新日:** 2026-08-23
 
-## Context
+## 背景
 
-テストユーザ登録デモは、当初AliasとNoticeを現在のTabのSession Storageへ保存するだけのBrowser Fixtureだった。この構成はPrivacy境界の確認には適するが、ユーザがCreator First Platformの中心的な流れであるWallet接続、Stablecoin建てSubscriptionおよび音楽Player操作を連続して検証できない。
+テストユーザ登録デモは、当初Aliasと通知を現在のTabのセッションストレージへ保存するだけのブラウザ用フィクスチャだった。この構成はプライバシー境界の確認には適するが、ユーザがCreator First Platformの中心的な流れであるウォレット接続、ステーブルコイン建てサブスクリプションおよび音楽プレーヤー操作を連続して検証できない。
 
-一方、GitHub Pagesは静的Hostingであり、秘密鍵、Relayer Credential、Server Sessionまたは保護音源を保持できない。設計時点ではSepolia Contractが未デプロイであり、任意Contract Addressをユーザが入力できるUIや、未検証AddressへTransactionを送るUIを公開すると、誤Chain、偽Token、Phishingおよび本番資産の誤使用につながる。
+一方、GitHub Pagesは静的Hostingであり、秘密鍵、リレイヤー資格証明、サーバーセッションまたは保護音源を保持できない。設計時点ではSepolia コントラクトが未デプロイであり、任意コントラクトアドレスをユーザが入力できるUIや、未検証アドレスへトランザクションを送るUIを公開すると、誤チェーン、偽トークン、Phishingおよび本番資産の誤使用につながる。
 
-また、テストユーザプロフィール、Wallet Address、Subscription、Streaming Authorizationは異なる責任を持つ。UI上で一続きに見せても、Alias登録だけをAccount、本人確認または再生権限として扱ってはならない。
+また、テストユーザプロフィール、ウォレットアドレス、サブスクリプション、ストリーミング認可は異なる責任を持つ。UI上で一続きに見せても、Alias登録だけをアカウント、本人確認または再生権限として扱ってはならない。
 
-## Decision
+## 決定
 
 GitHub Pages上のテストユーザデモを、次の4段階からなる **公開テストネットユーザ利用フロー** として実装する。
 
 ```mermaid
 flowchart LR
-    PROFILE[Tab-local Test Profile]
-    WALLET[EIP-1193 Wallet]
-    MANIFEST[Same-origin Deployment Manifest]
+    PROFILE[Tab-local テストプロフィール]
+    WALLET[EIP-1193 ウォレット]
+    MANIFEST[Same-origin デプロイマニフェスト]
     SEPOLIA[Ethereum Sepolia]
     TOKEN[MockJPYC]
-    SUB[Subscription Contract]
-    PLAYER[Synthetic Audio Player]
+    SUB[サブスクリプションコントラクト]
+    PLAYER[Synthetic 音声プレーヤー]
 
     PROFILE --> WALLET
     MANIFEST --> WALLET
@@ -40,128 +40,128 @@ flowchart LR
     SUB -. confirmed UI state .-> PLAYER
 ```
 
-### 1. Test ProfileはWalletおよびIdentityから分離する
+### 1. テストプロフィールはウォレットおよびアイデンティティから分離する
 
-- AliasとランダムなテストユーザIDだけを現在のTabのSession Storageへ保存する。
-- 実名、Email、電話番号、Password、秘密鍵、Seed PhraseまたはWallet Addressの入力欄を設けない。
-- Profile登録はPlatform Account、Authentication、Wallet Link、本人確認、Subscription、SBTまたはStreaming Authorizationを成立させない。
-- Profile削除はTab-local Dataだけを削除し、Wallet接続履歴やBlockchain Transactionが削除されるとは表示しない。
+- AliasとランダムなテストユーザIDだけを現在のTabのセッションストレージへ保存する。
+- 実名、Email、電話番号、Password、秘密鍵、Seed Phraseまたはウォレットアドレスの入力欄を設けない。
+- プロフィール登録はプラットフォームアカウント、認証、ウォレット連携、本人確認、サブスクリプション、SBTまたはストリーミング認可を成立させない。
+- プロフィール削除はTab-local データだけを削除し、ウォレット接続履歴やブロックチェーントランザクションが削除されるとは表示しない。
 
-### 2. Wallet接続は明示操作とし、Sepoliaへ固定する
+### 2. ウォレット接続は明示操作とし、Sepoliaへ固定する
 
-- BrowserのEIP-1193 Providerを、ユーザが「Walletを接続」を押した場合だけ呼び出す。
-- Chain IDはEthereum Sepoliaの`11155111`だけを受け入れる。
-- Network切替には`wallet_switchEthereumChain`を使い、任意RPC URLまたは未知のChainを追加しない。
-- AccountまたはChain変更Eventを監視し、Address変更時は状態を再取得し、Sepolia以外へ移動した時は残高、Allowance、PlanおよびSubscription状態を消去して書込みと限定Trackを停止する。
-- Wallet Addressは公開Chain上の識別子として表示し、Test Profileと永続的または法的に結合しない。
+- BrowserのEIP-1193 事業者を、ユーザが「ウォレットを接続」を押した場合だけ呼び出す。
+- チェーン IDはEthereum Sepoliaの`11155111`だけを受け入れる。
+- ネットワーク切替には`wallet_switchEthereumChain`を使い、任意RPC URLまたは未知のチェーンを追加しない。
+- アカウントまたはチェーン変更イベントを監視し、アドレス変更時は状態を再取得し、Sepolia以外へ移動した時は残高、Allowance、計画およびサブスクリプション状態を消去して書込みと限定楽曲を停止する。
+- ウォレットアドレスは公開チェーン上の識別子として表示し、テストプロフィールと永続的または法的に結合しない。
 
-### 3. Contract Addressはsame-origin Manifestだけを信頼する
+### 3. コントラクトアドレスはsame-origin マニフェストだけを信頼する
 
-公開Clientは`/testnet/deployment.json`を`no-store`で取得し、次を満たす場合だけContract操作を有効にする。
+公開クライアントは`/testnet/deployment.json`を`no-store`で取得し、次を満たす場合だけコントラクト操作を有効にする。
 
-- `schemaVersion`がClientの対応Versionと一致する
+- `schemaVersion`がクライアントの対応版と一致する
 - `chainId`が`11155111`である
 - `status`が`active`である
-- MockJPYC、Subscription、Treasury、Supporter SBTの全Addressが有効な非Zero Addressである
-- `sourceCommit`が完全な40桁Commit Hashである
+- MockJPYC、サブスクリプション、資金庫、サポーター SBTの全アドレスが有効な非Zero アドレスである
+- `sourceCommit`が完全な40桁コミットハッシュである
 
-`not-deployed`、取得失敗、不明Schema、誤Chain、不正Addressまたは不正Commitではfail closedとする。ユーザがContract Addressを手入力してこの制御を迂回する機能は設けない。
+`not-deployed`、取得失敗、不明Schema、誤チェーン、不正アドレスまたは不正コミットではfail closedとする。ユーザがコントラクトアドレスを手入力してこの制御を迂回する機能は設けない。
 
-Manifestを`active`へ変更する前に、対象CommitからのDeployment、Contract Verification、Role、Plan、Test Asset NoticeおよびAddress対応をReviewする。Manifestは発見のための公開情報であり、それ自体をOn-chain状態の正本にはしない。
+マニフェストを`active`へ変更する前に、対象コミットからのデプロイ、コントラクト検証、役割、計画、テスト資産通知およびアドレス対応をレビューする。マニフェストは発見のための公開情報であり、それ自体をオンチェーン状態の正本にはしない。
 
-### 4. MockJPYC課金はTestnet専用の限定Flowとする
+### 4. MockJPYC課金はテストネット専用の限定フローとする
 
-- `MockJPYC`は無価値、償還不可、実在JPYCと交換不可であることを画面とContractで表示する。
-- 各AddressはPublic `claim()`から一回だけ`2,000 tJPYC`を取得できる。既存のRole限定`faucet()`は管理・Fixture用途として分離する。
-- Public FaucetはTestnet専用であり、Sybil-resistantな配布、本人単位の上限または経済価値の配布を目的としない。
-- Clientは現在のPlan価格とVersionをContractから読み、Subscription ContractへPlan価格と同額だけApproveする。無制限Approveを要求しない。
-- SubscriptionごとにテストユーザIDと時刻から一意なPayment Referenceを生成し、Walletへ署名対象Transactionを個別表示する。
-- Subscription価格は`tJPYC`で表示する。Sepolia ETHはNetwork Gasだけであり、料金、売上、寄附またはJPYC相当額として扱わない。
-- Transaction Hashの生成だけでは成功とせず、Receiptが`success`になった後に残高、Allowance、Planおよび`isActive`を再取得する。
+- `MockJPYC`は無価値、償還不可、実在JPYCと交換不可であることを画面とコントラクトで表示する。
+- 各アドレスは公開 `claim()`から一回だけ`2,000 tJPYC`を取得できる。既存の役割限定`faucet()`は管理・Fixture用途として分離する。
+- 公開 Faucetはテストネット専用であり、Sybil-resistantな配布、本人単位の上限または経済価値の配布を目的としない。
+- クライアントは現在の計画価格と版をコントラクトから読み、サブスクリプションコントラクトへ計画価格と同額だけApproveする。無制限Approveを要求しない。
+- サブスクリプションごとにテストユーザIDと時刻から一意な決済参照を生成し、ウォレットへ署名対象トランザクションを個別表示する。
+- サブスクリプション価格は`tJPYC`で表示する。Sepolia ETHはネットワークガスだけであり、料金、売上、寄附またはJPYC相当額として扱わない。
+- トランザクションハッシュの生成だけでは成功とせず、Receiptが`success`になった後に残高、Allowance、計画および`isActive`を再取得する。
 
-現行JourneyはユーザWalletから直接Transactionを送るため、Sepolia ETHをGasとして必要とする。これはADR-0008およびProtocolが目標とするRelayer／PaymasterによるGas Sponsored Flowの完成形ではない。Gas Sponsorshipが実装されるまで、公開Demoはこの制約を明示する。
+現行利用フローはユーザウォレットから直接トランザクションを送るため、Sepolia ETHをガスとして必要とする。これはADR-0008およびプロトコルが目標とするリレイヤー／ペイマスターによるガス Sponsored フローの完成形ではない。ガス代支援が実装されるまで、公開デモはこの制約を明示する。
 
-### 5. Playerは合成PreviewとUI Gateに限定する
+### 5. プレーヤーは合成プレビューとUI ゲートに限定する
 
-- 公開ページ内で短いmono PCM WAVを生成し、実在楽曲、Upload、外部Audio URLまたは著作権処理済み音源を必要としない。
-- Preview TrackはSubscriptionなしでPlay、Pause、SeekおよびVolumeを試せる。
-- Subscriber TrackはSepolia上の確定済み`isActive`状態を取得できた場合だけUI上で再生可能にする。
-- このUI GateはGatewayのStreaming Authorization、Rights確認、Playback Session、Delivery EvidenceまたはVerified Usageではない。
-- Navidromeと保護音源へ直接接続せず、本番StreamingはADR-0009のGatewayを唯一の公開境界とする。
+- 公開ページ内で短いmono PCM WAVを生成し、実在楽曲、アップロード、外部音声 URLまたは著作権処理済み音源を必要としない。
+- プレビュー楽曲はサブスクリプションなしでPlay、停止、Seekおよびボリュームを試せる。
+- Subscriber 楽曲はSepolia上の確定済み`isActive`状態を取得できた場合だけUI上で再生可能にする。
+- このUI ゲートはゲートウェイのストリーミング認可、権利確認、再生セッション、配信証跡または検証済み利用実績ではない。
+- Navidromeと保護音源へ直接接続せず、本番ストリーミングはADR-0009のゲートウェイを唯一の公開境界とする。
 
-## Security and Privacy Boundary
+## セキュリティ・プライバシー境界
 
-- Mainnet、実在JPYC、本番Wallet、本番資金および秘密情報の利用を求めない。
-- Walletを自動接続せず、秘密鍵またはSeed Phraseを受信・保存しない。
-- Contract書込みは検証済みManifest、Sepolia、明示Wallet操作がすべて成立した場合だけ許可する。
-- `approve`、`claim`、`subscribe`を一つの不透明な操作にまとめず、ユーザがWalletで個別確認できるようにする。
-- AliasはOff-chainのTab-local Data、Wallet AddressとTransactionはPublic Chain Dataとして別のPrivacy Noticeを表示する。
-- Client表示、Session Storage、Transaction HashまたはPending ReceiptをGateway認可に利用しない。
+- Mainnet、実在JPYC、本番ウォレット、本番資金および秘密情報の利用を求めない。
+- ウォレットを自動接続せず、秘密鍵またはSeed Phraseを受信・保存しない。
+- コントラクト書込みは検証済みマニフェスト、Sepolia、明示ウォレット操作がすべて成立した場合だけ許可する。
+- `approve`、`claim`、`subscribe`を一つの不透明な操作にまとめず、ユーザがウォレットで個別確認できるようにする。
+- AliasはオフチェーンのTab-local データ、ウォレットアドレスとトランザクションは公開チェーンデータとして別のプライバシー通知を表示する。
+- クライアント表示、セッションストレージ、トランザクションハッシュまたはPending Receiptをゲートウェイ認可に利用しない。
 
-## Consequences
+## 影響
 
-### Positive
+### 利点
 
-- 公開静的サイトだけで登録、Wallet、Test Asset、Subscription、Playerの順序と安全表示を検証できる。
-- Backend Secretや任意Address入力を持たず、未デプロイ中もPreview体験を維持しながらChain書込みを停止できる。
-- exact-amount Approveと一操作一Transactionにより、Wallet確認内容を理解しやすい。
-- 合成音源によりRights、Privacyおよび外向き通信量を増やさずPlayer操作を確認できる。
-- Contract DeploymentとUI公開をManifestで分離し、Source Commitを追跡できる。
+- 公開静的サイトだけで登録、ウォレット、テスト資産、サブスクリプション、プレーヤーの順序と安全表示を検証できる。
+- Backend Secretや任意アドレス入力を持たず、未デプロイ中もプレビュー体験を維持しながらチェーン書込みを停止できる。
+- exact-amount Approveと一操作一トランザクションにより、ウォレット確認内容を理解しやすい。
+- 合成音源により権利、プライバシーおよび外向き通信量を増やさずプレーヤー操作を確認できる。
+- コントラクトデプロイとUI公開をマニフェストで分離し、ソースコミットを追跡できる。
 
-### Trade-offs
+### トレードオフ
 
-- GitHub PagesだけではRelayer、Rate Limit、Abuse Control、Authenticator、Gateway Cookie Sessionまたは保護Streamingを提供できない。
-- 一Address一回のFaucetはSybil対策ではなく、Testnet Tokenの供給制限として弱い。
-- Direct Wallet TransactionはユーザにSepolia ETHと複数回のWallet確認を要求する。
-- On-chain RPC障害、Wallet実装差およびTestnet CongestionがDemo体験へ影響する。
-- Subscriber TrackのUI Gateは本番認可の証拠にならず、別途Gateway／Indexer統合が必要になる。
+- GitHub Pagesだけではリレイヤー、率制限、不正利用制御、認証器、ゲートウェイ Cookie セッションまたは保護ストリーミングを提供できない。
+- 一アドレス一回のFaucetはシビル対策ではなく、テストネットトークンの供給制限として弱い。
+- 直接ウォレットトランザクションはユーザにSepolia ETHと複数回のウォレット確認を要求する。
+- オンチェーン RPC障害、ウォレット実装差およびテストネット Congestionがデモ体験へ影響する。
+- Subscriber 楽曲のUI ゲートは本番認可の証拠にならず、別途ゲートウェイ／インデクサー統合が必要になる。
 
-## Alternatives Considered
+## 検討した代替案
 
 ### Browser-only Alias登録を維持する
 
-Privacy Noticeの確認には十分だが、決済とPlayerを含むVertical SliceのUXを検証できないため、登録前の一部機能としてのみ残す。
+プライバシー通知の確認には十分だが、決済とプレーヤーを含む最小縦断実装のUXを検証できないため、登録前の一部機能としてのみ残す。
 
-### Contract Addressをユーザに入力させる
+### コントラクトアドレスをユーザに入力させる
 
-Phishing、誤Chainおよび偽TokenへのTransactionを公式UIから誘導し得るため採用しない。
+Phishing、誤チェーンおよび偽トークンへのトランザクションを公式UIから誘導し得るため採用しない。
 
-### GitHub PagesへRPC KeyまたはRelayer Keyを埋め込む
+### GitHub PagesへRPC 鍵またはリレイヤー鍵を埋め込む
 
-静的Assetから秘密情報を回収でき、権限分離とRotationを成立させられないため禁止する。
+静的資産から秘密情報を回収でき、権限分離とローテーションを成立させられないため禁止する。
 
-### MockJPYCを初回表示時に自動ApproveしてSubscriptionを開始する
+### MockJPYCを初回表示時に自動Approveしてサブスクリプションを開始する
 
-Wallet Consent、Asset、Amountおよび各Transactionの状態が不透明になるため採用しない。
+ウォレット同意、資産、Amountおよび各トランザクションの状態が不透明になるため採用しない。
 
 ### 実在楽曲または公開Navidromeを直接再生する
 
-Rights、Credential、Media IDおよびStreaming Authorization境界を迂回するため、公開Journeyでは採用しない。
+権利、資格証明、メディア IDおよびストリーミング認可境界を迂回するため、公開利用フローでは採用しない。
 
-## Acceptance Criteria
+## 受入基準
 
-1. Profile登録前にWallet操作が有効にならず、Profile登録だけでは課金または限定Trackが有効にならない。
-2. Sepolia以外、無効Manifest、未デプロイ、不正Addressまたは不正Source Commitでは全Contract書込みが無効になる。
-3. WalletのAccount／Chain変更で古い残高、Allowance、Subscriptionおよび限定Track資格を使用しない。
-4. Public `claim()`は各Addressで一回だけ成功し、固定`2,000 tJPYC`以外をユーザが指定できない。
-5. Approve額が現在のPlan価格と一致し、無制限Approveを要求しない。
-6. Receipt成功後だけSubscription状態を再取得し、PendingまたはFailed Transactionを有効と表示しない。
-7. PreviewはContract未デプロイでも操作でき、Subscriber Trackは確定済みActive Subscriptionなしでは再生できない。
-8. Public Clientから秘密鍵、Seed Phrase、Relayer Credential、Navidrome Credentialまたは保護Audio URLを取得できない。
-9. DesktopとMobile Viewportで操作でき、非同期状態を`aria-live`等で通知する。
-10. Contract Test、Manifest Negative Test、合成WAV Test、VitePress Buildおよび生成Site検査が自動化される。
+1. プロフィール登録前にウォレット操作が有効にならず、プロフィール登録だけでは課金または限定楽曲が有効にならない。
+2. Sepolia以外、無効マニフェスト、未デプロイ、不正アドレスまたは不正ソースコミットでは全コントラクト書込みが無効になる。
+3. ウォレットのアカウント／チェーン変更で古い残高、Allowance、サブスクリプションおよび限定楽曲資格を使用しない。
+4. 公開 `claim()`は各アドレスで一回だけ成功し、固定`2,000 tJPYC`以外をユーザが指定できない。
+5. Approve額が現在の計画価格と一致し、無制限Approveを要求しない。
+6. Receipt成功後だけサブスクリプション状態を再取得し、PendingまたはFailed トランザクションを有効と表示しない。
+7. プレビューはコントラクト未デプロイでも操作でき、Subscriber 楽曲は確定済み有効サブスクリプションなしでは再生できない。
+8. 公開クライアントから秘密鍵、Seed Phrase、リレイヤー資格証明、Navidrome 資格証明または保護音声 URLを取得できない。
+9. Desktopとモバイル Viewportで操作でき、非同期状態を`aria-live`等で通知する。
+10. コントラクトテスト、マニフェスト欠点テスト、合成WAV テスト、VitePress ビルドおよび生成Site検査が自動化される。
 
-## Implementation Status
+## 実装状態
 
-2026-08-23時点で、Journey UI、Manifest検証、合成Player、一回限りのMockJPYC `claim()`、Contract Testおよび公開Site TestをRepositoryへ実装済みである。公開構成Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`をEthereum Sepoliaへデプロイし、Manifestを`active`へ更新した。公開RPCでBytecode、MockJPYC Notice／Claim額、SubscriptionのAsset／Treasury／Plan、ERC-1967 Implementation Slotおよび音楽クリエーター登録台帳 Noticeを検証済みである。Etherscan Source Verification、Bootstrap Role分離、Relayer／Paymaster、Gateway／Indexer連携および本番Streaming Authorizationは未実装である。この部分実装は本ADRの採用確定、Security Auditまたは本番利用承認を意味しない。
+2026-08-23時点で、利用フロー UI、マニフェスト検証、合成プレーヤー、一回限りのMockJPYC `claim()`、コントラクトテストおよび公開Site テストをリポジトリへ実装済みである。公開構成ソースコミット `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`をEthereum Sepoliaへデプロイし、マニフェストを`active`へ更新した。公開RPCでBytecode、MockJPYC 通知／主張額、サブスクリプションの資産／資金庫／計画、ERC-1967 実装スロットおよび音楽クリエーター登録台帳通知を検証済みである。Etherscan ソース検証、Bootstrap 役割分離、リレイヤー／ペイマスター、ゲートウェイ／インデクサー連携および本番ストリーミング認可は未実装である。この部分実装は本ADRの採用確定、セキュリティ監査または本番利用承認を意味しない。
 
-## Related Documents
+## 関連文書
 
-- [ADR-0007 Blockchain / L2 Strategy](./ADR-0007-blockchain-l2-strategy.md)
-- [ADR-0008 Account / Wallet / Identity Strategy](./ADR-0008-account-wallet-identity-strategy.md)
-- [ADR-0009 Navidrome / Streaming Authorization Gateway](./ADR-0009-navidrome-streaming-gateway.md)
-- [ADR-0011 Integrated Player Client](./ADR-0011-integrated-player-client.md)
+- [ADR-0007 ブロックチェーン / L2 戦略](./ADR-0007-blockchain-l2-strategy.md)
+- [ADR-0008 アカウント / ウォレット / アイデンティティ戦略](./ADR-0008-account-wallet-identity-strategy.md)
+- [ADR-0009 Navidrome / ストリーミング認可ゲートウェイ](./ADR-0009-navidrome-streaming-gateway.md)
+- [ADR-0011 統合プレーヤークライアント](./ADR-0011-integrated-player-client.md)
 - [テストユーザ利用フローデモ](/demo/test-user-registration)
 - [Sepolia スマートコントラクト](/demo/testnet-contracts)
-- [Subscription Settlement仕様](/protocol/specs/subscription-settlement)
-- [Player Client仕様](/protocol/specs/player-client)
+- [サブスクリプション精算仕様](/protocol/specs/subscription-settlement)
+- [プレーヤークライアント仕様](/protocol/specs/player-client)

@@ -5,7 +5,7 @@ robots: noindex, follow
 search: false
 ---
 
-# 6. 経済モデル — Economic Model
+# 6. 経済モデル
 
 ## 6.1 本章の目的
 
@@ -29,17 +29,17 @@ Creator First Platform の経済モデルは、単に「1再生あたりいく�
 
 ```mermaid
 flowchart TD
-    SUB[Subscription Revenue]
-    SUB --> COST[Required Costs]
-    COST --> NET[Distributable Revenue]
+    SUB[サブスクリプション収益]
+    SUB --> COST[必要経費]
+    COST --> NET[分配可能収益]
 
-    NET --> U[Usage-based Pool]
-    NET --> G[Growth Pool]
-    NET --> O[Operation Pool]
+    NET --> U[利用実績連動プール]
+    NET --> G[成長支援プール]
+    NET --> O[運用プール]
 
     U --> CREATOR[音楽クリエーター／権利者]
-    G --> EMERGING[Emerging 音楽クリエーター]
-    O --> PLATFORM[Platform Sustainability]
+    G --> EMERGING[新人音楽クリエーター]
+    O --> PLATFORM[プラットフォーム持続可能性]
 ```
 
 ::: info 数式について
@@ -60,23 +60,23 @@ flowchart TD
 
 音楽クリエーター支援のためにユーザの利便性や満足度を犠牲にしない。
 
-### Transparent Rules
+### 透明なルール
 
 分配ルール、控除項目、主要パラメータを可能な限り明確にする。
 
-### Fair Opportunity
+### 公正な機会
 
 人気の平等ではなく、発見される機会と参加機会の公平性を重視する。
 
-### Rights First
+### 権利優先
 
 権利関係を無視して経済的効率だけを追求しない。
 
-### Sustainable Platform
+### 持続可能なプラットフォーム
 
 運営費を極端に削減してサービスの品質、安全性、法令遵守を損なわない。
 
-### Governed Economics
+### 統治された経済
 
 重要な経済パラメータを運営企業だけの裁量で変更しない。
 
@@ -90,9 +90,9 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    USER[Listener]
-    PLAN[Subscription Plan]
-    ACCESS[Music Access]
+    USER[ユーザ]
+    PLAN[サブスクリプション計画]
+    ACCESS[音楽アクセス]
     ECON[音楽クリエーター経済]
 
     USER --> PLAN
@@ -100,9 +100,9 @@ flowchart LR
     PLAN --> ECON
 ```
 
-初期段階では複雑な投機的トークン経済をユーザへ要求せず、JPYC等の承認済み法定通貨連動型ステーブルコインによる単純な定額決済を中心とする。ETH等の価格変動するNative Tokenはサービス料金ではなく、必要に応じてRelayerまたはPaymasterが抽象化するNetwork Feeとして扱う。
+初期段階では複雑な投機的トークン経済をユーザへ要求せず、JPYC等の承認済み法定通貨連動型ステーブルコインによる単純な定額決済を中心とする。ETH等の価格変動するネイティブトークンはサービス料金ではなく、必要に応じてリレイヤーまたはペイマスターが抽象化するネットワーク手数料として扱う。
 
-将来的には複数プランや追加的な 音楽クリエーター支援 機能を検討できるが、基本アクセスと投機的トークン保有を結び付けない。
+将来的には複数プランや追加的な音楽クリエーター支援機能を検討できるが、基本アクセスと投機的トークン保有を結び付けない。
 
 ---
 
@@ -141,18 +141,18 @@ $$
 
 ```mermaid
 flowchart TD
-    NET[Distributable Revenue]
+    NET[分配可能収益]
 
-    NET --> U[Usage-based Pool]
-    NET --> G[Growth Pool]
-    NET --> O[Operation Pool]
+    NET --> U[利用実績連動プール]
+    NET --> G[成長支援プール]
+    NET --> O[運用プール]
 
     U --> U1[利用に基づく権利者還元]
     G --> G1[新人・発見・成長支援]
     O --> O1[運営・開発・法務・安全性]
 ```
 
-Usage-based Pool、Growth Pool、Operation Pool の比率をそれぞれ $\alpha$、$\beta$、$\gamma$ とすると、
+利用実績連動プール、成長支援プール、運用プールの比率をそれぞれ $\alpha$、$\beta$、$\gamma$ とすると、
 
 $$
 \alpha + \beta + \gamma = 1
@@ -192,9 +192,9 @@ $\alpha$、$\beta$、$\gamma$ はホワイトペーパー段階では固定し�
 
 ---
 
-## 6.6 Usage-based Pool
+## 6.6 利用実績連動プール
 
-Usage-based Pool は、実際に利用された作品と、その権利者への基本的な還元を担う。
+利用実績連動プールは、実際に利用された作品と、その権利者への基本的な還元を担う。
 
 最も単純な概念モデルでは、作品 $i$ の有効利用量を $p_i$ とすると、その作品への分配額 $D_i$ を、
 
@@ -211,11 +211,11 @@ $$
 
 ```mermaid
 flowchart LR
-    RAW[Raw Plays]
-    VALID[Valid Usage]
-    FRAUD[Fraud Filtering]
-    WEIGHT[Usage Weight]
-    DIST[Distribution]
+    RAW[生の再生回数]
+    VALID[有効利用実績]
+    FRAUD[不正除外]
+    WEIGHT[利用実績重み]
+    DIST[分配]
 
     RAW --> FRAUD
     FRAUD --> VALID
@@ -223,7 +223,7 @@ flowchart LR
     WEIGHT --> DIST
 ```
 
-再生時間、不正判定、重複、権利状態などを考慮した **Valid Usage** を利用する。
+再生時間、不正判定、重複、権利状態などを考慮した **有効利用実績** を利用する。
 
 ---
 
@@ -251,7 +251,7 @@ $$
 
 例えば不正と判定されたイベントは $v_e = 0$ とすることが考えられる。
 
-ただし、具体的な検証ルールは Usage Oracle と不正対策の仕様で決定する。
+ただし、具体的な検証ルールは利用実績オラクルと不正対策の仕様で決定する。
 
 ---
 
@@ -280,13 +280,13 @@ $$
 
 ---
 
-## 6.9 ユーザ中心 な要素
+## 6.9 ユーザ中心な要素
 
 全ユーザの再生を一つの巨大なプールへ集約する方式だけでなく、
 
 > **あるユーザが支払った価値を、そのユーザが実際に支持した音楽クリエーターへより強く結び付ける**
 
-ユーザ中心 的な考え方を導入できる。
+ユーザ中心的な考え方を導入できる。
 
 ユーザ $u$ の分配対象額を $B_u$、そのユーザによる作品 $i$ の有効利用重みを $w_{u,i}$ とすると、
 
@@ -311,17 +311,17 @@ $$
 
 ```mermaid
 flowchart TD
-    USER[ユーザサブスクリプション Share]
-    USER --> A[Artist A]
-    USER --> B[Artist B]
-    USER --> C[Artist C]
+    USER[ユーザサブスクリプション比率]
+    USER --> A[アーティスト A]
+    USER --> B[アーティスト B]
+    USER --> C[アーティスト C]
 
     A -->|そのユーザの利用比率| DIST[音楽クリエーター分配]
     B -->|そのユーザの利用比率| DIST
     C -->|そのユーザの利用比率| DIST
 ```
 
-完全な ユーザ中心 方式が常に最適とは限らないため、実証データをもとに評価する。
+完全なユーザ中心方式が常に最適とは限らないため、実証データをもとに評価する。
 
 ---
 
@@ -357,9 +357,9 @@ $$
 
 ```mermaid
 flowchart TD
-    VALUE[ユーザの経済的 Contribution]
-    VALUE --> LISTEN[Listening-based]
-    VALUE --> SUPPORT[Explicit Support]
+    VALUE[ユーザの経済的貢献]
+    VALUE --> LISTEN[聴取実績連動]
+    VALUE --> SUPPORT[明示的支援]
 
     LISTEN --> C1[聴取された音楽クリエーター]
     SUPPORT --> C2[ユーザが選択した音楽クリエーター]
@@ -369,13 +369,13 @@ flowchart TD
 
 ---
 
-## 6.11 Growth Pool
+## 6.11 成長支援プール
 
 再生実績だけで分配すると、すでに大きな利用量を持つ作品へ資金が集中しやすい。
 
-そこで、Usage-based Poolとは別に **Growth Pool** を設ける。
+そこで、利用実績連動プールとは別に **成長支援プール** を設ける。
 
-Growth Pool の目的は、
+成長支援プールの目的は、
 
 > **人気を人工的に平等化することではなく、まだ十分に発見されていない音楽クリエーターに成長機会を提供すること**
 
@@ -383,22 +383,22 @@ Growth Pool の目的は、
 
 ```mermaid
 flowchart LR
-    G[Growth Pool]
+    G[成長支援プール]
     G --> NEW[新人音楽クリエーター]
-    G --> DISC[Discovery]
-    G --> COMMUNITY[Community Support]
-    G --> PROJECT[Creative Projects]
+    G --> DISC[発見]
+    G --> COMMUNITY[コミュニティ支援]
+    G --> PROJECT[創作プロジェクト]
 ```
 
 ---
 
-## 6.12 Growth Score
+## 6.12 成長スコア
 
-Growth Pool の配分に単純な再生数ランキングを使えば、Usage-based Pool と同じ集中が起きる。
+成長支援プールの配分に単純な再生数ランキングを使えば、利用実績連動プールと同じ集中が起きる。
 
-そこで、複数の要素を使った Growth Score を検討する。
+そこで、複数の要素を使った成長スコアを検討する。
 
-作品または音楽クリエーター $i$ の Growth Score を $G_i$ とすると、
+作品または音楽クリエーター $i$ の成長スコアを $G_i$ とすると、
 
 $$
 G_i =
@@ -423,7 +423,7 @@ $$
 
 などである。
 
-::: warning Growth Score は未確定
+::: warning 成長スコアは未確定
 関数 $f$ は現時点では定義していない。
 
 これは「どのような情報を考慮し得るか」を示す概念式であり、最終的なランキング式や分配式ではない。
@@ -431,9 +431,9 @@ $$
 
 ---
 
-## 6.13 Growth Pool の概念的配分
+## 6.13 成長支援プールの概念的配分
 
-Growth Score が確定したと仮定した場合、単純な正規化モデルとして、
+成長スコアが確定したと仮定した場合、単純な正規化モデルとして、
 
 $$
 M_i =
@@ -446,9 +446,9 @@ $$
 
 ここで、
 
-- $G$：Growth Pool の総額
-- $G_i$：対象 $i$ の Growth Score
-- $M_i$：Growth Pool からの配分額
+- $G$：成長支援プールの総額
+- $G_i$：対象 $i$ の成長スコア
+- $M_i$：成長支援プールからの配分額
 
 である。
 
@@ -456,9 +456,9 @@ $$
 
 ---
 
-## 6.14 Quadratic Funding
+## 6.14 二次資金配分
 
-Growth Pool の一部では、Quadratic Funding の考え方を利用できる。
+成長支援プールの一部では、二次資金配分の考え方を利用できる。
 
 基本的な発想は、
 
@@ -466,7 +466,7 @@ Growth Pool の一部では、Quadratic Funding の考え方を利用できる�
 
 ことである。
 
-音楽クリエーターまたはプロジェクト $i$ への、ユーザ $u$ の支援額を $c_{u,i}$ とすると、Quadratic Funding の基礎的なスコアを、
+音楽クリエーターまたはプロジェクト $i$ への、ユーザ $u$ の支援額を $c_{u,i}$ とすると、二次資金配分の基礎的なスコアを、
 
 $$
 Q_i =
@@ -479,22 +479,22 @@ $$
 
 ```mermaid
 flowchart LR
-    U1[ユーザ 1] --> P[音楽クリエーター / Project]
+    U1[ユーザ 1] --> P[音楽クリエーター / プロジェクト]
     U2[ユーザ 2] --> P
     U3[ユーザ 3] --> P
     U4[ユーザ 4] --> P
 
-    P --> QF[Quadratic Funding]
-    QF --> MATCH[Growth Pool Match]
+    P --> QF[二次資金配分]
+    QF --> MATCH[成長支援プール一致度]
 ```
 
 ただし、この $Q_i$ をそのまま配分額とするわけではない。
 
-実際のマッチングでは、直接支援額を除いたマッチング需要、Growth Pool の上限、Sybil Resistance、各種キャップ等を考慮する必要がある。
+実際のマッチングでは、直接支援額を除いたマッチング需要、成長支援プールの上限、シビル耐性、各種キャップ等を考慮する必要がある。
 
 ---
 
-## 6.15 Quadratic Funding のマッチング概念
+## 6.15 二次資金配分のマッチング概念
 
 プロジェクト $i$ への直接支援総額を、
 
@@ -505,7 +505,7 @@ $$
 
 とする。
 
-Quadratic Funding による追加的なマッチング需要の概念値を、
+二次資金配分による追加的なマッチング需要の概念値を、
 
 $$
 M_i^{*}
@@ -515,7 +515,7 @@ $$
 
 と置くことができる。
 
-実際の Growth Pool が有限であるため、マッチング需要総額が利用可能額を超える場合には正規化が必要となる。
+実際の成長支援プールが有限であるため、マッチング需要総額が利用可能額を超える場合には正規化が必要となる。
 
 例えばマッチングに利用できる額を $G_Q$ とすると、
 
@@ -533,9 +533,9 @@ $$
 
 ---
 
-## 6.16 Sybil Resistance
+## 6.16 シビル耐性
 
-Quadratic Funding では、一人が多数のアカウントへ支援を分割するとスコアを不正に高められる可能性がある。
+二次資金配分では、一人が多数のアカウントへ支援を分割するとスコアを不正に高められる可能性がある。
 
 したがって、ユーザ $u$ に対する信頼重み $a_u$ を導入する概念も考えられる。
 
@@ -562,21 +562,21 @@ $$
 
 ---
 
-## 6.17 Early Support
+## 6.17 初期支援
 
 ユーザが新人音楽クリエーターを早期に発見し、応援すること自体をプラットフォーム体験の一部にする。
 
 ```mermaid
 flowchart LR
-    DISCOVER[Early Discovery]
-    FOLLOW[Follow]
-    SUPPORT[Support]
+    DISCOVER[初期発見]
+    FOLLOW[フォロー]
+    SUPPORT[支援]
     GROWTH[音楽クリエーターの成長]
 
     DISCOVER --> FOLLOW --> SUPPORT --> GROWTH
 ```
 
-ただし Early Support を金融投資化しない。
+ただし初期支援を金融投資化しない。
 
 「将来人気になれば金銭的リターンが得られる」ことを中心にすると、音楽発見ではなく投機市場になる。
 
@@ -584,24 +584,24 @@ Creator First Platform では、支援と証券的・投機的インセンティ
 
 ---
 
-## 6.18 Support Reputation
+## 6.18 支援評価
 
 初期から新人を発見したユーザに、金銭ではなくコミュニティ上の評価を与えることは考えられる。
 
 例えば、
 
-- Early Supporter
-- Discovery Contributor
-- Community Curator
+- 初期サポーター
+- 発見貢献者
+- コミュニティキュレーター
 
 などの履歴である。
 
 ```mermaid
 flowchart LR
     USER[ユーザ]
-    EARLY[Early Support]
+    EARLY[初期支援]
     CREATOR[音楽クリエーターの成長]
-    REP[Reputation]
+    REP[評価]
 
     USER --> EARLY
     EARLY --> CREATOR
@@ -609,15 +609,15 @@ flowchart LR
     REP --> USER
 ```
 
-Reputation がガバナンス権力や推薦操作へ直接変換される場合には慎重な設計が必要になる。
+評価がガバナンス権力や推薦操作へ直接変換される場合には慎重な設計が必要になる。
 
 ---
 
-## 6.19 Operation Pool
+## 6.19 運用プール
 
 Creator First Platform が長期的に存続するには、運営費用が必要である。
 
-Operation Pool は例えば、
+運用プールは例えば、
 
 - クラウド・CDN
 - ソフトウェア開発
@@ -634,17 +634,17 @@ Operation Pool は例えば、
 
 ```mermaid
 flowchart TD
-    OPS[Operation Pool]
+    OPS[運用プール]
 
-    OPS --> CLOUD[Infrastructure]
-    OPS --> DEV[Development]
-    OPS --> SEC[Security]
-    OPS --> RIGHTS[Rights / Legal]
-    OPS --> SUPPORT[Support]
-    OPS --> AUDIT[Audit]
+    OPS --> CLOUD[インフラ]
+    OPS --> DEV[開発]
+    OPS --> SEC[セキュリティ]
+    OPS --> RIGHTS[権利 / 法務]
+    OPS --> SUPPORT[支援]
+    OPS --> AUDIT[監査]
 ```
 
-音楽クリエーター中心 は「運営会社が利益を得てはいけない」という意味ではない。
+音楽クリエーター中心は「運営会社が利益を得てはいけない」という意味ではない。
 
 重要なのは、
 
@@ -661,7 +661,7 @@ flowchart TD
 したがって、
 
 $$
-\mathrm{Corporate\ Profit} \geq 0
+\mathrm{法人\ Profit} \geq 0
 $$
 
 を前提とする。
@@ -670,19 +670,19 @@ $$
 
 ```mermaid
 flowchart LR
-    REV[Revenue]
+    REV[収益]
     REV --> CREATOR[音楽クリエーター経済]
-    REV --> SERVICE[Service Sustainability]
-    SERVICE --> PROFIT[Corporate Profit]
+    REV --> SERVICE[サービス持続可能性]
+    SERVICE --> PROFIT[会社利益]
 ```
 
 利益率や運営費がブラックボックス化し、音楽クリエーターへの還元を一方的に圧縮できる構造は避ける。
 
 ---
 
-## 6.21 音楽クリエーター比率 Floor
+## 6.21 音楽クリエーター分配率の下限
 
-音楽クリエーター中心 の理念をより強く制度化する場合、一定の分配可能額について 音楽クリエーター経済 に最低比率を設定することも検討できる。
+音楽クリエーター中心の理念をより強く制度化する場合、一定の分配可能額について音楽クリエーター経済に最低比率を設定することも検討できる。
 
 音楽クリエーター経済への最低配分比率を $\alpha_{\min}$ とすると、
 
@@ -704,11 +704,11 @@ $$
 
 ```mermaid
 flowchart LR
-    BOT[Bot / Fraud]
-    BOT --> FAKE[Fake Usage]
-    FAKE --> MONEY[Illicit Distribution]
+    BOT[ボット / 不正]
+    BOT --> FAKE[偽造利用実績]
+    FAKE --> MONEY[不正な分配]
 
-    VERIFY[Usage Verification] --> FAKE
+    VERIFY[利用実績検証] --> FAKE
 ```
 
 不正イベントの割合を $\phi$ とし、生の利用量を $p_i^{\mathrm{raw}}$ とした単純化例では、
@@ -734,19 +734,19 @@ $$
 
 ```mermaid
 flowchart TD
-    POP[Popularity]
-    POP --> REC[Recommendation]
-    REC --> PLAY[More Plays]
-    PLAY --> MONEY[More Revenue]
-    MONEY --> VIS[More Visibility]
+    POP[人気度]
+    POP --> REC[推薦]
+    REC --> PLAY[再生増加]
+    PLAY --> MONEY[増加収益]
+    MONEY --> VIS[増加可視性]
     VIS --> POP
 ```
 
 これに対し、
 
-- Usage-based Pool は実利用を尊重する
-- Growth Pool は成長機会を補完する
-- Discovery は推薦機会を多様化する
+- 利用実績連動プールは実利用を尊重する
+- 成長支援プールは成長機会を補完する
+- 発見は推薦機会を多様化する
 - ユーザは推薦モードを選択できる
 
 という複数レイヤーで対応する。
@@ -759,9 +759,9 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    REC[Recommendation System]
-    USAGE[Actual Usage]
-    DIST[Distribution]
+    REC[推薦システム]
+    USAGE[実際の利用実績]
+    DIST[分配]
 
     REC --> USAGE
     USAGE --> DIST
@@ -781,11 +781,11 @@ flowchart LR
 flowchart TD
     USER[ユーザ]
 
-    USER --> SUB[Subscription]
-    USER --> TIP[Direct Support]
-    USER --> PROJECT[Project Support]
+    USER --> SUB[サブスクリプション]
+    USER --> TIP[直接支援]
+    USER --> PROJECT[プロジェクト支援]
 
-    SUB --> ECON[Platform Economy]
+    SUB --> ECON[プラットフォーム経済]
     TIP --> CREATOR[音楽クリエーター]
     PROJECT --> CREATOR
 ```
@@ -793,8 +793,8 @@ flowchart TD
 法的・決済上の要件を確認した上で、
 
 - Tip
-- Project Support
-- Membership的支援
+- プロジェクト支援
+- 議員資格的支援
 - 限定イベント等
 
 を将来的な機能として検討できる。
@@ -807,8 +807,8 @@ Creator First Platform は、独自トークンの価格上昇によって成立
 
 ```mermaid
 flowchart LR
-    MUSIC[Music Economy]
-    TOKEN[Token Price]
+    MUSIC[音楽経済]
+    TOKEN[トークン価格]
 
     TOKEN -.->|依存しない| MUSIC
 ```
@@ -829,15 +829,15 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    COMPANY[Operating Corporation]
+    COMPANY[運営株式会社]
 
-    INVESTOR[Investors] -->|STO / Capital| COMPANY
-    USERS[Subscribers] -->|Service Revenue| COMPANY
+    INVESTOR[投資家] -->|STO / 資本| COMPANY
+    USERS[加入者] -->|サービス収益| COMPANY
 
-    COMPANY --> SERVICE[Platform Operations]
+    COMPANY --> SERVICE[プラットフォーム運用]
     SERVICE --> CREATOR[音楽クリエーター分配]
 
-    COMPANY --> INVESTORRETURN[Investor Rights / Returns]
+    COMPANY --> INVESTORRETURN[投資家権利 / リターン]
 ```
 
 投資家の権利と、ユーザ・音楽クリエーターによるプロトコルガバナンスを混同しないことが重要である。
@@ -848,18 +848,18 @@ flowchart TD
 
 ## 6.28 ガバナンス可能な経済パラメータ
 
-重要な経済パラメータの一部は、音楽クリエータ院議会 と ユーザ院議会 のガバナンス対象とする。
+重要な経済パラメータの一部は、音楽クリエータ院議会とユーザ院議会のガバナンス対象とする。
 
 例えば、
 
-- $\alpha$：Usage-based Pool 比率
-- $\beta$：Growth Pool 比率
-- $\gamma$：Operation Pool 比率
-- Growth Pool の評価方式
+- $\alpha$：利用実績連動プール比率
+- $\beta$：成長支援プール比率
+- $\gamma$：運用プール比率
+- 成長支援プールの評価方式
 - 不正利用に関するプロトコルルール
 - 分配頻度
 - 最低分配額
-- Support Allocation の範囲
+- 支援配分の範囲
 - 主要な分配アルゴリズム
 
 などである。
@@ -869,10 +869,10 @@ flowchart TD
     CH[音楽クリエータ院議会]
     UH[ユーザ院議会]
 
-    CH --> GOV[Economic Governance]
+    CH --> GOV[経済ガバナンス]
     UH --> GOV
 
-    GOV --> PARAM[Parameters]
+    GOV --> PARAM[パラメータ]
     PARAM --> SC[スマートコントラクトs]
 ```
 
@@ -889,23 +889,23 @@ flowchart TD
 1. 提案
 2. シミュレーション
 3. 公開レビュー
-4. 音楽クリエータ院議会 審議
-5. ユーザ院議会 審議
+4. 音楽クリエータ院議会審議
+5. ユーザ院議会審議
 6. 法務・会計確認
-7. Timelock
+7. タイムロック
 8. 適用
 
 という手続きを設ける。
 
 ```mermaid
 flowchart LR
-    PROPOSE[Proposal]
-    SIM[Simulation]
-    REVIEW[Public Review]
-    VOTE[Two-House Approval]
-    LEGAL[Legal Check]
-    TIME[Timelock]
-    APPLY[Apply]
+    PROPOSE[提案]
+    SIM[シミュレーション]
+    REVIEW[公開レビュー]
+    VOTE[両院承認]
+    LEGAL[法務検査]
+    TIME[タイムロック]
+    APPLY[適用]
 
     PROPOSE --> SIM --> REVIEW --> VOTE --> LEGAL --> TIME --> APPLY
 ```
@@ -922,25 +922,25 @@ flowchart LR
 - 中位音楽クリエーターへの影響
 - 新人への分配
 - 1ユーザあたりの価値
-- Operation Pool の持続可能性
+- 運用プールの持続可能性
 - 不正利用時の損失
-- Growth Pool の効果
+- 成長支援プールの効果
 
 などを評価する。
 
 ```mermaid
 flowchart TD
-    DATA[Usage / Economic Data]
-    MODEL[Candidate Model]
-    SIM[Simulation]
+    DATA[利用実績 / 経済データ]
+    MODEL[候補モデル]
+    SIM[シミュレーション]
 
     DATA --> SIM
     MODEL --> SIM
 
     SIM --> CREATOR[音楽クリエーターへの影響]
     SIM --> USER[ユーザへの影響]
-    SIM --> COMPANY[Platform Impact]
-    SIM --> RISK[Risk]
+    SIM --> COMPANY[プラットフォーム Impact]
+    SIM --> RISK[リスク]
 ```
 
 例えば総分配額に占める上位 $x\%$ の音楽クリエーターのシェアを、
@@ -967,26 +967,26 @@ $$
 例えば、
 
 - 音楽クリエーターへの総分配率
-- Usage-based Pool の分配
-- Growth Pool の分配
-- Operation Pool
+- 利用実績連動プールの分配
+- 成長支援プールの分配
+- 運用プール
 - 収益集中度
 - 新人音楽クリエーターの継続率
 - 分配対象音楽クリエーター数
-- ユーザの Discovery 利用率
+- ユーザの発見利用率
 - 不正として除外された利用量
 
 などである。
 
 ```mermaid
 flowchart LR
-    ECON[Platform Economy]
-    ECON --> DASH[Transparency Dashboard]
+    ECON[プラットフォーム経済]
+    ECON --> DASH[透明性ダッシュボード]
 
     DASH --> CREATOR[音楽クリエーター指標]
-    DASH --> MONEY[Distribution Metrics]
-    DASH --> GROWTH[Growth Metrics]
-    DASH --> FRAUD[Integrity Metrics]
+    DASH --> MONEY[分配指標]
+    DASH --> GROWTH[成長指標]
+    DASH --> FRAUD[完全性指標]
 ```
 
 個人情報や企業秘密を無制限に公開するのではなく、制度の健全性を検証できる粒度で公開する。
@@ -999,11 +999,11 @@ MVPでは複雑な数理モデルを最初から導入しない。
 
 ```mermaid
 flowchart LR
-    REV[Revenue]
-    REV --> BASIC[Simple Transparent Pools]
-    BASIC --> USAGE[Usage Distribution]
-    BASIC --> GROWTH[Small Growth Pool]
-    BASIC --> OPS[Operations]
+    REV[収益]
+    REV --> BASIC[単純透明プール]
+    BASIC --> USAGE[利用実績分配]
+    BASIC --> GROWTH[Small 成長支援プール]
+    BASIC --> OPS[運用]
 ```
 
 初期段階では、
@@ -1024,10 +1024,10 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    P1[Phase 1<br/>Simple Pools]
-    P2[Phase 2<br/>ユーザ中心 Elements]
-    P3[Phase 3<br/>Growth / QF]
-    P4[Phase 4<br/>Governed Economics]
+    P1[フェーズ 1<br/>単純プール]
+    P2[フェーズ 2<br/>ユーザ中心要素]
+    P3[フェーズ 3<br/>成長 / QF]
+    P4[フェーズ 4<br/>統治された経済]
 
     P1 --> P2 --> P3 --> P4
 ```
@@ -1045,19 +1045,19 @@ flowchart TD
     CONST[3つの憲章]
 
     CONST --> CREATOR[音楽クリエーターの持続可能性]
-    CONST --> USER[ユーザ価値 / Autonomy]
-    CONST --> FAIR[Fair Discovery]
+    CONST --> USER[ユーザ価値 / 自律性]
+    CONST --> FAIR[Fair 発見]
 
-    CREATOR --> ECON[Economic Model]
+    CREATOR --> ECON[経済モデル]
     USER --> ECON
     FAIR --> ECON
 ```
 
 例えば、音楽クリエーターへの分配率を高めるために利用料金を極端に上げ、ユーザが離脱すれば持続可能ではない。
 
-逆に、利用料金を下げるために音楽クリエーター報酬を過度に圧縮すれば 音楽クリエーター中心 の理念に反する。
+逆に、利用料金を下げるために音楽クリエーター報酬を過度に圧縮すれば音楽クリエーター中心の理念に反する。
 
-Growth Pool を増やしすぎて実際によく聴かれた音楽クリエーターへの還元を大きく損なうことも避ける。
+成長支援プールを増やしすぎて実際によく聴かれた音楽クリエーターへの還元を大きく損なうことも避ける。
 
 したがって3つの価値の間の緊張関係を、透明なルールとガバナンスによって調整する。
 
@@ -1067,27 +1067,27 @@ Growth Pool を増やしすぎて実際によく聴かれた音楽クリエー�
 
 ```mermaid
 flowchart TD
-    USER[Listeners]
-    USER -->|Subscription| REV[Revenue]
+    USER[ユーザ]
+    USER -->|サブスクリプション| REV[収益]
 
-    REV --> REQUIRED[Taxes / Payment / Required Costs]
-    REQUIRED --> NET[Distributable Revenue]
+    REV --> REQUIRED[税金 / 決済 / 必要経費]
+    REQUIRED --> NET[分配可能収益]
 
-    NET --> USAGE[Usage-based Pool]
-    NET --> GROWTH[Growth Pool]
-    NET --> OPS[Operation Pool]
+    NET --> USAGE[利用実績連動プール]
+    NET --> GROWTH[成長支援プール]
+    NET --> OPS[運用プール]
 
-    USAGE --> ORACLE[Verified Usage]
-    ORACLE --> RIGHTS[Rights Splits]
+    USAGE --> ORACLE[検証済み利用実績]
+    ORACLE --> RIGHTS[権利分割]
     RIGHTS --> CREATORS[音楽クリエーター／権利者]
 
-    USER -->|Explicit Support| SUPPORT[Support Signals]
+    USER -->|明示的支援| SUPPORT[支援シグナル]
     SUPPORT --> GROWTH
 
-    GROWTH --> EMERGING[Emerging 音楽クリエーター]
-    OPS --> PLATFORM[Platform Sustainability]
+    GROWTH --> EMERGING[新人音楽クリエーター]
+    OPS --> PLATFORM[プラットフォーム持続可能性]
 
-    GOV[音楽クリエータ院議会 + ユーザ院議会] --> RULES[Economic Rules]
+    GOV[音楽クリエータ院議会 + ユーザ院議会] --> RULES[経済ルール]
     RULES --> USAGE
     RULES --> GROWTH
 ```
@@ -1108,12 +1108,12 @@ Creator First Platform の経済モデルは、
 
 ```mermaid
 flowchart LR
-    CREATE[Create]
-    DISCOVER[Discover]
-    LISTEN[Listen]
-    SUPPORT[Support]
-    REWARD[Reward]
-    CREATE2[Create Again]
+    CREATE[創作]
+    DISCOVER[発見]
+    LISTEN[聴取]
+    SUPPORT[支援]
+    REWARD[報酬]
+    CREATE2[創作再び]
 
     CREATE --> DISCOVER
     DISCOVER --> LISTEN
@@ -1133,6 +1133,6 @@ flowchart LR
 
 である。
 
-> **音楽クリエーター中心 とは、音楽クリエーターだけを最大化することではない。音楽クリエーターが創作を続けられ、ユーザが音楽を楽しみ、新しい才能が発見され、その循環を支えるプラットフォームも持続できる経済を設計することである。**
+> **音楽クリエーター中心とは、音楽クリエーターだけを最大化することではない。音楽クリエーターが創作を続けられ、ユーザが音楽を楽しみ、新しい才能が発見され、その循環を支えるプラットフォームも持続できる経済を設計することである。**
 
 このバランスを、固定された企業内部のアルゴリズムではなく、透明なプロトコルとガバナンスによって維持することが本プラットフォームの経済設計の目標である。

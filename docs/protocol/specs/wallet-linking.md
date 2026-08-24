@@ -1,6 +1,6 @@
 ---
-title: SPEC-ACCOUNT-002 Wallet Linking
-description: Wallet関連付け、署名検証、解除、回復時のDraft プロトコル仕様
+title: SPEC-ACCOUNT-002 ウォレット連携
+description: ウォレット関連付け、署名検証、解除、回復時の草案プロトコル仕様
 editLink: false
 ---
 

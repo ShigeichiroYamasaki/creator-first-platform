@@ -1,132 +1,132 @@
 ---
 title: ADR-0015 公開テストネット音楽クリエーター利用フロー
-description: GitHub PagesとSepoliaで仮名音楽クリエーター登録と作品の権利自己申告Commitmentを安全に検証する技術判断。
+description: GitHub PagesとSepoliaで仮名音楽クリエーター登録と作品の権利自己申告コミットメントを安全に検証する技術判断。
 ---
 
 # ADR-0015: 公開テストネット音楽クリエーター利用フロー
 
-**Status:** Proposed
+**状態:** 提案
 
-**Date:** 2026-08-23
+**日付:** 2026-08-23
 
-**Last Updated:** 2026-08-23
+**最終更新日:** 2026-08-23
 
-## Context
+## 背景
 
-既存の音楽クリエーターデモは、仮名Profileと作品Draftを現在のTabのSession Storageへ保存するBrowser Fixtureであり、Wallet、公開Testnetまたはスマートコントラクトを利用していなかった。音楽クリエーター向けの最小Flowを検証するには、Wallet Control、音楽クリエーター識別子、作品申告、取消しおよび公開監査証跡を一続きで試せる必要がある。
+既存の音楽クリエーターデモは、仮名プロフィールと作品草案を現在のTabのセッションストレージへ保存するブラウザ用フィクスチャであり、ウォレット、公開テストネットまたはスマートコントラクトを利用していなかった。音楽クリエーター向けの最小フローを検証するには、ウォレット制御、音楽クリエーター識別子、作品申告、取消しおよび公開監査証跡を一続きで試せる必要がある。
 
-一方、音楽クリエーター登録、Legal Identity、権利者、Payee、作品メタデータ、音源、契約および税務情報は同一ではない。公開Blockchainへ実名、作品名、音源、契約書または権利資料を保存すると、訂正・削除・機密保持が困難になり、Hashだけを置いても低entropy情報の推測やWalletとの関連付けが起こり得る。自己申告TransactionをRights Verificationまたは配信許諾として扱うこともできない。
+一方、音楽クリエーター登録、法務アイデンティティ、権利者、受取人、作品メタデータ、音源、契約および税務情報は同一ではない。公開ブロックチェーンへ実名、作品名、音源、契約書または権利資料を保存すると、訂正・削除・機密保持が困難になり、ハッシュだけを置いても低entropy情報の推測やウォレットとの関連付けが起こり得る。自己申告トランザクションを権利検証または配信許諾として扱うこともできない。
 
-## Decision
+## 決定
 
 公開テストネット音楽クリエーター利用フローを次の4段階で実装する。
 
 ```mermaid
 flowchart LR
     PROFILE[Tab-local pseudonymous profile]
-    WALLET[EIP-1193 Wallet / Sepolia]
+    WALLET[EIP-1193 ウォレット / Sepolia]
     CREATOR[音楽クリエーターコミットメント]
-    RELEASE[Release and rights declaration commitments]
+    RELEASE[リリース・rights declaration commitments]
     REVIEW[Future off-chain review]
 
     PROFILE --> WALLET --> CREATOR --> RELEASE
     RELEASE -. never auto-verifies .-> REVIEW
 ```
 
-### 1. Profileと公開Chain Dataを分離する
+### 1. プロフィールと公開チェーンデータを分離する
 
-- Artist名、活動形態、Genre、ランダムsaltは現在のTabだけに保存する。
-- Chainにはdomain separator、saltおよび入力から生成した`bytes32` Profile Commitmentだけを送る。
-- Wallet Address、Commitment、音楽クリエーターID、Release ID、状態、EventおよびTransactionは公開情報であると表示する。
+- アーティスト名、活動形態、ジャンル、ランダムsaltは現在のTabだけに保存する。
+- チェーンにはdomain separator、saltおよび入力から生成した`bytes32` プロフィールコミットメントだけを送る。
+- ウォレットアドレス、コミットメント、音楽クリエーターID、リリース ID、状態、イベントおよびトランザクションは公開情報であると表示する。
 - 実在人物・団体、実在作品、未公開情報、連絡先、本人確認、契約、権利資料、税務情報、秘密鍵またはSeed Phraseを入力させない。
 
-### 2. WalletとContractを固定する
+### 2. ウォレットとコントラクトを固定する
 
-- Walletは明示操作でのみ接続し、Chain ID `11155111`のEthereum Sepoliaへ固定する。
-- 音楽クリエーター登録台帳 Addressはsame-originの`/testnet/deployment.json`からだけ取得し、ユーザによる手入力を許可しない。
-- Manifestに検証済み音楽クリエーター登録台帳がない場合、ユーザ利用フローを停止せず音楽クリエーター書込みだけをfail closedにする。
-- AccountまたはChain変更時は音楽クリエーターID、状態、Payout候補およびRelease数を破棄して再取得する。
+- ウォレットは明示操作でのみ接続し、チェーン ID `11155111`のEthereum Sepoliaへ固定する。
+- 音楽クリエーター登録台帳アドレスはsame-originの`/testnet/deployment.json`からだけ取得し、ユーザによる手入力を許可しない。
+- マニフェストに検証済み音楽クリエーター登録台帳がない場合、ユーザ利用フローを停止せず音楽クリエーター書込みだけをfail closedにする。
+- アカウントまたはチェーン変更時は音楽クリエーターID、状態、分配候補およびリリース数を破棄して再取得する。
 
-### 3. Testnet 音楽クリエーター登録台帳を自己申告台帳に限定する
+### 3. テストネット音楽クリエーター登録台帳を自己申告台帳に限定する
 
 `CreatorFirstCreatorRegistry`は次だけを保持する。
 
-- 一Wallet一音楽クリエーターID
-- 一意なProfile Commitment
-- 音楽クリエーター自身が指定するPayout候補Address
-- Active／Inactive状態
-- Release Metadata Commitment
-- Rights Declaration Commitment
+- 一ウォレット一音楽クリエーターID
+- 一意なプロフィールコミットメント
+- 音楽クリエーター自身が指定する分配候補アドレス
+- 有効／Inactive状態
+- リリースメタデータコミットメント
+- 権利申告コミットメント
 - `DECLARED_UNVERIFIED`／`WITHDRAWN`状態
 
-登録、更新および作品申告は音楽クリエーターウォレット自身が署名する。Pauseだけを運用Roleへ付与する。Native Assetを受け取らず、料金、Subscription、SBT、配当、報酬計算または送金を行わない。
+登録、更新および作品申告は音楽クリエーターウォレット自身が署名する。停止だけを運用役割へ付与する。ネイティブ資産を受け取らず、料金、サブスクリプション、SBT、配当、報酬計算または送金を行わない。
 
-### 4. Rightsと支払を自動承認しない
+### 4. 権利と支払を自動承認しない
 
-- Release登録は`SELF_DECLARED_UNVERIFIED`として扱い、Rights Registryの`VERIFIED`または`ACTIVE`へ遷移させない。
-- Profile CommitmentはLegal Identity、音楽クリエーター資格証明または権利者証明に使用しない。
-- Payout候補AddressはPayee審査、Wallet Link、税務・制裁確認または支払承認に使用しない。
-- 既存Treasuryは権限付き支出境界のままとし、音楽クリエーター登録台帳登録だけで`disburse`を呼び出せない。
-- 実音源Upload、Navidrome公開、配信開始、利用集計、分配計算および本番支払は本Journeyの範囲外とする。
+- リリース登録は`SELF_DECLARED_UNVERIFIED`として扱い、権利登録台帳の`VERIFIED`または`ACTIVE`へ遷移させない。
+- プロフィールコミットメントは法務アイデンティティ、音楽クリエーター資格証明または権利者証明に使用しない。
+- 分配候補アドレスは受取人審査、ウォレット連携、税務・制裁確認または支払承認に使用しない。
+- 既存資金庫は権限付き支出境界のままとし、音楽クリエーター登録台帳登録だけで`disburse`を呼び出せない。
+- 実音源アップロード、Navidrome公開、配信開始、利用集計、分配計算および本番支払は本利用フローの範囲外とする。
 
-## Security and Privacy Boundary
+## セキュリティ・プライバシー境界
 
-- Commitment生成へランダムsaltとdomain separatorを含めるが、Hashを匿名化と表現しない。
-- 一Wallet一登録と一Commitment一登録をContractで強制し、重複音楽クリエーターIDを防ぐ。
-- Release取消しは当該音楽クリエーターウォレットだけが実行でき、過去Eventを消去しない。
-- Pause時は新規登録、更新、申告および取消しを停止する。
-- 本DemoではProfileとWalletをPlatform Accountとして永続Linkせず、Wallet喪失Recoveryも提供しない。
+- コミットメント生成へランダムsaltとdomain separatorを含めるが、ハッシュを匿名化と表現しない。
+- 一ウォレット一登録と一コミットメント一登録をコントラクトで強制し、重複音楽クリエーターIDを防ぐ。
+- リリース取消しは当該音楽クリエーターウォレットだけが実行でき、過去イベントを消去しない。
+- 停止時は新規登録、更新、申告および取消しを停止する。
+- 本デモではプロフィールとウォレットをプラットフォームアカウントとして永続連携せず、ウォレット喪失復旧も提供しない。
 
-## Consequences
+## 影響
 
-### Positive
+### 利点
 
-- GitHub Pagesだけで音楽クリエーターのWallet Transaction UXと公開監査証跡を検証できる。
-- 個人情報、作品名、音源、契約または権利資料を直接On-chainへ保存しない。
-- 音楽クリエーター登録、Rights Verification、Payee審査、配信公開およびTreasury支出を構造的に分離できる。
+- GitHub Pagesだけで音楽クリエーターのウォレットトランザクション UXと公開監査証跡を検証できる。
+- 個人情報、作品名、音源、契約または権利資料を直接オンチェーンへ保存しない。
+- 音楽クリエーター登録、権利検証、受取人審査、配信公開および資金庫支出を構造的に分離できる。
 
-### Trade-offs
+### トレードオフ
 
-- Wallet AddressとTransactionは公開され、Commitmentも削除できない。
-- Direct TransactionにはSepolia ETHが必要で、Relayer／PaymasterやRecoveryは未実装である。
-- 一Wallet一音楽クリエーターはTestnetの単純化であり、本番のOrganization、複数Member、Role DelegationまたはWallet Rotationを表現しない。
-- Off-chain Evidence Store、審査Workflow、Indexerおよび音楽クリエーターBFFがないため、Rightsを有効化できない。
+- ウォレットアドレスとトランザクションは公開され、コミットメントも削除できない。
+- 直接トランザクションにはSepolia ETHが必要で、リレイヤー／ペイマスターや復旧は未実装である。
+- 一ウォレット一音楽クリエーターはテストネットの単純化であり、本番の組織、複数Member、役割委任またはウォレットローテーションを表現しない。
+- オフチェーン証跡保存、審査Workflow、インデクサーおよび音楽クリエーターBFFがないため、権利を有効化できない。
 
-## Alternatives Considered
+## 検討した代替案
 
-### 音楽クリエータープロフィールと作品名を直接On-chainへ保存する
+### 音楽クリエータープロフィールと作品名を直接オンチェーンへ保存する
 
 公開・永続・検索可能な個人情報や機密情報になり得るため採用しない。
 
-### Browser Fixtureだけを維持する
+### ブラウザ用フィクスチャだけを維持する
 
-Privacy表示には使えるが、Wallet署名、Contract Event、重複拒否および公開照会を検証できないため、Profile入力段階だけに残す。
+プライバシー表示には使えるが、ウォレット署名、コントラクトイベント、重複拒否および公開照会を検証できないため、プロフィール入力段階だけに残す。
 
-### 音楽クリエーター登録と同時にRightsとPayeeを承認する
+### 音楽クリエーター登録と同時に権利と受取人を承認する
 
-異なる証拠、責任主体、取消し、法務・税務判断を一つのWallet Transactionへ誤って統合するため禁止する。
+異なる証拠、責任主体、取消し、法務・税務判断を一つのウォレットトランザクションへ誤って統合するため禁止する。
 
-## Acceptance Criteria
+## 受入基準
 
-1. 音楽クリエータープロフィールがない状態ではWallet接続とChain書込みを開始できない。
-2. Sepolia以外、無効Manifestまたは音楽クリエーター登録台帳未公開では音楽クリエーター書込みが無効になる。
-3. 一Wallet一音楽クリエーター、一Profile Commitment一音楽クリエーターをContractが強制する。
-4. 作品申告は登録済みActive 音楽クリエーターだけが実行でき、初期状態は常に`DECLARED_UNVERIFIED`になる。
-5. 作品取消しは当該音楽クリエーターだけが実行でき、過去EventとCommitmentを削除しない。
-6. Payout候補AddressだけではTreasury支出、Subscription、SBT、Rightsまたは配信権限を得られない。
-7. Public Clientへ秘密鍵、Seed Phrase、実在音源、権利資料または管理Credentialを含めない。
-8. Contract Test、Manifest Test、VitePress Build、Site検査および公開RPC検証が成功する。
+1. 音楽クリエータープロフィールがない状態ではウォレット接続とチェーン書込みを開始できない。
+2. Sepolia以外、無効マニフェストまたは音楽クリエーター登録台帳未公開では音楽クリエーター書込みが無効になる。
+3. 一ウォレット一音楽クリエーター、一プロフィールコミットメント一音楽クリエーターをコントラクトが強制する。
+4. 作品申告は登録済み有効音楽クリエーターだけが実行でき、初期状態は常に`DECLARED_UNVERIFIED`になる。
+5. 作品取消しは当該音楽クリエーターだけが実行でき、過去イベントとコミットメントを削除しない。
+6. 分配候補アドレスだけでは資金庫支出、サブスクリプション、SBT、権利または配信権限を得られない。
+7. 公開クライアントへ秘密鍵、Seed Phrase、実在音源、権利資料または管理資格証明を含めない。
+8. コントラクトテスト、マニフェストテスト、VitePress ビルド、Site検査および公開RPC検証が成功する。
 
-## Implementation Status
+## 実装状態
 
-2026-08-23時点でContract、Contract Test、公開音楽クリエーター利用フロー UIおよび設計・Protocol境界を実装し、Source Commit `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`の音楽クリエーター登録台帳をEthereum Sepoliaの`0x5676d34d7C41849311b99932d8272af58b63e6E9`へデプロイした。Manifest公開と、公開RPCによるBytecode、Testnet Notice、初期音楽クリエーター数およびRelease IDの検証を完了した。Etherscan Source Verification、Role分離、音楽クリエーターBFF、Indexer、Rights Review、Wallet RecoveryおよびTreasury連携は未完了である。
+2026-08-23時点でコントラクト、コントラクトテスト、公開音楽クリエーター利用フロー UIおよび設計・プロトコル境界を実装し、ソースコミット `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`の音楽クリエーター登録台帳をEthereum Sepoliaの`0x5676d34d7C41849311b99932d8272af58b63e6E9`へデプロイした。マニフェスト公開と、公開RPCによるBytecode、テストネット通知、初期音楽クリエーター数およびリリース IDの検証を完了した。Etherscan ソース検証、役割分離、音楽クリエーターBFF、インデクサー、権利レビュー、ウォレット復旧および資金庫連携は未完了である。
 
-## Related Documents
+## 関連文書
 
-- [ADR-0003 Rights Registry](./ADR-0003-rights-registry.md)
-- [ADR-0008 Account / Wallet / Identity Strategy](./ADR-0008-account-wallet-identity-strategy.md)
-- [ADR-0013 Treasury Flow Transparency](./ADR-0013-treasury-flow-transparency.md)
+- [ADR-0003 権利登録台帳](./ADR-0003-rights-registry.md)
+- [ADR-0008 アカウント / ウォレット / アイデンティティ戦略](./ADR-0008-account-wallet-identity-strategy.md)
+- [ADR-0013 資金庫フロー透明性](./ADR-0013-treasury-flow-transparency.md)
 - [ADR-0014 公開テストネットユーザ利用フロー](./ADR-0014-public-testnet-user-journey.md)
 - [音楽クリエーター登録](/whitepaper/05-creator-onboarding)
-- [Rights Registry仕様](/protocol/specs/rights-registry)
+- [権利登録台帳仕様](/protocol/specs/rights-registry)
 - [テスト音楽クリエーター利用フロー](/demo/creator-workspace)

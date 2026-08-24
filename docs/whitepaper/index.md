@@ -2,7 +2,7 @@
 description: Creator First Platformの理念、権利、経済、ガバナンス、技術、法務と段階的実装計画をまとめたホワイトペーパー。
 ---
 
-# Creator First Platform Whitepaper
+# Creator First Platform ホワイトペーパー
 
 本文の参加主体と議会名称は、[正規用語表](../terminology.md)に従います。
 
@@ -14,7 +14,7 @@ Creator First Platformは、音楽クリエーターの権利と持続可能な�
 
 本格的なスマートコントラクト、バックエンド、音楽プレーヤーの実装は、仕様とガバナンスが確定した後に開始します。
 
-公開済み文書、Draft仕様、未実装範囲、専門家確認事項は[現在の状況](/status)にまとめています。
+公開済み文書、草案仕様、未実装範囲、専門家確認事項は[現在の状況](/status)にまとめています。
 
 ## 章構成
 

@@ -8,21 +8,21 @@ description: 音楽ストリーミング市場の構造と、音楽クリエー�
 
 世界の録音音楽市場は、ストリーミングを中心に再び成長局面に入っている。
 
-IFPI の *Global Music Report 2026* によれば、2025年の世界の録音音楽売上は **317億米ドル**に達し、前年比 **6.4%** 増となった。成長は11年連続で、ストリーミング収入は **220億米ドル**、録音音楽収入全体の **69.6%** を占める。
+IFPI の *国際音楽報告 2026* によれば、2025年の世界の録音音楽売上は **317億米ドル**に達し、前年比 **6.4%** 増となった。成長は11年連続で、ストリーミング収入は **220億米ドル**、録音音楽収入全体の **69.6%** を占める。
 
 有料サブスクリプション型ストリーミングだけでも世界市場の **52.4%** を占め、サブスクリプションアカウントのユーザ数は **8億3,700万人**に達している。
 
 ```mermaid
 flowchart LR
-    M[Recorded Music Market] --> S[Streaming]
-    M --> P[Physical]
-    M --> R[Performance Rights]
-    M --> O[Other]
+    M[録音音楽市場] --> S[ストリーミング]
+    M --> P[物理媒体]
+    M --> R[実演権利]
+    M --> O[その他]
 
-    S --> PS[Paid Subscription]
-    S --> AS[Ad-supported]
+    S --> PS[有料サブスクリプション]
+    S --> AS[広告型]
 
-    PS --> G[Market Growth]
+    PS --> G[市場成長]
     AS --> G
 ```
 
@@ -56,12 +56,12 @@ Creator First Platform は、成長しているストリーミング市場その
 flowchart TD
     JP[日本の音楽市場]
 
-    JP --> PH[Physical<br/>CD・アナログ・映像]
-    JP --> DS[Digital]
+    JP --> PH[物理媒体<br/>CD・アナログ・映像]
+    JP --> DS[デジタル]
 
-    DS --> SUB[Subscription Streaming]
-    DS --> ADS[Ad-supported Streaming]
-    DS --> DL[Download]
+    DS --> SUB[サブスクリプションストリーミング]
+    DS --> ADS[広告型ストリーミング]
+    DS --> DL[ダウンロード]
 ```
 
 この市場構造は、Creator First Platform にとって重要である。
@@ -110,16 +110,16 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    U[ユーザ<br/>Subscription] --> DSP[DSP]
+    U[ユーザ<br/>サブスクリプション] --> DSP[DSP]
 
-    DSP --> POOL[Royalty Pool]
+    DSP --> POOL[ロイヤルティプール]
 
-    POOL --> LABEL[Label / Distributor]
-    POOL --> PUB[Publisher / CMO]
-    POOL --> OTHER[Other 権利者]
+    POOL --> LABEL[レーベル・ディストリビューター]
+    POOL --> PUB[音楽出版社・著作権管理団体]
+    POOL --> OTHER[その他権利者]
 
-    LABEL --> ARTIST[Artist]
-    PUB --> WRITER[Songwriter]
+    LABEL --> ARTIST[アーティスト]
+    PUB --> WRITER[作詞・作曲者]
 ```
 
 ユーザの視点では、
@@ -154,10 +154,10 @@ Creator First Platform が問題とするのは、**価値の流れと分配ル�
 
 ```mermaid
 flowchart TD
-    P[Popular Artist]
-    P --> MORE[More Plays]
-    MORE --> REV[More Revenue]
-    REV --> EXP[More Exposure]
+    P[人気アーティスト]
+    P --> MORE[再生増加]
+    MORE --> REV[増加収益]
+    REV --> EXP[露出増加]
     EXP --> MORE
 ```
 
@@ -173,7 +173,7 @@ flowchart TD
 
 この構造では、新人、ローカルアーティスト、ニッチジャンル、実験的な作品などが、作品の質とは別の理由で発見機会を失う可能性がある。
 
-Creator First Platform では、通常の利用報酬とは別に、Growth Pool や Discovery の仕組みを設けることで、この集中を補正できないかを検討する。
+Creator First Platform では、通常の利用報酬とは別に、成長支援プールや発見の仕組みを設けることで、この集中を補正できないかを検討する。
 
 ---
 
@@ -189,9 +189,9 @@ Creator First Platform では、通常の利用報酬とは別に、Growth Pool 
 
 ```mermaid
 flowchart LR
-    A[Algorithm] --> R[Recommendation]
-    R --> L[Listening]
-    L --> D[Usage Data]
+    A[アルゴリズム] --> R[推薦]
+    R --> L[聴取]
+    L --> D[利用実績データ]
     D --> A
 ```
 
@@ -209,8 +209,8 @@ flowchart LR
 
 Creator First Platform では、推薦を単一アルゴリズムに固定せず、
 
-- For You
-- Discovery
+- あなた向け
+- 発見
 - 新人音楽クリエーター
 - Deep Dive
 - Following
@@ -233,7 +233,7 @@ Creator First Platform では、推薦を単一アルゴリズムに固定せず
 
 ```mermaid
 flowchart LR
-    OP[Platform Operator] --> RULE[Rules]
+    OP[プラットフォーム運用者] --> RULE[ルール]
     RULE --> CREATOR[音楽クリエーター]
     RULE --> USER[ユーザ]
 ```
@@ -242,15 +242,15 @@ Creator First Platform は、この関係を次のように変えることを目
 
 ```mermaid
 flowchart TD
-    CONST[Constitution]
+    CONST[憲章]
 
     CONST --> CH[音楽クリエータ院議会]
     CONST --> UH[ユーザ院議会]
 
-    CH --> GOV[Governance]
+    CH --> GOV[ガバナンス]
     UH --> GOV
 
-    GOV --> RULE[Protocol Rules]
+    GOV --> RULE[プロトコルルール]
     RULE --> CODE[スマートコントラクトs]
 ```
 
@@ -279,10 +279,10 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    PLAY[Playback Data] --> V[Verification]
-    PLAY --> P[Privacy]
+    PLAY[再生データ] --> V[検証]
+    PLAY --> P[プライバシー]
 
-    V --> T[Trust]
+    V --> T[信頼]
     P --> T
 ```
 
@@ -292,7 +292,7 @@ flowchart LR
 
 という技術的課題が存在する。
 
-Creator First Platform では、ゼロ知識証明などを利用し、ユーザの詳細な履歴を公開せずに、分配に必要な利用実績を検証できる Usage Oracle の設計を検討する。
+Creator First Platform では、ゼロ知識証明などを利用し、ユーザの詳細な履歴を公開せずに、分配に必要な利用実績を検証できる利用実績オラクルの設計を検討する。
 
 ---
 
@@ -347,20 +347,20 @@ IFPI も、2026年の市場報告においてストリーミング不正を業�
 
 ```mermaid
 flowchart LR
-    FUND[Support] --> CREATE[Creation]
-    CREATE --> RELEASE[Release]
-    RELEASE --> DISC[Discovery]
-    DISC --> PLAY[Listening]
-    PLAY --> REV[Revenue]
+    FUND[支援] --> CREATE[創作]
+    CREATE --> RELEASE[リリース]
+    RELEASE --> DISC[発見]
+    DISC --> PLAY[聴取]
+    PLAY --> REV[収益]
     REV --> FUND
 ```
 
 Creator First Platform では、再生報酬だけではなく、
 
-- Growth Pool
-- Quadratic Funding
-- Early Support
-- Community Contribution
+- 成長支援プール
+- 二次資金配分
+- 初期支援
+- コミュニティ貢献
 
 などを組み合わせることで、発見前・成長途中の音楽クリエーターも支援できる経済モデルを検討する。
 
@@ -379,7 +379,7 @@ flowchart TD
     E[利用データと不正]
     F[新人の資金不足]
 
-    A --> CORE[Platform Structure]
+    A --> CORE[プラットフォーム構造]
     B --> CORE
     C --> CORE
     D --> CORE
@@ -422,9 +422,9 @@ Creator First Platform が対象とする市場機会は、単に「Spotifyの�
 
 ```mermaid
 flowchart LR
-    G1[Generation 1<br/>Ownership<br/>CD / Download]
-    G2[Generation 2<br/>Access<br/>Streaming]
-    G3[Generation 3<br/>Participation<br/>音楽クリエーター中心]
+    G1[世代 1<br/>所有<br/>CD / ダウンロード]
+    G2[世代 2<br/>アクセス<br/>ストリーミング]
+    G3[世代 3<br/>参加<br/>音楽クリエーター中心]
 
     G1 --> G2 --> G3
 ```
@@ -465,6 +465,6 @@ Creator First Platform は、この問いに対する新しい制度設計を提
 
 ## 参考資料
 
-- IFPI, *Global Music Report 2026 — State of the Industry*, 2026.
-- 一般社団法人 日本レコード協会, 「2025年国内レコード市場（音楽ソフト＋音楽配信）は3,988億円と推計」, 2026.
-- Spotify, *Loud & Clear — Music Economics and Royalty Data*.
+- IFPI, *国際音楽報告 2026 — 状態 of the Industry*, 2026.
+- 一般社団法人日本レコード協会, 「2025年国内レコード市場（音楽ソフト＋音楽配信）は3,988億円と推計」, 2026.
+- Spotify, *Loud & Clear — 音楽 Economics・ロイヤルティデータ*.

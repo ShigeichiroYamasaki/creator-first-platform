@@ -1,6 +1,6 @@
 ---
-title: SPEC-ACCOUNT-001 Subscription Settlement
-description: 承認済み決済資産によるSubscription決済・有効化のDraft プロトコル仕様
+title: SPEC-ACCOUNT-001 サブスクリプション精算
+description: 承認済み決済資産によるサブスクリプション決済・有効化の草案プロトコル仕様
 editLink: false
 ---
 

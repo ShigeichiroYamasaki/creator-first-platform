@@ -1,13 +1,13 @@
 ---
 title: 現在の状況
-description: Creator First Platformの公開文書、Draft仕様、未実装範囲、専門家確認事項と次の成立条件。
+description: Creator First Platformの公開文書、草案仕様、未実装範囲、専門家確認事項と次の成立条件。
 ---
 
 # 現在の状況
 
 > **基準日: 2026-08-24**
 
-Creator First Platformは現在、**構想、公開文書、設計判断、プロトコル仕様を整備している段階**です。アプリケーションはローカルPlayback Slice（部分実装）と公開Test-only UIの段階であり、本ページは将来像と現在成立しているものを区別します。
+Creator First Platformは現在、**構想、公開文書、設計判断、プロトコル仕様を整備している段階**です。アプリケーションはローカル再生部分実装（部分実装）と公開Test-only UIの段階であり、本ページは将来像と現在成立しているものを区別します。
 
 ::: warning サービスはまだ稼働していません
 本サイトは、音楽ストリーミング、JPYC等によるサブスクリプション決済、音楽クリエーター分配、DAOガバナンスまたはSTOが現在利用・申込可能であることを示すものではありません。
@@ -17,30 +17,30 @@ Creator First Platformは現在、**構想、公開文書、設計判断、プ�
 
 | 対象 | 現在の状態 | 現在確認できるもの | 次の成立条件 |
 | --- | --- | --- | --- |
-| Whitepaper | 公開・策定継続中 | 理念、権利、経済、技術、ガバナンス、法務、ロードマップ | 利害関係者レビューと継続改訂 |
-| CFP | Draft | 提案プロセス案とCFP-0001 | 採択主体・手続・記録方式の確定 |
-| ADR | Proposed | 15件の設計判断案 | レビュー、採否決定、Status更新 |
-| Protocol | Draft 0.1.0 | Account、Wallet、Supporter Credential／Early Tier、決済、決済資産台帳、Rights、Streaming Authorization、Player、Usage、Distribution／資金透明性、Contract Change Governanceの11仕様 | Open Questions解決、法務・セキュリティ・ガバナンス承認 |
-| Testnetデモ | 公開テストネット利用フロー部分稼働 | [テストユーザ利用フロー](/demo/test-user-registration)のProfile／Wallet／mockJPYC／合成Playerと、[テスト音楽クリエーター利用フロー](/demo/creator-workspace)のProfile／Wallet／音楽クリエーター・Release Commitment | 公開Wallet E2E確認、Gateway公開と認可接続、音楽クリエーターBFF／Indexer、Relayer／Paymaster、Security Review |
-| アプリケーション | 公開テストユーザ／音楽クリエーター利用フロー＋ローカルPlayback Slice | [Navidrome Docker Server](/demo/local-streaming)、[Streaming Gateway Mock](/demo/local-gateway)、テストユーザプロフィール／Wallet／mockJPYC／合成Player UI、テスト音楽クリエータープロフィール／Wallet／音楽クリエーター・Release Commitment UI、[資金フロー可視化](/demo/treasury-dashboard)、Vue Player PWA、Delivery Evidence | Account lifecycle／Authenticator、Gas Sponsorship、音楽クリエーターBFF、Media Ingest、Navidrome非公開Network、Contract Indexer、Rights／Credential／Treasury Read Model、Security Review |
-| スマートコントラクト | Ethereum Sepoliaへデプロイ済み、監査前 | [公開Address／Source Commit](/demo/testnet-contracts#公開deployment)、MockJPYC、Subscription、Treasury、一般／Early Supporter SBT、UUPS Proxy、音楽クリエーター登録台帳、公開RPC検証 | Etherscan Source Verification、Role分離、Gateway／音楽クリエーターBFF／Indexer接続、Threat Model、独立監査 |
-| ステーブルコイン決済 | 未提供 | 決済・資産審査のDraft仕様 | 対象商品・ネットワーク・取扱形態の法務／技術審査 |
-| DAOガバナンス | 未稼働 | [二院制議会・Quadratic Voting・Contract変更手続の設計](/governance/) | Community形成、適格性、抽選、投票・TimelockのTestnet実証、異議申立て |
+| ホワイトペーパー | 公開・策定継続中 | 理念、権利、経済、技術、ガバナンス、法務、ロードマップ | 利害関係者レビューと継続改訂 |
+| CFP | 草案 | 提案プロセス案とCFP-0001 | 採択主体・手続・記録方式の確定 |
+| ADR | 提案 | 15件の設計判断案 | レビュー、採否決定、状態更新 |
+| プロトコル | 草案 0.1.0 | アカウント、ウォレット、サポーター資格証明／初期階層、決済、決済資産台帳、権利、ストリーミング認可、プレーヤー、利用実績、分配／資金透明性、コントラクト変更ガバナンスの11仕様 | 未解決事項解決、法務・セキュリティ・ガバナンス承認 |
+| テストネットデモ | 公開テストネット利用フロー部分稼働 | [テストユーザ利用フロー](/demo/test-user-registration)のプロフィール／ウォレット／mockJPYC／合成プレーヤーと、[テスト音楽クリエーター利用フロー](/demo/creator-workspace)のプロフィール／ウォレット／音楽クリエーター・リリースコミットメント | 公開ウォレット E2E確認、ゲートウェイ公開と認可接続、音楽クリエーターBFF／インデクサー、リレイヤー／ペイマスター、セキュリティレビュー |
+| アプリケーション | 公開テストユーザ／音楽クリエーター利用フロー＋ローカル再生部分実装 | [Navidrome Docker サーバー](/demo/local-streaming)、[ストリーミングゲートウェイモック](/demo/local-gateway)、テストユーザプロフィール／ウォレット／mockJPYC／合成プレーヤー UI、テスト音楽クリエータープロフィール／ウォレット／音楽クリエーター・リリースコミットメント UI、[資金フロー可視化](/demo/treasury-dashboard)、Vue プレーヤー PWA、配信証跡 | アカウント lifecycle／認証器、ガス代支援、音楽クリエーターBFF、メディア取込み、Navidrome非公開ネットワーク、コントラクトインデクサー、権利／資格証明／資金庫参照モデル、セキュリティレビュー |
+| スマートコントラクト | Ethereum Sepoliaへデプロイ済み、監査前 | [公開アドレス／ソースコミット](/demo/testnet-contracts#public-deployment)、MockJPYC、サブスクリプション、資金庫、一般／初期サポーター SBT、UUPS プロキシ、音楽クリエーター登録台帳、公開RPC検証 | Etherscan ソース検証、役割分離、ゲートウェイ／音楽クリエーターBFF／インデクサー接続、脅威モデル、独立監査 |
+| ステーブルコイン決済 | 未提供 | 決済・資産審査の草案仕様 | 対象商品・ネットワーク・取扱形態の法務／技術審査 |
+| DAOガバナンス | 未稼働 | [二院制議会・二次投票・コントラクト変更手続の設計](/governance/) | コミュニティ形成、適格性、抽選、投票・タイムロックのテストネット実証、異議申立て |
 | STO | 未実施 | 資金調達手段としての検討事項 | 発行設計、法的分類、取扱事業者、開示、投資家保護の専門家確認 |
 | 株式会社・契約 | 構想・確認事項 | 法人が権利、税務、雇用、法令対応を担う責任分界案 | 法人・契約・規程の具体化と専門家レビュー |
 
 ## 現在公開している成果物
 
-- [Whitepaper](/whitepaper/)
+- [ホワイトペーパー](/whitepaper/)
 - [音楽クリエーター中心提案](/proposals/)
-- [Architecture Decision Records](/adr/)
+- [アーキテクチャ意思決定記録](/adr/)
 - [プロトコル仕様](/protocol/)
-- [二院制議会・Governance](/governance/)
-- [Testnetデモ入口](/demo/)
+- [二院制議会・ガバナンス](/governance/)
+- [テストネットデモ入口](/demo/)
 - [ローカル音楽ストリーミング手順](/demo/local-streaming)
-- GitHub上のProtocol検証、文書ビルド、公開前メタデータ検査
+- GitHub上のプロトコル検証、文書ビルド、公開前メタデータ検査
 
-Protocolの11仕様は公開して読める状態ですが、すべてDraftです。要件IDとテスト対応の自動検証は、仕様の完全性、安全性、法令適合性または本番承認を意味しません。
+プロトコルの11仕様は公開して読める状態ですが、すべて草案です。要件IDとテスト対応の自動検証は、仕様の完全性、安全性、法令適合性または本番承認を意味しません。
 
 ## 現在公開・本番提供していないもの
 
@@ -49,11 +49,11 @@ Protocolの11仕様は公開して読める状態ですが、すべてDraftで�
 - サブスクリプション契約または決済受付
 - JPYCその他のトークンの販売、交換、媒介または保管
 - 音楽クリエーター報酬の計算、支払または税務処理
-- Security Tokenの募集、売出し、勧誘または取扱い
+- セキュリティトークンの募集、売出し、勧誘または取扱い
 - DAOへの参加登録、投票、抽選議会または資金管理
 - 本番スマートコントラクト、監査済みコントラクトアドレスまたは公式ウォレット
 
-第三者が本プロジェクト名を用いて送金、秘密鍵・シードフレーズ、トークン購入または投資を求めても、本サイトの公開文書だけを根拠に応じないでください。セキュリティ上の問題は[Security Policy](https://github.com/ShigeichiroYamasaki/creator-first-platform/security/policy)を確認してください。
+第三者が本プロジェクト名を用いて送金、秘密鍵・シードフレーズ、トークン購入または投資を求めても、本サイトの公開文書だけを根拠に応じないでください。セキュリティ上の問題は[セキュリティポリシー](https://github.com/ShigeichiroYamasaki/creator-first-platform/security/policy)を確認してください。
 
 ## 専門家確認が必要な領域
 
@@ -73,11 +73,11 @@ Protocolの11仕様は公開して読める状態ですが、すべてDraftで�
 
 次の段階は、単にコードが書けることではなく、以下を満たしてから進みます。
 
-1. [Draft仕様のOpen Questionsと責任主体](/protocol/open-questions)を確定する
+1. [草案仕様の未解決事項と責任主体](/protocol/open-questions)を確定する
 2. 法務・権利・税務・プライバシー・セキュリティの専門レビュー条件を定義する
-3. [Vertical Slice Implementation Plan](/protocol/implementation-plan)のBlocking Decisionを解決し、Mock Work Packageへ着手する
-4. [Testnetデモ](/demo/)で失敗、再試行、重複、取消し、監査、緊急停止を検証し、Network・Contract・Source Commitを公開する
-5. Testnetデモの成立後、本番用の鍵、権限、インフラ、契約、監視、復旧を別実装する
+3. [最小縦断実装実装計画](/protocol/implementation-plan)のBlocking 決定を解決し、モック作業パッケージへ着手する
+4. [テストネットデモ](/demo/)で失敗、再試行、重複、取消し、監査、緊急停止を検証し、ネットワーク・コントラクト・ソースコミットを公開する
+5. テストネットデモの成立後、本番用の鍵、権限、インフラ、契約、監視、復旧を別実装する
 6. 本番資金を扱う前に独立レビュー、監査、運用手順、インシデント対応を完了する
 
 段階的な全体計画は[ロードマップ](/whitepaper/13-roadmap)を参照してください。
@@ -86,7 +86,7 @@ Protocolの11仕様は公開して読める状態ですが、すべてDraftで�
 
 本ページは、次のいずれかが変わった場合に更新します。
 
-- 文書や仕様のStatusまたはVersion
+- 文書や仕様の状態または版
 - 実装、監査、テスト、デプロイの状態
 - 法人、契約、決済、STOまたはガバナンスの成立状態
 - ユーザまたは音楽クリエーターが実際に利用できる機能

@@ -1,14 +1,14 @@
 ---
-description: 制度、経済、技術、ガバナンス、Protocolの変更や拡張を提案・議論する音楽クリエーター中心提案制度。
+description: 制度、経済、技術、ガバナンス、プロトコルの変更や拡張を提案・議論する音楽クリエーター中心提案制度。
 ---
 
 # 音楽クリエーター中心提案s
 
-音楽クリエーター中心提案（CFP）は、Creator First Platform の制度、経済モデル、技術、Governance、Protocol などについて、変更や新しい仕組みを提案するための公開提案制度です。
+音楽クリエーター中心提案（CFP）は、Creator First Platform の制度、経済モデル、技術、ガバナンス、プロトコルなどについて、変更や新しい仕組みを提案するための公開提案制度です。
 
-Whitepaper が、
+ホワイトペーパーが、
 
-> **現時点で合意されている Platform の基本設計**
+> **現時点で合意されているプラットフォームの基本設計**
 
 を表すのに対し、CFP は、
 
@@ -16,46 +16,46 @@ Whitepaper が、
 
 を表します。
 
-## CFP Process
+## CFP 手続
 
 ```mermaid
 flowchart LR
     CU[音楽クリエーター／ユーザ]
-    CFP[CFP Proposal]
-    DISCUSS[Discussion]
+    CFP[CFP 提案]
+    DISCUSS[議論]
     PARL[音楽クリエータ院議会 / ユーザ院議会]
-    DELIB[Deliberation]
+    DELIB[熟議]
     SPEC[プロトコル仕様]
-    CODE[Implementation]
+    CODE[実装]
 
     CU --> CFP --> DISCUSS --> PARL --> DELIB --> SPEC --> CODE
 ```
 
-CFPは単なる開発Issueではありません。
+CFPは単なる開発課題ではありません。
 
 ```mermaid
 flowchart TD
     CFP[CFP]
     DECISION[ガバナンス決定]
     SPEC[プロトコル仕様]
-    ISSUE[GitHub Issue]
-    PR[Pull Request]
-    CODE[Code]
+    ISSUE[GitHub課題]
+    PR[プルリクエスト]
+    CODE[コード]
 
     CFP --> DECISION --> SPEC --> ISSUE --> PR --> CODE
 ```
 
-CFPは「Platformのルールをどうするか」を議論し、GitHub Issueは「承認された仕様をどう実装するか」を管理します。
+CFPは「プラットフォームのルールをどうするか」を議論し、GitHub課題は「承認された仕様をどう実装するか」を管理します。
 
-## Status
+## 状態
 
-CFPでは、次のStatusを使用します。
+CFPでは、次の状態を使用します。
 
-| Status | 意味 |
+| 状態 | 意味 |
 | --- | --- |
-| Draft | 提案作成中 |
-| Discussion | 公開議論中 |
-| Deliberation | Governanceによる熟議中 |
+| 草案 | 提案作成中 |
+| 議論 | 公開議論中 |
+| 熟議 | ガバナンスによる熟議中 |
 | Accepted | 採択 |
 | Rejected | 否決 |
 | Implemented | 実装済み |
@@ -65,11 +65,11 @@ CFPでは、次のStatusを使用します。
 
 現時点ではCFP制度そのものを整備している段階です。
 
-| CFP | Title | Status |
+| CFP | Title | 状態 |
 | --- | --- | --- |
-| CFP-0001 | 音楽クリエーター中心提案 Process | Draft |
+| CFP-0001 | 音楽クリエーター中心提案手続 | 草案 |
 
-今後、抽選議会、音楽クリエータ院議会 / ユーザ院議会、Economic Model、Rights Registry、Usage Oracleなどの変更提案をCFPとして記録します。
+今後、抽選議会、音楽クリエータ院議会 / ユーザ院議会、経済モデル、権利登録台帳、利用実績オラクルなどの変更提案をCFPとして記録します。
 
 ## CFPの基本原則
 
@@ -80,26 +80,26 @@ CFPは次の原則に従います。
 - 3つの憲章と整合すること
 - 重要な変更は音楽クリエータ院議会 / ユーザ院議会による熟議を経ること
 - 採択された内容をプロトコル仕様へ変換すること
-- Specificationと実装Codeを追跡可能にすること
+- 仕様と実装コードを追跡可能にすること
 
-## Whitepaperとの関係
+## ホワイトペーパーとの関係
 
 ```mermaid
 flowchart LR
-    WP[Whitepaper]
+    WP[ホワイトペーパー]
     CFP[CFP]
-    GOV[Governance]
+    GOV[ガバナンス]
     SPEC[プロトコル仕様]
-    IMPL[Implementation]
+    IMPL[実装]
 
     WP --> CFP --> GOV --> SPEC --> IMPL
 ```
 
-Whitepaperは現在の設計を記述し、CFPはその設計を変更する提案を記録します。
+ホワイトペーパーは現在の設計を記述し、CFPはその設計を変更する提案を記録します。
 
-採択されたCFPによってWhitepaperやプロトコル仕様が更新される場合、その変更履歴をVersion管理します。
+採択されたCFPによってホワイトペーパーやプロトコル仕様が更新される場合、その変更履歴を版管理します。
 
-## Governanceとの関係
+## ガバナンスとの関係
 
 将来的には、
 
@@ -107,4 +107,4 @@ Whitepaperは現在の設計を記述し、CFPはその設計を変更する提�
 
 という流れを形成します。
 
-重大な憲章変更などについては、抽選議会の承認だけでなく、音楽クリエーター／ユーザコミュニティ全体によるReferendumを必要とする制度を想定しています。
+重大な憲章変更などについては、抽選議会の承認だけでなく、音楽クリエーター／ユーザコミュニティ全体による全体投票を必要とする制度を想定しています。

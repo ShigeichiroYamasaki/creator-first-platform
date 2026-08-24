@@ -1,6 +1,6 @@
 ---
-title: SPEC-BLOCKCHAIN-001 Settlement Asset Registry
-description: JPYC等の決済資産の審査、承認、停止、監視、履歴管理を定義するDraft プロトコル仕様
+title: SPEC-BLOCKCHAIN-001 精算資産登録台帳
+description: JPYC等の決済資産の審査、承認、停止、監視、履歴管理を定義する草案プロトコル仕様
 editLink: false
 ---
 

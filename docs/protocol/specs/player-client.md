@@ -1,6 +1,6 @@
 ---
-title: SPEC-STREAMING-002 Player Client
-description: Gateway専用APIを利用し、Navidrome再生・Wallet・Supporter SBT・Communityを統合するPlayer ClientのDraft プロトコル仕様
+title: SPEC-STREAMING-002 プレーヤークライアント
+description: ゲートウェイ専用APIを利用し、Navidrome再生・ウォレット・サポーター SBT・コミュニティを統合するプレーヤークライアントの草案プロトコル仕様
 editLink: false
 search: false
 ---

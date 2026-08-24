@@ -1,52 +1,52 @@
 ---
-description: Navidromeを交換可能なメディアサーバーとして利用し、購読・権利・再生証跡をStreaming Authorization Gatewayで強制する設計案。
+description: Navidromeを交換可能なメディアサーバーとして利用し、購読・権利・再生証跡をストリーミング認可ゲートウェイで強制する設計案。
 ---
 
-# ADR-0009: Navidrome / Streaming Authorization Gateway
+# ADR-0009: Navidrome / ストリーミング認可ゲートウェイ
 
-**Status:** Proposed
-**Date:** 2026-08-19
-**Last Updated:** 2026-08-24
+**状態:** 提案
+**日付:** 2026-08-19
+**最終更新日:** 2026-08-24
 
-> **Implementation note (2026-08-23):** `apps/gateway`にローカルMock Vertical Sliceを実装した。固定Mock Subscription／Rights、5分の単一Playback Session、単一Range、SQLite Delivery Evidence、SIWE／EIP-712検証、合成音源File Adapterおよび明示Mapping方式のNavidrome Adapterを含む。現在実装しているApplication APIはCatalog Home、Test-only Profile、Playback Session／Stream、SIWE、Support Intent／Mock Credential StatusおよびCommunity Capabilityの限定Surfaceである。Testnet ContractはEthereum Sepoliaへデプロイしたが、GatewayはまだそのEventを参照しない。`auth/refresh`、`auth/logout`、Client Playback Event、検索・Artist・Album詳細、Contract Indexerおよび本番Read Modelは未実装である。これは`MOCK-ASSUMPTION-001`の範囲内であり、Proposed Decision、Open Question、本番Topologyまたは法的Rightsを確定しない。
+> **実装 note (2026-08-23):** `apps/gateway`にローカルモック最小縦断実装を実装した。固定モックサブスクリプション／権利、5分の単一再生セッション、単一範囲、SQLite 配信証跡、SIWE／EIP-712検証、合成音源ファイルアダプターおよび明示対応付け方式のNavidrome アダプターを含む。現在実装しているアプリケーション APIはカタログ Home、Test-only プロフィール、再生セッション／ストリーム、SIWE、支援意思／モック資格証明状態およびコミュニティ Capabilityの限定Surfaceである。テストネットコントラクトはEthereum Sepoliaへデプロイしたが、ゲートウェイはまだそのイベントを参照しない。`auth/refresh`、`auth/logout`、クライアント再生イベント、検索・アーティスト・Album詳細、コントラクトインデクサーおよび本番参照モデルは未実装である。これは`MOCK-ASSUMPTION-001`の範囲内であり、提案決定、未解決事項、本番構成または法的権利を確定しない。
 
-## 1. Context
+## 1. 背景
 
-Creator First Platform は、Stablecoin Subscription、Rights Registry、Usage Verification、音楽クリエーター分配を、実際の音楽ストリーミングへ接続する必要がある。
+Creator First Platform は、ステーブルコインサブスクリプション、権利登録台帳、利用実績検証、音楽クリエーター分配を、実際の音楽ストリーミングへ接続する必要がある。
 
 一方、次の処理を一つのサービスへ集中させると、責任境界が不明確になる。
 
 - 音源スキャン、検索、プレイリスト、トランスコード
-- Account / Wallet認証
-- On-chain Subscriptionの確認
-- 楽曲ごとの権利、地域、期間、Plan判定
-- HTTP Range配信
-- Playback Evidenceの生成
-- 分配対象となるValid Usageの確定
+- アカウント / ウォレット認証
+- オンチェーンサブスクリプションの確認
+- 楽曲ごとの権利、地域、期間、計画判定
+- HTTP 範囲配信
+- 再生証跡の生成
+- 分配対象となる有効利用実績の確定
 
-Navidromeは音楽ライブラリとストリーミングの実装を早期に検証するために有用だが、Subscription、Rights、法的な利用実績または音楽クリエーター分配のSource of Truthではない。
+Navidromeは音楽ライブラリとストリーミングの実装を早期に検証するために有用だが、サブスクリプション、権利、法的な利用実績または音楽クリエーター分配の正本ではない。
 
-また、音楽再生ごとにBlockchain RPCへ同期問い合わせを行うと、再生開始遅延と外部依存障害がCritical Pathへ入る。
+また、音楽再生ごとにブロックチェーン RPCへ同期問い合わせを行うと、再生開始遅延と外部依存障害が重大 Pathへ入る。
 
-## 2. Decision
+## 2. 決定
 
 Creator First Platform は、初期実装において次の構成を採用候補とする。
 
-> **Navidromeは非公開のMedia Serverとし、音楽クリエーター中心 Streaming Authorization Gatewayを唯一の公開再生境界とする。**
+> **Navidromeは非公開のメディアサーバーとし、音楽クリエーター中心ストリーミング認可ゲートウェイを唯一の公開再生境界とする。**
 
-Navidrome固有のTopology、認証、Network分離、Adapter、配信、Evidence、Scale Triggerおよび置換条件は、本ADRと関連プロトコル仕様を技術的な記録先とする。Whitepaperは製品固有の実装詳細を持たず、技術選択を交換可能に保つ。
+Navidrome固有の構成、認証、ネットワーク分離、アダプター、配信、証跡、規模拡大 Triggerおよび置換条件は、本ADRと関連プロトコル仕様を技術的な記録先とする。ホワイトペーパーは製品固有の実装詳細を持たず、技術選択を交換可能に保つ。
 
 ```mermaid
 flowchart LR
-    PLAYER[Web / Mobile Player]
-    EDGE[Caddy / Edge]
-    GATEWAY[Streaming Authorization Gateway]
-    READ[Subscription / Rights Read Model]
+    PLAYER[ウェブ / モバイルプレーヤー]
+    EDGE[Caddy / エッジ]
+    GATEWAY[ストリーミング認可ゲートウェイ]
+    READ[サブスクリプション / 権利参照モデル]
     NAVI[Navidrome]
-    MUSIC[Read-only Music Volume]
-    EVENTS[Playback Evidence Pipeline]
+    MUSIC[読取専用音楽ボリューム]
+    EVENTS[再生証跡パイプライン]
     CHAIN[スマートコントラクトs]
-    RELAYER[Payment / SBT Relayer]
+    RELAYER[決済 / SBT リレイヤー]
 
     PLAYER --> EDGE --> GATEWAY
     GATEWAY --> READ
@@ -57,50 +57,50 @@ flowchart LR
     GATEWAY --> RELAYER --> CHAIN
 ```
 
-NavidromeのPortはPublic Networkへ公開しない。Gatewayだけが専用内部NetworkからNavidromeへ接続できるものとする。
+NavidromeのPortは公開ネットワークへ公開しない。ゲートウェイだけが専用内部ネットワークからNavidromeへ接続できるものとする。
 
-## 3. Responsibility Boundary
+## 3. 責任境界
 
 ### Navidrome
 
 Navidromeは次を担当する。
 
 - 音源ファイルのスキャン
-- 楽曲、Album、ArtistのMetadata Index
-- SearchおよびPlaylist
+- 楽曲、Album、アーティストのメタデータ索引
+- 検索およびプレイリスト
 - Cover Art
-- HTTP Range Response
-- Direct PlayおよびFFmpeg Transcoding
+- HTTP 範囲対応
+- 直接 PlayおよびFFmpeg トランスコード
 - OpenSubsonic互換API
 
-### Streaming Authorization Gateway
+### ストリーミング認可ゲートウェイ
 
-Gatewayは次を担当する。
+ゲートウェイは次を担当する。
 
-- Platform Sessionの検証
-- AccountとWalletの関連確認
-- Subscription Read Modelの参照
-- Track、Plan、Territory、License Window、Rights Versionの判定
-- Concurrent StreamおよびRate Limit
-- 短時間Playback Sessionの発行
-- Navidrome内部IDへのMapping
-- 許可済みRequestだけのStreaming Proxy
-- Server-side Playback Evidenceの生成
-- Client supplied authentication headerの除去
+- プラットフォームセッションの検証
+- アカウントとウォレットの関連確認
+- サブスクリプション参照モデルの参照
+- 楽曲、計画、地域、License Window、権利版の判定
+- Concurrent ストリームおよび率制限
+- 短時間再生セッションの発行
+- Navidrome内部IDへの対応付け
+- 許可済みリクエストだけのストリーミングプロキシ
+- Server-side 再生証跡の生成
+- クライアント supplied authentication headerの除去
 
 ### スマートコントラクトs
 
 スマートコントラクトは次を担当する。
 
-- Subscriptionの成立、更新、取消しおよび期限
-- JPYC等の承認済みSettlement AssetによるPayment Event
-- Early Supporter SBTの発行、失効およびBurn Event
-- Settlement Assetの許可状態
-- Versioned Rights StateのCommitment
-- Usage RootおよびDistribution Root
-- 音楽クリエーター／権利者によるClaim
+- サブスクリプションの成立、更新、取消しおよび期限
+- JPYC等の承認済み精算資産による決済イベント
+- 初期サポーター SBTの発行、失効およびBurn イベント
+- 精算資産の許可状態
+- Versioned 権利状態のコミットメント
+- 利用実績ルートおよび分配ルート
+- 音楽クリエーター／権利者による主張
 
-### Operating Corporation
+### 運営株式会社
 
 運営株式会社は次を担当する。
 
@@ -108,13 +108,13 @@ Gatewayは次を担当する。
 - 音源公開・停止の業務判断
 - 個人情報と監査証拠の管理
 - 返金、税務、会計および法令対応
-- Security Incident対応
+- セキュリティインシデント対応
 
-## 4. Public API Boundary
+## 4. 公開 API 境界
 
-ClientへNavidromeのInternal APIまたはMedia IDを直接公開しない。
+クライアントへNavidromeの内部 APIまたはメディア IDを直接公開しない。
 
-初期Gatewayは少なくとも次のAPIを提供する。
+初期ゲートウェイは少なくとも次のAPIを提供する。
 
 ```text
 POST   /v1/auth/siwe/nonce
@@ -128,31 +128,31 @@ POST   /v1/playback-events
 DELETE /v1/playback-sessions/:playbackSessionId
 ```
 
-上記は採用候補となるTarget Surfaceであり、すべてが現在のMockに実装済みという意味ではない。現行Mock固有の`GET /v1/demo/user`と`POST /v1/demo/users`はAliasとNotice確認のUI検証だけを行うTest Harness APIであり、Platform Account、Authenticator、Wallet Link、SubscriptionまたはCredentialを作成しない。
+上記は採用候補となるTarget Surfaceであり、すべてが現在のモックに実装済みという意味ではない。現行モック固有の`GET /v1/demo/user`と`POST /v1/demo/users`はAliasと通知確認のUI検証だけを行うテスト試験基盤 APIであり、プラットフォームアカウント、認証器、ウォレット連携、サブスクリプションまたは資格証明を作成しない。
 
-任意のNavidrome Pathを転送できる汎用Proxyは提供しない。
+任意のNavidrome Pathを転送できる汎用プロキシは提供しない。
 
-## 5. Authentication
+## 5. 認証
 
-Walletを使用する場合は、nonce、domain、chain ID、有効期限を検証するSIWE等の標準的なOff-chain Signature Flowを利用する。
+ウォレットを使用する場合は、nonce、domain、chain ID、有効期限を検証するSIWE等の標準的なオフチェーン署名フローを利用する。
 
-署名検証後は短時間のPlatform Sessionへ変換し、音楽再生ごとにWallet Signatureを要求しない。これはADR-0008のAccount / Wallet分離に従う。
+署名検証後は短時間のプラットフォームセッションへ変換し、音楽再生ごとにウォレット署名を要求しない。これはADR-0008のアカウント / ウォレット分離に従う。
 
-Navidrome Externalized Authenticationを利用する場合、Gatewayが生成したPseudonymous Usernameを`Remote-User`として内部Requestへ付与する。
+Navidrome Externalized 認証を利用する場合、ゲートウェイが生成した仮名 Usernameを`Remote-User`として内部リクエストへ付与する。
 
 次を必須とする。
 
-- Clientから受信した`Remote-User`を破棄する
-- Gateway以外をNavidromeのTrusted Sourceにしない
-- NavidromeのPublic ShareおよびDownloadを無効化する
-- Navidrome固有のCookie、PasswordまたはAuthorizationをClientへ返さない
-- 初期Admin ユーザを管理された手順で作成する
+- クライアントから受信した`Remote-User`を破棄する
+- ゲートウェイ以外をNavidromeの信頼されたソースにしない
+- Navidromeの公開比率およびダウンロードを無効化する
+- Navidrome固有のCookie、Passwordまたは認可をクライアントへ返さない
+- 初期管理ユーザを管理された手順で作成する
 
-Navidromeの外部認証はTrusted ProxyからのHeaderを信頼するため、Network IsolationとHeader Sanitizationを一つのControlとして扱う。
+Navidromeの外部認証は信頼されたプロキシからのHeaderを信頼するため、ネットワーク IsolationとHeader Sanitizationを一つの制御として扱う。
 
-## 6. Playback Authorization
+## 6. 再生認可
 
-GatewayはPlayback Session発行時に少なくとも次を確認する。
+ゲートウェイは再生セッション発行時に少なくとも次を確認する。
 
 ```text
 authenticated
@@ -167,7 +167,7 @@ AND within_license_window
 AND concurrent_stream_limit_not_exceeded
 ```
 
-判定結果は`allowed`だけでなく、機械可読なReason Codeを持つ。
+判定結果は`allowed`だけでなく、機械可読なReason コードを持つ。
 
 ```text
 SUBSCRIPTION_INACTIVE
@@ -178,333 +178,333 @@ OUTSIDE_LICENSE_WINDOW
 CONCURRENCY_LIMIT
 ```
 
-## 7. Playback Session
+## 7. 再生セッション
 
-Gatewayは認可成功時に短時間のOpaque Playback Sessionを生成する。
+ゲートウェイは認可成功時に短時間のOpaque 再生セッションを生成する。
 
-Sessionは少なくとも次をBindingする。
+セッションは少なくとも次を結付けする。
 
-- Platform Account ID
-- Pseudonymous Navidrome Username
-- 音楽クリエーター中心 Track ID
-- Navidrome Media ID
-- Subscription ID / Plan ID
-- Rights Version
-- Format / Maximum Bitrate
+- プラットフォームアカウント ID
+- 仮名 Navidrome Username
+- 音楽クリエーター中心楽曲 ID
+- Navidrome メディア ID
+- サブスクリプション ID / 計画 ID
+- 権利版
+- 形式 / Maximum Bitrate
 - Issued At / Expires At
 - Concurrency Lease
 
-Playback URLだけを取得した第三者が長期間再利用できないよう、Sessionには短いTTL、Owner Binding、失効およびRate Limitを適用する。
+再生 URLだけを取得した第三者が長期間再利用できないよう、セッションには短いTTL、Owner 結付け、失効および率制限を適用する。
 
-## 8. Streaming Proxy
+## 8. ストリーミングプロキシ
 
-MVPではGatewayがNavidromeの音声ResponseをBufferせず逐次転送する。
+MVPではゲートウェイがNavidromeの音声対応をバッファせず逐次転送する。
 
-Gatewayは`Range`、`If-Range`等の許可済みHeaderだけをNavidromeへ渡し、`206 Partial Content`、`Content-Range`、`Accept-Ranges`等の必要なResponse HeaderだけをClientへ返す。
+ゲートウェイは`Range`、`If-Range`等の許可済みHeaderだけをNavidromeへ渡し、`206 Partial Content`、`Content-Range`、`Accept-Ranges`等の必要な対応 Headerだけをクライアントへ返す。
 
-Client切断時はUpstream Requestと不要なTranscodeを可能な範囲で中断する。
+クライアント切断時はUpstream リクエストと不要なTranscodeを可能な範囲で中断する。
 
-ただし、Gateway Relayは帯域とConnectionを消費する。負荷試験で定義するScale Triggerを超えた場合は、事前Transcode、Object Storage、CDNおよび短時間署名URLへAudio Byte Deliveryを移す。
+ただし、ゲートウェイ Relayは帯域とConnectionを消費する。負荷試験で定義する規模拡大 Triggerを超えた場合は、事前Transcode、オブジェクトストレージ、CDNおよび短時間署名URLへ音声 Byte 配信を移す。
 
-Navidromeはその移行後もCatalog AdapterまたはPoC Serverとして残せるが、Protocol上の必須依存にはしない。
+Navidromeはその移行後もカタログアダプターまたはPoC サーバーとして残せるが、プロトコル上の必須依存にはしない。
 
-## 9. Subscription and Rights Read Model
+## 9. サブスクリプション・権利参照モデル
 
-再生ごとの同期RPC呼出しは行わず、確認済みContract EventからRead Modelを構築する。
+再生ごとの同期RPC呼出しは行わず、確認済みコントラクトイベントから参照モデルを構築する。
 
 ```mermaid
 flowchart LR
-    CONTRACT[Contract Events]
-    INDEXER[Blockchain Indexer]
-    DB[PostgreSQL Read Model]
+    CONTRACT[コントラクトイベント]
+    INDEXER[ブロックチェーンインデクサー]
+    DB[PostgreSQL 参照モデル]
     CACHE[Redis]
-    GATEWAY[Gateway]
+    GATEWAY[ゲートウェイ]
 
     CONTRACT --> INDEXER --> DB --> CACHE --> GATEWAY
 ```
 
-Read Modelはchain ID、block number、block hash、transaction hash、log indexを保持し、Reorganization時に巻き戻せるものとする。
+参照モデルはchain ID、block number、block hash、transaction hash、log indexを保持し、Reorganization時に巻き戻せるものとする。
 
-- 新規Playback Sessionは判定不能時にFail Closedとする
-- 開始済みStreamには短いGrace Windowを定義できる
-- Rights SuspensionとAccount SuspensionはCacheを即時失効させる
+- 新規再生セッションは判定不能時にFail Closedとする
+- 開始済みストリームには短いGrace Windowを定義できる
+- 権利 Suspensionとアカウント Suspensionはキャッシュを即時失効させる
 - Grace Windowの長さは法務・権利・可用性レビュー対象とする
 
-## 10. Track Identity and Catalog Mapping
+## 10. 楽曲アイデンティティ・カタログ対応付け
 
-音楽クリエーター中心 Track IDをCanonical Identifierとし、Navidrome IDを交換可能なAdapter Identifierとして扱う。
+音楽クリエーター中心楽曲 IDを正規 Identifierとし、Navidrome IDを交換可能なアダプター Identifierとして扱う。
 
 ```text
-音楽クリエーター中心 Track ID
-    -> Catalog Mapping
-    -> Navidrome Media ID
-    -> Read-only Audio File
+音楽クリエーター中心楽曲 ID
+    -> カタログ対応付け
+    -> Navidrome メディア ID
+    -> 読取専用音声ファイル
 ```
 
-MappingはISRC、MusicBrainz ID、Content Hash、Rights Version、Publication Stateを必要に応じて関連付ける。
+対応付けはISRC、MusicBrainz ID、コンテンツハッシュ、権利版、Publication 状態を必要に応じて関連付ける。
 
-Navidrome IDをRights Registry、Usage CommitmentまたはDistribution RootのCanonical Keyにしてはならない。
+Navidrome IDを権利登録台帳、利用実績コミットメントまたは分配ルートの正規鍵にしてはならない。
 
-## 11. Playback Evidence
+## 11. 再生証跡
 
-HTTP Range Request一回を一回の有効再生として数えない。
+HTTP 範囲リクエスト一回を一回の有効再生として数えない。
 
-Gateway Byte Delivery、Player Heartbeat、Session State、Subscription State、Rights VersionおよびFraud Signalを照合し、Usage Verification LayerがValid Usageを決定する。
+ゲートウェイ Byte 配信、プレーヤー Heartbeat、セッション状態、サブスクリプション状態、権利版および不正 Signalを照合し、利用実績検証レイヤーが有効利用実績を決定する。
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Authorized
-    Authorized --> Started: first bytes served
+    [*] --> 認可済み
+    認可済み --> Started: first bytes served
     Started --> Qualified: evidence threshold met
     Started --> Abandoned: insufficient evidence
     Qualified --> Completed
     Qualified --> Interrupted
-    Authorized --> Expired
+    認可済み --> Expired
 ```
 
-NavidromeのPlay CountまたはScrobbleだけを音楽クリエーター分配の根拠にしない。
+Navidromeの再生回数またはScrobbleだけを音楽クリエーター分配の根拠にしない。
 
-## 12. Deployment Topology
+## 12. デプロイ構成
 
-Deploymentは、ローカル単体確認、開発・プレゼン用Test環境および本番候補環境を分離する。Test環境の成立は、本番環境のSecurity、Rights、Privacy、可用性または法令適合性を証明しない。
+デプロイは、ローカル単体確認、開発・プレゼン用テスト環境および本番候補環境を分離する。テスト環境の成立は、本番環境のセキュリティ、権利、プライバシー、可用性または法令適合性を証明しない。
 
-### 12.1 Local Standalone Verification
+### 12.1 ローカル単体検証
 
-Navidrome Adapterを有効化する前の独立したローカル管理・検証に限り、Navidrome `0.63.2`をHost Loopbackの`127.0.0.1:4533`へ公開し、合成試験音でScanと再生を確認する。この例外はLANまたはInternetへの公開を許可せず、Playerから利用せず、GatewayとNavidromeを同一の非公開Media Networkへ接続する時点で削除する。手順は[ローカル音楽ストリーミング](/demo/local-streaming)に記録する。
+Navidrome アダプターを有効化する前の独立したローカル管理・検証に限り、Navidrome `0.63.2`をHost Loopbackの`127.0.0.1:4533`へ公開し、合成試験音でScanと再生を確認する。この例外はLANまたはインターネットへの公開を許可せず、プレーヤーから利用せず、ゲートウェイとNavidromeを同一の非公開メディアネットワークへ接続する時点で削除する。手順は[ローカル音楽ストリーミング](/demo/local-streaming)に記録する。
 
-### 12.2 Development and Presentation Test Environment
+### 12.2 開発・プレゼンテスト環境
 
-開発およびプレゼンでSubscription-to-Playback Vertical Sliceを実証する環境は、金銭的価値を持たないTest Assetと合成または利用許諾確認済み音源だけを扱い、月額費用を発生させないことを設計目標とする。ただしCloud ProviderのFree Tierまたは第三者Serviceの無償提供を保証とみなさず、Billing、Quotaおよび利用条件をDeploy前に再確認する。
+開発およびプレゼンでSubscription-to-Playback 最小縦断実装を実証する環境は、金銭的価値を持たないテスト資産と合成または利用許諾確認済み音源だけを扱い、月額費用を発生させないことを設計目標とする。ただしクラウド事業者の無料枠または第三者サービスの無償提供を保証とみなさず、Billing、Quotaおよび利用条件をデプロイ前に再確認する。
 
-#### Resource and Cost Boundary
+#### 資源・コスト境界
 
-Test環境は次を満たす。
+テスト環境は次を満たす。
 
-- Google Cloud Free Tier対象RegionのCompute Engine `e2-micro`を1台だけ使用する
-- Persistent Diskは`pd-standard`とし、Boot、音源、DatabaseおよびCacheの合計を30 GB-month以下にする
-- 課金対象となる外部IPv4、Load Balancer、Cloud NAT、Cloud DNSおよび自動Snapshotを使用しない
-- VMには外部IPv6だけを割り当て、Inbound PortをInternetへ開放しない
-- Public HTTPS入口はCloudflare Quick Tunnelを使用し、`cloudflared`からIPv6のOutbound接続を確立する
-- Quick TunnelのURLが再起動時に変わり得ること、SLAがないことおよび開発・Test用途限定であることを表示する
-- Google Cloud Budget Alertを設定する。ただしAlertはHard Capではないため、Gateway自身が配信Byte数を制限する
-- Gatewayは月間Audio Deliveryが700 MiBに達した時点で警告し、800 MiBで新規Playback Sessionを停止する
-- 少なくとも200 MiBをTunnel、RPC、管理およびProtocol Overheadの予備として残す
+- Google クラウド無料枠対象地域のコンピュートエンジン `e2-micro`を1台だけ使用する
+- Persistent Diskは`pd-standard`とし、Boot、音源、データベースおよびキャッシュの合計を30 GB-month以下にする
+- 課金対象となる外部IPv4、負荷分散器、クラウド NAT、クラウド DNSおよび自動スナップショットを使用しない
+- VMには外部IPv6だけを割り当て、Inbound Portをインターネットへ開放しない
+- 公開 HTTPS入口はCloudflare Quick Tunnelを使用し、`cloudflared`からIPv6のOutbound接続を確立する
+- Quick TunnelのURLが再起動時に変わり得ること、SLAがないことおよび開発・テスト用途限定であることを表示する
+- Google クラウド予算警告を設定する。ただし警告はHard Capではないため、ゲートウェイ自身が配信Byte数を制限する
+- ゲートウェイは月間音声配信が700 MiBに達した時点で警告し、800 MiBで新規再生セッションを停止する
+- 少なくとも200 MiBをTunnel、RPC、管理およびプロトコル Overheadの予備として残す
 
-#### Runtime Boundary
+#### 実行時境界
 
-e2-micro上のRuntimeは原則として次だけで構成する。
+e2-micro上の実行時は原則として次だけで構成する。
 
 ```text
 cloudflared
-    -> Streaming Authorization Gateway
+    -> ストリーミング認可ゲートウェイ
         -> Navidrome
-        -> SQLite Read Model / Playback Evidence
+        -> SQLite 参照モデル / 再生証跡
         -> Base Sepolia RPC
-        -> Relayer Module
+        -> リレイヤー Module
 ```
 
-- Gatewayは単一の軽量Processとして実装する
-- RelayerはGateway内の限定Moduleとし、別の常駐Application Serverを追加しない
-- Read Model、Nonce、Session、Allowlist、Playback Evidenceおよび月間配信Byte数はSQLiteへ保存できる
-- PostgreSQL、Redis、Event Queue、Local Blockchain Nodeおよび検索ClusterをTest環境へ配置しない
-- Cloudflare側でPublic TLSを終端するため、Quick Tunnel構成ではCaddyを必須としない
-- 音源は96 kbpsまたは128 kbpsへ事前変換し、Direct Playを基本とする
-- Navidromeの同時Transcodeは最大1本とし、Client切断時のTranscode Cancellationを有効にする
-- プレゼン成立条件は同時Direct Play 1〜3本を目標とし、実測値を記録する
+- ゲートウェイは単一の軽量手続として実装する
+- リレイヤーはゲートウェイ内の限定Moduleとし、別の常駐アプリケーションサーバーを追加しない
+- 参照モデル、Nonce、セッション、Allowlist、再生証跡および月間配信Byte数はSQLiteへ保存できる
+- PostgreSQL、Redis、イベント一覧、ローカルブロックチェーン Nodeおよび検索Clusterをテスト環境へ配置しない
+- Cloudflare側で公開 TLSを終端するため、Quick Tunnel構成ではCaddyを必須としない
+- 音源は96 kbpsまたは128 kbpsへ事前変換し、直接 Playを基本とする
+- Navidromeの同時Transcodeは最大1本とし、クライアント切断時のTranscode Cancellationを有効にする
+- プレゼン成立条件は同時直接 Play 1〜3本を目標とし、実測値を記録する
 
-#### Gateway and スマートコントラクト Boundary
+#### ゲートウェイ・スマートコントラクト境界
 
-Gatewayを唯一のPublic Application Boundaryとし、NavidromeのPort、Credential、Internal APIおよびMedia IDをClientへ公開しない。
+ゲートウェイを唯一の公開アプリケーション境界とし、NavidromeのPort、資格証明、内部 APIおよびメディア IDをクライアントへ公開しない。
 
-- Wallet認証はnonce、domain、URI、Chain ID、有効期限を検証するSIWEを使用する
-- ユーザが認識するSubscription PriceとPayment Intentは`MockJPYC`建てとし、Test ETHを支払資産として受け付けない
-- Gatewayは署名済みPayment Authorizationを検証してRelayerへ渡せるが、Relayer受付またはGas支払だけでSubscriptionを有効化しない
-- `DemoSubscription`は一致する`MockJPYC` TransferがFinality条件を満たした後だけ有効化する
-- 明示的なSBT受領同意とQualificationを確認した後だけ、RelayerがEarly Supporter SBT発行Transactionを送信できる
-- Test参加者はWallet Allowlistまたは明示的な招待記録で制限する
-- SubscriptionおよびRights判定はBase Sepolia Public RPCから取得し、15〜30秒の短時間Cacheへ保存する
-- RPC Timeout、Rate Limit、Chain ID不一致、Contract Address不一致または判定不能時は新規Playback SessionをFail Closedにする
-- 認可成功時だけ、Account、Track、Rights Version、SubscriptionおよびTTLをBindingした短時間Playback Ticketを発行する
-- Gatewayは許可済み`Range` HeaderだけをNavidromeへ渡し、配信Byte数とServer-side Playback EvidenceをSQLiteへ記録する
+- ウォレット認証はnonce、domain、URI、チェーン ID、有効期限を検証するSIWEを使用する
+- ユーザが認識するサブスクリプション価格と決済意思は`MockJPYC`建てとし、テスト ETHを支払資産として受け付けない
+- ゲートウェイは署名済み決済認可を検証してリレイヤーへ渡せるが、リレイヤー受付またはガス支払だけでサブスクリプションを有効化しない
+- `DemoSubscription`は一致する`MockJPYC` 転送がファイナリティ条件を満たした後だけ有効化する
+- 明示的なSBT受領同意と資格判定を確認した後だけ、リレイヤーが初期サポーター SBT発行トランザクションを送信できる
+- テスト参加者はウォレット Allowlistまたは明示的な招待記録で制限する
+- サブスクリプションおよび権利判定はBase Sepolia 公開 RPCから取得し、15〜30秒の短時間キャッシュへ保存する
+- RPC Timeout、率制限、チェーン ID不一致、コントラクトアドレス不一致または判定不能時は新規再生セッションをFail Closedにする
+- 認可成功時だけ、アカウント、楽曲、権利版、サブスクリプションおよびTTLを結付けした短時間再生 Ticketを発行する
+- ゲートウェイは許可済み`Range` HeaderだけをNavidromeへ渡し、配信Byte数とServer-side 再生証跡をSQLiteへ記録する
 
-Base SepoliaのTest Contractは少なくとも次を分離する。
+Base Sepoliaのテストコントラクトは少なくとも次を分離する。
 
-- `MockJPYC`: 金銭的価値、償還請求権または実在JPYCとの交換可能性を持たないTest Token
-- `DemoSubscription`: Wallet、Plan、開始時刻、有効期限および取消状態
-- `DemoRightsRegistry`: 音楽クリエーター中心 Track ID、公開状態、Rights Versionおよび停止状態
-- `DemoEarlySupporterSBT`: 譲渡不能、失効可能かつ金銭的権利を持たないTest Credential
+- `MockJPYC`: 金銭的価値、償還請求権または実在JPYCとの交換可能性を持たないテストトークン
+- `DemoSubscription`: ウォレット、計画、開始時刻、有効期限および取消状態
+- `DemoRightsRegistry`: 音楽クリエーター中心楽曲 ID、公開状態、権利版および停止状態
+- `DemoEarlySupporterSBT`: 譲渡不能、失効可能かつ金銭的権利を持たないテスト資格証明
 
-最初の公開Contract JourneyのChain IDはEthereum Sepoliaの`11155111`とし、Contract Address、Deployment Transaction、ABI、Source Commitおよび使用RPCをデモ画面へ表示する。ADR-0007で将来のPrimary L2を決定した後は、Environmentごとに別ManifestとAsset Registry Entryを使用する。Test ETHはGasにだけ使用し、料金表示、Payment Intent、Subscription RevenueまたはSBT資格額に使用しない。Mainnet Asset、本番Wallet、本番秘密鍵、実在Subscription、実在Rights、未公開音源または個人情報をTest環境へ投入しない。Deployer KeyとRelayer KeyはRepositoryへCommitせず、用途と権限を分離し、可能な限りVMへ常置しない。
+最初の公開コントラクト利用フローのチェーン IDはEthereum Sepoliaの`11155111`とし、コントラクトアドレス、デプロイトランザクション、ABI、ソースコミットおよび使用RPCをデモ画面へ表示する。ADR-0007で将来の主 L2を決定した後は、環境ごとに別マニフェストと資産登録台帳登録項目を使用する。テスト ETHはガスにだけ使用し、料金表示、決済意思、サブスクリプション収益またはSBT資格額に使用しない。Mainnet 資産、本番ウォレット、本番秘密鍵、実在サブスクリプション、実在権利、未公開音源または個人情報をテスト環境へ投入しない。Deployer 鍵とリレイヤー鍵はリポジトリへコミットせず、用途と権限を分離し、可能な限りVMへ常置しない。
 
-#### Test Environment Acceptance Criteria
+#### テスト環境受入基準
 
 開発・プレゼン用環境は少なくとも次を再現できなければならない。
 
-1. AllowlistされたWalletによるSIWE成功と、未許可Walletの拒否
-2. 有効な`DemoSubscription`とActive Rightsによる試験音再生
-3. Subscription期限切れまたは取消し後の新規再生拒否
-4. Rights停止またはRights Version不一致後の新規再生拒否
-5. RPC停止、Timeoutまたは誤Chain接続時のFail Closed
-6. Playback Ticketの期限切れ、Owner不一致およびReplayの拒否
-7. HTTP Range、Seek、Pause、ReconnectおよびClient Abort
-8. NavidromeへPublic経路から直接到達できないこと
-9. Playback Evidence、配信Byte数およびDenial Reasonの監査可能な記録
-10. 700 MiB警告と800 MiB新規Session停止の自動Test
-11. e2-microでOOMを発生させず、同時Direct Play 1〜3本と最大1 Transcodeの測定結果を保存すること
-12. `MockJPYC`の正しいAsset、Amount、ChainおよびPayment IntentだけがSubscriptionを有効化し、Test ETH、誤Asset、未確定または重複Paymentが有効化しないこと
-13. ユーザがTest ETHを保持しなくてもRelayer経由でPaymentとSBT発行を操作でき、Gas支払がSubscription Paymentとして記録されないこと
-14. 明示的同意とQualificationがある場合だけDemo SBTを一回発行し、Transfer、重複発行、失効後の特権およびSBT単独での通常再生を拒否すること
+1. AllowlistされたウォレットによるSIWE成功と、未許可ウォレットの拒否
+2. 有効な`DemoSubscription`と有効権利による試験音再生
+3. サブスクリプション期限切れまたは取消し後の新規再生拒否
+4. 権利停止または権利版不一致後の新規再生拒否
+5. RPC停止、Timeoutまたは誤チェーン接続時のFail Closed
+6. 再生 Ticketの期限切れ、Owner不一致およびReplayの拒否
+7. HTTP 範囲、Seek、停止、Reconnectおよびクライアント Abort
+8. Navidromeへ公開経路から直接到達できないこと
+9. 再生証跡、配信Byte数およびDenial Reasonの監査可能な記録
+10. 700 MiB警告と800 MiB新規セッション停止の自動テスト
+11. e2-microでOOMを発生させず、同時直接 Play 1〜3本と最大1 Transcodeの測定結果を保存すること
+12. `MockJPYC`の正しい資産、Amount、チェーンおよび決済意思だけがサブスクリプションを有効化し、テスト ETH、誤資産、未確定または重複決済が有効化しないこと
+13. ユーザがテスト ETHを保持しなくてもリレイヤー経由で決済とSBT発行を操作でき、ガス支払がサブスクリプション決済として記録されないこと
+14. 明示的同意と資格判定がある場合だけデモ SBTを一回発行し、転送、重複発行、失効後の特権およびSBT単独での通常再生を拒否すること
 
-### 12.3 Production Candidate Topology
+### 12.3 本番候補構成
 
 本番候補構成は次を想定する。
 
 ```text
-Public:   Caddy :443
-Private:  Gateway, PostgreSQL, Redis, Event Queue
-Media:    Gateway, Navidrome :4533
-Storage:  /music read-only, /data persistent, /cache writable
+公開:   Caddy :443
+非公開:  ゲートウェイ, PostgreSQL, Redis, イベント一覧
+メディア:    ゲートウェイ, Navidrome :4533
+ストレージ:  /music read-only, /data persistent, /cache writable
 ```
 
-CaddyからNavidromeへ直接到達できないNetwork Policyとする。Navidrome Containerはnon-rootで動作させ、Image Versionを固定する。
+CaddyからNavidromeへ直接到達できないネットワークポリシーとする。Navidrome Containerはnon-rootで動作させ、Image 版を固定する。
 
-## 13. Observability
+## 13. 可観測性
 
 少なくとも次を計測する。
 
-- Playback Authorization latency / denial reason
-- Playback Start Time p50 / p95 / p99
-- Range Response status
-- Active Stream / Concurrent Transcode
+- 再生認可 latency / denial reason
+- 再生開始 Time p50 / p95 / p99
+- 範囲対応 status
+- 有効ストリーム / Concurrent Transcode
 - Upstream error / client disconnect
 - Bytes served
-- Playback Evidence loss rate
-- Subscription Indexer lag
-- Rights Suspension propagation time
-- CPU、Memory、CacheおよびStorage
+- 再生証跡 loss rate
+- サブスクリプションインデクサー lag
+- 権利 Suspension propagation time
+- CPU、Memory、キャッシュおよびストレージ
 
-個人の再生履歴をMetrics Labelへ含めない。
+個人の再生履歴を指標レーベルへ含めない。
 
-## 14. Alternatives Considered
+## 14. 検討した代替案
 
-### Navidromeを直接Publicへ公開する
+### Navidromeを直接公開へ公開する
 
-SubscriptionとRights Enforcementを迂回できる経路が生じるため採用しない。
+サブスクリプションと権利 Enforcementを迂回できる経路が生じるため採用しない。
 
-### Navidromeのユーザ / Library権限だけでPlanを表現する
+### Navidromeのユーザ / ライブラリ権限だけで計画を表現する
 
-Library単位の制御は補助的に利用できるが、楽曲ごとのRights Version、Territory、License WindowおよびOn-chain Subscriptionを十分に表現できないため、唯一のPolicy Engineにはしない。
+ライブラリ単位の制御は補助的に利用できるが、楽曲ごとの権利版、地域、License Windowおよびオンチェーンサブスクリプションを十分に表現できないため、唯一のポリシーエンジンにはしない。
 
 ### 再生ごとにスマートコントラクトを直接読む
 
-RPC latency、Rate Limit、Chain障害をPlayback Critical Pathへ入れるため採用しない。
+RPC latency、率制限、チェーン障害を再生重大 Pathへ入れるため採用しない。
 
-### 再生ごとにOn-chain Transactionを送る
+### 再生ごとにオンチェーントランザクションを送る
 
-Cost、Latency、PrivacyおよびWallet UXの要件を満たさないため採用しない。
+コスト、Latency、プライバシーおよびウォレット UXの要件を満たさないため採用しない。
 
-### 最初から独自Media Serverを構築する
+### 最初から独自メディアサーバーを構築する
 
-Track Range、Transcoding、Metadata Scan等の実装範囲が大きく、Subscription-to-Playback Vertical Sliceの検証を遅らせるため初期段階では採用しない。
+楽曲範囲、トランスコード、メタデータ Scan等の実装範囲が大きく、Subscription-to-Playback 最小縦断実装の検証を遅らせるため初期段階では採用しない。
 
-## 15. Consequences
+## 15. 影響
 
-### Positive
+### 利点
 
-- 既存OSSを使ってStreaming Vertical Sliceを早期に検証できる
-- Subscription、Rights、Media Serverの責務を分離できる
+- 既存OSSを使ってストリーミング最小縦断実装を早期に検証できる
+- サブスクリプション、権利、メディアサーバーの責務を分離できる
 - Navidromeを将来置換できる
-- ClientへNavidrome Credentialを配布せずに済む
-- Server-side EvidenceをUsage Verificationへ接続できる
-- 通常再生からWalletとBlockchain RPCを外せる
+- クライアントへNavidrome 資格証明を配布せずに済む
+- Server-side 証跡を利用実績検証へ接続できる
+- 通常再生からウォレットとブロックチェーン RPCを外せる
 
-### Negative
+### 欠点
 
-- Gatewayが帯域とConnectionのBottleneckになり得る
-- Range、Backpressure、Cancellation、Timeoutの正確な実装が必要になる
-- Blockchain Read Modelの整合性とReorg処理が必要になる
-- Navidrome IDとのCatalog Mappingを維持する必要がある
-- Header-based Authenticationの設定不備が重大な権限昇格につながる
-- 本番ScaleではCDN Deliveryへの移行が必要になる可能性が高い
+- ゲートウェイが帯域とConnectionのボトルネックになり得る
+- 範囲、Backpressure、Cancellation、Timeoutの正確な実装が必要になる
+- ブロックチェーン参照モデルの整合性とReorg処理が必要になる
+- Navidrome IDとのカタログ対応付けを維持する必要がある
+- Header-based 認証の設定不備が重大な権限昇格につながる
+- 本番規模拡大ではCDN 配信への移行が必要になる可能性が高い
 
-## 16. Validation Gates
+## 16. 検証ゲート
 
 本ADRをAcceptedへ変更する前に、少なくとも次を検証する。
 
-1. Wallet Loginから30秒以上の権利処理済みTest Audio再生までのEnd-to-End Test
-2. Subscription取消しおよびRights停止後の新規再生拒否
-3. Client supplied `Remote-User`の除去
-4. Navidrome PortへPublic Networkから到達できないこと
-5. Range、Seek、Pause、ReconnectおよびClient Abort
-6. Duplicate SessionおよびConcurrent Stream Limit
-7. RPC停止、Indexer遅延、Redis停止およびNavidrome停止
-8. Playback Evidenceの欠損、重複および順序逆転
-9. Load TestによるGateway RelayのScale Trigger
-10. NavidromeおよびGatewayのOSS License、Security、Privacy Review
-11. 12.2のTest環境Acceptance Criteriaを再現した検証証拠
-12. 外部IPv4、Load Balancer、Cloud NATおよび追加Diskが作成されていないことのBilling Inventory
-13. Quick Tunnel以外からGatewayおよびNavidromeへ到達できないこと
-14. Base Sepolia Chain ID、Contract Address、ABIおよびSource Commitの一致
-15. Test環境に本番資金、実在Rights、未公開音源、個人情報または本番Credentialが存在しないこと
+1. ウォレット Loginから30秒以上の権利処理済みテスト音声再生までのエンドツーエンドテスト
+2. サブスクリプション取消しおよび権利停止後の新規再生拒否
+3. クライアント supplied `Remote-User`の除去
+4. Navidrome Portへ公開ネットワークから到達できないこと
+5. 範囲、Seek、停止、Reconnectおよびクライアント Abort
+6. Duplicate セッションおよびConcurrent ストリーム制限
+7. RPC停止、インデクサー遅延、Redis停止およびNavidrome停止
+8. 再生証跡の欠損、重複および順序逆転
+9. 負荷テストによるゲートウェイ Relayの規模拡大 Trigger
+10. NavidromeおよびゲートウェイのOSS License、セキュリティ、プライバシーレビュー
+11. 12.2のテスト環境受入基準を再現した検証証拠
+12. 外部IPv4、負荷分散器、クラウド NATおよび追加Diskが作成されていないことのBilling Inventory
+13. Quick Tunnel以外からゲートウェイおよびNavidromeへ到達できないこと
+14. Base Sepolia チェーン ID、コントラクトアドレス、ABIおよびソースコミットの一致
+15. テスト環境に本番資金、実在権利、未公開音源、個人情報または本番資格証明が存在しないこと
 
-## 17. Open Questions
+## 17. 未解決事項
 
-- Gateway実装言語とFrameworkを何にするか
-- SIWE、PasskeyおよびEmbedded Walletをどう組み合わせるか
-- Playback Session TTLとGrace Windowを何秒にするか
-- Region判定のSourceと異議訂正手続をどうするか
-- Navidrome Multi-libraryをPlan補助制御に利用するか
-- Eligible Playbackの最低時間とEvidence Thresholdをどう定義するか
-- Object Storage + CDNへ移行するScale Triggerを何にするか
+- ゲートウェイ実装言語とFrameworkを何にするか
+- SIWE、Passkeyおよび組込みウォレットをどう組み合わせるか
+- 再生セッション TTLとGrace Windowを何秒にするか
+- 地域判定のソースと異議訂正手続をどうするか
+- Navidrome Multi-libraryを計画補助制御に利用するか
+- 適格再生の最低時間と証跡しきい値をどう定義するか
+- オブジェクトストレージ + CDNへ移行する規模拡大 Triggerを何にするか
 - Navidromeの改変が必要になった場合のGPL-3.0対応をどう行うか
 
-これらは本ADRだけで確定せず、Protocol DecisionとImplementation Work Packageで追跡する。
+これらは本ADRだけで確定せず、プロトコル決定と実装作業パッケージで追跡する。
 
-## 18. Relationship to Other ADRs
+## 18. 他のADRとの関係
 
-- ADR-0003は配信可否を決めるVersioned Rights Stateを提供する
-- ADR-0005はPlayback EvidenceをValid Usageへ変換する
-- ADR-0007はSubscriptionとCommitmentが利用するBlockchain / L2を定義する
-- ADR-0008はPlatform Account、Wallet、Sessionの分離を定義する
-- ADR-0009はこれらを実際のMedia Deliveryへ接続するApplication Boundaryを定義する
-- ADR-0010はEarly Supporter SBTをSubscriptionとRightsを置き換えない限定Privilegeへ接続する
-- ADR-0011はGateway専用PWA、Wallet操作、Supporter表示およびClient Storageの境界を定義する
+- ADR-0003は配信可否を決めるVersioned 権利状態を提供する
+- ADR-0005は再生証跡を有効利用実績へ変換する
+- ADR-0007はサブスクリプションとコミットメントが利用するブロックチェーン / L2を定義する
+- ADR-0008はプラットフォームアカウント、ウォレット、セッションの分離を定義する
+- ADR-0009はこれらを実際のメディア配信へ接続するアプリケーション境界を定義する
+- ADR-0010は初期サポーター SBTをサブスクリプションと権利を置き換えない限定特権へ接続する
+- ADR-0011はゲートウェイ専用PWA、ウォレット操作、サポーター表示およびクライアントストレージの境界を定義する
 
-## 19. Related Documents
+## 19. 関連文書
 
-- [Whitepaper: Platform Architecture](/whitepaper/04-platform-architecture)
-- [Whitepaper: Technology](/whitepaper/09-technology)
-- [Whitepaper: Security](/whitepaper/10-security)
-- [Whitepaper: Infrastructure and Cost](/whitepaper/12-infrastructure-cost)
-- [Protocol: Vertical Slice](/protocol/vertical-slice)
-- [Protocol: Implementation Plan](/protocol/implementation-plan)
-- [Protocol: Subscription Settlement](/protocol/specs/subscription-settlement)
-- [Protocol: Early Supporter Credential](/protocol/specs/early-supporter-credential)
-- [Protocol: Rights Registry](/protocol/specs/rights-registry)
-- [Protocol: Playback Verification](/protocol/specs/playback-verification)
-- [Protocol: Player Client and Gateway Interaction](/protocol/specs/player-client)
-- [Navidrome Externalized Authentication](https://www.navidrome.org/docs/usage/integration/authentication/)
-- [Navidrome Security Considerations](https://www.navidrome.org/docs/usage/admin/security/)
-- [Google Cloud Free Tier](https://docs.cloud.google.com/free/docs/free-cloud-features)
-- [Google Cloud External IP Pricing](https://cloud.google.com/vpc/network-pricing)
+- [ホワイトペーパー: プラットフォームアーキテクチャ](/whitepaper/04-platform-architecture)
+- [ホワイトペーパー: Technology](/whitepaper/09-technology)
+- [ホワイトペーパー: セキュリティ](/whitepaper/10-security)
+- [ホワイトペーパー: インフラ・コスト](/whitepaper/12-infrastructure-cost)
+- [プロトコル: 最小縦断実装](/protocol/vertical-slice)
+- [プロトコル: 実装計画](/protocol/implementation-plan)
+- [プロトコル: サブスクリプション精算](/protocol/specs/subscription-settlement)
+- [プロトコル: 初期サポーター資格証明](/protocol/specs/early-supporter-credential)
+- [プロトコル: 権利登録台帳](/protocol/specs/rights-registry)
+- [プロトコル: 再生検証](/protocol/specs/playback-verification)
+- [プロトコル: プレーヤークライアント・ゲートウェイ連携](/protocol/specs/player-client)
+- [Navidrome Externalized 認証](https://www.navidrome.org/docs/usage/integration/authentication/)
+- [Navidrome セキュリティ上の考慮事項](https://www.navidrome.org/docs/usage/admin/security/)
+- [Google クラウド無料枠](https://docs.cloud.google.com/free/docs/free-cloud-features)
+- [Google クラウド外部 IP 料金](https://cloud.google.com/vpc/network-pricing)
 - [Cloudflare Quick Tunnels](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/)
-- [Cloudflare Tunnel Run Parameters](https://developers.cloudflare.com/tunnel/advanced/run-parameters/)
-- [Base Sepolia Connection Information](https://docs.base.org/base-chain/quickstart/connecting-to-base)
+- [Cloudflare Tunnel Run パラメータ](https://developers.cloudflare.com/tunnel/advanced/run-parameters/)
+- [Base Sepolia Connection 情報](https://docs.base.org/base-chain/quickstart/connecting-to-base)
 - [Base Sepolia Faucets](https://docs.base.org/base-chain/network-information/network-faucets)
 
-## 20. Follow-up Work
+## 20. 後続作業
 
-本ADRの採択候補を検証する最初のVertical Sliceは次とする。
+本ADRの採択候補を検証する最初の最小縦断実装は次とする。
 
 ```text
-Wallet / Passkey Login
-    -> Subscription Read Model
-    -> Optional Early Supporter Privilege Read Model
-    -> Track Rights Decision
-    -> Playback Session
-    -> Navidrome Range Stream
-    -> Playback Evidence
-    -> Mock Usage Aggregation
+ウォレット / Passkey Login
+    -> サブスクリプション参照モデル
+    -> 任意初期サポーター特権参照モデル
+    -> 楽曲権利決定
+    -> 再生セッション
+    -> Navidrome 範囲ストリーム
+    -> 再生証跡
+    -> モック利用実績集約
 ```
 
-本番資金または未公開音源を扱う前に、Threat Model、Failure Injection、License Review、Privacy ReviewおよびIndependent Security Reviewを完了する。
+本番資金または未公開音源を扱う前に、脅威モデル、Failure Injection、License レビュー、プライバシーレビューおよび独立セキュリティレビューを完了する。

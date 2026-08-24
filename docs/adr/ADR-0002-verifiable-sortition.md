@@ -1,78 +1,78 @@
 ---
-description: 音楽クリエーターとユーザの代表者を検証可能かつ操作耐性のある方法で抽選するSortition Protocolの設計案。
+description: 音楽クリエーターとユーザの代表者を検証可能かつ操作耐性のある方法で抽選する抽選プロトコルの設計案。
 ---
 
-# ADR-0002: Verifiable Sortition
+# ADR-0002: 検証可能抽選
 
-**Status:** Proposed  
-**Date:** 2026-07-29
-**Last Updated:** 2026-08-20
+**状態:** 提案
+**日付:** 2026-07-29
+**最終更新日:** 2026-08-20
 
-## 1. Context
+## 1. 背景
 
-Creator First Platform は、音楽クリエーター と ユーザ を プロトコルガバナンス の正統性の源泉とする。
+Creator First Platform は、音楽クリエーターとユーザをプロトコルガバナンスの正統性の源泉とする。
 
-ADR-0001 では、音楽クリエーター／ユーザコミュニティ から代表者を抽選し、
+ADR-0001 では、音楽クリエーター／ユーザコミュニティから代表者を抽選し、
 
 > **音楽クリエーター／ユーザ → 抽選議会 → 熟議 → プロトコル仕様 → スマートコントラクト → 自動執行**
 
-という Governance Model を採用する。
+というガバナンスモデルを採用する。
 
 しかし、単に「ランダムに代表者を選ぶ」だけでは十分ではない。
 
-抽選を Platform 運営者や株式会社が内部システムで実施した場合、
+抽選をプラットフォーム運営者や株式会社が内部システムで実施した場合、
 
 - 特定の候補者を意図的に選択する
 - 特定の候補者を除外する
 - 都合のよい乱数が得られるまで抽選をやり直す
-- 抽選対象となる Eligible Community を事後的に変更する
+- 抽選対象となる適格コミュニティを事後的に変更する
 - 抽選結果そのものを書き換える
 
-といった Governance Manipulation の可能性を排除できない。
+といったガバナンス操作の可能性を排除できない。
 
 したがって Creator First Platform の抽選議会には、
 
-**Verifiable Sortition（検証可能な抽選）**
+**検証可能抽選（検証可能な抽選）**
 
 が必要である。
 
 ---
 
-## 2. Decision
+## 2. 決定
 
-Creator First Platform は、音楽クリエータ院議会 および ユーザ院議会 の代表者選出に **Verifiable Sortition** を採用する。
+Creator First Platform は、音楽クリエータ院議会およびユーザ院議会の代表者選出に **検証可能抽選** を採用する。
 
 抽選は、少なくとも次の性質を満たさなければならない。
 
-### Fairness
+### 公平性
 
-同一カテゴリー内のすべての Eligible Member は、原則として等しい選出機会を持つ。
+同一カテゴリー内のすべての適格 Member は、原則として等しい選出機会を持つ。
 
-資産保有量、Token保有量、知名度、フォロワー数、再生回数、Platformへの支払額などによって抽選確率を増加させない。
+資産保有量、トークン保有量、知名度、フォロワー数、再生回数、プラットフォームへの支払額などによって抽選確率を増加させない。
 
-### Unpredictability
+### 予測不能性
 
 抽選結果は、抽選条件が確定する前に予測できてはならない。
 
-### Verifiability
+### 検証可能性
 
-抽選結果が正しいことを、Platform運営者以外の第三者が検証できなければならない。
+抽選結果が正しいことを、プラットフォーム運営者以外の第三者が検証できなければならない。
 
-### Non-manipulability
+### 操作不能性
 
-Platform運営者、候補者、その他の参加者が抽選結果を恣意的に操作できてはならない。
+プラットフォーム運営者、候補者、その他の参加者が抽選結果を恣意的に操作できてはならない。
 
-### Reproducibility
+### 再現可能性
 
-確定した Eligible Set、公開されたRandomness、および同一のSortition Algorithmから、第三者が同一の抽選結果を再計算できなければならない。
+確定した適格集合、公開された乱数、および同一の抽選アルゴリズムから、第三者が同一の抽選結果を再計算できなければならない。
 
 ---
 
-## 3. Governance Population
+## 3. ガバナンス母集団
 
-抽選対象は全Wallet Addressではない。
+抽選対象は全ウォレットアドレスではない。
 
-各Houseについて、事前に定義されたEligibility Rulesを満たすCommunity Memberのみを対象とする。
+各Houseについて、事前に定義された適格性ルールを満たすコミュニティ Memberのみを対象とする。
 
 ```text
 音楽クリエーターコミュニティ
@@ -81,7 +81,7 @@ Platform運営者、候補者、その他の参加者が抽選結果を恣意的
         ↓
 適格音楽クリエーター集合
         ↓
-Verifiable Sortition
+検証可能抽選
         ↓
 音楽クリエータ院議会
 ```
@@ -93,22 +93,22 @@ Verifiable Sortition
         ↓
 適格ユーザ集合
         ↓
-Verifiable Sortition
+検証可能抽選
         ↓
 ユーザ院議会
 ```
 
-音楽クリエーター適格性 と ユーザ適格性 の詳細は別Specificationで定義する。
+音楽クリエーター適格性とユーザ適格性の詳細は別仕様で定義する。
 
 ---
 
-## 4. One Person / One Eligibility Principle
+## 4. 一人一適格性原則
 
-Creator First Platform のSortitionはToken-weighted selectionを採用しない。
+Creator First Platform の抽選はToken-weighted selectionを採用しない。
 
 基本原則は、
 
-> **One Eligible Person = One Sortition Opportunity**
+> **One 適格 Person = One 抽選機会**
 
 とする。
 
@@ -124,47 +124,47 @@ Creator First Platform のSortitionはToken-weighted selectionを採用しない
 100,000 JPYCを保有するユーザ
 ```
 
-が同一のEligibility条件を満たしている場合、資産量を理由として後者の抽選確率を高くしない。
+が同一の適格性条件を満たしている場合、資産量を理由として後者の抽選確率を高くしない。
 
-同様に音楽クリエーターについても、人気、収益、再生回数等を直接的な抽選Weightとして使用しない。
+同様に音楽クリエーターについても、人気、収益、再生回数等を直接的な抽選重みとして使用しない。
 
-これはGovernance PowerとEconomic Powerの集中を分離するためである。
+これはガバナンス権力と経済権力の集中を分離するためである。
 
 ---
 
-## 5. Sybil Resistance
+## 5. シビル耐性
 
-One Person / One Eligibilityを成立させるためには、単純なWallet Addressを抽選単位にしてはならない。
+一人一適格性を成立させるためには、単純なウォレットアドレスを抽選単位にしてはならない。
 
 一人のユーザが、
 
 ```text
-Wallet A
-Wallet B
-Wallet C
+ウォレット A
+ウォレット B
+ウォレット C
 ...
-Wallet N
+ウォレット N
 ```
 
-を作成することで抽選確率を増加させるSybil Attackを防止する必要がある。
+を作成することで抽選確率を増加させるシビル攻撃を防止する必要がある。
 
 したがって、
 
-> Wallet ≠ Governance Identity
+> ウォレット ≠ ガバナンスアイデンティティ
 
 とする。
 
-Governance Eligibilityは、Walletとは独立したIdentity / Credential Layerによって管理する。
+ガバナンス適格性は、ウォレットとは独立したアイデンティティ / 資格証明レイヤーによって管理する。
 
-ただし、Identity Verificationの具体的方法は本ADRでは決定しない。
+ただし、アイデンティティ検証の具体的方法は本ADRでは決定しない。
 
-Privacy-preserving credentials、Proof of Personhood、Platform activity credentials等を候補として別ADRで検討する。
+Privacy-preserving credentials、証明 of 一人性、プラットフォーム activity credentials等を候補として別ADRで検討する。
 
 ---
 
-## 6. Eligible Set Commitment
+## 6. 適格集合コミットメント
 
-抽選前にEligible Setを確定する。
+抽選前に適格集合を確定する。
 
 抽選対象集合を、
 
@@ -174,7 +174,7 @@ $$
 
 とする。
 
-Platformは抽選Randomnessが確定する**前に**Eligible SetへのCommitmentを公開する。
+プラットフォームは抽選乱数が確定する**前に**適格集合へのコミットメントを公開する。
 
 例えば、
 
@@ -182,9 +182,9 @@ $$
 C_E = H(\operatorname{MerkleRoot}(E))
 $$
 
-のようなCommitmentを利用できる。
+のようなコミットメントを利用できる。
 
-これによってRandomnessを見た後で、
+これによって乱数を見た後で、
 
 - 候補者を追加する
 - 候補者を削除する
@@ -193,29 +193,29 @@ $$
 
 ---
 
-## 7. Public Randomness
+## 7. 公開乱数
 
-抽選には、Platform運営者が単独で決定できないRandomness Sourceを使用する。
+抽選には、プラットフォーム運営者が単独で決定できない乱数ソースを使用する。
 
 概念的には、
 
 ```text
-Eligible Set
+適格集合
       ↓
-Commitment
+コミットメント
       ↓
-Future Public Randomness
+Future 公開乱数
       ↓
-Deterministic Sortition
+決定論的抽選
       ↓
-Selected Members
+選出議員
       ↓
-Public Verification
+公開検証
 ```
 
 とする。
 
-Randomness Sourceの候補には、
+乱数ソースの候補には、
 
 - public randomness beacon
 - blockchain randomness
@@ -224,21 +224,21 @@ Randomness Sourceの候補には、
 
 などがある。
 
-具体的なRandomness Sourceはプロトコル仕様または別ADRで決定する。
+具体的な乱数ソースはプロトコル仕様または別ADRで決定する。
 
 ---
 
-## 8. Deterministic Sortition
+## 8. 決定論的抽選
 
-確定したEligible Setを $E$、公開Randomnessを $R$、選出人数を $k$ とすると、
+確定した適格集合を $E$、公開乱数を $R$、選出人数を $k$ とすると、
 
 $$
-S = \operatorname{Sortition}(E,R,k)
+S = \operatorname{抽選}(E,R,k)
 $$
 
-によってSelected Member Set $S$ を決定する。
+によってSelected Member 集合 $S$ を決定する。
 
-Algorithmは公開され、
+アルゴリズムは公開され、
 
 $$
 E,R,k
@@ -248,40 +248,40 @@ $$
 
 ---
 
-## 9. Verification
+## 9. 検証
 
 抽選後、少なくとも次の情報を公開する。
 
-- Eligible Set Commitment
-- Eligibility Snapshot identifier
-- Randomness Source
-- Randomness Value
-- Sortition Algorithm Version
+- 適格集合コミットメント
+- 適格性スナップショット identifier
+- 乱数ソース
+- 乱数 Value
+- 抽選アルゴリズム版
 - Number of seats
 - Selected Member identifiers or privacy-preserving credentials
-- Verification data
+- 検証 data
 
 第三者は、
 
 ```text
-Eligibility Snapshot
+適格性スナップショット
         +
-Randomness
+乱数
         +
-Algorithm
+アルゴリズム
         ↓
-Independent Verification
+独立検証
         ↓
-Same Result
+Same 結果
 ```
 
 を確認できる。
 
 ---
 
-## 10. Privacy
+## 10. プライバシー
 
-Verifiabilityのために音楽クリエーター／ユーザの個人情報を公開してはならない。
+検証可能性のために音楽クリエーター／ユーザの個人情報を公開してはならない。
 
 特に、
 
@@ -291,29 +291,29 @@ Verifiabilityのために音楽クリエーター／ユーザの個人情報を�
 - 電話番号
 - 本人確認資料
 
-等をBlockchain上へ記録しない。
+等をブロックチェーン上へ記録しない。
 
-公開するのは、抽選の正当性を検証するために必要なCommitment、Credential、Proof等に限定する。
+公開するのは、抽選の正当性を検証するために必要なコミットメント、資格証明、証明等に限定する。
 
-将来的にはZero-Knowledge Proofを利用し、
+将来的にはゼロ知識証明を利用し、
 
-> 「このMemberは抽選時点でEligible Setに属していた」
+> 「このMemberは抽選時点で適格集合に属していた」
 
-ことを、Identityそのものを公開せずに証明できる構造を検討する。
+ことを、アイデンティティそのものを公開せずに証明できる構造を検討する。
 
 ---
 
-## 11. Replacement Members
+## 11. 補欠議員
 
 選出されたMemberが、
 
 - 辞退
 - 利益相反
-- Eligibility喪失
+- 適格性喪失
 - 長期不参加
 - その他の失格条件
 
-によって議員になれない場合に備え、Sortitionでは補欠順位も決定する。
+によって議員になれない場合に備え、抽選では補欠順位も決定する。
 
 例えば定数 $k$ の議席に対して、
 
@@ -321,15 +321,15 @@ $$
 k+r
 $$
 
-人を順序付きで抽選し、後続 $r$ 人をReplacement Poolとする。
+人を順序付きで抽選し、後続 $r$ 人をReplacement プールとする。
 
 運営者が任意の代替Memberを指名してはならない。
 
 ---
 
-## 12. Auditability
+## 12. 監査可能性
 
-各Sortition Roundには一意のIdentifierを付与する。
+各抽選ラウンドには一意のIdentifierを付与する。
 
 例：
 
@@ -338,92 +338,92 @@ USER-HOUSE-2026-001
 CREATOR-HOUSE-2026-001
 ```
 
-各Roundについて、
+各ラウンドについて、
 
 ```text
-Sortition Round
-├── Eligibility Snapshot
-├── Eligible Set Commitment
-├── Randomness
-├── Algorithm Version
-├── Selected Members
+抽選ラウンド
+├── 適格性スナップショット
+├── 適格集合コミットメント
+├── 乱数
+├── アルゴリズム版
+├── 選出議員
 ├── Replacement Order
-└── Verification Result
+└── 検証結果
 ```
 
 を追跡可能にする。
 
 ---
 
-## 13. Alternatives Considered
+## 13. 検討した代替案
 
-### Token-weighted Voting / Sortition
+### Token-weighted 投票 / 抽選
 
-資本量がGovernance Powerへ変換されるため採用しない。
+資本量がガバナンス権力へ変換されるため採用しない。
 
-### Operator-controlled Random Selection
+### 運用者が制御する無作為選出
 
-Platform運営者による操作可能性を排除できないため採用しない。
+プラットフォーム運営者による操作可能性を排除できないため採用しない。
 
-### Election-only Representation
+### 選挙だけによる代表制
 
 知名度、資金、組織力等が代表選出に強く影響する可能性があるため、基本方式として採用しない。
 
-### Pure Direct Democracy
+### 純粋な直接民主制
 
 すべての意思決定への全員参加は、参加負担と熟議品質の問題があるため、通常のプロトコルガバナンスには採用しない。
 
-ただし、憲章変更等の重大事項ではCommunity Referendumを併用する。
+ただし、憲章変更等の重大事項ではコミュニティ全体投票を併用する。
 
 ---
 
-## 14. Consequences
+## 14. 影響
 
-### Positive
+### 利点
 
-- Governance Powerの固定化を抑制できる
+- ガバナンス権力の固定化を抑制できる
 - 資本量と政治的影響力を分離できる
-- 一般音楽クリエーター／ユーザがGovernanceへ参加できる
+- 一般音楽クリエーター／ユーザがガバナンスへ参加できる
 - 抽選操作を第三者が検証できる
-- Platform運営者への信頼依存を低減できる
+- プラットフォーム運営者への信頼依存を低減できる
 - 抽選議会の正統性を技術的に補強できる
 
-### Negative
+### 欠点
 
-- Sybil Resistanceが必要になる
-- Eligibility設計が複雑になる
-- Randomness Infrastructureが必要になる
-- PrivacyとTransparencyの両立が必要になる
+- シビル耐性が必要になる
+- 適格性設計が複雑になる
+- 乱数インフラが必要になる
+- プライバシーと透明性の両立が必要になる
 - 選出されたMemberへの教育・支援が必要になる
 - 暗号技術の変更に対応する必要がある
 
 ---
 
-## 15. Security Considerations
+## 15. セキュリティ上の考慮事項
 
-Sortition Systemは少なくとも次の攻撃を考慮する。
+抽選システムは少なくとも次の攻撃を考慮する。
 
-- Sybil Attack
-- Eligible Set Manipulation
-- Randomness Manipulation
-- Grinding Attack
-- Selective Disclosure
-- Replacement Manipulation
-- Credential Theft
+- シビル攻撃
+- 適格集合操作
+- 乱数操作
+- Grinding 攻撃
+- Selective 開示
+- Replacement 操作
+- 資格証明 Theft
 - Collusion
-- Privacy Leakage
+- プライバシー Leakage
 
-具体的なThreat Modelはプロトコル仕様で定義する。
+具体的な脅威モデルはプロトコル仕様で定義する。
 
 ---
 
-## 16. Relationship to ADR-0001
+## 16. 関係 to ADR-0001
 
 ADR-0001は、
 
 > **抽選議会を採用する**
 
-というGovernance Architectureを決定する。
+というガバナンスアーキテクチャを決定する。
 
 ADR-0002は、
 
@@ -434,33 +434,33 @@ ADR-0002は、
 したがって、
 
 ```text
-ADR-0001 Governance Model
+ADR-0001 ガバナンスモデル
             ↓
-ADR-0002 Verifiable Sortition
+ADR-0002 検証可能抽選
             ↓
-Protocol Sortition Specification
+プロトコル抽選仕様
             ↓
-Implementation
+実装
 ```
 
 という関係になる。
 
 ---
 
-## 17. Related Documents
+## 17. 関連文書
 
-- ADR-0001: Governance Model
-- Whitepaper: Vision
-- Whitepaper: Governance
-- Whitepaper: Technology
-- Whitepaper: Security
+- ADR-0001: ガバナンスモデル
+- ホワイトペーパー: ビジョン
+- ホワイトペーパー: ガバナンス
+- ホワイトペーパー: Technology
+- ホワイトペーパー: セキュリティ
 
-## 18. Follow-up Specifications
+## 18. 後続仕様
 
-本ADRの採択後、少なくとも次のSpecificationを作成する。
+本ADRの採択後、少なくとも次の仕様を作成する。
 
 - `protocol/sortition-spec.md`
 - `protocol/governance-eligibility-spec.md`
 - `protocol/randomness-spec.md`
 
-Identity / Sybil Resistanceについては、必要に応じて独立したADRを作成する。
+アイデンティティ / シビル耐性については、必要に応じて独立したADRを作成する。

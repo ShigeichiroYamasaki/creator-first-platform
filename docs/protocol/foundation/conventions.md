@@ -1,6 +1,6 @@
 ---
-title: Protocol Conventions
-description: 規範キーワード、識別子、時刻、金額、Version、エラー、プライバシー等の共通Protocol規則。
+title: プロトコル規約
+description: 規範キーワード、識別子、時刻、金額、版、エラー、プライバシー等の共通プロトコル規則。
 editLink: false
 ---
 
