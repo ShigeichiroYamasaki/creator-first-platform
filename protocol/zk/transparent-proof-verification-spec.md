@@ -4,7 +4,7 @@
 **Version:** 0.1.0  
 **Protocol Domain:** zk / privacy / verification  
 **Specification ID:** SPEC-ZK-001  
-**Last Updated:** 2026-08-24
+**Last Updated:** 2026-08-26
 
 ## Related Documents
 
@@ -34,7 +34,7 @@ Define a proof-system-neutral envelope, verifier-profile lifecycle and testnet-t
 
 `CreatorFirstTransparentZKRegistry` and `CreatorFirstTransparentZKMockVerifier` implement only a Polygon Amoy-capable integration fixture for verifier registration, domain-bound receipt identity, replay rejection, deprecation, pause and events. The mock verifier performs a deterministic digest comparison and explicitly does not implement zero knowledge, soundness or a production proof system. It is permitted only under `MOCK-ASSUMPTION-002` and does not satisfy the mainnet acceptance criteria of this specification.
 
-The contracts are included in the `CreatorFirstTestnet` Ignition module but are not a public Polygon Amoy deployment until their addresses, deployment transactions and source commit appear in the reviewed public deployment manifest.
+The contracts were deployed from the `CreatorFirstTestnet` Ignition module to Polygon Amoy on 2026-08-26. The reviewed public deployment manifest binds both addresses, deployment transactions, the mock-profile registration transaction and source commit. This proves only the integration boundary described above; it does not prove zero knowledge, soundness or production conformance.
 
 ## Scope
 

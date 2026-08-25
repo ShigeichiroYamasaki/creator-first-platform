@@ -6,11 +6,11 @@ description: 二院制議会の独立承認、本人単位のクアドラティ�
 
 **状態:** 提案
 **日付:** 2026-08-24
-**最終更新日:** 2026-08-25
+**最終更新日:** 2026-08-26
 
 > **実装追記（2026-08-24）:** テストネットガバナーへ、投票前の憲章・法務適合性審査証拠と両院別熟議証拠を追加した。CFP-0002を対象に、不合格審査または片院の熟議欠落で投票を拒否し、両院承認後は対象ソース、生成物、テストスイート、試験報告およびcalldataを結合した合格証拠がなければ実装レビューへ進めない。実装レビュー、P2タイムロック後にだけCREATE2ファクトリーが時間窓ポリシーをデプロイするローカル試験を実装した。証拠は合成ハッシュであり、正式な憲章採択、法律意見、実在議員の熟議、独立監査または公開デプロイを示さない。
 
-> **実装追記（2026-08-25）:** CFP識別子ハッシュと改訂番号を提案へ明示的に結合する登録関数、CFP承認投票関数、院別結果取得関数および両院承認判定を追加した。ガバナーV2と無価値のデモポリシーをソースコミット`5431e890657d1f97cd4ef3cb387d7afc1b9bdf8f`からPolygon Amoyへ分離デプロイし、公開マニフェストと検証スクリプトを更新した。公開画面には音楽クリエータ院議会とユーザ院議会の個別入口を設け、接続ウォレットの所属院と入口が一致する場合だけCFP専用投票操作を許可する。
+> **実装追記（2026-08-25）:** CFP識別子ハッシュと改訂番号を提案へ明示的に結合する登録関数、CFP承認投票関数、院別結果取得関数および両院承認判定を追加した。ガバナーV2と無価値のデモポリシーをソースコミット`16b33334e6457337054c66824620d64cbed4f473`からPolygon Amoyへ分離デプロイし、公開マニフェストと検証スクリプトを更新した。公開画面には音楽クリエータ院議会とユーザ院議会の個別入口を設け、接続ウォレットの所属院と入口が一致する場合だけCFP専用投票操作を許可する。
 
 > **実装追記（2026-08-25）:** `CreatorFirstTestnetLegislatorRegistrationAdapter`をソースコミット`ee46a2ba0330d75d99226e66cedc7789a1e33321`からPolygon Amoyへデプロイし、既存ガバナーの`REGISTRAR_ROLE`を付与した。公開デモ会期1を作成し、有効なmockJPYCサブスクリプションまたは活動中のテスト音楽クリエーター登録から院別に自己登録できる。院別議員資格SBTの画像と静的メタデータ原案も公開したが、資格SBT発行コントラクトには未接続であり、表示と投票権限を分離する。
 
@@ -112,9 +112,9 @@ CFP Revisionごとに、論点、憲章・法務審査、音楽クリエータ�
 
 | 対象 | アドレス | 状態 |
 | --- | --- | --- |
-| `CreatorFirstBicameralGovernor` V2 | [`0x640711f1C249F8F6e8921E01060c99ccc6D72B95`](https://amoy.polygonscan.com/address/0x640711f1C249F8F6e8921E01060c99ccc6D72B95) | CFP対応ABI、チェーンID、遅延設定を公開RPCで検証済み |
-| `CreatorFirstGovernedPolicy` V2 | [`0x34f23e860b1A6E8cD0D06514A29ea9386A92B596`](https://amoy.polygonscan.com/address/0x34f23e860b1A6E8cD0D06514A29ea9386A92B596) | ガバナーV2だけを管理主体として参照することを検証済み |
-| `CreatorFirstTestnetLegislatorRegistrationAdapter` | [`0x39cAdc19b820e7BA549E6E9c2F6cc008ac2F729F`](https://amoy.polygonscan.com/address/0x39cAdc19b820e7BA549E6E9c2F6cc008ac2F729F) | 接続先3コントラクトと`REGISTRAR_ROLE`を公開RPCで検証済み |
+| `CreatorFirstBicameralGovernor` V2 | [`0xCDcb81E835CC6A4bB5779e09dED516f58CdfbB8a`](https://amoy.polygonscan.com/address/0xCDcb81E835CC6A4bB5779e09dED516f58CdfbB8a) | CFP対応ABI、チェーンID、遅延設定を公開RPCで検証済み |
+| `CreatorFirstGovernedPolicy` V2 | [`0xbA137FDD8901A89cB0C43Ec478980bEe357962E0`](https://amoy.polygonscan.com/address/0xbA137FDD8901A89cB0C43Ec478980bEe357962E0) | ガバナーV2だけを管理主体として参照することを検証済み |
+| `CreatorFirstTestnetLegislatorRegistrationAdapter` | [`0x88918A4E01A2145431a9AbB482d1904264cdE1b2`](https://amoy.polygonscan.com/address/0x88918A4E01A2145431a9AbB482d1904264cdE1b2) | 接続先3コントラクトと`REGISTRAR_ROLE`を公開RPCで検証済み |
 
 ガバナーV2のデプロイIDは`amoy-creator-first-governance-v2`、議員登録アダプターは`amoy-testnet-legislator-registration-adapter`とし、既存の決済、資金庫、SBTおよび音楽クリエーター登録台帳を再デプロイしない。公開デモ会期1は、会期ID 1、開始時刻2026年9月1日15:28 JST、終了時刻2026年10月1日15:28 JST、投票クレジット25、両院定足数各1として作成した。テストネットの登録役、審査役、緊急時ガーディアンおよび管理役は現在デプロイ用アカウントへ集約されているため、実在コミュニティによる運用、本番統治または法的な会社機関決定を示さない。CFP提案、正式な議員選出、議員資格SBT発行および実在する熟議記録は未登録である。
 

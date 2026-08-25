@@ -244,7 +244,10 @@ export async function switchProviderToAmoy(provider) {
         chainId: AMOY_CHAIN_HEX,
         chainName: 'Polygon Amoy',
         nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
-        rpcUrls: ['https://polygon-amoy.drpc.org'],
+        rpcUrls: [
+          'https://polygon-amoy-bor-rpc.publicnode.com',
+          'https://polygon-amoy.drpc.org'
+        ],
         blockExplorerUrls: [AMOY_EXPLORER_URL]
       }]
     })

@@ -3,8 +3,142 @@
   "environment": "amoy-demo",
   "network": "Polygon Amoy",
   "chainId": 80002,
-  "status": "not-deployed",
+  "status": "active",
+  "deployedAt": "2026-08-26",
+  "sourceCommit": "16b33334e6457337054c66824620d64cbed4f473",
+  "deploymentTool": "Hardhat Ignition 3.14.0",
   "deploymentId": "amoy-creator-first-testnet",
+  "compiler": {
+    "version": "0.8.28",
+    "optimizerRuns": 200,
+    "viaIR": true,
+    "evmTarget": "cancun"
+  },
+  "deployer": "0x67df94e6ed03d533c9c63d582f5e20447db3c803",
+  "contracts": {
+    "mockJpyc": {
+      "address": "0xC2D1fAC9517544A839D35e67008c76A1839366aA",
+      "transactionHash": "0x0677e184a10261ea743ff145d0205829f4d29cf3c8e667de1704b0bb18754ca4",
+      "blockNumber": 45852693
+    },
+    "supporterSbtImplementation": {
+      "address": "0x42d2B3A45C4Ce37De7960642eBD52aBd450B593b",
+      "transactionHash": "0xd5837534bf0f49f7d6da87b431e32731264889bdd05d055d4b0d2b80453304a2",
+      "blockNumber": 45852694
+    },
+    "treasury": {
+      "address": "0x239f51DDbB1D5249865088126ff40D34734151D7",
+      "transactionHash": "0xa4add03239c216252ce5feafc49853d553a5ad28497fe1f3048f4990187e1b10",
+      "blockNumber": 45852706
+    },
+    "subscription": {
+      "address": "0xFFbB494c89cBDDB7F2aeC85E14019f793416F2BD",
+      "transactionHash": "0xc3f99f31f092d1f704d2298afcc133591abf1b51703c4f0338cee069e51ff514",
+      "blockNumber": 45852715
+    },
+    "supporterSbtProxy": {
+      "address": "0x0406Cf42Ab5d3529ceAe869b6F05A3876379AB18",
+      "transactionHash": "0xd184b9520ddae7fee43e2e7b645eb4dbb7e9112ae509568bd74e4a87c5c4ee7a",
+      "blockNumber": 45852715,
+      "implementation": "0x42d2B3A45C4Ce37De7960642eBD52aBd450B593b"
+    },
+    "supporterRegistrationAdapter": {
+      "address": "0x7A5b305Bd64Be6070cfa5168C860F945f1D59dd1",
+      "transactionHash": "0x94704d7982158fa03dea0096e4a69f4b9c47b1ad757d2eb7d765b534fb354e8a",
+      "blockNumber": 45852725,
+      "roleGrantTransactionHash": "0x5273b635d79a6ea9d1cf70e8ab2dffa99b215c93689d92dea6384b514e352a9c",
+      "roleGrantBlockNumber": 45852737,
+      "sourceCommit": "16b33334e6457337054c66824620d64cbed4f473",
+      "supporterSbt": "0x0406Cf42Ab5d3529ceAe869b6F05A3876379AB18"
+    },
+    "creatorRegistry": {
+      "address": "0x7823e12075Ab59DE11eaa1044345906C062bF63c",
+      "transactionHash": "0x7999c357bc308a7f0b170f2f619a49617b7220bbff352fc9a360f8691ffae0d6",
+      "blockNumber": 45852688,
+      "sourceCommit": "16b33334e6457337054c66824620d64cbed4f473"
+    },
+    "creatorRegistrationAdapter": {
+      "address": "0x9F745D597f9f0531044510051056981AE37C8472",
+      "transactionHash": "0x50dd13bd21a2f8b7dc40b374d52a7ba943ab2c94b0a2280b1d6ca8640b1d2aa7",
+      "blockNumber": 45852703
+    },
+    "governor": {
+      "address": "0xCDcb81E835CC6A4bB5779e09dED516f58CdfbB8a",
+      "transactionHash": "0x893a055c523f827109b9aa76495f7da077663ed258733cfc12c73642c35502ab",
+      "blockNumber": 45852686,
+      "sourceCommit": "16b33334e6457337054c66824620d64cbed4f473",
+      "deploymentId": "amoy-creator-first-testnet"
+    },
+    "governedPolicy": {
+      "address": "0xbA137FDD8901A89cB0C43Ec478980bEe357962E0",
+      "transactionHash": "0x110953d269d56a52f875853d0677a01116007aa3be212b8ad3c6ca888ed83257",
+      "blockNumber": 45852704,
+      "sourceCommit": "16b33334e6457337054c66824620d64cbed4f473",
+      "deploymentId": "amoy-creator-first-testnet"
+    },
+    "legislatorRegistrationAdapter": {
+      "address": "0x88918A4E01A2145431a9AbB482d1904264cdE1b2",
+      "transactionHash": "0x11b7767c2620773b9e0fcdf1306e305faa0a75cbd981e3fb1d81217062a9df9e",
+      "blockNumber": 45852726,
+      "roleGrantTransactionHash": "0xdc723243e2616157014a51f0939290d75850069eddc26229291ec6a0b04044b5",
+      "roleGrantBlockNumber": 45852732,
+      "sourceCommit": "16b33334e6457337054c66824620d64cbed4f473",
+      "deploymentId": "amoy-creator-first-testnet",
+      "governor": "0xCDcb81E835CC6A4bB5779e09dED516f58CdfbB8a",
+      "subscription": "0xFFbB494c89cBDDB7F2aeC85E14019f793416F2BD",
+      "creatorRegistry": "0x7823e12075Ab59DE11eaa1044345906C062bF63c"
+    },
+    "cfp0002DeploymentFactory": {
+      "address": "0x3052B01311C4BDDa6B97f2c21029C80b848A28Cb",
+      "transactionHash": "0x49d75cde68858b8778335e7d41ed9988a28e01460296a4183e5d7c5038385a6c",
+      "blockNumber": 45852701
+    },
+    "transparentZkMockVerifier": {
+      "address": "0x2d61d67cBe34208b524980F815358184858ba80f",
+      "transactionHash": "0xc3b0a0db9f3985404384afc305b2a3818f9c3a799f7701a56516d5002c26f30a",
+      "blockNumber": 45852688
+    },
+    "transparentZkRegistry": {
+      "address": "0x4378586fE4835C4dEbe86084426f4ac98fBfcCc3",
+      "transactionHash": "0xedf35e5acdc595b1564a8c707df3bedc1ed60aec01dc8a1c4c335e41aa8a6e70",
+      "blockNumber": 45852691,
+      "profileRegistrationTransactionHash": "0x6be74e613e557d32f91fbcab0f4cfef16923681059a64e7db884ed52f5dfeb68",
+      "profileRegistrationBlockNumber": 45852705
+    }
+  },
+  "subscriptionPlan": {
+    "asset": "0xC2D1fAC9517544A839D35e67008c76A1839366aA",
+    "priceAtomic": "1000000000000000000000",
+    "durationSeconds": 2592000,
+    "version": 1,
+    "enabled": true
+  },
   "testAssetNotice": "TESTNET ONLY - NO VALUE, NO REDEMPTION, NOT PRODUCTION JPYC",
-  "creatorRegistryNotice": "TESTNET ONLY - NO IDENTITY, RIGHTS, PAYEE OR RELEASE VERIFICATION"
+  "creatorRegistryNotice": "TESTNET ONLY - NO IDENTITY, RIGHTS, PAYEE OR RELEASE VERIFICATION",
+  "verification": {
+    "onchainConfiguration": "verified",
+    "explorerSourceCode": "pending",
+    "independentAudit": "not-started"
+  },
+  "governanceConfiguration": {
+    "allowedChainId": 80002,
+    "parameterDelaySeconds": 60,
+    "upgradeDelaySeconds": 300,
+    "constitutionalDelaySeconds": 900,
+    "executionWindowSeconds": 604800,
+    "governedPolicyInitialVersion": 1,
+    "publicDemoSession": {
+      "sessionId": 1,
+      "ruleHash": "0x7c7d4b67883b80f114dd64b09399c0d66c1c7daf6951f9fcb658a8bc41ff2b55",
+      "startsAt": 1788244104,
+      "endsAt": 1790836104,
+      "voiceCreditBudget": 25,
+      "creatorQuorum": 1,
+      "userQuorum": 1,
+      "transactionHash": "0xa9b078967af97b699ae070989ffb95c1be167f10d2a8543896899d97a4aa624b",
+      "blockNumber": 45852701,
+      "deploymentId": "amoy-creator-first-testnet"
+    }
+  },
+  "operationalWarning": "All bootstrap roles, including governance registrar, reviewer and guardian, remain assigned to the deployer. Separate operational roles before broader public testing."
 }

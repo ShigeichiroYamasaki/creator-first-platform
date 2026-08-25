@@ -27,7 +27,7 @@ const legislatorRegistrationAdapter = manifest.contracts.legislatorRegistrationA
   ? getAddress(manifest.contracts.legislatorRegistrationAdapter)
   : undefined
 assert.equal(Boolean(governor), Boolean(governedPolicy), 'Governance manifest must publish governor and policy together')
-const rpcUrl = process.env.AMOY_READ_RPC_URL ?? 'https://polygon-amoy.drpc.org'
+const rpcUrl = process.env.AMOY_READ_RPC_URL ?? 'https://polygon-amoy-bor-rpc.publicnode.com'
 const client = createPublicClient({ chain: polygonAmoy, transport: http(rpcUrl) })
 
 for (const [name, address] of [...Object.entries(addresses), ['supporterImplementation', implementation]]) {

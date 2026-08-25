@@ -1,11 +1,11 @@
 ---
 title: Polygon Amoy スマートコントラクトデモ
-description: Hardhat 3、Infura、Polygon AmoyでCreator First PlatformのMockJPYC決済、サポーター SBT、音楽クリエーター登録台帳、二院制ガバナンス、透明型ZK境界を検証する手順。
+description: Hardhat 3、Viem、Polygon AmoyでCreator First PlatformのMockJPYC決済、サポーター SBT、音楽クリエーター登録台帳、二院制ガバナンス、透明型ZK境界を検証する手順。
 ---
 
 # Polygon Amoy スマートコントラクトデモ
 
-Hardhat 3とViemを使い、公開済みのテストネット専用コントラクトをPolygon Amoyへデプロイしました。次の表には、公開済み構成に加えて、次回デプロイ対象としてローカル実装した透明型ZK境界、CFP-0002検証境界、テスト議員登録、本番向け抽選候補も示します。CFP識別子・改訂結合と両院別結果取得を備えたガバナーV2は、ソースコミット `5431e890657d1f97cd4ef3cb387d7afc1b9bdf8f`からデプロイしています。
+Hardhat 3とViemを使い、公開済みのテストネット専用コントラクトをPolygon Amoyへデプロイしました。次の表には、公開済み構成に加えて、次回デプロイ対象としてローカル実装した透明型ZK境界、CFP-0002検証境界、テスト議員登録、本番向け抽選候補も示します。CFP識別子・改訂結合と両院別結果取得を備えたガバナーV2は、ソースコミット `16b33334e6457337054c66824620d64cbed4f473`からデプロイしています。
 
 | コントラクト | テストネット上の責務 | 本番境界 |
 | --- | --- | --- |
@@ -26,7 +26,7 @@ Hardhat 3とViemを使い、公開済みのテストネット専用コントラ�
 | `CreatorFirstCFP0002DeploymentFactory` | 両院承認、レビュー、P2タイムロック後だけ固定saltでCFP-0002ポリシーをデプロイする | 本番デプロイヤー、正式な憲章・法務審査または監査を代替しない |
 | `CreatorFirstCFP0002EarlySupporterPolicy` | 初期登録から31,536,000秒未満という排他的時間条件を判定する | SBTを発行せず、配信、金銭、権利または議決権を付与しない |
 
-透明型ZKの2コントラクト、CFP-0002用アダプター／デプロイファクトリー、本番向け検証可能抽選候補はローカル実装まで完了していますが、下記の公開Polygon Amoyマニフェストにはまだ含まれません。テスト議員登録アダプターは既存ガバナー、サブスクリプション、音楽クリエーター登録台帳へ接続してPolygon Amoyへデプロイし、`REGISTRAR_ROLE`付与と公開デモ会期1の作成まで公開RPCで検証済みです。本番向け抽選候補は監査前のためデプロイモジュールを設けていません。公開プレーヤー用サポータ登録アダプターはPolygon Amoyへデプロイし、既存SBTへの`RELAYER_ROLE`付与まで検証済みです。CFP-0002ポリシーはガバナンス実行時にだけ作成されます。
+透明型ZKの2コントラクト、CFP-0002用音楽クリエーター登録アダプター／デプロイファクトリー、テスト議員登録アダプターを統合モジュールからPolygon Amoyへデプロイしました。`REGISTRAR_ROLE`と`RELAYER_ROLE`の付与、公開デモ会期1、透明型ZKモックプロファイルの登録まで公開RPCで検証済みです。本番向け検証可能抽選候補はローカル実装・監査前のためデプロイしていません。CFP-0002の実ポリシーは両院承認とレビュー後のガバナンス実行時にだけ作成されます。
 
 SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を拒否します。初期条件の`POLICY_ROLE`、実装更新の`UPGRADER_ROLE`、署名済み意思を送る`RELAYER_ROLE`を分離し、発行済み階層を後日のポリシー更新で書き換えません。
 
@@ -38,16 +38,20 @@ SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を�
 
 | コントラクト | Polygon Amoy アドレス |
 | --- | --- |
-| MockJPYC | [`0xBc89…5f49`](https://amoy.polygonscan.com/address/0xBc89cF411Fe4fEc602e854fF32E78BBD131F5f49) |
-| CreatorFirstSubscription | [`0x7bEe…3d90`](https://amoy.polygonscan.com/address/0x7bEeD194032a8D655cF72E61889896eef97F3d90) |
-| CreatorFirstTreasury | [`0x57a9…4215`](https://amoy.polygonscan.com/address/0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215) |
-| SupporterSBT プロキシ | [`0x2D01…0923`](https://amoy.polygonscan.com/address/0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923) |
-| SupporterSBT 実装 | [`0x350a…7a66`](https://amoy.polygonscan.com/address/0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66) |
-| サポータ登録アダプター | [`0xbd68…D292`](https://amoy.polygonscan.com/address/0xbd6887125F9b8e000CF5a0673D7fa2a29a70D292) |
-| CreatorFirstCreatorRegistry | [`0x5676…e6E9`](https://amoy.polygonscan.com/address/0x5676d34d7C41849311b99932d8272af58b63e6E9) |
-| CreatorFirstBicameralGovernor V2 | [`0x6407…2B95`](https://amoy.polygonscan.com/address/0x640711f1C249F8F6e8921E01060c99ccc6D72B95) |
-| CreatorFirstGovernedPolicy V2 | [`0x34f2…B596`](https://amoy.polygonscan.com/address/0x34f23e860b1A6E8cD0D06514A29ea9386A92B596) |
-| テスト議員登録アダプター | [`0x39cA…729F`](https://amoy.polygonscan.com/address/0x39cAdc19b820e7BA549E6E9c2F6cc008ac2F729F) |
+| MockJPYC | [`0xC2D1…66aA`](https://amoy.polygonscan.com/address/0xC2D1fAC9517544A839D35e67008c76A1839366aA) |
+| CreatorFirstSubscription | [`0xFFbB…F2BD`](https://amoy.polygonscan.com/address/0xFFbB494c89cBDDB7F2aeC85E14019f793416F2BD) |
+| CreatorFirstTreasury | [`0x239f…51D7`](https://amoy.polygonscan.com/address/0x239f51DDbB1D5249865088126ff40D34734151D7) |
+| SupporterSBT プロキシ | [`0x0406…AB18`](https://amoy.polygonscan.com/address/0x0406Cf42Ab5d3529ceAe869b6F05A3876379AB18) |
+| SupporterSBT 実装 | [`0x42d2…593b`](https://amoy.polygonscan.com/address/0x42d2B3A45C4Ce37De7960642eBD52aBd450B593b) |
+| サポータ登録アダプター | [`0x7A5b…9dd1`](https://amoy.polygonscan.com/address/0x7A5b305Bd64Be6070cfa5168C860F945f1D59dd1) |
+| CreatorFirstCreatorRegistry | [`0x7823…F63c`](https://amoy.polygonscan.com/address/0x7823e12075Ab59DE11eaa1044345906C062bF63c) |
+| 音楽クリエーター登録アダプター | [`0x9F74…8472`](https://amoy.polygonscan.com/address/0x9F745D597f9f0531044510051056981AE37C8472) |
+| CreatorFirstBicameralGovernor V2 | [`0xCDcb…bB8a`](https://amoy.polygonscan.com/address/0xCDcb81E835CC6A4bB5779e09dED516f58CdfbB8a) |
+| CreatorFirstGovernedPolicy V2 | [`0xbA13…62E0`](https://amoy.polygonscan.com/address/0xbA137FDD8901A89cB0C43Ec478980bEe357962E0) |
+| テスト議員登録アダプター | [`0x8891…E1b2`](https://amoy.polygonscan.com/address/0x88918A4E01A2145431a9AbB482d1904264cdE1b2) |
+| CFP-0002デプロイファクトリー | [`0x3052…28Cb`](https://amoy.polygonscan.com/address/0x3052B01311C4BDDa6B97f2c21029C80b848A28Cb) |
+| 透明型ZKモック検証者 | [`0x2d61…a80f`](https://amoy.polygonscan.com/address/0x2d61d67cBe34208b524980F815358184858ba80f) |
+| 透明型ZK受付台帳 | [`0x4378…cCc3`](https://amoy.polygonscan.com/address/0x4378586fE4835C4dEbe86084426f4ac98fBfcCc3) |
 
 チェーン IDは`80002`です。[公開マニフェスト](/testnet/deployment.json)と[トランザクションを含むデプロイ記録](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Polygon Amoy RPCからBytecode、MockJPYC 通知／主張額、サブスクリプションの資産／資金庫／計画、ERC-1967 実装スロット、音楽クリエーター登録台帳のテストネット通知、ガバナーのチェーン／タイムロック設定およびデモポリシーとの接続を再検証します。
 
@@ -67,16 +71,15 @@ npm run contracts:test
 
 テストは、MockJPYCの一回限りの自己取得と移転、決済／支出参照の重複拒否、EIP-712 nonceのreplay拒否、初期上限、ERC-5192、SBT移転拒否、一ウォレット一音楽クリエーター、コミットメント重複拒否、リリース自己申告と音楽クリエーター限定取消し、透明型ZK境界に加え、テスト議員の院別資格と会期締切、本番向け抽選の適格者固定、乱数権限、重複しない抽選順位、本人請求、一人一院、補欠順序、CFP-0002の投票前適合性審査、両院熟議、別集計、共同承認、事後レビュー、P2タイムロック、完全一致デプロイおよび365日境界を確認します。
 
-## InfuraとPolygon Amoyの設定
+## RPCとPolygon Amoyの設定
 
-InfuraでPolygon Amoy用API 鍵を作成し、完全なHTTPS Endpointとデプロイ専用Polygon Amoy秘密鍵をHardhat 3の暗号化Keystoreへ保存します。
+既定では検証済みの公開PublicNode RPCを使用します。専用Infura／Alchemy RPCを使う場合だけ、完全なHTTPS Endpointを実行時環境変数`AMOY_RPC_URL`へ設定します。デプロイ専用秘密鍵はHardhat 3の暗号化Keystoreへ保存します。
 
 ```sh
-npx hardhat keystore set SEPOLIA_RPC_URL
 npx hardhat keystore set DEPLOYER_PRIVATE_KEY
 ```
 
-`SEPOLIA_RPC_URL`には`https://amoy.infura.io/v3/<API_KEY>`形式のEndpointを入力します。秘密鍵は`0x`から始まる32-byte値です。Keystoreの値、`.env`、Seed Phrase、本番鍵をGitへ追加しないでください。
+秘密鍵は`0x`から始まる32-byte値です。Keystoreの値、`.env`、Seed Phrase、本番鍵をGitへ追加しないでください。公開RPCはレート制限や一時障害があるため、再デプロイ時はIgnition journalと残高を確認し、必要に応じて専用RPCへ切り替えます。
 
 再デプロイ前に次を確認します。
 
@@ -93,29 +96,7 @@ npx hardhat keystore set DEPLOYER_PRIVATE_KEY
 npm run contracts:deploy:amoy
 ```
 
-CFP識別子・改訂結合を備えたガバナーV2だけを既存テスト資産から分離してデプロイする場合は、次を実行します。
-
-```sh
-npm run contracts:deploy:governance-v2:amoy
-```
-
-既存公開SBTへサポータ登録アダプターだけを追加する場合は、総合モジュールではなく次の専用コマンドを使います。既定の接続先は公開済みSBTプロキシ`0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923`で、アダプターのデプロイと`RELAYER_ROLE`付与だけを実行します。
-
-```sh
-npm run contracts:deploy:supporter-adapter:amoy
-```
-
-既存公開ガバナーへテスト議員登録アダプターを追加する場合は、次の専用コマンドを使います。既定では公開済みガバナー、サブスクリプション、音楽クリエーター登録台帳へ接続し、アダプターに`REGISTRAR_ROLE`を付与します。現在の公開デプロイでは実行済みであり、再実行時は同じIgnition Journalを確認して重複デプロイを避けます。
-
-```sh
-npm run contracts:deploy:legislator-adapter:amoy
-```
-
-公開デモ会期1は、次の専用モジュールで一度だけ作成しました。2026年9月1日15:28 JSTに開始し、2026年10月1日15:28 JSTに終了します。投票クレジットは25、両院の定足数は各1人です。会期ID、規則ハッシュ、時刻、トランザクションは公開デプロイ記録で検証できます。
-
-```sh
-npm run contracts:deploy:governance-session-one:amoy
-```
+同じ`amoy-creator-first-testnet`デプロイIDで再実行すると、Ignitionはjournalを読み、確定済み処理を重複送信せず未完了分だけを再開します。公開デモ会期1は2026年9月1日15:28 JSTに開始し、2026年10月1日15:28 JSTに終了します。投票クレジットは25、両院の定足数は各1人です。会期ID、規則ハッシュ、時刻、トランザクションは公開デプロイ記録で検証できます。
 
 実行アカウントが既存SBTの`DEFAULT_ADMIN_ROLE`を失っている場合、役割付与は停止します。その場合は権限を持つ承認済み管理主体から別途付与し、エラーを迂回するために新しい管理鍵を追加しません。
 

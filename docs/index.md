@@ -82,7 +82,7 @@ features:
 
 <div class="document-meta__row">
   <span class="document-meta__label">Revision 日付</span>
-  <span>2026-08-25</span>
+  <span>2026-08-26</span>
 </div>
 
 <div class="document-meta__row">

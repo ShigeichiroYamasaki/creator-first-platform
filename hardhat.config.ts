@@ -1,6 +1,8 @@
 import hardhatToolboxViemPlugin from "@nomicfoundation/hardhat-toolbox-viem";
 import { configVariable, defineConfig } from "hardhat/config";
 
+const amoyRpcUrl = process.env.AMOY_RPC_URL ?? "https://polygon-amoy-bor-rpc.publicnode.com";
+
 export default defineConfig({
   plugins: [hardhatToolboxViemPlugin],
   solidity: {
@@ -30,7 +32,7 @@ export default defineConfig({
       type: "http",
       chainType: "l1",
       chainId: 80002,
-      url: "https://polygon-amoy.drpc.org",
+      url: amoyRpcUrl,
       accounts: [configVariable("DEPLOYER_PRIVATE_KEY")],
     },
   },

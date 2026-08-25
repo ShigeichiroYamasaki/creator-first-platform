@@ -61,7 +61,7 @@ npm run governance:test
 npm run governance:validate
 ```
 
-ソースコミット`5431e890657d1f97cd4ef3cb387d7afc1b9bdf8f`のCFP識別子・改訂結合を備えた二院制ガバナーV2と、無価値のデモポリシー実行対象をPolygon Amoyへデプロイ済みです。`npm run contracts:verify:amoy`は公開RPC上のバイトコード、コントラクト接続、プラン、プロキシ実装先、音楽クリエーター登録台帳の注意表示、ガバナンスのCFP対応ABI、チェーン拘束、タイムロック順序および実行対象との接続を検証します。アドレスと安全境界は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
+ソースコミット`16b33334e6457337054c66824620d64cbed4f473`のCFP識別子・改訂結合を備えた二院制ガバナーV2と、無価値のデモポリシー実行対象をPolygon Amoyへデプロイ済みです。`npm run contracts:verify:amoy`は公開RPC上のバイトコード、コントラクト接続、プラン、プロキシ実装先、音楽クリエーター登録台帳の注意表示、ガバナンスのCFP対応ABI、チェーン拘束、タイムロック順序および実行対象との接続を検証します。アドレスと安全境界は[`docs/demo/testnet-contracts.md`](docs/demo/testnet-contracts.md)を参照してください。
 
 ## 文書から実装まで
 
