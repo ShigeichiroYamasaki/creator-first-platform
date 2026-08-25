@@ -4,7 +4,7 @@
 **Version:** 0.1.0
 **Protocol Domain:** governance / voting / contract evolution
 **Specification ID:** SPEC-GOVERNANCE-001
-**Last Updated:** 2026-08-24
+**Last Updated:** 2026-08-25
 
 ## Related Documents
 
@@ -212,7 +212,7 @@ Equivalent operations MUST be provided by the selected on-chain and off-chain co
 
 ```text
 createSession(rule_version, creator_house_root, user_house_root, time_bounds)
-registerProposal(cfp_id, revision_hash, change_class, specification_hash)
+registerCfpProposal(cfp_id_hash, revision, content_hash, change_class, specification_hash, manifest_hash)
 openVoting(proposal_id, revision, session_id)
 commitBallot(proposal_id, house, commitment, nullifier)
 revealBallot(proposal_id, house, intensity, salt, proof)
@@ -276,7 +276,7 @@ The audit bundle records Session, membership roots, Proposal Revision, Rule Vers
 
 ## Testnet Implementation Profile
 
-The first executable profile is implemented by `CreatorFirstBicameralGovernor` and the harmless `CreatorFirstGovernedPolicy` target. It validates session-bound equal Voice Credit, quadratic replacement accounting, separate Creator House and User House outcomes, exact calldata binding, review evidence, P3 referendum-evidence presence, class-based delay, execution expiry and guardian cancellation.
+The first executable profile is implemented by `CreatorFirstBicameralGovernor` and the harmless `CreatorFirstGovernedPolicy` target. It binds a CFP identifier hash and revision to the immutable proposal payload, validates session-bound equal Voice Credit, quadratic replacement accounting, separate Creator House and User House outcomes, joint approval, exact calldata binding, review evidence, P3 referendum-evidence presence, class-based delay, execution expiry and guardian cancellation. Separate public House routes may filter write controls by the connected member's committed House, but UI routing never establishes membership or changes the canonical on-chain result.
 
 This profile deliberately uses registrar-assigned public wallet membership and public ballots. A P3 proposal binds a referendum evidence hash but the referendum mechanism is not implemented. The profile does not claim production compliance with verifiable sortition, personhood, cross-session uniqueness, commit-reveal, zero-knowledge privacy, conflict and recusal handling, material challenges, Reasoned Return, audit approval or migration of production upgrade authority. The public UI MUST remain write-disabled until both governance addresses are present in the reviewed Sepolia deployment manifest.
 

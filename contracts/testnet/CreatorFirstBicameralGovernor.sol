@@ -114,6 +114,9 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
     mapping(uint256 sessionId => mapping(address member => House house)) public memberHouse;
     mapping(uint256 sessionId => mapping(address member => uint32 spent)) public spentVoiceCredits;
     mapping(uint256 proposalId => Proposal proposal) public proposals;
+    mapping(uint256 proposalId => bytes32 cfpIdHash) public proposalCfpIdHash;
+    mapping(uint256 proposalId => uint32 revision) public proposalCfpRevision;
+    mapping(bytes32 cfpRevisionKey => uint256 proposalId) public cfpProposalId;
     mapping(uint256 proposalId => mapping(address member => Ballot ballot)) public ballots;
     mapping(uint256 proposalId => bytes32 evidenceHash) public constitutionalEvidenceHash;
     mapping(uint256 proposalId => bytes32 evidenceHash) public reviewEvidenceHash;
@@ -152,6 +155,8 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
     error ContractTestEvidenceMissing(uint256 proposalId);
     error ContractTestFailed(uint256 proposalId);
     error ContractTestEvidenceAlreadyRecorded(uint256 proposalId);
+    error CfpBindingMissing(uint256 proposalId);
+    error CfpRevisionAlreadyRegistered(bytes32 cfpIdHash, uint32 revision, uint256 proposalId);
 
     event SessionCreated(
         uint256 indexed sessionId,
@@ -175,6 +180,11 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
         bytes32 callDataHash,
         uint64 votingStartsAt,
         uint64 votingEndsAt
+    );
+    event CfpProposalBound(
+        uint256 indexed proposalId,
+        bytes32 indexed cfpIdHash,
+        uint32 indexed revision
     );
     event BallotCast(
         uint256 indexed proposalId,
@@ -308,6 +318,72 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
         uint64 votingStartsAt,
         uint64 votingEndsAt
     ) external onlyRole(REGISTRAR_ROLE) returns (uint256 proposalId) {
+        proposalId = _registerProposal(
+            sessionId,
+            contentHash,
+            specificationHash,
+            manifestHash,
+            changeClass,
+            target,
+            value,
+            callDataHash,
+            votingStartsAt,
+            votingEndsAt
+        );
+    }
+
+    /// @notice Registers a CFP revision and binds it to the exact proposal payload.
+    /// @dev cfpIdHash should be the hash of the canonical CFP identifier, for example CFP-0002.
+    function registerCfpProposal(
+        bytes32 cfpIdHash,
+        uint32 revision,
+        uint256 sessionId,
+        bytes32 contentHash,
+        bytes32 specificationHash,
+        bytes32 manifestHash,
+        ChangeClass changeClass,
+        address target,
+        uint256 value,
+        bytes32 callDataHash,
+        uint64 votingStartsAt,
+        uint64 votingEndsAt
+    ) external onlyRole(REGISTRAR_ROLE) returns (uint256 proposalId) {
+        if (cfpIdHash == bytes32(0) || revision == 0) revert InvalidConfiguration();
+        bytes32 revisionKey = keccak256(abi.encode(cfpIdHash, revision));
+        uint256 existingProposalId = cfpProposalId[revisionKey];
+        if (existingProposalId != 0) {
+            revert CfpRevisionAlreadyRegistered(cfpIdHash, revision, existingProposalId);
+        }
+        proposalId = _registerProposal(
+            sessionId,
+            contentHash,
+            specificationHash,
+            manifestHash,
+            changeClass,
+            target,
+            value,
+            callDataHash,
+            votingStartsAt,
+            votingEndsAt
+        );
+        proposalCfpIdHash[proposalId] = cfpIdHash;
+        proposalCfpRevision[proposalId] = revision;
+        cfpProposalId[revisionKey] = proposalId;
+        emit CfpProposalBound(proposalId, cfpIdHash, revision);
+    }
+
+    function _registerProposal(
+        uint256 sessionId,
+        bytes32 contentHash,
+        bytes32 specificationHash,
+        bytes32 manifestHash,
+        ChangeClass changeClass,
+        address target,
+        uint256 value,
+        bytes32 callDataHash,
+        uint64 votingStartsAt,
+        uint64 votingEndsAt
+    ) internal returns (uint256 proposalId) {
         Session storage session = _session(sessionId);
         if (contentHash == bytes32(0) || specificationHash == bytes32(0) || manifestHash == bytes32(0)) {
             revert InvalidHash();
@@ -349,6 +425,16 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
     }
 
     function castVote(uint256 proposalId, int8 intensity) external {
+        _castVote(proposalId, intensity);
+    }
+
+    /// @notice Casts a quadratic approval vote for a proposal explicitly bound to a CFP revision.
+    function castCfpApprovalVote(uint256 proposalId, int8 intensity) external {
+        if (proposalCfpIdHash[proposalId] == bytes32(0)) revert CfpBindingMissing(proposalId);
+        _castVote(proposalId, intensity);
+    }
+
+    function _castVote(uint256 proposalId, int8 intensity) internal {
         Proposal storage proposal = _proposal(proposalId);
         if (proposal.finalized || proposal.cancelled || proposal.executed) revert FinalState(proposalId);
         if (block.timestamp < proposal.votingStartsAt || block.timestamp >= proposal.votingEndsAt) {
@@ -591,6 +677,28 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
     function remainingVoiceCredits(uint256 sessionId, address member) external view returns (uint32) {
         Session storage session = _session(sessionId);
         return session.voiceCreditBudget - spentVoiceCredits[sessionId][member];
+    }
+
+    /// @notice Returns one House's result without combining it with the other House.
+    function houseResult(uint256 proposalId, House house)
+        external
+        view
+        returns (int64 score, uint32 participants, uint32 quorum, bool approved)
+    {
+        Proposal storage proposal = _proposal(proposalId);
+        Session storage session = sessions[proposal.sessionId];
+        if (house == House.CREATOR) {
+            return (proposal.creatorScore, proposal.creatorParticipants, session.creatorQuorum, proposal.creatorApproved);
+        }
+        if (house == House.USER) {
+            return (proposal.userScore, proposal.userParticipants, session.userQuorum, proposal.userApproved);
+        }
+        revert InvalidHouse();
+    }
+
+    function jointlyApproved(uint256 proposalId) external view returns (bool) {
+        Proposal storage proposal = _proposal(proposalId);
+        return proposal.finalized && proposal.creatorApproved && proposal.userApproved;
     }
 
     function proposalState(uint256 proposalId) public view returns (ProposalState) {

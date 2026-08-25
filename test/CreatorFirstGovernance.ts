@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import { network } from "hardhat";
-import { encodeFunctionData, keccak256, toBytes } from "viem";
+import { encodeAbiParameters, encodeFunctionData, keccak256, toBytes } from "viem";
 
 describe("Creator-first testnet bicameral governance", async () => {
   const { viem, networkHelpers } = await network.create();
@@ -55,7 +55,9 @@ describe("Creator-first testnet bicameral governance", async () => {
     });
     const votingStartsAt = sessionStartsAt;
     const votingEndsAt = votingStartsAt + 100n;
-    await governor.write.registerProposal([
+    await governor.write.registerCfpProposal([
+      hash("CFP-TEST-0001"),
+      1,
       1n,
       hash("CFP-TEST-0001:revision:1"),
       hash("SPEC-GOVERNANCE-001:0.1.0"),
@@ -83,10 +85,10 @@ describe("Creator-first testnet bicameral governance", async () => {
     governor: Awaited<ReturnType<typeof viem.deployContract>>,
     proposalId = 1n,
   ) {
-    await governor.write.castVote([proposalId, 2], { account: creatorA.account });
-    await governor.write.castVote([proposalId, 1], { account: creatorB.account });
-    await governor.write.castVote([proposalId, 2], { account: userA.account });
-    await governor.write.castVote([proposalId, 1], { account: userB.account });
+    await governor.write.castCfpApprovalVote([proposalId, 2], { account: creatorA.account });
+    await governor.write.castCfpApprovalVote([proposalId, 1], { account: creatorB.account });
+    await governor.write.castCfpApprovalVote([proposalId, 2], { account: userA.account });
+    await governor.write.castCfpApprovalVote([proposalId, 1], { account: userB.account });
   }
 
   async function recordPassingContractTests(
@@ -123,6 +125,28 @@ describe("Creator-first testnet bicameral governance", async () => {
     await assert.rejects(governor.write.recordReview([1n, hash("review:1")]));
   });
 
+  it("binds a CFP revision and exposes independent House approval results", async () => {
+    const { governor, votingStartsAt, votingEndsAt } = await deployFixture();
+    assert.equal(await governor.read.proposalCfpIdHash([1n]), hash("CFP-TEST-0001"));
+    assert.equal(await governor.read.proposalCfpRevision([1n]), 1);
+    const revisionKey = keccak256(encodeAbiParameters(
+      [{ type: "bytes32" }, { type: "uint32" }],
+      [hash("CFP-TEST-0001"), 1],
+    ));
+    assert.equal(await governor.read.cfpProposalId([revisionKey]), 1n);
+
+    await networkHelpers.time.increaseTo(votingStartsAt);
+    await castPassingBallots(governor);
+    await networkHelpers.time.increaseTo(votingEndsAt);
+    await governor.write.finalizeProposal([1n]);
+
+    const creatorResult = await governor.read.houseResult([1n, 1]);
+    const userResult = await governor.read.houseResult([1n, 2]);
+    assert.deepEqual(creatorResult, [3n, 2, 2, true]);
+    assert.deepEqual(userResult, [3n, 2, 2, true]);
+    assert.equal(await governor.read.jointlyApproved([1n]), true);
+  });
+
   it("refunds replaced quadratic cost while enforcing one equal session budget", async () => {
     const { governor, policy, votingStartsAt, votingEndsAt, sessionEndsAt } = await deployFixture(1, 1);
     const secondCallData = encodeFunctionData({
@@ -157,6 +181,7 @@ describe("Creator-first testnet bicameral governance", async () => {
     assert.equal(await governor.read.remainingVoiceCredits([1n, creatorA.account.address]), 1);
     await governor.write.castVote([1n, 2], { account: creatorA.account });
     assert.equal(await governor.read.remainingVoiceCredits([1n, creatorA.account.address]), 6);
+    await assert.rejects(governor.write.castCfpApprovalVote([2n, 1], { account: creatorA.account }));
     await assert.rejects(governor.write.castVote([2n, 3], { account: creatorA.account }));
     await governor.write.castVote([2n, 2], { account: creatorA.account });
     assert.equal(await governor.read.remainingVoiceCredits([1n, creatorA.account.address]), 2);

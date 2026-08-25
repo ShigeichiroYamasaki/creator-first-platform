@@ -22,6 +22,10 @@ type ProposalView = {
   creatorApproved: boolean; userApproved: boolean; reviewed: boolean
 }
 
+const props = withDefaults(defineProps<{ focusHouse?: 'creator' | 'user' | 'all' }>(), {
+  focusHouse: 'all'
+})
+
 const deployment = ref<GovernanceDeployment>()
 const deploymentError = ref('')
 const walletAddress = ref<Address>()
@@ -41,7 +45,9 @@ let listenersAttached = false
 const correctChain = computed(() => walletChainId.value === 11155111)
 const ready = computed(() => Boolean(deployment.value?.governanceReady && deployment.value.governor))
 const voteCost = computed(() => quadraticCost(selectedIntensity.value))
-const canVote = computed(() => ready.value && correctChain.value && walletAddress.value && proposal.value?.state === 2 && house.value > 0 && !busy.value)
+const requiredHouse = computed(() => props.focusHouse === 'creator' ? 1 : props.focusHouse === 'user' ? 2 : 0)
+const focusedHouseLabel = computed(() => props.focusHouse === 'creator' ? '音楽クリエータ院議会' : props.focusHouse === 'user' ? 'ユーザ院議会' : '二院制議会')
+const canVote = computed(() => ready.value && correctChain.value && walletAddress.value && proposal.value?.state === 2 && house.value > 0 && (requiredHouse.value === 0 || house.value === requiredHouse.value) && !busy.value)
 const houseLabel = computed(() => ['議員資格なし', '音楽クリエータ院議会', 'ユーザ院議会'][house.value] ?? '不明')
 
 function providerFromWindow(): DemoProvider | undefined {
@@ -171,8 +177,9 @@ onBeforeUnmount(() => {
   <section class="governance-demo" aria-labelledby="governance-demo-title">
     <header class="panel">
       <p class="kicker">Sepolia・二院制・二次投票・タイムロック</p>
-      <h2 id="governance-demo-title">テストネット版ガバナンス</h2>
+      <h2 id="governance-demo-title">{{ focusedHouseLabel }}・テストネット版</h2>
       <p>公開マニフェストに登録されたコントラクトだけを読み込み、議員資格、提案、両院結果、投票クレジットを検証します。</p>
+      <p v-if="requiredHouse" class="warning">この入口では{{ focusedHouseLabel }}に登録された議員だけが投票できます。他院の議員資格では書込みボタンを有効にしません。</p>
       <p class="warning"><strong>テスト専用:</strong> 投票は公開されます。議員登録はテスト運営者が行い、本人性・抽選・秘密投票・法的承認を実装した本番ガバナンスではありません。</p>
     </header>
 
@@ -194,6 +201,7 @@ onBeforeUnmount(() => {
     <section class="panel">
       <h3>3. 二次投票</h3>
       <div class="grid"><div><span>議員資格</span><strong>{{ houseLabel }}</strong></div><div><span>残り投票クレジット</span><strong>{{ remainingCredits }}</strong></div><div><span>投票強度</span><strong>{{ selectedIntensity > 0 ? '+' : '' }}{{ selectedIntensity }}</strong></div><div><span>二乗コスト</span><strong>{{ voteCost }}</strong></div></div>
+      <p v-if="requiredHouse && house > 0 && house !== requiredHouse" class="error">接続中のウォレットは{{ houseLabel }}の議員です。{{ focusedHouseLabel }}の入口からは投票できません。</p>
       <label for="vote-intensity">反対 -3〜賛成 +3</label><input id="vote-intensity" v-model.number="selectedIntensity" type="range" min="-3" max="3" step="1">
       <div class="actions"><button type="button" @click="castVote" :disabled="!canVote">この強度で公開投票</button></div>
       <p class="warning">同じ提案へ再投票すると票を差し替えます。会期内の全提案について二乗コストの合計が共通予算を超える投票はコントラクトが拒否します。</p>

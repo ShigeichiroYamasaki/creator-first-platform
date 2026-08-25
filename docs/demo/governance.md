@@ -6,6 +6,8 @@ description: Sepolia上の二院制議会、二次投票、レビュー、タイ
 
 この画面は、音楽クリエータ院議会とユーザ院議会が別々に投票し、両院承認後の同一実行マニフェストだけをタイムロック経由で実行する最小実装を検証します。
 
+[音楽クリエータ院議会を開く](/demo/creator-house) · [ユーザ院議会を開く](/demo/user-house)
+
 <ClientOnly>
   <TestnetGovernanceDemo />
 </ClientOnly>
