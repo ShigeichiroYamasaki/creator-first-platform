@@ -57,6 +57,17 @@ export const governanceStateLabels = [
   'レビュー済み', 'タイムロック中', '実行済み', '取消済み', '期限切れ'
 ]
 
+export const legislatorRegistrationAbi = [
+  {
+    type: 'function', name: 'registerAsCreator', stateMutability: 'nonpayable',
+    inputs: [{ name: 'sessionId', type: 'uint256' }], outputs: []
+  },
+  {
+    type: 'function', name: 'registerAsUser', stateMutability: 'nonpayable',
+    inputs: [{ name: 'sessionId', type: 'uint256' }], outputs: []
+  }
+]
+
 export function quadraticCost(intensity) {
   if (!Number.isInteger(intensity) || intensity < -9 || intensity > 9) {
     throw new Error('投票強度は-9から9までの整数で指定します。')
@@ -68,11 +79,24 @@ export function validateGovernanceDeployment(value) {
   const manifest = validateDeploymentManifest(value)
   const governor = manifest?.contracts?.governor
   const governedPolicy = manifest?.contracts?.governedPolicy
+  const legislatorRegistrationAdapter = manifest?.contracts?.legislatorRegistrationAdapter
   if (governor === undefined && governedPolicy === undefined) {
-    return { ...manifest, governanceReady: false, governor: null, governedPolicy: null }
+    return { ...manifest, governanceReady: false, governor: null, governedPolicy: null, legislatorRegistrationAdapter: null }
   }
   if (!isAddress(governor) || /^0x0{40}$/i.test(governor) || !isAddress(governedPolicy) || /^0x0{40}$/i.test(governedPolicy)) {
     throw new Error('ガバナンスのコントラクトアドレスが不完全です。')
   }
-  return { ...manifest, governanceReady: true, governor, governedPolicy }
+  if (
+    legislatorRegistrationAdapter !== undefined
+    && (!isAddress(legislatorRegistrationAdapter) || /^0x0{40}$/i.test(legislatorRegistrationAdapter))
+  ) {
+    throw new Error('議員登録アダプターのコントラクトアドレスが不完全です。')
+  }
+  return {
+    ...manifest,
+    governanceReady: true,
+    governor,
+    governedPolicy,
+    legislatorRegistrationAdapter: legislatorRegistrationAdapter ?? null
+  }
 }

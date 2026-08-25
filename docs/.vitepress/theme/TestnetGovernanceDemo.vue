@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { createPublicClient, createWalletClient, custom, type Address, type EIP1193Provider, type Hash } from 'viem'
 import { sepolia } from 'viem/chains'
-import { governanceAbi, governanceStateLabels, quadraticCost, validateGovernanceDeployment } from './testnet-governance-demo.js'
+import { governanceAbi, governanceStateLabels, legislatorRegistrationAbi, quadraticCost, validateGovernanceDeployment } from './testnet-governance-demo.js'
 
 type DemoProvider = EIP1193Provider & {
   on?: (event: 'accountsChanged' | 'chainChanged', listener: (value: Address[] | string) => void) => void
@@ -13,6 +13,7 @@ type GovernanceDeployment = {
   governanceReady: boolean
   governor: Address | null
   governedPolicy: Address | null
+  legislatorRegistrationAdapter: Address | null
   sourceCommit: string | null
 }
 type ProposalView = {
@@ -33,9 +34,11 @@ const walletChainId = ref<number>()
 const message = ref('公開マニフェストとウォレット状態を確認してください。')
 const busy = ref(false)
 const proposalId = ref(1)
+const registrationSessionId = ref(1)
 const proposalCount = ref(0n)
 const proposal = ref<ProposalView>()
 const house = ref(0)
+const registrationHouse = ref(0)
 const remainingCredits = ref(0)
 const selectedIntensity = ref(1)
 const lastTransaction = ref<Hash>()
@@ -48,6 +51,7 @@ const voteCost = computed(() => quadraticCost(selectedIntensity.value))
 const requiredHouse = computed(() => props.focusHouse === 'creator' ? 1 : props.focusHouse === 'user' ? 2 : 0)
 const focusedHouseLabel = computed(() => props.focusHouse === 'creator' ? '音楽クリエータ院議会' : props.focusHouse === 'user' ? 'ユーザ院議会' : '二院制議会')
 const canVote = computed(() => ready.value && correctChain.value && walletAddress.value && proposal.value?.state === 2 && house.value > 0 && (requiredHouse.value === 0 || house.value === requiredHouse.value) && !busy.value)
+const canRegister = computed(() => requiredHouse.value > 0 && Boolean(deployment.value?.legislatorRegistrationAdapter) && correctChain.value && walletAddress.value && registrationHouse.value === 0 && !busy.value)
 const houseLabel = computed(() => ['議員資格なし', '音楽クリエータ院議会', 'ユーザ院議会'][house.value] ?? '不明')
 
 function providerFromWindow(): DemoProvider | undefined {
@@ -93,7 +97,7 @@ async function connectWallet(): Promise<void> {
     attachListeners()
     await readChainId()
     message.value = correctChain.value ? 'Sepoliaへ接続しました。' : 'Sepoliaへ切り替えてください。'
-    if (correctChain.value && ready.value) await refresh()
+    if (correctChain.value && ready.value) { await refreshMembership(); await refresh() }
   } catch (error) { message.value = error instanceof Error ? error.message : 'ウォレット接続に失敗しました。' }
   finally { busy.value = false }
 }
@@ -101,7 +105,44 @@ async function switchToSepolia(): Promise<void> {
   if (!provider) return
   await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xaa36a7' }] })
   await readChainId()
-  if (walletAddress.value && ready.value) await refresh()
+  if (walletAddress.value && ready.value) { await refreshMembership(); await refresh() }
+}
+async function refreshMembership(): Promise<void> {
+  if (!ready.value || !correctChain.value || !walletAddress.value || registrationSessionId.value < 1) return
+  try {
+    const { publicClient, governor } = clients()
+    registrationHouse.value = Number(await publicClient.readContract({
+      address: governor,
+      abi: governanceAbi,
+      functionName: 'memberHouse',
+      args: [BigInt(registrationSessionId.value), walletAddress.value]
+    }))
+  } catch (error) {
+    registrationHouse.value = 0
+    message.value = error instanceof Error ? error.message : '議員資格を取得できません。'
+  }
+}
+async function registerLegislator(): Promise<void> {
+  if (!canRegister.value || !deployment.value?.legislatorRegistrationAdapter) return
+  busy.value = true
+  lastTransaction.value = undefined
+  try {
+    const { publicClient, walletClient } = clients()
+    const hash = await walletClient.writeContract({
+      address: deployment.value.legislatorRegistrationAdapter,
+      abi: legislatorRegistrationAbi,
+      functionName: props.focusHouse === 'creator' ? 'registerAsCreator' : 'registerAsUser',
+      args: [BigInt(registrationSessionId.value)]
+    })
+    lastTransaction.value = hash
+    message.value = 'テスト議員資格の登録トランザクションを送信しました。'
+    const receipt = await publicClient.waitForTransactionReceipt({ hash })
+    if (receipt.status !== 'success') throw new Error('議員資格登録トランザクションがrevertしました。')
+    await refreshMembership()
+    message.value = `${focusedHouseLabel.value}のテスト議員資格を登録しました。`
+  } catch (error) {
+    message.value = error instanceof Error ? error.message : 'テスト議員資格を登録できません。'
+  } finally { busy.value = false }
 }
 async function refresh(): Promise<void> {
   if (!ready.value || !correctChain.value || !walletAddress.value) return
@@ -182,7 +223,7 @@ onBeforeUnmount(() => {
       <h2 id="governance-demo-title">{{ focusedHouseLabel }}・テストネット版</h2>
       <p>公開マニフェストに登録されたコントラクトだけを読み込み、議員資格、提案、両院結果、投票クレジットを検証します。</p>
       <p v-if="requiredHouse" class="warning">この入口では{{ focusedHouseLabel }}に登録された議員だけが投票できます。他院の議員資格では書込みボタンを有効にしません。</p>
-      <p class="warning"><strong>テスト専用:</strong> 投票は公開されます。議員登録はテスト運営者が行い、本人性・抽選・秘密投票・法的承認を実装した本番ガバナンスではありません。</p>
+      <p class="warning"><strong>テスト専用:</strong> 投票は公開されます。簡略資格アダプターによる自己登録は、本人性・一人性・抽選・秘密投票・法的承認を実装した本番ガバナンスではありません。</p>
     </header>
 
     <section class="panel">
@@ -193,15 +234,26 @@ onBeforeUnmount(() => {
       <div class="actions"><button type="button" @click="connectWallet" :disabled="busy">ウォレット接続</button><button type="button" class="secondary" @click="switchToSepolia" :disabled="!walletAddress || correctChain">Sepoliaへ切替</button></div>
     </section>
 
+    <section v-if="requiredHouse" class="panel">
+      <h3>2. テスト議員資格</h3>
+      <p v-if="props.focusHouse === 'creator'">活動中のテスト音楽クリエーター登録を持つ接続ウォレットだけが、会期開始前に音楽クリエータ院議会へ登録できます。</p>
+      <p v-else>有効なテスト用mockJPYCサブスクリプションを持つ接続ウォレットだけが、会期開始前にユーザ院議会へ登録できます。</p>
+      <p v-if="!deployment?.legislatorRegistrationAdapter" class="warning">公開マニフェストに議員登録アダプターがまだ登録されていないため、資格取得操作は無効です。</p>
+      <div class="proposal-picker"><label for="registration-session-id">登録会期ID</label><input id="registration-session-id" v-model.number="registrationSessionId" type="number" min="1"><button type="button" class="secondary" @click="refreshMembership" :disabled="!ready || !correctChain || !walletAddress || busy">資格を確認</button></div>
+      <div class="grid"><div><span>登録先</span><strong>{{ focusedHouseLabel }}</strong></div><div><span>現在の会期資格</span><strong>{{ ['未登録', '音楽クリエータ院議会', 'ユーザ院議会'][registrationHouse] ?? '不明' }}</strong></div><div><span>登録アダプター</span><strong>{{ short(deployment?.legislatorRegistrationAdapter) }}</strong></div></div>
+      <div class="actions"><button type="button" @click="registerLegislator" :disabled="!canRegister">この会期のテスト議員になる</button></div>
+      <p class="warning">これはテストネット限定の簡略登録です。本人性、一人性、検証可能な抽選または正式な議員選出を証明しません。</p>
+    </section>
+
     <section class="panel">
-      <h3>2. 提案と両院結果</h3>
+      <h3>{{ requiredHouse ? '3' : '2' }}. 提案と両院結果</h3>
       <div class="proposal-picker"><label for="proposal-id">提案ID</label><input id="proposal-id" v-model.number="proposalId" type="number" min="1"><button type="button" class="secondary" @click="refresh" :disabled="!ready || !correctChain || !walletAddress || busy">状態を更新</button></div>
       <div v-if="proposal" class="grid"><div><span>状態</span><strong>{{ governanceStateLabels[proposal.state] }}</strong></div><div><span>会期</span><strong>#{{ proposal.sessionId }}</strong></div><div><span>投票期間</span><strong>{{ date(proposal.votingStartsAt) }}〜{{ date(proposal.votingEndsAt) }}</strong></div><div><span>対象</span><strong>{{ short(proposal.target) }}</strong></div><div><span>音楽クリエータ院議会</span><strong>{{ proposal.creatorScore }}点・{{ proposal.creatorParticipants }}人・{{ proposal.creatorApproved ? '承認' : '未承認' }}</strong></div><div><span>ユーザ院議会</span><strong>{{ proposal.userScore }}点・{{ proposal.userParticipants }}人・{{ proposal.userApproved ? '承認' : '未承認' }}</strong></div></div>
       <p v-if="proposal"><code>CFP識別子 {{ proposal.cfpIdHash }}</code><br><code>CFP改訂 {{ proposal.cfpRevision }}</code><br><code>内容 {{ proposal.contentHash }}</code><br><code>仕様 {{ proposal.specificationHash }}</code><br><code>実行マニフェスト {{ proposal.manifestHash }}</code></p>
     </section>
 
     <section class="panel">
-      <h3>3. 二次投票</h3>
+      <h3>{{ requiredHouse ? '4' : '3' }}. 二次投票</h3>
       <div class="grid"><div><span>議員資格</span><strong>{{ houseLabel }}</strong></div><div><span>残り投票クレジット</span><strong>{{ remainingCredits }}</strong></div><div><span>投票強度</span><strong>{{ selectedIntensity > 0 ? '+' : '' }}{{ selectedIntensity }}</strong></div><div><span>二乗コスト</span><strong>{{ voteCost }}</strong></div></div>
       <p v-if="requiredHouse && house > 0 && house !== requiredHouse" class="error">接続中のウォレットは{{ houseLabel }}の議員です。{{ focusedHouseLabel }}の入口からは投票できません。</p>
       <label for="vote-intensity">反対 -3〜賛成 +3</label><input id="vote-intensity" v-model.number="selectedIntensity" type="range" min="-3" max="3" step="1">

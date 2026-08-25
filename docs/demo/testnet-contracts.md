@@ -5,7 +5,7 @@ description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決
 
 # Sepolia スマートコントラクトデモ
 
-Hardhat 3とViemを使い、公開済みのテストネット専用コントラクトをEthereum Sepoliaへデプロイしました。次の表には、公開済み構成に加えて、次回デプロイ対象としてローカル実装した透明型ZK境界とCFP-0002検証境界も示します。CFP識別子・改訂結合と両院別結果取得を備えたガバナーV2は、ソースコミット `5431e890657d1f97cd4ef3cb387d7afc1b9bdf8f`からデプロイしています。
+Hardhat 3とViemを使い、公開済みのテストネット専用コントラクトをEthereum Sepoliaへデプロイしました。次の表には、公開済み構成に加えて、次回デプロイ対象としてローカル実装した透明型ZK境界、CFP-0002検証境界、テスト議員登録、本番向け抽選候補も示します。CFP識別子・改訂結合と両院別結果取得を備えたガバナーV2は、ソースコミット `5431e890657d1f97cd4ef3cb387d7afc1b9bdf8f`からデプロイしています。
 
 | コントラクト | テストネット上の責務 | 本番境界 |
 | --- | --- | --- |
@@ -18,17 +18,21 @@ Hardhat 3とViemを使い、公開済みのテストネット専用コントラ�
 | `CreatorFirstCreatorRegistry` | 仮名音楽クリエーターと作品／権利自己申告のsalt付きコミットメント、状態、イベントを記録する | 本人、権利、受取人、カタログ、配信許諾、分配または支払を承認しない |
 | `CreatorFirstBicameralGovernor` | 二院の独立採決、二次投票、レビュー証拠、変更区分別タイムロック、拘束済み実行データを管理する | 法的な会社機関決定、監査、憲法適合性判断、役員責任を代替しない |
 | `CreatorFirstGovernedPolicy` | ガバナーだけが更新できる無価値のデモ設定を保持する | 資金庫、SBT、プロキシまたは本番権限を操作しない |
+| `CreatorFirstTestnetLegislatorRegistrationAdapter` | 有効なmockJPYCサブスクリプションまたは活動中のテスト音楽クリエーター登録を簡略資格として、接続ウォレットを該当院へ自己登録する | テストネット専用。本人性、一人性、抽選または正式な議員資格を証明しない |
+| `CreatorFirstVerifiableSortition` | 各院の索引付き適格者root、外部乱数、重複しない抽選順位、本人による議席取得、順序付き補欠有効化を拘束する | 本番向け監査候補。資格発行、root異議申立て、VRF接続、秘密性、運用統制と監査が完了するまで本番権限を与えない |
 | `CreatorFirstTransparentZKMockVerifier` | 決定論的ダイジェスト比較で検証者接続だけを試す。暗号学的ZKではない | ゼロ知識性、健全性、利用実績、権利、資格または分配を証明しない |
 | `CreatorFirstTransparentZKRegistry` | モック検証者プロファイル、チェーン拘束受付ID、再実行拒否、廃止、停止を検証する | 本番検証者、監査済み証明プログラムまたはmainnet受付台帳ではない |
 | `CreatorFirstCreatorRegistrationAdapter` | CFP-0002用の対象IDをテスト音楽クリエーター登録台帳の初期登録時刻へ対応付ける | 自己申告テスト登録であり、本番本人性・音楽クリエーター資格の正本ではない |
 | `CreatorFirstCFP0002DeploymentFactory` | 両院承認、レビュー、P2タイムロック後だけ固定saltでCFP-0002ポリシーをデプロイする | 本番デプロイヤー、正式な憲章・法務審査または監査を代替しない |
 | `CreatorFirstCFP0002EarlySupporterPolicy` | 初期登録から31,536,000秒未満という排他的時間条件を判定する | SBTを発行せず、配信、金銭、権利または議決権を付与しない |
 
-透明型ZKの2コントラクトとCFP-0002用アダプター／デプロイファクトリーはローカル実装とIgnitionモジュールへの追加まで完了していますが、下記の公開Sepoliaマニフェストにはまだ含まれません。公開プレーヤー用サポータ登録アダプターはSepoliaへデプロイし、既存SBTへの`RELAYER_ROLE`付与まで検証済みです。CFP-0002ポリシーはガバナンス実行時にだけ作成されます。
+透明型ZKの2コントラクト、CFP-0002用アダプター／デプロイファクトリー、テスト議員登録アダプター、本番向け検証可能抽選候補はローカル実装まで完了していますが、下記の公開Sepoliaマニフェストにはまだ含まれません。テスト議員登録アダプターには既存ガバナー、サブスクリプション、音楽クリエーター登録台帳へ接続して`REGISTRAR_ROLE`を付与する専用Ignitionモジュールがあります。本番向け抽選候補は監査前のためデプロイモジュールを設けていません。公開プレーヤー用サポータ登録アダプターはSepoliaへデプロイし、既存SBTへの`RELAYER_ROLE`付与まで検証済みです。CFP-0002ポリシーはガバナンス実行時にだけ作成されます。
 
 SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を拒否します。初期条件の`POLICY_ROLE`、実装更新の`UPGRADER_ROLE`、署名済み意思を送る`RELAYER_ROLE`を分離し、発行済み階層を後日のポリシー更新で書き換えません。
 
 一般サポータと初期サポータの`tokenURI`は、それぞれ[supporter.json](/sbt/supporter.json)と[early-supporter.json](/sbt/early-supporter.json)を返します。どちらもSepolia テストネット表示、公開画像、譲渡不能属性および非金銭的資格証明である旨を含み、個人情報、支援額または視聴履歴を含みません。
+
+将来の会期別議員資格SBT用メタデータ原案として、[音楽クリエータ院議会ガバナー](/sbt/creator-house-governor.json)と[ユーザ院議会ガバナー](/sbt/user-house-governor.json)も公開します。各JSONは対応する公開画像、院、役割、譲渡不能属性、テストネット表示を持ちますが、現時点では議員資格SBTコントラクトおよび会期別`tokenURI`には未接続です。表示用SBTだけで投票権や会社権限を成立させません。
 
 ## 公開デプロイ {#public-deployment}
 
@@ -60,7 +64,7 @@ npm run contracts:compile
 npm run contracts:test
 ```
 
-テストは、MockJPYCの一回限りの自己取得と移転、決済／支出参照の重複拒否、EIP-712 nonceのreplay拒否、初期上限、ERC-5192、SBT移転拒否、一ウォレット一音楽クリエーター、コミットメント重複拒否、リリース自己申告と音楽クリエーター限定取消し、透明型ZK境界に加え、CFP-0002の投票前適合性審査、両院熟議、別集計、共同承認、事後レビュー、P2タイムロック、完全一致デプロイおよび365日境界を確認します。
+テストは、MockJPYCの一回限りの自己取得と移転、決済／支出参照の重複拒否、EIP-712 nonceのreplay拒否、初期上限、ERC-5192、SBT移転拒否、一ウォレット一音楽クリエーター、コミットメント重複拒否、リリース自己申告と音楽クリエーター限定取消し、透明型ZK境界に加え、テスト議員の院別資格と会期締切、本番向け抽選の適格者固定、乱数権限、重複しない抽選順位、本人請求、一人一院、補欠順序、CFP-0002の投票前適合性審査、両院熟議、別集計、共同承認、事後レビュー、P2タイムロック、完全一致デプロイおよび365日境界を確認します。
 
 ## InfuraとSepoliaの設定
 
@@ -98,6 +102,12 @@ npm run contracts:deploy:governance-v2:sepolia
 
 ```sh
 npm run contracts:deploy:supporter-adapter:sepolia
+```
+
+既存公開ガバナーへテスト議員登録アダプターを追加する場合は、次の専用コマンドを使います。既定では公開済みガバナー、サブスクリプション、音楽クリエーター登録台帳へ接続し、アダプターに`REGISTRAR_ROLE`を付与します。デプロイ後はアドレスとトランザクションを公開記録へ追加し、公開マニフェストの`legislatorRegistrationAdapter`を更新するまで画面の登録操作を有効にしません。
+
+```sh
+npm run contracts:deploy:legislator-adapter:sepolia
 ```
 
 実行アカウントが既存SBTの`DEFAULT_ADMIN_ROLE`を失っている場合、役割付与は停止します。その場合は権限を持つ承認済み管理主体から別途付与し、エラーを迂回するために新しい管理鍵を追加しません。

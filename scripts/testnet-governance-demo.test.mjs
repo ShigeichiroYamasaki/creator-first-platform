@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import { test } from 'node:test'
 
 import {
@@ -22,6 +23,23 @@ const baseManifest = {
   }
 }
 
+const governorMetadataCases = [
+  {
+    metadataPath: new URL('../docs/public/sbt/creator-house-governor.json', import.meta.url),
+    imagePath: new URL('../docs/public/images/creator-house-governor-sbt.png', import.meta.url),
+    house: 'Creator House',
+    image: 'creator-house-governor-sbt.png',
+    externalUrl: 'https://shigeichiroyamasaki.github.io/creator-first-platform/demo/creator-house'
+  },
+  {
+    metadataPath: new URL('../docs/public/sbt/user-house-governor.json', import.meta.url),
+    imagePath: new URL('../docs/public/images/user-house-governor-sbt.png', import.meta.url),
+    house: 'User House',
+    image: 'user-house-governor-sbt.png',
+    externalUrl: 'https://shigeichiroyamasaki.github.io/creator-first-platform/demo/user-house'
+  }
+]
+
 test('calculates bounded quadratic voice-credit cost', () => {
   assert.equal(quadraticCost(-3), 9)
   assert.equal(quadraticCost(0), 0)
@@ -40,15 +58,51 @@ test('keeps governance disabled until both reviewed addresses are published', ()
     contracts: {
       ...baseManifest.contracts,
       governor: '0x5555555555555555555555555555555555555555',
-      governedPolicy: '0x6666666666666666666666666666666666666666'
+      governedPolicy: '0x6666666666666666666666666666666666666666',
+      legislatorRegistrationAdapter: '0x7777777777777777777777777777777777777777'
     }
   })
   assert.equal(active.governanceReady, true)
   assert.equal(active.governor, '0x5555555555555555555555555555555555555555')
+  assert.equal(active.legislatorRegistrationAdapter, '0x7777777777777777777777777777777777777777')
   assert.equal(governanceStateLabels[7], 'タイムロック中')
 
   assert.throws(() => validateGovernanceDeployment({
     ...baseManifest,
     contracts: { ...baseManifest.contracts, governor: '0x5555555555555555555555555555555555555555' }
   }), /不完全/)
+
+  assert.throws(() => validateGovernanceDeployment({
+    ...baseManifest,
+    contracts: {
+      ...baseManifest.contracts,
+      governor: '0x5555555555555555555555555555555555555555',
+      governedPolicy: '0x6666666666666666666666666666666666666666',
+      legislatorRegistrationAdapter: 'invalid'
+    }
+  }), /議員登録アダプター/)
+})
+
+test('publishes House-specific Governor SBT metadata with resolvable images', async () => {
+  for (const entry of governorMetadataCases) {
+    const metadata = JSON.parse(await readFile(entry.metadataPath, 'utf8'))
+    const image = await readFile(entry.imagePath)
+    assert.match(metadata.name, /Governor SBT.*Sepolia Testnet/)
+    assert.match(metadata.description, /TESTNET ONLY/)
+    assert.equal(
+      metadata.image,
+      `https://shigeichiroyamasaki.github.io/creator-first-platform/images/${entry.image}`
+    )
+    assert.equal(metadata.external_url, entry.externalUrl)
+    assert.equal(metadata.attributes.some(({ trait_type, value }) => (
+      trait_type === 'Governance House' && value === entry.house
+    )), true)
+    assert.equal(metadata.attributes.some(({ trait_type, value }) => (
+      trait_type === 'Credential Role' && value === 'Governor'
+    )), true)
+    assert.equal(metadata.attributes.some(({ trait_type, value }) => (
+      trait_type === 'Transferability' && value === 'Soulbound'
+    )), true)
+    assert.ok(image.byteLength > 100_000)
+  }
 })

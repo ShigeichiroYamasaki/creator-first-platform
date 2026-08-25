@@ -14,6 +14,7 @@
     "contracts:test": "hardhat test nodejs",
     "contracts:deploy:sepolia": "hardhat ignition deploy ignition/modules/CreatorFirstTestnet.ts --network sepolia --deployment-id sepolia-creator-first-testnet",
     "contracts:deploy:governance-v2:sepolia": "hardhat ignition deploy ignition/modules/CreatorFirstGovernanceV2Sepolia.ts --network sepolia --deployment-id sepolia-creator-first-governance-v2",
+    "contracts:deploy:legislator-adapter:sepolia": "hardhat ignition deploy ignition/modules/TestnetLegislatorRegistrationAdapterSepolia.ts --network sepolia --deployment-id sepolia-testnet-legislator-registration-adapter",
     "contracts:deploy:supporter-adapter:sepolia": "hardhat ignition deploy ignition/modules/SupporterRegistrationAdapterSepolia.ts --network sepolia --deployment-id sepolia-supporter-registration-adapter",
     "contracts:verify:sepolia": "node scripts/verify-sepolia-contracts.mjs",
     "testnet-demo:test": "node --test scripts/testnet-user-demo.test.mjs",

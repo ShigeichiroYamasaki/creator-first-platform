@@ -1,0 +1,29 @@
+{
+  "name": "Creator First User House Governor SBT — Sepolia Testnet",
+  "description": "TESTNET ONLY. A public, non-transferable display credential for a User House legislator in a specified Creator First Platform demo governance session. The credential itself does not create voting power, company authority, shareholder rights, employment, monetary value or a right to platform assets.",
+  "image": "https://shigeichiroyamasaki.github.io/creator-first-platform/images/user-house-governor-sbt.png",
+  "external_url": "https://shigeichiroyamasaki.github.io/creator-first-platform/demo/user-house",
+  "background_color": "071B33",
+  "attributes": [
+    {
+      "trait_type": "Network",
+      "value": "Ethereum Sepolia"
+    },
+    {
+      "trait_type": "Governance House",
+      "value": "User House"
+    },
+    {
+      "trait_type": "Credential Role",
+      "value": "Governor"
+    },
+    {
+      "trait_type": "Transferability",
+      "value": "Soulbound"
+    },
+    {
+      "trait_type": "Environment",
+      "value": "Testnet Demo"
+    }
+  ]
+}
