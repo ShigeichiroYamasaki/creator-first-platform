@@ -3,6 +3,11 @@ import { isAddress, keccak256, stringToHex } from 'viem'
 export const SEPOLIA_CHAIN_ID = 11155111
 export const DEMO_SUPPORTER_CREATOR_ID = keccak256(stringToHex('creator:synthetic-demo-artist'))
 export const DEMO_SUPPORTER_CONSENT_VERSION = keccak256(stringToHex('supporter-demo-consent-v1'))
+const PUBLIC_SITE_ORIGIN = 'https://shigeichiroyamasaki.github.io'
+const SUPPORTER_METADATA_PATHS = new Map([
+  ['/creator-first-platform/sbt/supporter.json', '/creator-first-platform/images/supporter-sbt-example.webp'],
+  ['/creator-first-platform/sbt/early-supporter.json', '/creator-first-platform/images/early-supporter-sbt-example.webp']
+])
 
 export const mockJpycAbi = [
   {
@@ -141,6 +146,23 @@ export function createSupporterTypedData({ supporterSbt, holder, nonce, deadline
       consentVersion: DEMO_SUPPORTER_CONSENT_VERSION
     }
   }
+}
+
+export function validateSupporterMetadata(value, metadataUri) {
+  const metadataUrl = new URL(metadataUri)
+  const expectedImagePath = SUPPORTER_METADATA_PATHS.get(metadataUrl.pathname)
+  if (metadataUrl.origin !== PUBLIC_SITE_ORIGIN || !expectedImagePath || metadataUrl.search || metadataUrl.hash) {
+    throw new Error('Supporter SBT metadata URI is not approved.')
+  }
+  if (!value || typeof value !== 'object' || typeof value.name !== 'string' || typeof value.description !== 'string') {
+    throw new Error('Supporter SBT metadata is incomplete.')
+  }
+  const imageUrl = new URL(value.image)
+  if (imageUrl.origin !== PUBLIC_SITE_ORIGIN || imageUrl.pathname !== expectedImagePath || imageUrl.search || imageUrl.hash) {
+    throw new Error('Supporter SBT image URI is not approved.')
+  }
+  if (!Array.isArray(value.attributes)) throw new Error('Supporter SBT attributes are missing.')
+  return value
 }
 
 export const creatorRegistryAbi = [

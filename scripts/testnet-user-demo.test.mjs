@@ -10,7 +10,8 @@ import {
   hasActiveCreatorRegistry,
   hasActiveSupporterRegistration,
   SEPOLIA_CHAIN_ID,
-  validateDeploymentManifest
+  validateDeploymentManifest,
+  validateSupporterMetadata
 } from '../docs/.vitepress/theme/testnet-user-demo.js'
 
 const manifestPath = new URL('../docs/public/testnet/deployment.json', import.meta.url)
@@ -124,8 +125,18 @@ test('publishes resolvable testnet metadata for both Supporter SBT tiers', async
     assert.equal(metadata.external_url, 'https://shigeichiroyamasaki.github.io/creator-first-platform/demo/test-user-registration')
     assert.equal(metadata.attributes.some((entry) => entry.trait_type === 'Credential Tier' && entry.value === tier), true)
     assert.equal(metadata.attributes.some((entry) => entry.trait_type === 'Transferability' && entry.value === 'Soulbound'), true)
+    assert.equal(validateSupporterMetadata(
+      metadata,
+      `https://shigeichiroyamasaki.github.io/creator-first-platform/sbt/${tier === 'Supporter' ? 'supporter' : 'early-supporter'}.json`
+    ), metadata)
     await readFile(new URL(`../docs/public/images/${image}`, import.meta.url))
   }
+
+  assert.throws(() => validateSupporterMetadata(cases[0].metadata, 'https://attacker.invalid/supporter.json'), /not approved/)
+  assert.throws(() => validateSupporterMetadata({
+    ...cases[0].metadata,
+    image: 'https://attacker.invalid/image.webp'
+  }, 'https://shigeichiroyamasaki.github.io/creator-first-platform/sbt/supporter.json'), /image URI/)
 })
 
 test('generates a deterministic mono PCM WAV for the copyright-free player fixture', () => {

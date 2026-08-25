@@ -13,7 +13,8 @@ import {
   supporterRegistrationAdapterAbi,
   supporterSbtAbi,
   subscriptionAbi,
-  validateDeploymentManifest
+  validateDeploymentManifest,
+  validateSupporterMetadata
 } from './testnet-user-demo.js'
 
 type DemoProfile = { registered: true; testUserId: string; displayName: string; state: 'TESTNET_DEMO_PROFILE'; createdAt: string }
@@ -36,6 +37,7 @@ type Deployment = {
   }
 }
 type Track = { id: string; title: string; artist: string; frequency: number; subscriberOnly: boolean }
+type SupporterMetadata = { name: string; description: string; image: string; attributes: Array<{ trait_type: string; value: string }> }
 
 const storageKey = 'creator-first-testnet-test-user-v2'
 const tracks: Track[] = [
@@ -65,6 +67,7 @@ const lastSbtTransaction = ref<Hash>()
 const supporterTokenId = ref(0n)
 const supporterTier = ref(0)
 const supporterTokenUri = ref('')
+const supporterMetadata = ref<SupporterMetadata>()
 const supporterMessage = ref('プレーヤーから対象アーティストへのサポータ登録を開始できます。')
 const selectedTrack = ref(tracks[0])
 const toneUrls = new Map<string, string>()
@@ -124,6 +127,7 @@ function clearOnchainState(): void {
   supporterTokenId.value = 0n
   supporterTier.value = 0
   supporterTokenUri.value = ''
+  supporterMetadata.value = undefined
 }
 const handleAccountsChanged = async (value: Address[] | string): Promise<void> => {
   const accounts = Array.isArray(value) ? value : []
@@ -233,6 +237,19 @@ async function refreshOnchainState(force = false): Promise<void> {
           args: [supporterTokenId.value]
         }) as string
       : ''
+    supporterMetadata.value = undefined
+    if (supporterTokenUri.value) {
+      try {
+        const metadataResponse = await fetch(supporterTokenUri.value, { cache: 'no-store' })
+        if (!metadataResponse.ok) throw new Error(`SBT metadata HTTP ${metadataResponse.status}`)
+        supporterMetadata.value = validateSupporterMetadata(
+          await metadataResponse.json(),
+          supporterTokenUri.value
+        ) as SupporterMetadata
+      } catch (error) {
+        supporterMessage.value = error instanceof Error ? error.message : 'SBTメタデータを取得できません。'
+      }
+    }
   }
 }
 async function transact(action: string, submit: () => Promise<Hash>): Promise<void> {
@@ -439,6 +456,10 @@ onBeforeUnmount(() => {
           </button>
           <button class="secondary" type="button" :disabled="!walletAddress || !correctChain || !contractsReady || Boolean(busyAction)" @click="refreshOnchainState(true)">SBT状態を更新</button>
         </div>
+        <figure v-if="supporterMetadata" class="credential-card">
+          <img :src="supporterMetadata.image" :alt="`${supporterMetadata.name}の資格証明画像`" width="360" height="360">
+          <figcaption><strong>{{ supporterMetadata.name }}</strong><span>{{ supporterMetadata.description }}</span></figcaption>
+        </figure>
         <p v-if="supporterTokenUri"><a :href="supporterTokenUri" target="_blank" rel="noopener noreferrer">SBTメタデータを確認</a></p>
         <p v-if="lastSbtTransaction"><a :href="`https://sepolia.etherscan.io/tx/${lastSbtTransaction}`" target="_blank" rel="noopener noreferrer">SBT発行TransactionをSepolia Etherscanで確認</a></p>
         <p aria-live="polite">{{ supporterMessage }}</p>
@@ -448,5 +469,5 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.testnet-journey{display:grid;gap:1.25rem;margin:1.75rem 0}.journey-heading,.panel{padding:clamp(1rem,3vw,1.6rem);border:1px solid var(--vp-c-divider);border-radius:16px;background:var(--vp-c-bg-soft)}.journey-heading h2,.panel h3{margin-top:.25rem;border:0}.kicker{margin:0;color:var(--vp-c-brand-1);font-size:.82rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.safety,.notice{padding:.8rem 1rem;border-left:4px solid var(--vp-c-warning-1);border-radius:6px;background:var(--vp-c-warning-soft)}.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;padding:0;list-style:none}.steps li{padding:.65rem .4rem;border:1px solid var(--vp-c-divider);border-radius:999px;text-align:center;font-size:.85rem;font-weight:700}.steps li.done{border-color:var(--vp-c-brand-1);color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.registration,.profile-summary{display:grid;gap:.8rem}.registration>label,legend{font-weight:700}.registration input[type=text]{min-height:44px;padding:.65rem .8rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}fieldset{display:grid;gap:.65rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:10px}fieldset label{display:grid;grid-template-columns:1.2rem 1fr;gap:.6rem;align-items:start}input[type=checkbox]{width:1rem;height:1rem;margin-top:.25rem}.actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}button{min-height:44px;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;font:inherit;font-weight:700;cursor:pointer}button.primary{color:var(--vp-c-white);background:var(--vp-c-brand-1)}button.secondary{color:var(--vp-c-brand-1);background:transparent}button:disabled{cursor:not-allowed;opacity:.45}.badge{width:fit-content;padding:.25rem .55rem;border-radius:999px;font-size:.8rem;font-weight:700}.badge.success{color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.status-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}.status-grid>div{display:grid;gap:.2rem;padding:.75rem;border:1px solid var(--vp-c-divider);border-radius:10px;background:var(--vp-c-bg)}.status-grid span,.track-list span,.now-playing span{color:var(--vp-c-text-2);font-size:.85rem}.error{color:var(--vp-c-danger-1)}.track-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.track-list button{display:grid;gap:.2rem;text-align:left;color:var(--vp-c-text-1);background:var(--vp-c-bg);border-color:var(--vp-c-divider)}.track-list button.selected{border-color:var(--vp-c-brand-1);box-shadow:0 0 0 2px var(--vp-c-brand-soft)}.track-list small{color:var(--vp-c-brand-1)}.now-playing{display:flex;gap:.8rem;align-items:center;margin:1rem 0 .6rem}.now-playing>div{display:grid}.art{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;color:var(--vp-c-white);background:linear-gradient(135deg,var(--vp-c-brand-1),#7c3aed);font-size:1.4rem}.supporter-action{margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--vp-c-divider)}.supporter-action h4{margin:.25rem 0;border:0}audio{width:100%}code{overflow-wrap:anywhere}@media(max-width:640px){.steps,.status-grid,.track-list{grid-template-columns:1fr}.actions button{width:100%}}
+.testnet-journey{display:grid;gap:1.25rem;margin:1.75rem 0}.journey-heading,.panel{padding:clamp(1rem,3vw,1.6rem);border:1px solid var(--vp-c-divider);border-radius:16px;background:var(--vp-c-bg-soft)}.journey-heading h2,.panel h3{margin-top:.25rem;border:0}.kicker{margin:0;color:var(--vp-c-brand-1);font-size:.82rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.safety,.notice{padding:.8rem 1rem;border-left:4px solid var(--vp-c-warning-1);border-radius:6px;background:var(--vp-c-warning-soft)}.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;padding:0;list-style:none}.steps li{padding:.65rem .4rem;border:1px solid var(--vp-c-divider);border-radius:999px;text-align:center;font-size:.85rem;font-weight:700}.steps li.done{border-color:var(--vp-c-brand-1);color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.registration,.profile-summary{display:grid;gap:.8rem}.registration>label,legend{font-weight:700}.registration input[type=text]{min-height:44px;padding:.65rem .8rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}fieldset{display:grid;gap:.65rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:10px}fieldset label{display:grid;grid-template-columns:1.2rem 1fr;gap:.6rem;align-items:start}input[type=checkbox]{width:1rem;height:1rem;margin-top:.25rem}.actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}button{min-height:44px;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;font:inherit;font-weight:700;cursor:pointer}button.primary{color:var(--vp-c-white);background:var(--vp-c-brand-1)}button.secondary{color:var(--vp-c-brand-1);background:transparent}button:disabled{cursor:not-allowed;opacity:.45}.badge{width:fit-content;padding:.25rem .55rem;border-radius:999px;font-size:.8rem;font-weight:700}.badge.success{color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.status-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}.status-grid>div{display:grid;gap:.2rem;padding:.75rem;border:1px solid var(--vp-c-divider);border-radius:10px;background:var(--vp-c-bg)}.status-grid span,.track-list span,.now-playing span{color:var(--vp-c-text-2);font-size:.85rem}.error{color:var(--vp-c-danger-1)}.track-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.track-list button{display:grid;gap:.2rem;text-align:left;color:var(--vp-c-text-1);background:var(--vp-c-bg);border-color:var(--vp-c-divider)}.track-list button.selected{border-color:var(--vp-c-brand-1);box-shadow:0 0 0 2px var(--vp-c-brand-soft)}.track-list small{color:var(--vp-c-brand-1)}.now-playing{display:flex;gap:.8rem;align-items:center;margin:1rem 0 .6rem}.now-playing>div{display:grid}.art{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;color:var(--vp-c-white);background:linear-gradient(135deg,var(--vp-c-brand-1),#7c3aed);font-size:1.4rem}.supporter-action{margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--vp-c-divider)}.supporter-action h4{margin:.25rem 0;border:0}.credential-card{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:1rem;align-items:center;margin:1rem 0;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:14px;background:var(--vp-c-bg)}.credential-card img{width:100%;height:auto;border-radius:12px}.credential-card figcaption{display:grid;gap:.5rem}.credential-card figcaption span{color:var(--vp-c-text-2);font-size:.9rem}audio{width:100%}code{overflow-wrap:anywhere}@media(max-width:640px){.steps,.status-grid,.track-list,.credential-card{grid-template-columns:1fr}.actions button{width:100%}}
 </style>
