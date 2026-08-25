@@ -171,8 +171,8 @@ if (governanceContractsPublished) {
     if (governanceRow.status.includes('公開デプロイ前')) {
       errors.push('docs/status.md: DAOガバナンス must not say 公開デプロイ前 when governance contracts are published')
     }
-    if (!governanceRow.status.includes('Sepolia') || !governanceRow.status.includes('デプロイ済み')) {
-      errors.push('docs/status.md: DAOガバナンス must report Sepolia deployment when governance contracts are published')
+    if (!governanceRow.status.includes('Polygon Amoy') || !governanceRow.status.includes('デプロイ済み')) {
+      errors.push('docs/status.md: DAOガバナンス must report Polygon Amoy deployment when governance contracts are published')
     }
     if (!governanceRow.evidence.includes('二院制') || !governanceRow.evidence.includes('デモポリシー')) {
       errors.push('docs/status.md: DAOガバナンス evidence must identify the published 二院制ガバナー and デモポリシー')

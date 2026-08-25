@@ -47,7 +47,7 @@ flowchart LR
     MOCK --> REGISTRY --> RECEIPT
 ```
 
-この構成はIgnitionの`CreatorFirstTestnet`モジュールへ追加するが、公開Sepoliaデプロイマニフェストへアドレスが記録されるまでは「公開デプロイ済み」と表示しない。
+この構成はIgnitionの`CreatorFirstTestnet`モジュールへ追加するが、公開Polygon Amoyデプロイマニフェストへアドレスが記録されるまでは「公開デプロイ済み」と表示しない。
 
 ## 4. 本番mainnet構成
 
@@ -89,7 +89,7 @@ flowchart LR
 - プロファイルは`PROPOSED → TESTED → APPROVED → ACTIVE → DEPRECATED`で管理する。
 - 緊急権限は新規受付を停止できるが、別検証者への置換、過去受付の改変または資金移動を実行できない。
 - 変更は新しいプロファイルIDと検証者を追加し、タイムロック後に有効化する。過去受付は元の版で検証可能に保つ。
-- mainnetの移行は新規デプロイ、鍵生成、権限付与、監査および公開マニフェストを別に行い、Sepoliaのアドレス、受付、管理鍵またはモック証明を移植しない。
+- mainnetの移行は新規デプロイ、鍵生成、権限付与、監査および公開マニフェストを別に行い、Polygon Amoyのアドレス、受付、管理鍵またはモック証明を移植しない。
 
 ## 7. 本番移行ゲート
 

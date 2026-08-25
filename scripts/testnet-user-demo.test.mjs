@@ -9,7 +9,7 @@ import {
   DEMO_SUPPORTER_CREATOR_ID,
   hasActiveCreatorRegistry,
   hasActiveSupporterRegistration,
-  SEPOLIA_CHAIN_ID,
+  AMOY_CHAIN_ID,
   validateDeploymentManifest,
   validateSupporterMetadata
 } from '../docs/.vitepress/theme/testnet-user-demo.js'
@@ -19,22 +19,22 @@ const deploymentRecordPath = new URL('../docs/public/testnet/deployment-record.j
 const supporterMetadataPath = new URL('../docs/public/sbt/supporter.json', import.meta.url)
 const earlySupporterMetadataPath = new URL('../docs/public/sbt/early-supporter.json', import.meta.url)
 
-test('ships an active Sepolia manifest with reviewed addresses and source commit', async () => {
+test('ships a safe Polygon Amoy manifest and verifies reviewed addresses when active', async () => {
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
-  const record = JSON.parse(await readFile(deploymentRecordPath, 'utf8'))
   const parsed = validateDeploymentManifest(manifest)
 
-  assert.equal(parsed.chainId, SEPOLIA_CHAIN_ID)
+  assert.equal(parsed.chainId, AMOY_CHAIN_ID)
+  assert.equal(parsed.environment, 'amoy-demo')
+  if (!parsed.active) {
+    assert.equal(parsed.status, 'not-deployed')
+    assert.deepEqual(parsed.contracts, {})
+    return
+  }
+
+  const record = JSON.parse(await readFile(deploymentRecordPath, 'utf8'))
   assert.equal(parsed.status, 'active')
   assert.equal(parsed.active, true)
-  assert.equal(parsed.sourceCommit, '5431e890657d1f97cd4ef3cb387d7afc1b9bdf8f')
-  assert.equal(parsed.contracts.mockJpyc, '0xBc89cF411Fe4fEc602e854fF32E78BBD131F5f49')
-  assert.equal(parsed.contracts.subscription, '0x7bEeD194032a8D655cF72E61889896eef97F3d90')
-  assert.equal(parsed.contracts.treasury, '0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215')
-  assert.equal(parsed.contracts.supporterSbt, '0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923')
-  assert.equal(parsed.contracts.supporterRegistrationAdapter, '0xbd6887125F9b8e000CF5a0673D7fa2a29a70D292')
-  assert.equal(parsed.contracts.creatorRegistry, '0x5676d34d7C41849311b99932d8272af58b63e6E9')
-  assert.equal(parsed.contracts.legislatorRegistrationAdapter, '0x39cAdc19b820e7BA549E6E9c2F6cc008ac2F729F')
+  assert.match(parsed.sourceCommit, /^[0-9a-f]{40}$/i)
   assert.equal(record.sourceCommit, parsed.sourceCommit)
   assert.equal(record.contracts.mockJpyc.address, parsed.contracts.mockJpyc)
   assert.equal(record.contracts.subscription.address, parsed.contracts.subscription)
@@ -45,7 +45,7 @@ test('ships an active Sepolia manifest with reviewed addresses and source commit
   assert.match(record.contracts.supporterRegistrationAdapter.transactionHash, /^0x[0-9a-f]{64}$/i)
   assert.match(record.contracts.supporterRegistrationAdapter.roleGrantTransactionHash, /^0x[0-9a-f]{64}$/i)
   assert.equal(record.contracts.creatorRegistry.address, parsed.contracts.creatorRegistry)
-  assert.equal(record.contracts.creatorRegistry.sourceCommit, '9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7')
+  assert.equal(record.contracts.creatorRegistry.sourceCommit, parsed.sourceCommit)
   assert.equal(record.contracts.legislatorRegistrationAdapter.address, parsed.contracts.legislatorRegistrationAdapter)
   assert.equal(record.contracts.legislatorRegistrationAdapter.governor, parsed.contracts.governor)
   assert.equal(record.contracts.legislatorRegistrationAdapter.subscription, parsed.contracts.subscription)
@@ -64,9 +64,9 @@ test('ships an active Sepolia manifest with reviewed addresses and source commit
 test('rejects an active manifest with an invalid chain, address, or source commit', () => {
   const base = {
     schemaVersion: 1,
-    environment: 'sepolia-demo',
-    chainId: SEPOLIA_CHAIN_ID,
-    networkName: 'Ethereum Sepolia',
+    environment: 'amoy-demo',
+    chainId: AMOY_CHAIN_ID,
+    networkName: 'Polygon Amoy',
     status: 'active',
     sourceCommit: 'a'.repeat(40),
     contracts: {
@@ -77,7 +77,7 @@ test('rejects an active manifest with an invalid chain, address, or source commi
     }
   }
 
-  assert.throws(() => validateDeploymentManifest({ ...base, chainId: 1 }), /Sepolia/)
+  assert.throws(() => validateDeploymentManifest({ ...base, chainId: 1 }), /Polygon Amoy/)
   assert.throws(() => validateDeploymentManifest({ ...base, sourceCommit: 'short' }), /source commit/)
   assert.throws(() => validateDeploymentManifest({ ...base, contracts: { ...base.contracts, mockJpyc: '0x0' } }), /contract address/)
   assert.equal(hasActiveCreatorRegistry(validateDeploymentManifest(base)), false)
@@ -103,7 +103,7 @@ test('builds the exact short-lived Supporter SBT EIP-712 intent', () => {
   const holder = '0x5555555555555555555555555555555555555555'
   const value = createSupporterTypedData({ supporterSbt, holder, nonce: 7n, deadline: 900n })
 
-  assert.equal(value.domain.chainId, SEPOLIA_CHAIN_ID)
+  assert.equal(value.domain.chainId, AMOY_CHAIN_ID)
   assert.equal(value.domain.verifyingContract, supporterSbt)
   assert.equal(value.primaryType, 'SupportIntent')
   assert.equal(value.message.creatorId, DEMO_SUPPORTER_CREATOR_ID)
@@ -128,7 +128,7 @@ test('publishes resolvable testnet metadata for both Supporter SBT tiers', async
   ]
 
   for (const { metadata, tier, image } of cases) {
-    assert.match(metadata.name, /Sepolia Testnet/)
+    assert.match(metadata.name, /Polygon Amoy Testnet/)
     assert.match(metadata.description, /TESTNET ONLY/)
     assert.equal(metadata.image, `https://shigeichiroyamasaki.github.io/creator-first-platform/images/${image}`)
     assert.equal(metadata.external_url, 'https://shigeichiroyamasaki.github.io/creator-first-platform/demo/test-user-registration')

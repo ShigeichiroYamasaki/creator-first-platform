@@ -23,7 +23,7 @@ assumptions:
     prohibited_uses:
       - Claiming cryptographic zero knowledge, proof soundness or independent audit
       - Consuming a mock receipt for real Usage, Rights, eligibility, Distribution or funds
-      - Copying Sepolia profiles, keys, addresses, receipts or bootstrap roles to mainnet
+      - Copying Polygon Amoy profiles, keys, addresses, receipts or bootstrap roles to mainnet
       - Presenting testnet integration success as production readiness
   - id: MOCK-ASSUMPTION-001
     state: ACTIVE
@@ -56,7 +56,7 @@ assumptions:
       its alias profile in per-tab Session Storage and never calls the Gateway. The
       hosted Creator fixture keeps a synthetic Creator Profile in per-tab Session
       Storage. Its public Testnet Journey may connect an explicitly selected Wallet to
-      Ethereum Sepolia and submit salted profile, release-metadata and unverified-rights
+      Polygon Amoy and submit salted profile, release-metadata and unverified-rights
       commitments to the reviewed Creator Registry address from the same-origin
       deployment manifest. It never uploads media or evidence, verifies identity or
       rights, publishes a release, calculates distribution, authorizes a Treasury

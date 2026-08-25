@@ -1,5 +1,5 @@
 {
-  "name": "Creator First Early Supporter SBT — Sepolia Testnet",
+  "name": "Creator First Early Supporter SBT — Polygon Amoy Testnet",
   "description": "TESTNET ONLY. A public, non-transferable credential showing that its holder registered support for a Creator First Platform demo artist while the active on-chain Early Supporter policy applied. It has no monetary value, redemption right, revenue claim, shareholder right or governance voting power.",
   "image": "https://shigeichiroyamasaki.github.io/creator-first-platform/images/early-supporter-sbt-example.webp",
   "external_url": "https://shigeichiroyamasaki.github.io/creator-first-platform/demo/test-user-registration",
@@ -7,7 +7,7 @@
   "attributes": [
     {
       "trait_type": "Network",
-      "value": "Ethereum Sepolia"
+      "value": "Polygon Amoy"
     },
     {
       "trait_type": "Credential Tier",

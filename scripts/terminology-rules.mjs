@@ -1317,7 +1317,7 @@ export const terminologyExceptions = [
   'Creator First Platform',
   'Navidrome',
   'Ethereum',
-  'Sepolia',
+  'Polygon Amoy',
   'JPYC',
   'MockJPYC',
   'SBT',

@@ -1,6 +1,8 @@
 import { isAddress, keccak256, stringToHex } from 'viem'
 
-export const SEPOLIA_CHAIN_ID = 11155111
+export const AMOY_CHAIN_ID = 80002
+export const AMOY_CHAIN_HEX = '0x13882'
+export const AMOY_EXPLORER_URL = 'https://amoy.polygonscan.com'
 export const DEMO_SUPPORTER_CREATOR_ID = keccak256(stringToHex('creator:synthetic-demo-artist'))
 export const DEMO_SUPPORTER_CONSENT_VERSION = keccak256(stringToHex('supporter-demo-consent-v1'))
 const PUBLIC_SITE_ORIGIN = 'https://shigeichiroyamasaki.github.io'
@@ -125,7 +127,7 @@ export function createSupporterTypedData({ supporterSbt, holder, nonce, deadline
     domain: {
       name: 'Creator First Supporter SBT',
       version: '1',
-      chainId: SEPOLIA_CHAIN_ID,
+      chainId: AMOY_CHAIN_ID,
       verifyingContract: supporterSbt
     },
     types: {
@@ -207,7 +209,7 @@ function hasValidAddress(value) {
 export function validateDeploymentManifest(value) {
   if (!value || typeof value !== 'object') throw new Error('Deployment manifest is not an object.')
   if (value.schemaVersion !== 1) throw new Error('Unsupported deployment manifest schema.')
-  if (value.chainId !== SEPOLIA_CHAIN_ID) throw new Error('Only Ethereum Sepolia is accepted.')
+  if (value.chainId !== AMOY_CHAIN_ID) throw new Error('Only Polygon Amoy is accepted.')
   if (!['not-deployed', 'active'].includes(value.status)) throw new Error('Unknown deployment status.')
   if (value.status === 'not-deployed') return { ...value, active: false }
 
@@ -226,6 +228,27 @@ export function validateDeploymentManifest(value) {
     throw new Error('Active deployment manifest contains an invalid supporter registration adapter address.')
   }
   return { ...value, active: true }
+}
+
+export async function switchProviderToAmoy(provider) {
+  try {
+    await provider.request({
+      method: 'wallet_switchEthereumChain',
+      params: [{ chainId: AMOY_CHAIN_HEX }]
+    })
+  } catch (error) {
+    if (Number(error?.code) !== 4902) throw error
+    await provider.request({
+      method: 'wallet_addEthereumChain',
+      params: [{
+        chainId: AMOY_CHAIN_HEX,
+        chainName: 'Polygon Amoy',
+        nativeCurrency: { name: 'POL', symbol: 'POL', decimals: 18 },
+        rpcUrls: ['https://polygon-amoy.drpc.org'],
+        blockExplorerUrls: [AMOY_EXPLORER_URL]
+      }]
+    })
+  }
 }
 
 export function hasActiveCreatorRegistry(manifest) {

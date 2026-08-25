@@ -39,6 +39,12 @@ export default buildModule("CreatorFirstTestnet", (m) => {
   const governanceUpgradeDelay = m.getParameter("governanceUpgradeDelay", 5n * 60n);
   const governanceConstitutionalDelay = m.getParameter("governanceConstitutionalDelay", 15n * 60n);
   const governanceExecutionWindow = m.getParameter("governanceExecutionWindow", 7n * 24n * 60n * 60n);
+  const publicDemoRuleHash = m.getParameter(
+    "publicDemoRuleHash",
+    "0x7c7d4b67883b80f114dd64b09399c0d66c1c7daf6951f9fcb658a8bc41ff2b55",
+  );
+  const publicDemoStartsAt = m.getParameter("publicDemoStartsAt", 1_788_244_104n);
+  const publicDemoEndsAt = m.getParameter("publicDemoEndsAt", 1_790_836_104n);
 
   const mockJPYC = m.contract("MockJPYC", [admin, initialMockSupply]);
   const treasury = m.contract("CreatorFirstTreasury", [
@@ -89,7 +95,7 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     governanceRegistrar,
     governanceReviewer,
     governanceGuardian,
-    11_155_111n,
+    80_002n,
     governanceParameterDelay,
     governanceUpgradeDelay,
     governanceConstitutionalDelay,
@@ -100,6 +106,25 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     30,
     100,
   ]);
+  const legislatorRegistrationAdapter = m.contract("CreatorFirstTestnetLegislatorRegistrationAdapter", [
+    bicameralGovernor,
+    subscription,
+    creatorRegistry,
+  ]);
+  const registrarRole = m.staticCall(bicameralGovernor, "REGISTRAR_ROLE");
+  m.call(bicameralGovernor, "grantRole", [registrarRole, legislatorRegistrationAdapter], {
+    id: "GrantLegislatorRegistrationAdapterRegistrarRole",
+  });
+  m.call(bicameralGovernor, "createSession", [
+    publicDemoRuleHash,
+    publicDemoStartsAt,
+    publicDemoEndsAt,
+    25,
+    1,
+    1,
+  ], {
+    id: "CreatePublicDemoSessionOne",
+  });
   const creatorRegistrationAdapter = m.contract("CreatorFirstCreatorRegistrationAdapter", [
     admin,
     creatorRegistry,
@@ -136,6 +161,7 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     supporterRegistrationAdapter,
     bicameralGovernor,
     governedPolicy,
+    legislatorRegistrationAdapter,
     creatorRegistrationAdapter,
     cfp0002DeploymentFactory,
     transparentZKMockVerifier,

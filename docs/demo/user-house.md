@@ -1,6 +1,6 @@
 ---
 title: ユーザ院議会
-description: Sepolia上でユーザ院議会の議員資格、CFP、院別集計、二次投票を確認するテストネット入口。
+description: Polygon Amoy上でユーザ院議会の議員資格、CFP、院別集計、二次投票を確認するテストネット入口。
 ---
 
 # ユーザ院議会

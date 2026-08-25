@@ -1,11 +1,11 @@
 ---
-title: Sepolia スマートコントラクトデモ
-description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決済、サポーター SBT、音楽クリエーター登録台帳、二院制ガバナンス、透明型ZK境界を検証する手順。
+title: Polygon Amoy スマートコントラクトデモ
+description: Hardhat 3、Infura、Polygon AmoyでCreator First PlatformのMockJPYC決済、サポーター SBT、音楽クリエーター登録台帳、二院制ガバナンス、透明型ZK境界を検証する手順。
 ---
 
-# Sepolia スマートコントラクトデモ
+# Polygon Amoy スマートコントラクトデモ
 
-Hardhat 3とViemを使い、公開済みのテストネット専用コントラクトをEthereum Sepoliaへデプロイしました。次の表には、公開済み構成に加えて、次回デプロイ対象としてローカル実装した透明型ZK境界、CFP-0002検証境界、テスト議員登録、本番向け抽選候補も示します。CFP識別子・改訂結合と両院別結果取得を備えたガバナーV2は、ソースコミット `5431e890657d1f97cd4ef3cb387d7afc1b9bdf8f`からデプロイしています。
+Hardhat 3とViemを使い、公開済みのテストネット専用コントラクトをPolygon Amoyへデプロイしました。次の表には、公開済み構成に加えて、次回デプロイ対象としてローカル実装した透明型ZK境界、CFP-0002検証境界、テスト議員登録、本番向け抽選候補も示します。CFP識別子・改訂結合と両院別結果取得を備えたガバナーV2は、ソースコミット `5431e890657d1f97cd4ef3cb387d7afc1b9bdf8f`からデプロイしています。
 
 | コントラクト | テストネット上の責務 | 本番境界 |
 | --- | --- | --- |
@@ -26,33 +26,33 @@ Hardhat 3とViemを使い、公開済みのテストネット専用コントラ�
 | `CreatorFirstCFP0002DeploymentFactory` | 両院承認、レビュー、P2タイムロック後だけ固定saltでCFP-0002ポリシーをデプロイする | 本番デプロイヤー、正式な憲章・法務審査または監査を代替しない |
 | `CreatorFirstCFP0002EarlySupporterPolicy` | 初期登録から31,536,000秒未満という排他的時間条件を判定する | SBTを発行せず、配信、金銭、権利または議決権を付与しない |
 
-透明型ZKの2コントラクト、CFP-0002用アダプター／デプロイファクトリー、本番向け検証可能抽選候補はローカル実装まで完了していますが、下記の公開Sepoliaマニフェストにはまだ含まれません。テスト議員登録アダプターは既存ガバナー、サブスクリプション、音楽クリエーター登録台帳へ接続してSepoliaへデプロイし、`REGISTRAR_ROLE`付与と公開デモ会期1の作成まで公開RPCで検証済みです。本番向け抽選候補は監査前のためデプロイモジュールを設けていません。公開プレーヤー用サポータ登録アダプターはSepoliaへデプロイし、既存SBTへの`RELAYER_ROLE`付与まで検証済みです。CFP-0002ポリシーはガバナンス実行時にだけ作成されます。
+透明型ZKの2コントラクト、CFP-0002用アダプター／デプロイファクトリー、本番向け検証可能抽選候補はローカル実装まで完了していますが、下記の公開Polygon Amoyマニフェストにはまだ含まれません。テスト議員登録アダプターは既存ガバナー、サブスクリプション、音楽クリエーター登録台帳へ接続してPolygon Amoyへデプロイし、`REGISTRAR_ROLE`付与と公開デモ会期1の作成まで公開RPCで検証済みです。本番向け抽選候補は監査前のためデプロイモジュールを設けていません。公開プレーヤー用サポータ登録アダプターはPolygon Amoyへデプロイし、既存SBTへの`RELAYER_ROLE`付与まで検証済みです。CFP-0002ポリシーはガバナンス実行時にだけ作成されます。
 
 SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を拒否します。初期条件の`POLICY_ROLE`、実装更新の`UPGRADER_ROLE`、署名済み意思を送る`RELAYER_ROLE`を分離し、発行済み階層を後日のポリシー更新で書き換えません。
 
-一般サポータと初期サポータの`tokenURI`は、それぞれ[supporter.json](/sbt/supporter.json)と[early-supporter.json](/sbt/early-supporter.json)を返します。どちらもSepolia テストネット表示、公開画像、譲渡不能属性および非金銭的資格証明である旨を含み、個人情報、支援額または視聴履歴を含みません。
+一般サポータと初期サポータの`tokenURI`は、それぞれ[supporter.json](/sbt/supporter.json)と[early-supporter.json](/sbt/early-supporter.json)を返します。どちらもPolygon Amoy テストネット表示、公開画像、譲渡不能属性および非金銭的資格証明である旨を含み、個人情報、支援額または視聴履歴を含みません。
 
 将来の会期別議員資格SBT用メタデータ原案として、[音楽クリエータ院議会ガバナー](/sbt/creator-house-governor.json)と[ユーザ院議会ガバナー](/sbt/user-house-governor.json)も公開します。各JSONは対応する公開画像、院、役割、譲渡不能属性、テストネット表示を持ちますが、現時点では議員資格SBTコントラクトおよび会期別`tokenURI`には未接続です。表示用SBTだけで投票権や会社権限を成立させません。
 
 ## 公開デプロイ {#public-deployment}
 
-| コントラクト | Sepolia アドレス |
+| コントラクト | Polygon Amoy アドレス |
 | --- | --- |
-| MockJPYC | [`0xBc89…5f49`](https://sepolia.etherscan.io/address/0xBc89cF411Fe4fEc602e854fF32E78BBD131F5f49) |
-| CreatorFirstSubscription | [`0x7bEe…3d90`](https://sepolia.etherscan.io/address/0x7bEeD194032a8D655cF72E61889896eef97F3d90) |
-| CreatorFirstTreasury | [`0x57a9…4215`](https://sepolia.etherscan.io/address/0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215) |
-| SupporterSBT プロキシ | [`0x2D01…0923`](https://sepolia.etherscan.io/address/0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923) |
-| SupporterSBT 実装 | [`0x350a…7a66`](https://sepolia.etherscan.io/address/0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66) |
-| サポータ登録アダプター | [`0xbd68…D292`](https://sepolia.etherscan.io/address/0xbd6887125F9b8e000CF5a0673D7fa2a29a70D292) |
-| CreatorFirstCreatorRegistry | [`0x5676…e6E9`](https://sepolia.etherscan.io/address/0x5676d34d7C41849311b99932d8272af58b63e6E9) |
-| CreatorFirstBicameralGovernor V2 | [`0x6407…2B95`](https://sepolia.etherscan.io/address/0x640711f1C249F8F6e8921E01060c99ccc6D72B95) |
-| CreatorFirstGovernedPolicy V2 | [`0x34f2…B596`](https://sepolia.etherscan.io/address/0x34f23e860b1A6E8cD0D06514A29ea9386A92B596) |
-| テスト議員登録アダプター | [`0x39cA…729F`](https://sepolia.etherscan.io/address/0x39cAdc19b820e7BA549E6E9c2F6cc008ac2F729F) |
+| MockJPYC | [`0xBc89…5f49`](https://amoy.polygonscan.com/address/0xBc89cF411Fe4fEc602e854fF32E78BBD131F5f49) |
+| CreatorFirstSubscription | [`0x7bEe…3d90`](https://amoy.polygonscan.com/address/0x7bEeD194032a8D655cF72E61889896eef97F3d90) |
+| CreatorFirstTreasury | [`0x57a9…4215`](https://amoy.polygonscan.com/address/0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215) |
+| SupporterSBT プロキシ | [`0x2D01…0923`](https://amoy.polygonscan.com/address/0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923) |
+| SupporterSBT 実装 | [`0x350a…7a66`](https://amoy.polygonscan.com/address/0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66) |
+| サポータ登録アダプター | [`0xbd68…D292`](https://amoy.polygonscan.com/address/0xbd6887125F9b8e000CF5a0673D7fa2a29a70D292) |
+| CreatorFirstCreatorRegistry | [`0x5676…e6E9`](https://amoy.polygonscan.com/address/0x5676d34d7C41849311b99932d8272af58b63e6E9) |
+| CreatorFirstBicameralGovernor V2 | [`0x6407…2B95`](https://amoy.polygonscan.com/address/0x640711f1C249F8F6e8921E01060c99ccc6D72B95) |
+| CreatorFirstGovernedPolicy V2 | [`0x34f2…B596`](https://amoy.polygonscan.com/address/0x34f23e860b1A6E8cD0D06514A29ea9386A92B596) |
+| テスト議員登録アダプター | [`0x39cA…729F`](https://amoy.polygonscan.com/address/0x39cAdc19b820e7BA549E6E9c2F6cc008ac2F729F) |
 
-チェーン IDは`11155111`です。[公開マニフェスト](/testnet/deployment.json)と[トランザクションを含むデプロイ記録](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Sepolia RPCからBytecode、MockJPYC 通知／主張額、サブスクリプションの資産／資金庫／計画、ERC-1967 実装スロット、音楽クリエーター登録台帳のテストネット通知、ガバナーのチェーン／タイムロック設定およびデモポリシーとの接続を再検証します。
+チェーン IDは`80002`です。[公開マニフェスト](/testnet/deployment.json)と[トランザクションを含むデプロイ記録](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Polygon Amoy RPCからBytecode、MockJPYC 通知／主張額、サブスクリプションの資産／資金庫／計画、ERC-1967 実装スロット、音楽クリエーター登録台帳のテストネット通知、ガバナーのチェーン／タイムロック設定およびデモポリシーとの接続を再検証します。
 
 ```sh
-npm run contracts:verify:sepolia
+npm run contracts:verify:amoy
 ```
 
 ## ローカル検証
@@ -67,61 +67,61 @@ npm run contracts:test
 
 テストは、MockJPYCの一回限りの自己取得と移転、決済／支出参照の重複拒否、EIP-712 nonceのreplay拒否、初期上限、ERC-5192、SBT移転拒否、一ウォレット一音楽クリエーター、コミットメント重複拒否、リリース自己申告と音楽クリエーター限定取消し、透明型ZK境界に加え、テスト議員の院別資格と会期締切、本番向け抽選の適格者固定、乱数権限、重複しない抽選順位、本人請求、一人一院、補欠順序、CFP-0002の投票前適合性審査、両院熟議、別集計、共同承認、事後レビュー、P2タイムロック、完全一致デプロイおよび365日境界を確認します。
 
-## InfuraとSepoliaの設定
+## InfuraとPolygon Amoyの設定
 
-InfuraでEthereum Sepolia用API 鍵を作成し、完全なHTTPS Endpointとデプロイ専用Sepolia秘密鍵をHardhat 3の暗号化Keystoreへ保存します。
+InfuraでPolygon Amoy用API 鍵を作成し、完全なHTTPS Endpointとデプロイ専用Polygon Amoy秘密鍵をHardhat 3の暗号化Keystoreへ保存します。
 
 ```sh
 npx hardhat keystore set SEPOLIA_RPC_URL
 npx hardhat keystore set DEPLOYER_PRIVATE_KEY
 ```
 
-`SEPOLIA_RPC_URL`には`https://sepolia.infura.io/v3/<API_KEY>`形式のEndpointを入力します。秘密鍵は`0x`から始まる32-byte値です。Keystoreの値、`.env`、Seed Phrase、本番鍵をGitへ追加しないでください。
+`SEPOLIA_RPC_URL`には`https://amoy.infura.io/v3/<API_KEY>`形式のEndpointを入力します。秘密鍵は`0x`から始まる32-byte値です。Keystoreの値、`.env`、Seed Phrase、本番鍵をGitへ追加しないでください。
 
 再デプロイ前に次を確認します。
 
-- 対象チェーン IDがSepoliaの`11155111`である
-- デプロイ鍵には少量のSepolia ETHだけがあり、本番資産がない
+- 対象チェーン IDがPolygon Amoyの`80002`である
+- デプロイ鍵には少量のAmoy POLだけがあり、本番資産がない
 - 初回Bootstrap後に`admin`、`policyManager`、`relayer`、`revoker`、`upgrader`、`treasuryDisburser`、`planManager`を分離する手順と担当アドレスがレビュー済みである
 - メタデータ URIが公開前に取得可能で、画像や説明がテストネット SBTであることを明示する
 
-## Sepoliaへデプロイ
+## Polygon Amoyへデプロイ
 
 既定値でデプロイする場合は次を実行します。
 
 ```sh
-npm run contracts:deploy:sepolia
+npm run contracts:deploy:amoy
 ```
 
 CFP識別子・改訂結合を備えたガバナーV2だけを既存テスト資産から分離してデプロイする場合は、次を実行します。
 
 ```sh
-npm run contracts:deploy:governance-v2:sepolia
+npm run contracts:deploy:governance-v2:amoy
 ```
 
 既存公開SBTへサポータ登録アダプターだけを追加する場合は、総合モジュールではなく次の専用コマンドを使います。既定の接続先は公開済みSBTプロキシ`0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923`で、アダプターのデプロイと`RELAYER_ROLE`付与だけを実行します。
 
 ```sh
-npm run contracts:deploy:supporter-adapter:sepolia
+npm run contracts:deploy:supporter-adapter:amoy
 ```
 
 既存公開ガバナーへテスト議員登録アダプターを追加する場合は、次の専用コマンドを使います。既定では公開済みガバナー、サブスクリプション、音楽クリエーター登録台帳へ接続し、アダプターに`REGISTRAR_ROLE`を付与します。現在の公開デプロイでは実行済みであり、再実行時は同じIgnition Journalを確認して重複デプロイを避けます。
 
 ```sh
-npm run contracts:deploy:legislator-adapter:sepolia
+npm run contracts:deploy:legislator-adapter:amoy
 ```
 
 公開デモ会期1は、次の専用モジュールで一度だけ作成しました。2026年9月1日15:28 JSTに開始し、2026年10月1日15:28 JSTに終了します。投票クレジットは25、両院の定足数は各1人です。会期ID、規則ハッシュ、時刻、トランザクションは公開デプロイ記録で検証できます。
 
 ```sh
-npm run contracts:deploy:governance-session-one:sepolia
+npm run contracts:deploy:governance-session-one:amoy
 ```
 
 実行アカウントが既存SBTの`DEFAULT_ADMIN_ROLE`を失っている場合、役割付与は停止します。その場合は権限を持つ承認済み管理主体から別途付与し、エラーを迂回するために新しい管理鍵を追加しません。
 
 初回の非公開デモデプロイでは、Ignitionが全役割をデプロイ専用アカウントへBootstrapします。公開前に各コントラクトの`grantRole`で運用アカウントへ権限を付与し、動作確認後にBootstrap アカウントの不要役割を`revokeRole`で外します。`DEFAULT_ADMIN_ROLE`を先に失わないこと、`POLICY_ROLE`と`UPGRADER_ROLE`を同じ単独鍵へ残さないこと、本番ではマルチシグ／タイムロックを含む別のデプロイポリシーを採用することが必要です。
 
-`hardhat.config.ts`はチェーン IDを`11155111`へ固定するため、Infura Endpointが別ネットワークを返す場合は停止します。Ignitionのデプロイ Journalはローカル生成物としてGit対象外です。公開デモとして扱う前に、コントラクトアドレス、トランザクション、ソースコミット、Compiler、Constructor／Initializer引数、役割付与、Bootstrap 役割移管結果、プロキシ実装アドレスを別の公開デプロイ記録へ記録します。
+`hardhat.config.ts`はチェーン IDを`80002`へ固定するため、Infura Endpointが別ネットワークを返す場合は停止します。Ignitionのデプロイ Journalはローカル生成物としてGit対象外です。公開デモとして扱う前に、コントラクトアドレス、トランザクション、ソースコミット、Compiler、Constructor／Initializer引数、役割付与、Bootstrap 役割移管結果、プロキシ実装アドレスを別の公開デプロイ記録へ記録します。
 
 ## 現在未接続の範囲
 

@@ -2,12 +2,12 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 
 import { createPublicClient, getAddress, http, parseAbi } from 'viem'
-import { sepolia } from 'viem/chains'
+import { polygonAmoy } from 'viem/chains'
 
 const manifest = JSON.parse(await readFile(new URL('../docs/public/testnet/deployment.json', import.meta.url), 'utf8'))
 const deploymentRecord = JSON.parse(await readFile(new URL('../docs/public/testnet/deployment-record.json', import.meta.url), 'utf8'))
 assert.equal(manifest.status, 'active', 'Deployment manifest must be active')
-assert.equal(manifest.chainId, sepolia.id, 'Deployment manifest must target Ethereum Sepolia')
+assert.equal(manifest.chainId, polygonAmoy.id, 'Deployment manifest must target Polygon Amoy')
 assert.match(manifest.sourceCommit, /^[0-9a-f]{40}$/i, 'Deployment manifest must contain a full source commit')
 
 const addresses = Object.fromEntries(
@@ -27,8 +27,8 @@ const legislatorRegistrationAdapter = manifest.contracts.legislatorRegistrationA
   ? getAddress(manifest.contracts.legislatorRegistrationAdapter)
   : undefined
 assert.equal(Boolean(governor), Boolean(governedPolicy), 'Governance manifest must publish governor and policy together')
-const rpcUrl = process.env.SEPOLIA_READ_RPC_URL ?? 'https://ethereum-sepolia-rpc.publicnode.com'
-const client = createPublicClient({ chain: sepolia, transport: http(rpcUrl) })
+const rpcUrl = process.env.AMOY_READ_RPC_URL ?? 'https://polygon-amoy.drpc.org'
+const client = createPublicClient({ chain: polygonAmoy, transport: http(rpcUrl) })
 
 for (const [name, address] of [...Object.entries(addresses), ['supporterImplementation', implementation]]) {
   const bytecode = await client.getBytecode({ address })
@@ -71,7 +71,7 @@ if (governor && governedPolicy) {
     client.readContract({ address: governedPolicy, abi: policyAbi, functionName: 'governor' }),
     client.readContract({ address: governedPolicy, abi: policyAbi, functionName: 'version' })
   ])
-  assert.equal(allowedChainId, BigInt(sepolia.id))
+  assert.equal(allowedChainId, BigInt(polygonAmoy.id))
   assert.ok(p1Delay > 0n && p2Delay >= p1Delay && p3Delay >= p2Delay, 'Governance delay ordering is invalid')
   assert.equal(emptyCfpRevision, 0)
   assert.equal(emptyCfpProposal, 0n)
@@ -173,7 +173,7 @@ if (supporterRegistrationAdapter) {
   }), true, 'Supporter registration adapter does not have RELAYER_ROLE')
 }
 
-console.log(`Sepolia deployment verified at source commit ${manifest.sourceCommit}:`)
+console.log(`Polygon Amoy deployment verified at source commit ${manifest.sourceCommit}:`)
 console.log(`- MockJPYC: ${addresses.mockJpyc}`)
 console.log(`- Subscription: ${addresses.subscription}`)
 console.log(`- Treasury: ${addresses.treasury}`)

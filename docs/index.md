@@ -31,11 +31,11 @@ features:
     link: /demo/
 
   - title: 音楽クリエータ院議会デモ
-    details: Sepolia上の音楽クリエータ院議会で、CFP、議員資格、院別集計、投票クレジットと承認投票を確認します。
+    details: Polygon Amoy上の音楽クリエータ院議会で、CFP、議員資格、院別集計、投票クレジットと承認投票を確認します。
     link: /demo/creator-house
 
   - title: ユーザ院議会デモ
-    details: Sepolia上のユーザ院議会で、CFP、議員資格、院別集計、投票クレジットと承認投票を確認します。
+    details: Polygon Amoy上のユーザ院議会で、CFP、議員資格、院別集計、投票クレジットと承認投票を確認します。
     link: /demo/user-house
 
   - title: 現在の状況

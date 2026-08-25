@@ -32,9 +32,9 @@ Define a proof-system-neutral envelope, verifier-profile lifecycle and testnet-t
 
 ## Current Implementation Conformance
 
-`CreatorFirstTransparentZKRegistry` and `CreatorFirstTransparentZKMockVerifier` implement only a Sepolia-capable integration fixture for verifier registration, domain-bound receipt identity, replay rejection, deprecation, pause and events. The mock verifier performs a deterministic digest comparison and explicitly does not implement zero knowledge, soundness or a production proof system. It is permitted only under `MOCK-ASSUMPTION-002` and does not satisfy the mainnet acceptance criteria of this specification.
+`CreatorFirstTransparentZKRegistry` and `CreatorFirstTransparentZKMockVerifier` implement only a Polygon Amoy-capable integration fixture for verifier registration, domain-bound receipt identity, replay rejection, deprecation, pause and events. The mock verifier performs a deterministic digest comparison and explicitly does not implement zero knowledge, soundness or a production proof system. It is permitted only under `MOCK-ASSUMPTION-002` and does not satisfy the mainnet acceptance criteria of this specification.
 
-The contracts are included in the `CreatorFirstTestnet` Ignition module but are not a public Sepolia deployment until their addresses, deployment transactions and source commit appear in the reviewed public deployment manifest.
+The contracts are included in the `CreatorFirstTestnet` Ignition module but are not a public Polygon Amoy deployment until their addresses, deployment transactions and source commit appear in the reviewed public deployment manifest.
 
 ## Scope
 
@@ -162,7 +162,7 @@ Receipts are append-only and remain bound to the profile state and artifacts app
 - **REQ-ZK-024:** A verifier upgrade or router change MUST NOT mutate, reinterpret or silently invalidate a historical Verification Receipt.
 - **REQ-ZK-025:** Emergency authority MUST NOT activate a new verifier, replace a Program Hash, alter a receipt or transfer funds.
 - **REQ-ZK-026:** Private witness data, detailed User listening history, stable cross-context identifiers, secrets or proving keys MUST NOT be placed in public calldata, events or receipts.
-- **REQ-ZK-027:** Sepolia keys, addresses, receipts, mock proof data or bootstrap role assignments MUST NOT be copied into or trusted by mainnet.
+- **REQ-ZK-027:** Polygon Amoy keys, addresses, receipts, mock proof data or bootstrap role assignments MUST NOT be copied into or trusted by mainnet.
 - **REQ-ZK-028:** Governance approval, AI review or test passage alone MUST NOT be described as independent cryptographic or security audit approval.
 
 ### SHOULD
@@ -296,7 +296,7 @@ Profiles are immutable. A change creates a new profile ID. Consumers declare sup
 
 - contracts compile and automated tests prove profile authorization, chain-bound receipt identity, invalid-proof rejection, replay rejection, pause and deprecation;
 - every UI, event and manifest identifies the verifier as a non-cryptographic testnet mock;
-- public deployment is claimed only after Sepolia addresses and transactions are in the reviewed manifest;
+- public deployment is claimed only after Polygon Amoy addresses and transactions are in the reviewed manifest;
 - no receipt is consumed by real Distribution, Rights, eligibility or funds.
 
 ### Mainnet profile

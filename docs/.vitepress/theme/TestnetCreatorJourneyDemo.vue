@@ -2,8 +2,8 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { createPublicClient, createWalletClient, custom, keccak256, parseEventLogs, toHex, type Address, type EIP1193Provider, type Hash } from 'viem'
-import { sepolia } from 'viem/chains'
-import { creatorRegistryAbi, hasActiveCreatorRegistry, SEPOLIA_CHAIN_ID, validateDeploymentManifest } from './testnet-user-demo.js'
+import { polygonAmoy } from 'viem/chains'
+import { AMOY_CHAIN_ID, creatorRegistryAbi, hasActiveCreatorRegistry, switchProviderToAmoy, validateDeploymentManifest } from './testnet-user-demo.js'
 
 type CreatorProfile = { registered: true; creatorId: string; artistName: string; entityType: string; genre: string; state: 'BROWSER_DEMO_ONLY'; createdAt: string }
 type DemoProvider = EIP1193Provider & {
@@ -34,7 +34,7 @@ const releases = ref<ReleaseSummary[]>([])
 let provider: DemoProvider | undefined
 let listenersAttached = false
 
-const correctChain = computed(() => walletChainId.value === SEPOLIA_CHAIN_ID)
+const correctChain = computed(() => walletChainId.value === AMOY_CHAIN_ID)
 const registryReady = computed(() => hasActiveCreatorRegistry(deployment.value))
 const chainReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && registryReady.value && !busyAction.value))
 const registeredOnchain = computed(() => creatorId.value > 0n)
@@ -65,8 +65,8 @@ function clients() {
   const transport = custom(provider)
   return {
     registry,
-    publicClient: createPublicClient({ chain: sepolia, transport }),
-    walletClient: createWalletClient({ account: walletAddress.value, chain: sepolia, transport })
+    publicClient: createPublicClient({ chain: polygonAmoy, transport }),
+    walletClient: createWalletClient({ account: walletAddress.value, chain: polygonAmoy, transport })
   }
 }
 function clearOnchainState(): void { creatorId.value = 0n; creatorReleaseCount.value = 0n; creatorActive.value = false; payoutAddress.value = undefined }
@@ -87,7 +87,7 @@ const handleAccountsChanged = async (value: Address[] | string): Promise<void> =
 }
 const handleChainChanged = async (value: Address[] | string): Promise<void> => {
   walletChainId.value = typeof value === 'string' ? Number.parseInt(value, 16) : undefined
-  clearOnchainState(); message.value = correctChain.value ? 'Sepoliaへ切り替わりました。' : '対象外Networkでは書込みを停止します。'
+  clearOnchainState(); message.value = correctChain.value ? 'Polygon Amoyへ切り替わりました。' : '対象外Networkでは書込みを停止します。'
   if (correctChain.value) await refreshOnchainState()
 }
 function attachListeners(): void {
@@ -102,18 +102,18 @@ async function connectWallet(): Promise<void> {
     const accounts = await provider.request({ method: 'eth_requestAccounts' }) as Address[]
     walletAddress.value = accounts[0]
     walletChainId.value = Number.parseInt(await provider.request({ method: 'eth_chainId' }) as string, 16)
-    attachListeners(); message.value = correctChain.value ? 'WalletをSepoliaへ接続しました。' : 'Sepoliaへ切り替えてください。'
+    attachListeners(); message.value = correctChain.value ? 'WalletをPolygon Amoyへ接続しました。' : 'Polygon Amoyへ切り替えてください。'
     await refreshOnchainState()
   } catch (error) { message.value = error instanceof Error ? error.message : 'Wallet接続に失敗しました。' }
   finally { busyAction.value = '' }
 }
-async function switchToSepolia(): Promise<void> {
+async function switchToAmoy(): Promise<void> {
   if (!provider) return
   busyAction.value = 'network'
   try {
-    await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xaa36a7' }] })
-    walletChainId.value = SEPOLIA_CHAIN_ID; await refreshOnchainState(); message.value = 'Ethereum Sepoliaへ切り替えました。'
-  } catch (error) { message.value = error instanceof Error ? error.message : 'Sepoliaへの切替に失敗しました。' }
+    await switchProviderToAmoy(provider)
+    walletChainId.value = AMOY_CHAIN_ID; await refreshOnchainState(); message.value = 'Polygon Amoyへ切り替えました。'
+  } catch (error) { message.value = error instanceof Error ? error.message : 'Polygon Amoyへの切替に失敗しました。' }
   finally { busyAction.value = '' }
 }
 async function submit(action: string, write: () => Promise<Hash>) {
@@ -122,7 +122,7 @@ async function submit(action: string, write: () => Promise<Hash>) {
     const hash = await write(); lastTransaction.value = hash; message.value = `${action} transactionの確定を待っています。`
     const receipt = await clients().publicClient.waitForTransactionReceipt({ hash })
     if (receipt.status !== 'success') throw new Error(`${action} transactionがrevertしました。`)
-    await refreshOnchainState(); message.value = `${action} transactionがSepoliaで確定しました。`
+    await refreshOnchainState(); message.value = `${action} transactionがPolygon Amoyで確定しました。`
     return receipt
   } catch (error) { message.value = error instanceof Error ? error.message : `${action}に失敗しました。`; return undefined }
   finally { busyAction.value = '' }
@@ -174,18 +174,18 @@ onBeforeUnmount(() => {
 
 <template>
   <section class="creator-journey" aria-labelledby="creator-journey-title">
-    <header><p class="kicker">Sepolia · creator commitments · test only</p><h2 id="creator-journey-title">Test Creator Journey</h2><p>仮名Profile、Wallet、Creator登録、作品の権利自己申告を順番に検証します。</p><p class="safety"><strong>重要:</strong> 本人確認、権利確認、配信許諾、報酬受取資格、音源登録または作品公開ではありません。実在情報を入力しないでください。</p></header>
+    <header><p class="kicker">Polygon Amoy · creator commitments · test only</p><h2 id="creator-journey-title">Test Creator Journey</h2><p>仮名Profile、Wallet、Creator登録、作品の権利自己申告を順番に検証します。</p><p class="safety"><strong>重要:</strong> 本人確認、権利確認、配信許諾、報酬受取資格、音源登録または作品公開ではありません。実在情報を入力しないでください。</p></header>
     <ol class="steps"><li :class="{ done: profile }">1. Profile</li><li :class="{ done: walletAddress && correctChain }">2. Wallet</li><li :class="{ done: registeredOnchain }">3. Creator</li><li :class="{ done: creatorReleaseCount > 0n }">4. Release</li></ol>
 
     <section v-if="!profile" class="panel"><h3>1. Test Creator Profile</h3><p>このタブにCreator Profileがありません。先に個人情報を含まない仮名Profileを作成してください。</p><a class="primary link" :href="withBase('/demo/creator-registration')">Test Creatorを登録</a></section>
     <section v-else class="panel"><h3>1. Test Creator Profile</h3><div class="status-grid"><div><span>Artist</span><strong>{{ profile.artistName }}</strong></div><div><span>Entity</span><strong>{{ profile.entityType }}</strong></div><div><span>Genre</span><strong>{{ profile.genre }}</strong></div><div><span>保存</span><strong>現在のタブのみ</strong></div></div></section>
 
-    <section class="panel"><h3>2. WalletとDeployment</h3><div class="status-grid"><div><span>Deployment</span><strong>{{ manifestError ? '無効' : registryReady ? '公開済み' : 'Creator Registry未公開' }}</strong></div><div><span>Network</span><strong>{{ walletChainId ?? '未接続' }}<template v-if="walletChainId"> / {{ correctChain ? 'Sepolia' : '対象外' }}</template></strong></div><div><span>Wallet</span><strong>{{ shortAddress(walletAddress) }}</strong></div><div><span>Registry</span><strong>{{ shortAddress(deployment?.contracts.creatorRegistry) }}</strong></div></div><p v-if="manifestError" class="error">{{ manifestError }}</p><div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">Walletを接続</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToSepolia">Sepoliaへ切替</button><button class="secondary" type="button" :disabled="!chainReady" @click="refreshOnchainState">状態を更新</button></div></section>
+    <section class="panel"><h3>2. WalletとDeployment</h3><div class="status-grid"><div><span>Deployment</span><strong>{{ manifestError ? '無効' : registryReady ? '公開済み' : 'Creator Registry未公開' }}</strong></div><div><span>Network</span><strong>{{ walletChainId ?? '未接続' }}<template v-if="walletChainId"> / {{ correctChain ? 'Polygon Amoy' : '対象外' }}</template></strong></div><div><span>Wallet</span><strong>{{ shortAddress(walletAddress) }}</strong></div><div><span>Registry</span><strong>{{ shortAddress(deployment?.contracts.creatorRegistry) }}</strong></div></div><p v-if="manifestError" class="error">{{ manifestError }}</p><div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">Walletを接続</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToAmoy">Polygon Amoyへ切替</button><button class="secondary" type="button" :disabled="!chainReady" @click="refreshOnchainState">状態を更新</button></div></section>
 
-    <section class="panel"><h3>3. Creator Commitment登録</h3><div class="status-grid"><div><span>Creator ID</span><strong>{{ registeredOnchain ? creatorId.toString() : '未登録' }}</strong></div><div><span>状態</span><strong>{{ registeredOnchain ? creatorActive ? 'Active' : 'Inactive' : '未登録' }}</strong></div><div><span>Payout候補</span><strong>{{ shortAddress(payoutAddress) }}</strong></div><div><span>Release数</span><strong>{{ creatorReleaseCount.toString() }}</strong></div></div><p>Profile内容そのものではなくsalt付きcommitmentを登録します。Payout候補は接続Walletですが、本人・Payee・税務確認や送金を行いません。</p><button class="primary" type="button" :disabled="!chainReady || registeredOnchain" @click="registerOnchain">CreatorをSepoliaへ登録</button></section>
+    <section class="panel"><h3>3. Creator Commitment登録</h3><div class="status-grid"><div><span>Creator ID</span><strong>{{ registeredOnchain ? creatorId.toString() : '未登録' }}</strong></div><div><span>状態</span><strong>{{ registeredOnchain ? creatorActive ? 'Active' : 'Inactive' : '未登録' }}</strong></div><div><span>Payout候補</span><strong>{{ shortAddress(payoutAddress) }}</strong></div><div><span>Release数</span><strong>{{ creatorReleaseCount.toString() }}</strong></div></div><p>Profile内容そのものではなくsalt付きcommitmentを登録します。Payout候補は接続Walletですが、本人・Payee・税務確認や送金を行いません。</p><button class="primary" type="button" :disabled="!chainReady || registeredOnchain" @click="registerOnchain">CreatorをPolygon Amoyへ登録</button></section>
 
-    <section class="panel"><h3>4. 作品の自己申告Commitment</h3><form class="release-form" @submit.prevent="declareRelease"><label for="testnet-release-title">作品名（合成Demo用）</label><input id="testnet-release-title" v-model="title" type="text" minlength="2" maxlength="60" autocomplete="off" placeholder="Synthetic First Song" required><label for="testnet-release-type">Release種別</label><select id="testnet-release-type" v-model="releaseType"><option>SINGLE</option><option>EP</option><option>ALBUM</option></select><label class="check"><input v-model="rightsAcknowledged" type="checkbox"> ハッシュ登録は権利確認・配信許諾・作品公開ではなく、取消可能な自己申告にすぎないことを確認しました</label><button class="primary" type="submit" :disabled="!releaseReady">作品Commitmentを登録</button></form><p v-if="registeredOnchain && !creatorActive" class="error">Inactive Creatorは新しい作品を申告できません。</p><ul v-if="releases.length" class="release-list"><li v-for="release in releases" :key="release.releaseId"><div><strong>#{{ release.releaseId }} {{ release.title }}</strong><span>{{ release.releaseType }} · SELF_DECLARED_UNVERIFIED</span></div><a :href="`https://sepolia.etherscan.io/tx/${release.transactionHash}`" target="_blank" rel="noopener noreferrer">Transaction</a></li></ul></section>
-    <p v-if="lastTransaction"><a :href="`https://sepolia.etherscan.io/tx/${lastTransaction}`" target="_blank" rel="noopener noreferrer">直近TransactionをEtherscanで確認</a></p><p aria-live="polite">{{ message }}</p>
+    <section class="panel"><h3>4. 作品の自己申告Commitment</h3><form class="release-form" @submit.prevent="declareRelease"><label for="testnet-release-title">作品名（合成Demo用）</label><input id="testnet-release-title" v-model="title" type="text" minlength="2" maxlength="60" autocomplete="off" placeholder="Synthetic First Song" required><label for="testnet-release-type">Release種別</label><select id="testnet-release-type" v-model="releaseType"><option>SINGLE</option><option>EP</option><option>ALBUM</option></select><label class="check"><input v-model="rightsAcknowledged" type="checkbox"> ハッシュ登録は権利確認・配信許諾・作品公開ではなく、取消可能な自己申告にすぎないことを確認しました</label><button class="primary" type="submit" :disabled="!releaseReady">作品Commitmentを登録</button></form><p v-if="registeredOnchain && !creatorActive" class="error">Inactive Creatorは新しい作品を申告できません。</p><ul v-if="releases.length" class="release-list"><li v-for="release in releases" :key="release.releaseId"><div><strong>#{{ release.releaseId }} {{ release.title }}</strong><span>{{ release.releaseType }} · SELF_DECLARED_UNVERIFIED</span></div><a :href="`https://amoy.polygonscan.com/tx/${release.transactionHash}`" target="_blank" rel="noopener noreferrer">Transaction</a></li></ul></section>
+    <p v-if="lastTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastTransaction}`" target="_blank" rel="noopener noreferrer">直近TransactionをEtherscanで確認</a></p><p aria-live="polite">{{ message }}</p>
   </section>
 </template>
 

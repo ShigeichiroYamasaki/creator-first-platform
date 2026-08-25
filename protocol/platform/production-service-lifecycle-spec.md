@@ -40,7 +40,7 @@ Define the production lifecycle that connects User registration, Creator onboard
 
 ## Current Implementation Conformance
 
-The GitHub Pages demos, local Player/Gateway/Navidrome stack and Sepolia contracts are test-only partial implementations. They do not implement this specification: they lack production Account authentication and recovery, verified Creator and Rights operations, production payment and accounting, Community moderation, governance eligibility and sortition, end-to-end indexing, operational key separation, disaster recovery and independent audit. Testnet records MUST NOT be imported as production authority.
+The GitHub Pages demos, local Player/Gateway/Navidrome stack and Polygon Amoy contracts are test-only partial implementations. They do not implement this specification: they lack production Account authentication and recovery, verified Creator and Rights operations, production payment and accounting, Community moderation, governance eligibility and sortition, end-to-end indexing, operational key separation, disaster recovery and independent audit. Testnet records MUST NOT be imported as production authority.
 
 ## Scope
 

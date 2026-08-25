@@ -2,19 +2,20 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { createPublicClient, createWalletClient, custom, formatUnits, keccak256, toHex, type Address, type EIP1193Provider, type Hash } from 'viem'
-import { sepolia } from 'viem/chains'
+import { polygonAmoy } from 'viem/chains'
 import {
   createSupporterTypedData,
   createTestToneWav,
   DEMO_SUPPORTER_CREATOR_ID,
   hasActiveSupporterRegistration,
   mockJpycAbi,
-  SEPOLIA_CHAIN_ID,
+  AMOY_CHAIN_ID,
   supporterRegistrationAdapterAbi,
   supporterSbtAbi,
   subscriptionAbi,
   validateDeploymentManifest,
-  validateSupporterMetadata
+  validateSupporterMetadata,
+  switchProviderToAmoy
 } from './testnet-user-demo.js'
 
 type DemoProfile = { registered: true; testUserId: string; displayName: string; state: 'TESTNET_DEMO_PROFILE'; createdAt: string }
@@ -79,7 +80,7 @@ let listenersAttached = false
 const normalizedAlias = computed(() => alias.value.trim().normalize('NFKC'))
 const aliasValid = computed(() => /^[\p{L}\p{N}_ -]{2,24}$/u.test(normalizedAlias.value))
 const ready = computed(() => aliasValid.value && acceptedTerms.value && acceptedPrivacy.value && acknowledgedTestOnly.value)
-const correctChain = computed(() => walletChainId.value === SEPOLIA_CHAIN_ID)
+const correctChain = computed(() => walletChainId.value === AMOY_CHAIN_ID)
 const contractsReady = computed(() => Boolean(deployment.value?.active && deployment.value.contracts.mockJpyc && deployment.value.contracts.subscription))
 const chainActionsReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && contractsReady.value && !busyAction.value))
 const supporterRegistrationReady = computed(() => hasActiveSupporterRegistration(deployment.value))
@@ -139,7 +140,7 @@ const handleAccountsChanged = async (value: Address[] | string): Promise<void> =
 const handleChainChanged = async (value: Address[] | string): Promise<void> => {
   walletChainId.value = typeof value === 'string' ? Number.parseInt(value, 16) : undefined
   clearOnchainState()
-  walletMessage.value = correctChain.value ? 'Sepoliaへ変更されました。状態を再確認します。' : '対象外Networkへ変更されたため、Contract操作と限定Trackを停止しました。'
+  walletMessage.value = correctChain.value ? 'Polygon Amoyへ変更されました。状態を再確認します。' : '対象外Networkへ変更されたため、Contract操作と限定Trackを停止しました。'
   if (correctChain.value && walletAddress.value && contractsReady.value) await refreshOnchainState(true)
 }
 function attachProviderListeners(): void {
@@ -164,30 +165,30 @@ async function connectWallet(): Promise<void> {
     walletAddress.value = accounts[0]
     attachProviderListeners()
     await readChainId()
-    walletMessage.value = correctChain.value ? 'WalletをSepoliaへ接続しました。' : 'Walletを接続しました。Sepoliaへ切り替えてください。'
+    walletMessage.value = correctChain.value ? 'WalletをPolygon Amoyへ接続しました。' : 'Walletを接続しました。Polygon Amoyへ切り替えてください。'
     if (correctChain.value && contractsReady.value) await refreshOnchainState(true)
   } catch (error) {
     walletMessage.value = error instanceof Error ? error.message : 'Wallet接続が拒否されました。'
   } finally { busyAction.value = '' }
 }
-async function switchToSepolia(): Promise<void> {
+async function switchToAmoy(): Promise<void> {
   if (!provider) return
   busyAction.value = 'network'
   try {
-    await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xaa36a7' }] })
+    await switchProviderToAmoy(provider)
     await readChainId()
-    walletMessage.value = 'Ethereum Sepoliaへ切り替えました。'
+    walletMessage.value = 'Polygon Amoyへ切り替えました。'
     if (contractsReady.value) await refreshOnchainState(true)
   } catch (error) {
-    walletMessage.value = error instanceof Error ? error.message : 'Sepoliaへの切替が拒否されました。'
+    walletMessage.value = error instanceof Error ? error.message : 'Polygon Amoyへの切替が拒否されました。'
   } finally { busyAction.value = '' }
 }
 function clients() {
   if (!provider || !walletAddress.value || !deployment.value?.contracts.mockJpyc || !deployment.value.contracts.subscription) throw new Error('Walletまたは検証済みContract Addressが利用できません。')
   const transport = custom(provider)
   return {
-    publicClient: createPublicClient({ chain: sepolia, transport }),
-    walletClient: createWalletClient({ account: walletAddress.value, chain: sepolia, transport }),
+    publicClient: createPublicClient({ chain: polygonAmoy, transport }),
+    walletClient: createWalletClient({ account: walletAddress.value, chain: polygonAmoy, transport }),
     mockJpyc: deployment.value.contracts.mockJpyc,
     subscription: deployment.value.contracts.subscription
   }
@@ -263,7 +264,7 @@ async function transact(action: string, submit: () => Promise<Hash>): Promise<vo
     const receipt = await publicClient.waitForTransactionReceipt({ hash })
     if (receipt.status !== 'success') throw new Error(`${action} transactionがrevertしました。`)
     await refreshOnchainState(true)
-    walletMessage.value = `${action} transactionがSepoliaで確定しました。`
+    walletMessage.value = `${action} transactionがPolygon Amoyで確定しました。`
   } catch (error) {
     walletMessage.value = error instanceof Error ? error.message : `${action}に失敗しました。`
   } finally { busyAction.value = '' }
@@ -317,7 +318,7 @@ async function registerAsSupporter(): Promise<void> {
       args: [DEMO_SUPPORTER_CREATOR_ID, nonce as bigint, deadline, typedData.message.consentVersion, signature]
     })
     lastSbtTransaction.value = hash
-    supporterMessage.value = 'SBT発行Transactionを送信しました。Sepoliaでの確定を待っています。'
+    supporterMessage.value = 'SBT発行Transactionを送信しました。Polygon Amoyでの確定を待っています。'
     const receipt = await publicClient.waitForTransactionReceipt({ hash })
     if (receipt.status !== 'success') throw new Error('Supporter SBT発行Transactionがrevertしました。')
     await refreshOnchainState(true)
@@ -379,10 +380,10 @@ onBeforeUnmount(() => {
 <template>
   <section class="testnet-journey" aria-labelledby="testnet-journey-title">
     <header class="journey-heading">
-      <p class="kicker">Sepolia · mockJPYC · synthetic audio</p>
+      <p class="kicker">Polygon Amoy · mockJPYC · synthetic audio</p>
       <h2 id="testnet-journey-title">Test User Journey</h2>
       <p>匿名Demo Profileの登録から、Wallet接続、test-only課金、Player操作、Supporter SBT取得までを順番に確認します。</p>
-      <p class="safety"><strong>重要:</strong> tJPYCは無価値・償還不可で、実在JPYCではありません。ETHはSepolia Gasにだけ使い、秘密鍵やSeed Phraseは入力しません。</p>
+      <p class="safety"><strong>重要:</strong> tJPYCは無価値・償還不可で、実在JPYCではありません。ETHはAmoy POL Gasにだけ使い、秘密鍵やSeed Phraseは入力しません。</p>
     </header>
     <ol class="steps" aria-label="Test User Journey steps">
       <li :class="{ done: profile }">1. Profile</li><li :class="{ done: walletAddress && correctChain }">2. Wallet</li><li :class="{ done: subscriptionActive }">3. Subscription</li><li>4. Player</li><li :class="{ done: supporterTokenId > 0n }">5. SBT</li>
@@ -403,23 +404,23 @@ onBeforeUnmount(() => {
         <fieldset><legend>Demo利用条件・Privacy Notice v2</legend>
           <label><input v-model="acceptedTerms" type="checkbox"> 金銭的価値や継続利用を保証しないTestnet Demo条件に同意します</label>
           <label><input v-model="acceptedPrivacy" type="checkbox"> Aliasはこのタブ内だけに保存され、Wallet AddressはBlockchain上で公開されることを確認しました</label>
-          <label><input v-model="acknowledgedTestOnly" type="checkbox"> tJPYCは実在JPYCではなく、Sepolia ETHはGasにだけ使うことを理解しました</label>
+          <label><input v-model="acknowledgedTestOnly" type="checkbox"> tJPYCは実在JPYCではなく、Amoy POLはGasにだけ使うことを理解しました</label>
         </fieldset>
         <button class="primary" type="submit" :disabled="!ready">Test Userを登録</button>
       </form>
     </section>
 
     <section class="panel" aria-labelledby="wallet-title">
-      <h3 id="wallet-title">2. WalletとSepolia</h3>
+      <h3 id="wallet-title">2. WalletとPolygon Amoy</h3>
       <div class="status-grid">
         <div><span>Deployment</span><strong>{{ manifestError ? '無効' : deployment?.active ? '公開済み' : '未デプロイ' }}</strong></div>
-        <div><span>Network</span><strong>{{ walletChainId ?? '未接続' }}<template v-if="walletChainId"> / {{ correctChain ? 'Sepolia' : '対象外' }}</template></strong></div>
+        <div><span>Network</span><strong>{{ walletChainId ?? '未接続' }}<template v-if="walletChainId"> / {{ correctChain ? 'Polygon Amoy' : '対象外' }}</template></strong></div>
         <div><span>Wallet</span><strong>{{ shortAddress(walletAddress) }}</strong></div>
         <div><span>Source Commit</span><strong>{{ deployment?.sourceCommit?.slice(0, 12) ?? '未公開' }}</strong></div>
       </div>
       <p v-if="manifestError" class="error" role="alert">{{ manifestError }} 書込み操作を停止しました。</p>
-      <p v-else-if="deployment && !deployment.active" class="notice">Sepolia Contract Addressがまだ公開されていないため、Wallet接続は試せますが、tJPYC取得・承認・課金は無効です。Addressを手入力して回避することはできません。</p>
-      <div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">{{ walletAddress ? 'Walletを再接続' : 'Walletを接続' }}</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToSepolia">Sepoliaへ切替</button><button class="secondary" type="button" :disabled="!chainActionsReady" @click="refreshOnchainState()">状態を更新</button></div>
+      <p v-else-if="deployment && !deployment.active" class="notice">Polygon Amoy Contract Addressがまだ公開されていないため、Wallet接続は試せますが、tJPYC取得・承認・課金は無効です。Addressを手入力して回避することはできません。</p>
+      <div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">{{ walletAddress ? 'Walletを再接続' : 'Walletを接続' }}</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToAmoy">Polygon Amoyへ切替</button><button class="secondary" type="button" :disabled="!chainActionsReady" @click="refreshOnchainState()">状態を更新</button></div>
     </section>
 
     <section class="panel" aria-labelledby="payment-title">
@@ -429,7 +430,7 @@ onBeforeUnmount(() => {
       </div>
       <div class="actions"><button class="primary" type="button" :disabled="!chainActionsReady" @click="claimMockJpyc">2,000 tJPYCを1回取得</button><button class="secondary" type="button" :disabled="!chainActionsReady || !planEnabled || balance < planPrice" @click="approveSubscription">Plan価格だけ承認</button><button class="primary" type="button" :disabled="!chainActionsReady || !planEnabled || !allowanceEnough || balance < planPrice" @click="subscribe">Subscriptionを開始</button></div>
       <p class="notice">各ボタンは確認画面をWalletに表示します。自動署名・無制限Approve・ETHによる料金支払いは行いません。</p>
-      <p v-if="lastTransaction"><a :href="`https://sepolia.etherscan.io/tx/${lastTransaction}`" target="_blank" rel="noopener noreferrer">直近TransactionをSepolia Etherscanで確認</a></p>
+      <p v-if="lastTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastTransaction}`" target="_blank" rel="noopener noreferrer">直近TransactionをPolygon Amoy Etherscanで確認</a></p>
       <p aria-live="polite">{{ walletMessage }}</p>
     </section>
 
@@ -440,16 +441,16 @@ onBeforeUnmount(() => {
       <div class="now-playing"><span class="art" aria-hidden="true">♪</span><div><strong>{{ selectedTrack.title }}</strong><span>{{ selectedTrack.artist }}</span></div></div>
       <audio ref="audioElement" controls preload="metadata" :aria-label="`${selectedTrack.title} player`" />
       <div class="actions"><button class="primary" type="button" :disabled="!canPlaySelected" @click="playSelected">再生</button><button class="secondary" type="button" @click="pauseSelected">一時停止</button></div>
-      <p v-if="!canPlaySelected" class="notice">Subscriber TrackはSepolia上の有効なSubscriptionを確認後に解放されます。Preview Trackはいつでも操作できます。</p>
+      <p v-if="!canPlaySelected" class="notice">Subscriber TrackはPolygon Amoy上の有効なSubscriptionを確認後に解放されます。Preview Trackはいつでも操作できます。</p>
       <p aria-live="polite">{{ playerMessage }}</p>
       <div class="supporter-action">
         <h4>Synthetic Demo Artistのサポータになる</h4>
-        <p>この操作は支援の意思表示をSepolia上の公開・譲渡不能なSBTとして記録します。JPYCの移転、Token Approval、継続課金は含みません。</p>
+        <p>この操作は支援の意思表示をPolygon Amoy上の公開・譲渡不能なSBTとして記録します。JPYCの移転、Token Approval、継続課金は含みません。</p>
         <div class="status-grid">
           <div><span>資格</span><strong>{{ supporterTierLabel }}</strong></div>
           <div><span>Token ID</span><strong>{{ supporterTokenId || '未発行' }}</strong></div>
         </div>
-        <p v-if="!supporterRegistrationReady" class="notice">公開デモ用登録アダプターはまだSepoliaへデプロイされていません。Contract Addressを公開マニフェストで検証できるまで、書込み操作は無効です。</p>
+        <p v-if="!supporterRegistrationReady" class="notice">公開デモ用登録アダプターはまだPolygon Amoyへデプロイされていません。Contract Addressを公開マニフェストで検証できるまで、書込み操作は無効です。</p>
         <div class="actions">
           <button class="primary" type="button" :disabled="!supporterActionReady" @click="registerAsSupporter">
             {{ supporterTokenId > 0n ? 'SBT取得済み' : busyAction === 'Supporter SBT' ? '署名・発行中…' : 'サポータになってSBTを得る' }}
@@ -461,7 +462,7 @@ onBeforeUnmount(() => {
           <figcaption><strong>{{ supporterMetadata.name }}</strong><span>{{ supporterMetadata.description }}</span></figcaption>
         </figure>
         <p v-if="supporterTokenUri"><a :href="supporterTokenUri" target="_blank" rel="noopener noreferrer">SBTメタデータを確認</a></p>
-        <p v-if="lastSbtTransaction"><a :href="`https://sepolia.etherscan.io/tx/${lastSbtTransaction}`" target="_blank" rel="noopener noreferrer">SBT発行TransactionをSepolia Etherscanで確認</a></p>
+        <p v-if="lastSbtTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastSbtTransaction}`" target="_blank" rel="noopener noreferrer">SBT発行TransactionをPolygon Amoy Etherscanで確認</a></p>
         <p aria-live="polite">{{ supporterMessage }}</p>
       </div>
     </section>

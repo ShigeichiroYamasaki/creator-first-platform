@@ -1,5 +1,5 @@
 ---
-description: Sepolia上の二院制議会、二次投票、レビュー、タイムロック実行を検証するテストネット専用ガバナンスデモ。
+description: Polygon Amoy上の二院制議会、二次投票、レビュー、タイムロック実行を検証するテストネット専用ガバナンスデモ。
 ---
 
 # テストネット版ガバナンスデモ
@@ -62,4 +62,4 @@ description: Sepolia上の二院制議会、二次投票、レビュー、タイ
 
 実行コマンドは、Node.js 24環境で`npm run contracts:test`です。`CFP-0002 constitutional review, bicameral approval and governed deployment`の4試験が該当します。
 
-この検証で用いる議員、レビューおよび熟議は合成されたテスト証拠であり、現実の議員による審議、弁護士の法律意見、三憲章の正式採択、独立監査またはSepoliaデプロイを意味しません。
+この検証で用いる議員、レビューおよび熟議は合成されたテスト証拠であり、現実の議員による審議、弁護士の法律意見、三憲章の正式採択、独立監査またはPolygon Amoyデプロイを意味しません。

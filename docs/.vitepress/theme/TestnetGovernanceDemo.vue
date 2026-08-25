@@ -2,8 +2,9 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { createPublicClient, createWalletClient, custom, type Address, type EIP1193Provider, type Hash } from 'viem'
-import { sepolia } from 'viem/chains'
+import { polygonAmoy } from 'viem/chains'
 import { governanceAbi, governanceStateLabels, legislatorRegistrationAbi, quadraticCost, validateGovernanceDeployment } from './testnet-governance-demo.js'
+import { AMOY_CHAIN_ID, switchProviderToAmoy } from './testnet-user-demo.js'
 
 type DemoProvider = EIP1193Provider & {
   on?: (event: 'accountsChanged' | 'chainChanged', listener: (value: Address[] | string) => void) => void
@@ -45,7 +46,7 @@ const lastTransaction = ref<Hash>()
 let provider: DemoProvider | undefined
 let listenersAttached = false
 
-const correctChain = computed(() => walletChainId.value === 11155111)
+const correctChain = computed(() => walletChainId.value === AMOY_CHAIN_ID)
 const ready = computed(() => Boolean(deployment.value?.governanceReady && deployment.value.governor))
 const voteCost = computed(() => quadraticCost(selectedIntensity.value))
 const requiredHouse = computed(() => props.focusHouse === 'creator' ? 1 : props.focusHouse === 'user' ? 2 : 0)
@@ -63,8 +64,8 @@ function clients() {
   if (!provider || !walletAddress.value || !deployment.value?.governor) throw new Error('ウォレットまたはガバナンスコントラクトを利用できません。')
   const transport = custom(provider)
   return {
-    publicClient: createPublicClient({ chain: sepolia, transport }),
-    walletClient: createWalletClient({ account: walletAddress.value, chain: sepolia, transport }),
+    publicClient: createPublicClient({ chain: polygonAmoy, transport }),
+    walletClient: createWalletClient({ account: walletAddress.value, chain: polygonAmoy, transport }),
     governor: deployment.value.governor
   }
 }
@@ -96,14 +97,14 @@ async function connectWallet(): Promise<void> {
     walletAddress.value = accounts[0]
     attachListeners()
     await readChainId()
-    message.value = correctChain.value ? 'Sepoliaへ接続しました。' : 'Sepoliaへ切り替えてください。'
+    message.value = correctChain.value ? 'Polygon Amoyへ接続しました。' : 'Polygon Amoyへ切り替えてください。'
     if (correctChain.value && ready.value) { await refreshMembership(); await refresh() }
   } catch (error) { message.value = error instanceof Error ? error.message : 'ウォレット接続に失敗しました。' }
   finally { busy.value = false }
 }
-async function switchToSepolia(): Promise<void> {
+async function switchToAmoy(): Promise<void> {
   if (!provider) return
-  await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: '0xaa36a7' }] })
+  await switchProviderToAmoy(provider)
   await readChainId()
   if (walletAddress.value && ready.value) { await refreshMembership(); await refresh() }
 }
@@ -177,7 +178,7 @@ async function refresh(): Promise<void> {
       creatorParticipants: Number(raw[13]), userParticipants: Number(raw[14]),
       creatorApproved: raw[16] as boolean, userApproved: raw[17] as boolean, reviewed: raw[19] as boolean
     }
-    message.value = 'Sepolia上の提案・両院結果・議員資格を更新しました。'
+    message.value = 'Polygon Amoy上の提案・両院結果・議員資格を更新しました。'
   } catch (error) { message.value = error instanceof Error ? error.message : 'ガバナンス状態を取得できません。' }
   finally { busy.value = false }
 }
@@ -196,7 +197,7 @@ async function castVote(): Promise<void> {
     const receipt = await publicClient.waitForTransactionReceipt({ hash })
     if (receipt.status !== 'success') throw new Error('投票トランザクションがrevertしました。')
     await refresh()
-    message.value = '投票がSepoliaで確定しました。票の差替え時は以前の二乗コストが返却されます。'
+    message.value = '投票がPolygon Amoyで確定しました。票の差替え時は以前の二乗コストが返却されます。'
   } catch (error) { message.value = error instanceof Error ? error.message : '投票に失敗しました。' }
   finally { busy.value = false }
 }
@@ -219,7 +220,7 @@ onBeforeUnmount(() => {
 <template>
   <section class="governance-demo" aria-labelledby="governance-demo-title">
     <header class="panel">
-      <p class="kicker">Sepolia・二院制・二次投票・タイムロック</p>
+      <p class="kicker">Polygon Amoy・二院制・二次投票・タイムロック</p>
       <h2 id="governance-demo-title">{{ focusedHouseLabel }}・テストネット版</h2>
       <p>公開マニフェストに登録されたコントラクトだけを読み込み、議員資格、提案、両院結果、投票クレジットを検証します。</p>
       <p v-if="requiredHouse" class="warning">この入口では{{ focusedHouseLabel }}に登録された議員だけが投票できます。他院の議員資格では書込みボタンを有効にしません。</p>
@@ -228,10 +229,10 @@ onBeforeUnmount(() => {
 
     <section class="panel">
       <h3>1. 公開デプロイとウォレット</h3>
-      <div class="grid"><div><span>ガバナー</span><strong>{{ short(deployment?.governor) }}</strong></div><div><span>実行対象</span><strong>{{ short(deployment?.governedPolicy) }}</strong></div><div><span>ネットワーク</span><strong>{{ correctChain ? 'Sepolia' : walletChainId ?? '未接続' }}</strong></div><div><span>ウォレット</span><strong>{{ short(walletAddress) }}</strong></div></div>
+      <div class="grid"><div><span>ガバナー</span><strong>{{ short(deployment?.governor) }}</strong></div><div><span>実行対象</span><strong>{{ short(deployment?.governedPolicy) }}</strong></div><div><span>ネットワーク</span><strong>{{ correctChain ? 'Polygon Amoy' : walletChainId ?? '未接続' }}</strong></div><div><span>ウォレット</span><strong>{{ short(walletAddress) }}</strong></div></div>
       <p v-if="deploymentError" class="error">{{ deploymentError }}</p>
-      <p v-else-if="deployment && !deployment.governanceReady" class="warning">コントラクト実装は完了していますが、公開Sepoliaマニフェストにはまだガバナンスアドレスが登録されていません。デプロイ完了まで書込み操作は無効です。</p>
-      <div class="actions"><button type="button" @click="connectWallet" :disabled="busy">ウォレット接続</button><button type="button" class="secondary" @click="switchToSepolia" :disabled="!walletAddress || correctChain">Sepoliaへ切替</button></div>
+      <p v-else-if="deployment && !deployment.governanceReady" class="warning">コントラクト実装は完了していますが、公開Polygon Amoyマニフェストにはまだガバナンスアドレスが登録されていません。デプロイ完了まで書込み操作は無効です。</p>
+      <div class="actions"><button type="button" @click="connectWallet" :disabled="busy">ウォレット接続</button><button type="button" class="secondary" @click="switchToAmoy" :disabled="!walletAddress || correctChain">Polygon Amoyへ切替</button></div>
     </section>
 
     <section v-if="requiredHouse" class="panel">
@@ -259,7 +260,7 @@ onBeforeUnmount(() => {
       <label for="vote-intensity">反対 -3〜賛成 +3</label><input id="vote-intensity" v-model.number="selectedIntensity" type="range" min="-3" max="3" step="1">
       <div class="actions"><button type="button" @click="castVote" :disabled="!canVote">この強度で公開投票</button></div>
       <p class="warning">同じ提案へ再投票すると票を差し替えます。会期内の全提案について二乗コストの合計が共通予算を超える投票はコントラクトが拒否します。</p>
-      <p v-if="lastTransaction"><a :href="`https://sepolia.etherscan.io/tx/${lastTransaction}`" target="_blank" rel="noopener noreferrer">投票トランザクションを確認</a></p>
+      <p v-if="lastTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastTransaction}`" target="_blank" rel="noopener noreferrer">投票トランザクションを確認</a></p>
       <p aria-live="polite">{{ message }}</p>
     </section>
   </section>

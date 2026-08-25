@@ -949,7 +949,7 @@ flowchart LR
 
 証明成功だけで分配、権利または資格を確定しない。利用側は、入力の正本、権利版、異議申立て状態、期間確定および追加承認をそれぞれの仕様に従って確認する。緊急権限は新規受付を停止できるが、検証者の置換、過去受付の変更または資金移動はできない。
 
-Sepoliaの鍵、アドレス、モック証明、受付記録、管理権限およびテストデータはmainnetへ移行しない。本番は新しい鍵、デプロイ、監査、役割分離、二院制ガバナンス、株式会社の法務・セキュリティ承認および公開マニフェストを別に成立させる。詳細は[ADR-0017](/adr/ADR-0017-transparent-zk-testnet-mainnet-boundary)と[SPEC-ZK-001](/protocol/specs/transparent-zk-verification)で定義する。
+Polygon Amoyの鍵、アドレス、モック証明、受付記録、管理権限およびテストデータはmainnetへ移行しない。本番は新しい鍵、デプロイ、監査、役割分離、二院制ガバナンス、株式会社の法務・セキュリティ承認および公開マニフェストを別に成立させる。詳細は[ADR-0017](/adr/ADR-0017-transparent-zk-testnet-mainnet-boundary)と[SPEC-ZK-001](/protocol/specs/transparent-zk-verification)で定義する。
 
 ---
 

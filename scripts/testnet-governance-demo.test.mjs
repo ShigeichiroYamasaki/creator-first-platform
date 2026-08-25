@@ -10,9 +10,9 @@ import {
 
 const baseManifest = {
   schemaVersion: 1,
-  environment: 'sepolia-demo',
-  chainId: 11155111,
-  networkName: 'Ethereum Sepolia',
+  environment: 'amoy-demo',
+  chainId: 80002,
+  networkName: 'Polygon Amoy',
   status: 'active',
   sourceCommit: 'a'.repeat(40),
   contracts: {
@@ -87,7 +87,7 @@ test('publishes House-specific Governor SBT metadata with resolvable images', as
   for (const entry of governorMetadataCases) {
     const metadata = JSON.parse(await readFile(entry.metadataPath, 'utf8'))
     const image = await readFile(entry.imagePath)
-    assert.match(metadata.name, /Governor SBT.*Sepolia Testnet/)
+    assert.match(metadata.name, /Governor SBT.*Polygon Amoy Testnet/)
     assert.match(metadata.description, /TESTNET ONLY/)
     assert.equal(
       metadata.image,

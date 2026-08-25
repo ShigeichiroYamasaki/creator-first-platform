@@ -1,22 +1,10 @@
 {
   "schemaVersion": 1,
-  "environment": "sepolia-demo",
-  "chainId": 11155111,
-  "networkName": "Ethereum Sepolia",
-  "status": "active",
-  "sourceCommit": "5431e890657d1f97cd4ef3cb387d7afc1b9bdf8f",
-  "deploymentRecord": "/creator-first-platform/testnet/deployment-record.json",
-  "contracts": {
-    "mockJpyc": "0xBc89cF411Fe4fEc602e854fF32E78BBD131F5f49",
-    "subscription": "0x7bEeD194032a8D655cF72E61889896eef97F3d90",
-    "treasury": "0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215",
-    "supporterSbt": "0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923",
-    "supporterRegistrationAdapter": "0xbd6887125F9b8e000CF5a0673D7fa2a29a70D292",
-    "creatorRegistry": "0x5676d34d7C41849311b99932d8272af58b63e6E9",
-    "governor": "0x640711f1C249F8F6e8921E01060c99ccc6D72B95",
-    "governedPolicy": "0x34f23e860b1A6E8cD0D06514A29ea9386A92B596",
-    "legislatorRegistrationAdapter": "0x39cAdc19b820e7BA549E6E9c2F6cc008ac2F729F"
-  },
+  "environment": "amoy-demo",
+  "chainId": 80002,
+  "networkName": "Polygon Amoy",
+  "status": "not-deployed",
+  "contracts": {},
   "testOnlyNotice": "TESTNET ONLY - NO VALUE, NO REDEMPTION, NOT PRODUCTION JPYC",
   "creatorTestOnlyNotice": "TESTNET ONLY - NO IDENTITY, RIGHTS, PAYEE OR RELEASE VERIFICATION"
 }

@@ -123,7 +123,7 @@ test('rejects a basis date older than a protocol update', async () => {
 
 test('accepts a deployed governance status when governance contracts are published', async () => {
   const result = await runValidator({
-    page: statusPage({ governanceStatus: 'Ethereum Sepoliaへ公開デプロイ済み、運用実証前' }),
+    page: statusPage({ governanceStatus: 'Polygon Amoyへ公開デプロイ済み、運用実証前' }),
     deploymentManifest: { contracts: { governor: '0x1', governedPolicy: '0x2' } }
   })
   assert.equal(result.status, 0, result.stderr)
