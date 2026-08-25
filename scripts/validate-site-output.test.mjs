@@ -35,7 +35,7 @@ test('accepts the complete generated site', async () => {
   const result = await runValidator()
 
   assert.equal(result.status, 0, result.stderr)
-  assert.match(result.stdout, /5691 internal reference\(s\)/)
+  assert.match(result.stdout, /5706 internal reference\(s\)/)
 })
 
 test('rejects an unresolved internal page reference', async () => {
@@ -121,7 +121,7 @@ test('rejects a gzip search index over its transfer budget', async () => {
   })
 
   assert.equal(result.status, 1)
-  assert.match(result.stderr, /gzip search index is \d+ bytes \(limit: 330000\)/)
+  assert.match(result.stderr, /gzip search index is \d+ bytes \(limit: 335000\)/)
 })
 
 test('rejects an insecure external link', async () => {

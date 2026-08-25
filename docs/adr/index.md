@@ -46,6 +46,6 @@ flowchart LR
 | [ADR-0015](./ADR-0015-public-testnet-creator-journey.md)  | 公開テストネット音楽クリエーター利用フロー        | 提案 | 2026-08-23 | 2026-08-24   |
 | [ADR-0016](./ADR-0016-bicameral-quadratic-governance.md) | Bicameral 二次ガバナンス        | 提案 | 2026-08-24 | 2026-08-25   |
 | [ADR-0017](./ADR-0017-transparent-zk-testnet-mainnet-boundary.md) | 透明型ゼロ知識証明のテストネット／本番境界 | 提案 | 2026-08-24 | 2026-08-24 |
-| [ADR-0018](./ADR-0018-production-service-architecture.md) | 本番サービス全体アーキテクチャ | 提案 | 2026-08-24 | 2026-08-24 |
+| [ADR-0018](./ADR-0018-production-service-architecture.md) | 本番サービス全体アーキテクチャ | 提案 | 2026-08-24 | 2026-08-25 |
 
 各ADRは初回作成日の`Date`と、内容またはメタデータを最後に変更した`Last Updated`を分けて記録します。
