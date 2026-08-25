@@ -27,7 +27,7 @@ test('ships an active Sepolia manifest with reviewed addresses and source commit
   assert.equal(parsed.chainId, SEPOLIA_CHAIN_ID)
   assert.equal(parsed.status, 'active')
   assert.equal(parsed.active, true)
-  assert.equal(parsed.sourceCommit, '9d4bf406527b8bfdea076a91cd129b55e3c23925')
+  assert.equal(parsed.sourceCommit, '5431e890657d1f97cd4ef3cb387d7afc1b9bdf8f')
   assert.equal(parsed.contracts.mockJpyc, '0xBc89cF411Fe4fEc602e854fF32E78BBD131F5f49')
   assert.equal(parsed.contracts.subscription, '0x7bEeD194032a8D655cF72E61889896eef97F3d90')
   assert.equal(parsed.contracts.treasury, '0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215')
