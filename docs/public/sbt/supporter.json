@@ -1,0 +1,25 @@
+{
+  "name": "Creator First Supporter SBT — Sepolia Testnet",
+  "description": "TESTNET ONLY. A public, non-transferable credential showing that its holder registered support for a Creator First Platform demo artist. It has no monetary value, redemption right, revenue claim, shareholder right or governance voting power.",
+  "image": "https://shigeichiroyamasaki.github.io/creator-first-platform/images/supporter-sbt-example.webp",
+  "external_url": "https://shigeichiroyamasaki.github.io/creator-first-platform/demo/test-user-registration",
+  "background_color": "172033",
+  "attributes": [
+    {
+      "trait_type": "Network",
+      "value": "Ethereum Sepolia"
+    },
+    {
+      "trait_type": "Credential Tier",
+      "value": "Supporter"
+    },
+    {
+      "trait_type": "Transferability",
+      "value": "Soulbound"
+    },
+    {
+      "trait_type": "Environment",
+      "value": "Testnet Demo"
+    }
+  ]
+}

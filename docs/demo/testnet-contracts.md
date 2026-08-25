@@ -28,6 +28,8 @@ Hardhat 3とViemを使い、公開済みのテストネット専用コントラ�
 
 SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を拒否します。初期条件の`POLICY_ROLE`、実装更新の`UPGRADER_ROLE`、署名済み意思を送る`RELAYER_ROLE`を分離し、発行済み階層を後日のポリシー更新で書き換えません。
 
+一般サポータと初期サポータの`tokenURI`は、それぞれ[supporter.json](/sbt/supporter.json)と[early-supporter.json](/sbt/early-supporter.json)を返します。どちらもSepolia テストネット表示、公開画像、譲渡不能属性および非金銭的資格証明である旨を含み、個人情報、支援額または視聴履歴を含みません。
+
 ## 公開デプロイ {#public-deployment}
 
 | コントラクト | Sepolia アドレス |

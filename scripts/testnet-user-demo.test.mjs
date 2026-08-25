@@ -15,6 +15,8 @@ import {
 
 const manifestPath = new URL('../docs/public/testnet/deployment.json', import.meta.url)
 const deploymentRecordPath = new URL('../docs/public/testnet/deployment-record.json', import.meta.url)
+const supporterMetadataPath = new URL('../docs/public/sbt/supporter.json', import.meta.url)
+const earlySupporterMetadataPath = new URL('../docs/public/sbt/early-supporter.json', import.meta.url)
 
 test('ships an active Sepolia manifest with reviewed addresses and source commit', async () => {
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
@@ -99,6 +101,31 @@ test('builds the exact short-lived Supporter SBT EIP-712 intent', () => {
   assert.equal(value.message.nonce, 7n)
   assert.equal(value.message.deadline, 900n)
   assert.equal(value.message.consentVersion, DEMO_SUPPORTER_CONSENT_VERSION)
+})
+
+test('publishes resolvable testnet metadata for both Supporter SBT tiers', async () => {
+  const cases = [
+    {
+      metadata: JSON.parse(await readFile(supporterMetadataPath, 'utf8')),
+      tier: 'Supporter',
+      image: 'supporter-sbt-example.webp'
+    },
+    {
+      metadata: JSON.parse(await readFile(earlySupporterMetadataPath, 'utf8')),
+      tier: 'Early Supporter',
+      image: 'early-supporter-sbt-example.webp'
+    }
+  ]
+
+  for (const { metadata, tier, image } of cases) {
+    assert.match(metadata.name, /Sepolia Testnet/)
+    assert.match(metadata.description, /TESTNET ONLY/)
+    assert.equal(metadata.image, `https://shigeichiroyamasaki.github.io/creator-first-platform/images/${image}`)
+    assert.equal(metadata.external_url, 'https://shigeichiroyamasaki.github.io/creator-first-platform/demo/test-user-registration')
+    assert.equal(metadata.attributes.some((entry) => entry.trait_type === 'Credential Tier' && entry.value === tier), true)
+    assert.equal(metadata.attributes.some((entry) => entry.trait_type === 'Transferability' && entry.value === 'Soulbound'), true)
+    await readFile(new URL(`../docs/public/images/${image}`, import.meta.url))
+  }
 })
 
 test('generates a deterministic mono PCM WAV for the copyright-free player fixture', () => {
