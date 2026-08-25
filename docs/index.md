@@ -30,6 +30,14 @@ features:
     details: 本番実装の前に、金銭的価値を持たないテストネットと合成データで再生・決済・権利・利用証跡・分配の最小縦断実装を検証します。
     link: /demo/
 
+  - title: 音楽クリエータ院議会デモ
+    details: Sepolia上の音楽クリエータ院議会で、CFP、議員資格、院別集計、投票クレジットと承認投票を確認します。
+    link: /demo/creator-house
+
+  - title: ユーザ院議会デモ
+    details: Sepolia上のユーザ院議会で、CFP、議員資格、院別集計、投票クレジットと承認投票を確認します。
+    link: /demo/user-house
+
   - title: 現在の状況
     details: 公開文書、草案仕様、未実装範囲、専門家確認が必要な事項を区別して示します。
     link: /status
@@ -74,7 +82,7 @@ features:
 
 <div class="document-meta__row">
   <span class="document-meta__label">Revision 日付</span>
-  <span>2026-08-24</span>
+  <span>2026-08-25</span>
 </div>
 
 <div class="document-meta__row">
