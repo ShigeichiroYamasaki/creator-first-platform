@@ -16,7 +16,7 @@ type GovernanceDeployment = {
   sourceCommit: string | null
 }
 type ProposalView = {
-  sessionId: bigint; state: number; contentHash: string; specificationHash: string; manifestHash: string
+  sessionId: bigint; state: number; cfpIdHash: string; cfpRevision: number; contentHash: string; specificationHash: string; manifestHash: string
   target: Address; votingStartsAt: bigint; votingEndsAt: bigint; executableAt: bigint; expiresAt: bigint
   creatorScore: bigint; userScore: bigint; creatorParticipants: number; userParticipants: number
   creatorApproved: boolean; userApproved: boolean; reviewed: boolean
@@ -115,10 +115,12 @@ async function refresh(): Promise<void> {
       return
     }
     const id = BigInt(proposalId.value)
-    const [raw, state] = await Promise.all([
+    const [raw, state, cfpIdHash, cfpRevision] = await Promise.all([
       publicClient.readContract({ address: governor, abi: governanceAbi, functionName: 'proposals', args: [id] }),
-      publicClient.readContract({ address: governor, abi: governanceAbi, functionName: 'proposalState', args: [id] })
-    ]) as [readonly unknown[], number]
+      publicClient.readContract({ address: governor, abi: governanceAbi, functionName: 'proposalState', args: [id] }),
+      publicClient.readContract({ address: governor, abi: governanceAbi, functionName: 'proposalCfpIdHash', args: [id] }),
+      publicClient.readContract({ address: governor, abi: governanceAbi, functionName: 'proposalCfpRevision', args: [id] })
+    ]) as [readonly unknown[], number, string, number]
     const sessionId = raw[0] as bigint
     const [nextHouse, nextRemaining] = await Promise.all([
       publicClient.readContract({ address: governor, abi: governanceAbi, functionName: 'memberHouse', args: [sessionId, walletAddress.value] }),
@@ -127,7 +129,7 @@ async function refresh(): Promise<void> {
     house.value = Number(nextHouse)
     remainingCredits.value = Number(nextRemaining)
     proposal.value = {
-      sessionId, state: Number(state), contentHash: raw[1] as string, specificationHash: raw[2] as string,
+      sessionId, state: Number(state), cfpIdHash, cfpRevision: Number(cfpRevision), contentHash: raw[1] as string, specificationHash: raw[2] as string,
       manifestHash: raw[3] as string, target: raw[5] as Address, votingStartsAt: raw[7] as bigint,
       votingEndsAt: raw[8] as bigint, executableAt: raw[9] as bigint, expiresAt: raw[10] as bigint,
       creatorScore: raw[11] as bigint, userScore: raw[12] as bigint,
@@ -145,7 +147,7 @@ async function castVote(): Promise<void> {
   try {
     const { publicClient, walletClient, governor } = clients()
     const hash = await walletClient.writeContract({
-      address: governor, abi: governanceAbi, functionName: 'castVote',
+      address: governor, abi: governanceAbi, functionName: 'castCfpApprovalVote',
       args: [BigInt(proposalId.value), selectedIntensity.value]
     })
     lastTransaction.value = hash
@@ -195,7 +197,7 @@ onBeforeUnmount(() => {
       <h3>2. 提案と両院結果</h3>
       <div class="proposal-picker"><label for="proposal-id">提案ID</label><input id="proposal-id" v-model.number="proposalId" type="number" min="1"><button type="button" class="secondary" @click="refresh" :disabled="!ready || !correctChain || !walletAddress || busy">状態を更新</button></div>
       <div v-if="proposal" class="grid"><div><span>状態</span><strong>{{ governanceStateLabels[proposal.state] }}</strong></div><div><span>会期</span><strong>#{{ proposal.sessionId }}</strong></div><div><span>投票期間</span><strong>{{ date(proposal.votingStartsAt) }}〜{{ date(proposal.votingEndsAt) }}</strong></div><div><span>対象</span><strong>{{ short(proposal.target) }}</strong></div><div><span>音楽クリエータ院議会</span><strong>{{ proposal.creatorScore }}点・{{ proposal.creatorParticipants }}人・{{ proposal.creatorApproved ? '承認' : '未承認' }}</strong></div><div><span>ユーザ院議会</span><strong>{{ proposal.userScore }}点・{{ proposal.userParticipants }}人・{{ proposal.userApproved ? '承認' : '未承認' }}</strong></div></div>
-      <p v-if="proposal"><code>内容 {{ proposal.contentHash }}</code><br><code>仕様 {{ proposal.specificationHash }}</code><br><code>実行マニフェスト {{ proposal.manifestHash }}</code></p>
+      <p v-if="proposal"><code>CFP識別子 {{ proposal.cfpIdHash }}</code><br><code>CFP改訂 {{ proposal.cfpRevision }}</code><br><code>内容 {{ proposal.contentHash }}</code><br><code>仕様 {{ proposal.specificationHash }}</code><br><code>実行マニフェスト {{ proposal.manifestHash }}</code></p>
     </section>
 
     <section class="panel">

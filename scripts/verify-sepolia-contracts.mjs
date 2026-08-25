@@ -46,22 +46,28 @@ if (governor && governedPolicy) {
     'function allowedChainId() view returns (uint256)',
     'function p1Delay() view returns (uint64)',
     'function p2Delay() view returns (uint64)',
-    'function p3Delay() view returns (uint64)'
+    'function p3Delay() view returns (uint64)',
+    'function proposalCfpRevision(uint256) view returns (uint32)',
+    'function cfpProposalId(bytes32) view returns (uint256)'
   ])
   const policyAbi = parseAbi([
     'function governor() view returns (address)',
     'function version() view returns (uint64)'
   ])
-  const [allowedChainId, p1Delay, p2Delay, p3Delay, policyGovernor, policyVersion] = await Promise.all([
+  const [allowedChainId, p1Delay, p2Delay, p3Delay, emptyCfpRevision, emptyCfpProposal, policyGovernor, policyVersion] = await Promise.all([
     client.readContract({ address: governor, abi: governanceAbi, functionName: 'allowedChainId' }),
     client.readContract({ address: governor, abi: governanceAbi, functionName: 'p1Delay' }),
     client.readContract({ address: governor, abi: governanceAbi, functionName: 'p2Delay' }),
     client.readContract({ address: governor, abi: governanceAbi, functionName: 'p3Delay' }),
+    client.readContract({ address: governor, abi: governanceAbi, functionName: 'proposalCfpRevision', args: [0n] }),
+    client.readContract({ address: governor, abi: governanceAbi, functionName: 'cfpProposalId', args: [`0x${'00'.repeat(32)}`] }),
     client.readContract({ address: governedPolicy, abi: policyAbi, functionName: 'governor' }),
     client.readContract({ address: governedPolicy, abi: policyAbi, functionName: 'version' })
   ])
   assert.equal(allowedChainId, BigInt(sepolia.id))
   assert.ok(p1Delay > 0n && p2Delay >= p1Delay && p3Delay >= p2Delay, 'Governance delay ordering is invalid')
+  assert.equal(emptyCfpRevision, 0)
+  assert.equal(emptyCfpProposal, 0n)
   assert.equal(getAddress(policyGovernor), governor)
   assert.equal(policyVersion, 1n)
 }

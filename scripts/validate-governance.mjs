@@ -15,7 +15,7 @@ const requirements = [
   ['scripts/verify-sepolia-contracts.mjs', 'Governance manifest must publish governor and policy together', 'Sepolia governance verification'],
   ['test/CreatorFirstGovernance.ts', 'user House rejection cannot be offset', 'separate House negative test'],
   ['docs/demo/governance.md', 'テストネットで簡略化している事項', 'public testnet boundary'],
-  ['docs/.vitepress/theme/TestnetGovernanceDemo.vue', 'castVote', 'wallet voting UI'],
+  ['docs/.vitepress/theme/TestnetGovernanceDemo.vue', 'castCfpApprovalVote', 'CFP-bound wallet voting UI'],
   ['docs/demo/creator-house.md', 'focus-house="creator"', 'Creator House route'],
   ['docs/demo/user-house.md', 'focus-house="user"', 'User House route'],
   ['protocol/governance/contract-change-governance-spec.md', 'Testnet Implementation Profile', 'protocol implementation profile'],

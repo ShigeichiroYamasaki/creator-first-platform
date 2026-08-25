@@ -5,7 +5,7 @@ description: Hardhat 3、Infura、SepoliaでCreator First PlatformのMockJPYC決
 
 # Sepolia スマートコントラクトデモ
 
-Hardhat 3とViemを使い、公開済みのテストネット専用コントラクトをEthereum Sepoliaへデプロイしました。次の表には、公開済み構成に加えて、次回デプロイ対象としてローカル実装した透明型ZK境界とCFP-0002検証境界も示します。現在の公開構成はソースコミット `b0bfcb73d453d970e0a5c1c432abb9abc6e0d341`で再現できます。
+Hardhat 3とViemを使い、公開済みのテストネット専用コントラクトをEthereum Sepoliaへデプロイしました。次の表には、公開済み構成に加えて、次回デプロイ対象としてローカル実装した透明型ZK境界とCFP-0002検証境界も示します。CFP識別子・改訂結合と両院別結果取得を備えたガバナーV2は、ソースコミット `5431e890657d1f97cd4ef3cb387d7afc1b9bdf8f`からデプロイしています。
 
 | コントラクト | テストネット上の責務 | 本番境界 |
 | --- | --- | --- |
@@ -41,8 +41,8 @@ SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を�
 | SupporterSBT 実装 | [`0x350a…7a66`](https://sepolia.etherscan.io/address/0x350a9FfcDBafA2982D28b29610CA09EDA65b7a66) |
 | サポータ登録アダプター | [`0xbd68…D292`](https://sepolia.etherscan.io/address/0xbd6887125F9b8e000CF5a0673D7fa2a29a70D292) |
 | CreatorFirstCreatorRegistry | [`0x5676…e6E9`](https://sepolia.etherscan.io/address/0x5676d34d7C41849311b99932d8272af58b63e6E9) |
-| CreatorFirstBicameralGovernor | [`0xE8D4…84b7`](https://sepolia.etherscan.io/address/0xE8D4BB558A69736375D8D5e4a7349D38B22584b7) |
-| CreatorFirstGovernedPolicy | [`0xE789…94F7`](https://sepolia.etherscan.io/address/0xE7891c8edFF943eB7f203A34d76f51b8157094F7) |
+| CreatorFirstBicameralGovernor V2 | [`0x6407…2B95`](https://sepolia.etherscan.io/address/0x640711f1C249F8F6e8921E01060c99ccc6D72B95) |
+| CreatorFirstGovernedPolicy V2 | [`0x34f2…B596`](https://sepolia.etherscan.io/address/0x34f23e860b1A6E8cD0D06514A29ea9386A92B596) |
 
 チェーン IDは`11155111`です。[公開マニフェスト](/testnet/deployment.json)と[トランザクションを含むデプロイ記録](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Sepolia RPCからBytecode、MockJPYC 通知／主張額、サブスクリプションの資産／資金庫／計画、ERC-1967 実装スロット、音楽クリエーター登録台帳のテストネット通知、ガバナーのチェーン／タイムロック設定およびデモポリシーとの接続を再検証します。
 
@@ -86,6 +86,12 @@ npx hardhat keystore set DEPLOYER_PRIVATE_KEY
 
 ```sh
 npm run contracts:deploy:sepolia
+```
+
+CFP識別子・改訂結合を備えたガバナーV2だけを既存テスト資産から分離してデプロイする場合は、次を実行します。
+
+```sh
+npm run contracts:deploy:governance-v2:sepolia
 ```
 
 既存公開SBTへサポータ登録アダプターだけを追加する場合は、総合モジュールではなく次の専用コマンドを使います。既定の接続先は公開済みSBTプロキシ`0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923`で、アダプターのデプロイと`RELAYER_ROLE`付与だけを実行します。

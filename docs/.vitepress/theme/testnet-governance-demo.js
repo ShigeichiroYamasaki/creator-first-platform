@@ -39,7 +39,15 @@ export const governanceAbi = [
     ]
   },
   {
-    type: 'function', name: 'castVote', stateMutability: 'nonpayable',
+    type: 'function', name: 'proposalCfpIdHash', stateMutability: 'view',
+    inputs: [{ name: 'proposalId', type: 'uint256' }], outputs: [{ name: '', type: 'bytes32' }]
+  },
+  {
+    type: 'function', name: 'proposalCfpRevision', stateMutability: 'view',
+    inputs: [{ name: 'proposalId', type: 'uint256' }], outputs: [{ name: '', type: 'uint32' }]
+  },
+  {
+    type: 'function', name: 'castCfpApprovalVote', stateMutability: 'nonpayable',
     inputs: [{ name: 'proposalId', type: 'uint256' }, { name: 'intensity', type: 'int8' }], outputs: []
   }
 ]
