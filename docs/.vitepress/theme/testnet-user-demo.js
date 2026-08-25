@@ -3,6 +3,8 @@ import { isAddress, keccak256, stringToHex } from 'viem'
 export const AMOY_CHAIN_ID = 80002
 export const AMOY_CHAIN_HEX = '0x13882'
 export const AMOY_EXPLORER_URL = 'https://amoy.polygonscan.com'
+export const AMOY_MIN_PRIORITY_FEE_PER_GAS = 25_000_000_000n
+export const AMOY_FALLBACK_BASE_FEE_PER_GAS = 1_000_000_000n
 export const DEMO_SUPPORTER_CREATOR_ID = keccak256(stringToHex('creator:synthetic-demo-artist'))
 export const DEMO_SUPPORTER_CONSENT_VERSION = keccak256(stringToHex('supporter-demo-consent-v1'))
 const PUBLIC_SITE_ORIGIN = 'https://shigeichiroyamasaki.github.io'
@@ -252,6 +254,40 @@ export async function switchProviderToAmoy(provider) {
       }]
     })
   }
+}
+
+export function resolveAmoyTransactionFees({ maxFeePerGas, maxPriorityFeePerGas, baseFeePerGas } = {}) {
+  const suggestedPriorityFee = typeof maxPriorityFeePerGas === 'bigint' ? maxPriorityFeePerGas : 0n
+  const suggestedMaxFee = typeof maxFeePerGas === 'bigint' ? maxFeePerGas : 0n
+  const currentBaseFee = typeof baseFeePerGas === 'bigint' ? baseFeePerGas : 0n
+  const priorityFee = suggestedPriorityFee > AMOY_MIN_PRIORITY_FEE_PER_GAS
+    ? suggestedPriorityFee
+    : AMOY_MIN_PRIORITY_FEE_PER_GAS
+  const baseAwareMaxFee = priorityFee + currentBaseFee * 2n
+
+  return {
+    maxPriorityFeePerGas: priorityFee,
+    maxFeePerGas: suggestedMaxFee > baseAwareMaxFee ? suggestedMaxFee : baseAwareMaxFee
+  }
+}
+
+export async function getAmoyTransactionFees(publicClient) {
+  let estimatedFees = {}
+  let baseFeePerGas = AMOY_FALLBACK_BASE_FEE_PER_GAS
+
+  try {
+    estimatedFees = await publicClient.estimateFeesPerGas()
+  } catch {
+    // The explicit Amoy floor below keeps writes usable when a wallet RPC cannot estimate EIP-1559 fees.
+  }
+  try {
+    const block = await publicClient.getBlock({ blockTag: 'latest' })
+    baseFeePerGas = typeof block.baseFeePerGas === 'bigint' ? block.baseFeePerGas : 0n
+  } catch {
+    // Keep a conservative base-fee allowance when the wallet RPC cannot return the latest block.
+  }
+
+  return resolveAmoyTransactionFees({ ...estimatedFees, baseFeePerGas })
 }
 
 export function hasActiveCreatorRegistry(manifest) {

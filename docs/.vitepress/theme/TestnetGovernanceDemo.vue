@@ -4,7 +4,7 @@ import { withBase } from 'vitepress'
 import { createPublicClient, createWalletClient, custom, type Address, type EIP1193Provider, type Hash } from 'viem'
 import { polygonAmoy } from 'viem/chains'
 import { governanceAbi, governanceStateLabels, legislatorRegistrationAbi, quadraticCost, validateGovernanceDeployment } from './testnet-governance-demo.js'
-import { AMOY_CHAIN_ID, switchProviderToAmoy } from './testnet-user-demo.js'
+import { AMOY_CHAIN_ID, getAmoyTransactionFees, switchProviderToAmoy } from './testnet-user-demo.js'
 
 type DemoProvider = EIP1193Provider & {
   on?: (event: 'accountsChanged' | 'chainChanged', listener: (value: Address[] | string) => void) => void
@@ -129,11 +129,13 @@ async function registerLegislator(): Promise<void> {
   lastTransaction.value = undefined
   try {
     const { publicClient, walletClient } = clients()
+    const fees = await getAmoyTransactionFees(publicClient)
     const hash = await walletClient.writeContract({
       address: deployment.value.legislatorRegistrationAdapter,
       abi: legislatorRegistrationAbi,
       functionName: props.focusHouse === 'creator' ? 'registerAsCreator' : 'registerAsUser',
-      args: [BigInt(registrationSessionId.value)]
+      args: [BigInt(registrationSessionId.value)],
+      ...fees
     })
     lastTransaction.value = hash
     message.value = 'テスト議員資格の登録トランザクションを送信しました。'
@@ -188,9 +190,11 @@ async function castVote(): Promise<void> {
   lastTransaction.value = undefined
   try {
     const { publicClient, walletClient, governor } = clients()
+    const fees = await getAmoyTransactionFees(publicClient)
     const hash = await walletClient.writeContract({
       address: governor, abi: governanceAbi, functionName: 'castCfpApprovalVote',
-      args: [BigInt(proposalId.value), selectedIntensity.value]
+      args: [BigInt(proposalId.value), selectedIntensity.value],
+      ...fees
     })
     lastTransaction.value = hash
     message.value = '公開投票トランザクションを送信しました。'

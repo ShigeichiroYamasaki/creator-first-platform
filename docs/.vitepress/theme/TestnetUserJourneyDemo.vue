@@ -7,6 +7,7 @@ import {
   createSupporterTypedData,
   createTestToneWav,
   DEMO_SUPPORTER_CREATOR_ID,
+  getAmoyTransactionFees,
   hasActiveSupporterRegistration,
   mockJpycAbi,
   AMOY_CHAIN_ID,
@@ -271,22 +272,25 @@ async function transact(action: string, submit: () => Promise<Hash>): Promise<vo
 }
 async function claimMockJpyc(): Promise<void> {
   await transact('MockJPYC取得', async () => {
-    const { walletClient, mockJpyc } = clients()
-    return walletClient.writeContract({ address: mockJpyc, abi: mockJpycAbi, functionName: 'claim' })
+    const { publicClient, walletClient, mockJpyc } = clients()
+    const fees = await getAmoyTransactionFees(publicClient)
+    return walletClient.writeContract({ address: mockJpyc, abi: mockJpycAbi, functionName: 'claim', ...fees })
   })
 }
 async function approveSubscription(): Promise<void> {
   await transact('利用承認', async () => {
-    const { walletClient, mockJpyc, subscription } = clients()
-    return walletClient.writeContract({ address: mockJpyc, abi: mockJpycAbi, functionName: 'approve', args: [subscription, planPrice.value] })
+    const { publicClient, walletClient, mockJpyc, subscription } = clients()
+    const fees = await getAmoyTransactionFees(publicClient)
+    return walletClient.writeContract({ address: mockJpyc, abi: mockJpycAbi, functionName: 'approve', args: [subscription, planPrice.value], ...fees })
   })
 }
 async function subscribe(): Promise<void> {
   if (!profile.value) return
   const paymentReference = keccak256(toHex(`${profile.value.testUserId}:${Date.now()}`))
   await transact('Subscription', async () => {
-    const { walletClient, subscription } = clients()
-    return walletClient.writeContract({ address: subscription, abi: subscriptionAbi, functionName: 'subscribe', args: [paymentReference, planVersion.value] })
+    const { publicClient, walletClient, subscription } = clients()
+    const fees = await getAmoyTransactionFees(publicClient)
+    return walletClient.writeContract({ address: subscription, abi: subscriptionAbi, functionName: 'subscribe', args: [paymentReference, planVersion.value], ...fees })
   })
 }
 async function registerAsSupporter(): Promise<void> {
@@ -310,12 +314,14 @@ async function registerAsSupporter(): Promise<void> {
     })
     supporterMessage.value = 'Walletで公開・譲渡不能なSupporter SBTの意思表示に署名してください。'
     const signature = await walletClient.signTypedData({ account: walletAddress.value, ...typedData })
+    const fees = await getAmoyTransactionFees(publicClient)
     const hash = await walletClient.writeContract({
       account: walletAddress.value,
       address: adapter,
       abi: supporterRegistrationAdapterAbi,
       functionName: 'registerSelf',
-      args: [DEMO_SUPPORTER_CREATOR_ID, nonce as bigint, deadline, typedData.message.consentVersion, signature]
+      args: [DEMO_SUPPORTER_CREATOR_ID, nonce as bigint, deadline, typedData.message.consentVersion, signature],
+      ...fees
     })
     lastSbtTransaction.value = hash
     supporterMessage.value = 'SBT発行Transactionを送信しました。Polygon Amoyでの確定を待っています。'

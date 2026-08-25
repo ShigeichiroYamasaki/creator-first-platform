@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { createPublicClient, createWalletClient, custom, keccak256, parseEventLogs, toHex, type Address, type EIP1193Provider, type Hash } from 'viem'
 import { polygonAmoy } from 'viem/chains'
-import { AMOY_CHAIN_ID, creatorRegistryAbi, hasActiveCreatorRegistry, switchProviderToAmoy, validateDeploymentManifest } from './testnet-user-demo.js'
+import { AMOY_CHAIN_ID, creatorRegistryAbi, getAmoyTransactionFees, hasActiveCreatorRegistry, switchProviderToAmoy, validateDeploymentManifest } from './testnet-user-demo.js'
 
 type CreatorProfile = { registered: true; creatorId: string; artistName: string; entityType: string; genre: string; state: 'BROWSER_DEMO_ONLY'; createdAt: string }
 type DemoProvider = EIP1193Provider & {
@@ -129,16 +129,18 @@ async function submit(action: string, write: () => Promise<Hash>) {
 }
 async function registerOnchain(): Promise<void> {
   await submit('Creator登録', async () => {
-    const { walletClient, registry } = clients()
-    return walletClient.writeContract({ address: registry, abi: creatorRegistryAbi, functionName: 'registerCreator', args: [profileCommitment(), walletAddress.value as Address] })
+    const { publicClient, walletClient, registry } = clients()
+    const fees = await getAmoyTransactionFees(publicClient)
+    return walletClient.writeContract({ address: registry, abi: creatorRegistryAbi, functionName: 'registerCreator', args: [profileCommitment(), walletAddress.value as Address], ...fees })
   })
 }
 async function declareRelease(): Promise<void> {
   if (!releaseReady.value) return
   const commitments = releaseCommitments()
   const receipt = await submit('作品自己申告', async () => {
-    const { walletClient, registry } = clients()
-    return walletClient.writeContract({ address: registry, abi: creatorRegistryAbi, functionName: 'declareRelease', args: [commitments.metadata, commitments.rights] })
+    const { publicClient, walletClient, registry } = clients()
+    const fees = await getAmoyTransactionFees(publicClient)
+    return walletClient.writeContract({ address: registry, abi: creatorRegistryAbi, functionName: 'declareRelease', args: [commitments.metadata, commitments.rights], ...fees })
   })
   if (!receipt || !lastTransaction.value) return
   const event = parseEventLogs({ abi: creatorRegistryAbi, logs: receipt.logs, eventName: 'ReleaseDeclared' })[0]

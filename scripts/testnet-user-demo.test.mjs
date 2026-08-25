@@ -9,7 +9,11 @@ import {
   DEMO_SUPPORTER_CREATOR_ID,
   hasActiveCreatorRegistry,
   hasActiveSupporterRegistration,
+  getAmoyTransactionFees,
   AMOY_CHAIN_ID,
+  AMOY_FALLBACK_BASE_FEE_PER_GAS,
+  AMOY_MIN_PRIORITY_FEE_PER_GAS,
+  resolveAmoyTransactionFees,
   validateDeploymentManifest,
   validateSupporterMetadata
 } from '../docs/.vitepress/theme/testnet-user-demo.js'
@@ -18,6 +22,35 @@ const manifestPath = new URL('../docs/public/testnet/deployment.json', import.me
 const deploymentRecordPath = new URL('../docs/public/testnet/deployment-record.json', import.meta.url)
 const supporterMetadataPath = new URL('../docs/public/sbt/supporter.json', import.meta.url)
 const earlySupporterMetadataPath = new URL('../docs/public/sbt/early-supporter.json', import.meta.url)
+
+test('enforces the Polygon Amoy priority-fee floor for wallet writes', async () => {
+  const lowEstimate = resolveAmoyTransactionFees({
+    maxPriorityFeePerGas: 1_500_000_000n,
+    maxFeePerGas: 3_000_000_000n,
+    baseFeePerGas: 1_000_000_000n
+  })
+  assert.equal(lowEstimate.maxPriorityFeePerGas, AMOY_MIN_PRIORITY_FEE_PER_GAS)
+  assert.equal(lowEstimate.maxFeePerGas, 27_000_000_000n)
+
+  const recommendedEstimate = resolveAmoyTransactionFees({
+    maxPriorityFeePerGas: 30_000_000_000n,
+    maxFeePerGas: 35_000_000_000n,
+    baseFeePerGas: 2_000_000_000n
+  })
+  assert.deepEqual(recommendedEstimate, {
+    maxPriorityFeePerGas: 30_000_000_000n,
+    maxFeePerGas: 35_000_000_000n
+  })
+
+  const fallback = await getAmoyTransactionFees({
+    estimateFeesPerGas: async () => { throw new Error('unsupported') },
+    getBlock: async () => { throw new Error('unavailable') }
+  })
+  assert.deepEqual(fallback, {
+    maxPriorityFeePerGas: AMOY_MIN_PRIORITY_FEE_PER_GAS,
+    maxFeePerGas: AMOY_MIN_PRIORITY_FEE_PER_GAS + AMOY_FALLBACK_BASE_FEE_PER_GAS * 2n
+  })
+})
 
 test('ships a safe Polygon Amoy manifest and verifies reviewed addresses when active', async () => {
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
