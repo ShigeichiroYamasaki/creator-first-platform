@@ -6,7 +6,7 @@ description: Navidromeを交換可能なメディアサーバーとして利用�
 
 **状態:** 提案
 **日付:** 2026-08-19
-**最終更新日:** 2026-08-24
+**最終更新日:** 2026-08-25
 
 > **実装 note (2026-08-23):** `apps/gateway`にローカルモック最小縦断実装を実装した。固定モックサブスクリプション／権利、5分の単一再生セッション、単一範囲、SQLite 配信証跡、SIWE／EIP-712検証、合成音源ファイルアダプターおよび明示対応付け方式のNavidrome アダプターを含む。現在実装しているアプリケーション APIはカタログ Home、Test-only プロフィール、再生セッション／ストリーム、SIWE、支援意思／モック資格証明状態およびコミュニティ Capabilityの限定Surfaceである。テストネットコントラクトはEthereum Sepoliaへデプロイしたが、ゲートウェイはまだそのイベントを参照しない。`auth/refresh`、`auth/logout`、クライアント再生イベント、検索・アーティスト・Album詳細、コントラクトインデクサーおよび本番参照モデルは未実装である。これは`MOCK-ASSUMPTION-001`の範囲内であり、提案決定、未解決事項、本番構成または法的権利を確定しない。
 
@@ -299,7 +299,7 @@ cloudflared
     -> ストリーミング認可ゲートウェイ
         -> Navidrome
         -> SQLite 参照モデル / 再生証跡
-        -> Base Sepolia RPC
+        -> Polygon Amoy RPC
         -> リレイヤー Module
 ```
 
@@ -322,19 +322,19 @@ cloudflared
 - `DemoSubscription`は一致する`MockJPYC` 転送がファイナリティ条件を満たした後だけ有効化する
 - 明示的なSBT受領同意と資格判定を確認した後だけ、リレイヤーが初期サポーター SBT発行トランザクションを送信できる
 - テスト参加者はウォレット Allowlistまたは明示的な招待記録で制限する
-- サブスクリプションおよび権利判定はBase Sepolia 公開 RPCから取得し、15〜30秒の短時間キャッシュへ保存する
+- サブスクリプションおよび権利判定はPolygon Amoy（チェーンID `80002`）の検証済みRPCから取得し、15〜30秒の短時間キャッシュへ保存する
 - RPC Timeout、率制限、チェーン ID不一致、コントラクトアドレス不一致または判定不能時は新規再生セッションをFail Closedにする
 - 認可成功時だけ、アカウント、楽曲、権利版、サブスクリプションおよびTTLを結付けした短時間再生 Ticketを発行する
 - ゲートウェイは許可済み`Range` HeaderだけをNavidromeへ渡し、配信Byte数とServer-side 再生証跡をSQLiteへ記録する
 
-Base Sepoliaのテストコントラクトは少なくとも次を分離する。
+Polygon Amoyのテストコントラクトは少なくとも次を分離する。
 
 - `MockJPYC`: 金銭的価値、償還請求権または実在JPYCとの交換可能性を持たないテストトークン
 - `DemoSubscription`: ウォレット、計画、開始時刻、有効期限および取消状態
 - `DemoRightsRegistry`: 音楽クリエーター中心楽曲 ID、公開状態、権利版および停止状態
 - `DemoEarlySupporterSBT`: 譲渡不能、失効可能かつ金銭的権利を持たないテスト資格証明
 
-最初の公開コントラクト利用フローのチェーン IDはEthereum Sepoliaの`11155111`とし、コントラクトアドレス、デプロイトランザクション、ABI、ソースコミットおよび使用RPCをデモ画面へ表示する。ADR-0007で将来の主 L2を決定した後は、環境ごとに別マニフェストと資産登録台帳登録項目を使用する。テスト ETHはガスにだけ使用し、料金表示、決済意思、サブスクリプション収益またはSBT資格額に使用しない。Mainnet 資産、本番ウォレット、本番秘密鍵、実在サブスクリプション、実在権利、未公開音源または個人情報をテスト環境へ投入しない。Deployer 鍵とリレイヤー鍵はリポジトリへコミットせず、用途と権限を分離し、可能な限りVMへ常置しない。
+最初の公開コントラクト利用フローはEthereum SepoliaのチェーンID`11155111`へデプロイ済みであり、コントラクトアドレス、デプロイトランザクション、ABI、ソースコミットおよび使用RPCをデモ画面へ表示する。この既存デモを履歴参照として残しつつ、新規のゲートウェイ統合テストと本番リハーサルはPolygon AmoyのチェーンID`80002`を使用する。環境ごとに鍵、デプロイID、マニフェスト、資産登録台帳、インデクサー開始点および監視を分離する。Sepolia ETHまたはAmoy POLはガスにだけ使用し、料金表示、決済意思、サブスクリプション収益またはSBT資格額に使用しない。Mainnet 資産、本番ウォレット、本番秘密鍵、実在サブスクリプション、実在権利、未公開音源または個人情報をテスト環境へ投入しない。Deployer 鍵とリレイヤー鍵はリポジトリへコミットせず、用途と権限を分離し、可能な限りVMへ常置しない。
 
 #### テスト環境受入基準
 
@@ -444,7 +444,7 @@ RPC latency、率制限、チェーン障害を再生重大 Pathへ入れるた�
 11. 12.2のテスト環境受入基準を再現した検証証拠
 12. 外部IPv4、負荷分散器、クラウド NATおよび追加Diskが作成されていないことのBilling Inventory
 13. Quick Tunnel以外からゲートウェイおよびNavidromeへ到達できないこと
-14. Base Sepolia チェーン ID、コントラクトアドレス、ABIおよびソースコミットの一致
+14. Polygon AmoyチェーンID`80002`、コントラクトアドレス、ABIおよびソースコミットの一致
 15. テスト環境に本番資金、実在権利、未公開音源、個人情報または本番資格証明が存在しないこと
 
 ## 17. 未解決事項
@@ -489,8 +489,8 @@ RPC latency、率制限、チェーン障害を再生重大 Pathへ入れるた�
 - [Google クラウド外部 IP 料金](https://cloud.google.com/vpc/network-pricing)
 - [Cloudflare Quick Tunnels](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/)
 - [Cloudflare Tunnel Run パラメータ](https://developers.cloudflare.com/tunnel/advanced/run-parameters/)
-- [Base Sepolia Connection 情報](https://docs.base.org/base-chain/quickstart/connecting-to-base)
-- [Base Sepolia Faucets](https://docs.base.org/base-chain/network-information/network-faucets)
+- [Polygon PoS RPC endpoints](https://docs.polygon.technology/pos/reference/rpc-endpoints)
+- [Polygon Faucet](https://faucet.polygon.technology/)
 
 ## 20. 後続作業
 

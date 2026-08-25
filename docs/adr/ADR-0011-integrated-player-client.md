@@ -6,7 +6,7 @@ description: Navidromeを非公開メディアアダプターとして利用し�
 
 **状態:** 提案
 **日付:** 2026-08-21
-**最終更新日:** 2026-08-23
+**最終更新日:** 2026-08-25
 
 > **実装 note (2026-08-23):** `apps/player`へVue 3／TypeScriptのローカルPWAを、`apps/gateway`へ対応するモック APIを実装した。カタログ Home、単一音声 Element、Play／停止／Seek／Next／Previous、短命再生セッション、範囲、SIWE、EIP-712 支援意思、モックサポーター状態、コミュニティ CapabilityおよびAlias限定Test-only プロフィールを検証できる。Test-only プロフィールはプラットフォームアカウントや認証器ではなく、登録の有無は認可を変更しない。GitHub PagesにはADR-0014に基づき、Tab-local プロフィール、明示的EIP-1193 ウォレット接続、Sepolia固定、検証済みデプロイマニフェスト、mockJPYC課金UIおよび合成プレーヤーを一続きにした公開テストネット利用フローを実装し、Sepolia コントラクトアドレスを有効化した。公開プレーヤーのサブスクリプション状態はゲートウェイ認可やNavidromeへ接続しない。ローカルプレーヤー／ゲートウェイは引き続きモック状態を使用する。検索、アーティスト／Album詳細、クライアント再生イベント、Logout／アカウント Switch、サービス Worker、コントラクトインデクサーおよび本番認証器は未実装である。Framework等の未決定事項は`MOCK-ASSUMPTION-001`で限定しており、この実装は本ADRの採用確定またはプロトコル適合完了を意味しない。
 
@@ -172,7 +172,7 @@ Cloudflare Quick Tunnel
     -> same-origin プレーヤー static assets・/v1 ゲートウェイ API
         -> private Navidrome
         -> SQLite
-        -> Base Sepolia RPC / リレイヤー module
+        -> Polygon Amoy RPC / リレイヤー module
 ```
 
 同一オリジンはCookie、CORSおよびSIWE Domainを単純化する。GitHub Pagesのプロジェクト Topからデモ URLへ連携できるが、保護された音声ストリームおよび認証APIはデモゲートウェイオリジンから提供する。

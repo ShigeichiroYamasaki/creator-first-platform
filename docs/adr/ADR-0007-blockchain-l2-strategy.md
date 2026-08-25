@@ -1,12 +1,12 @@
 ---
-description: 決済、権利、利用証明、分配、ガバナンスを支えるブロックチェーンとL2の選定・抽象化方針案。
+description: 決済、権利、利用証明、分配、ガバナンスをPolygon PoSとPolygon Amoyで実行する選定・抽象化方針案。
 ---
 
 # ADR-0007: ブロックチェーン / L2 戦略
 
 **状態:** 提案
 **日付:** 2026-07-29
-**最終更新日:** 2026-08-23
+**最終更新日:** 2026-08-25
 
 ## 1. 背景
 
@@ -35,11 +35,11 @@ Creator First Platform は、音楽クリエーター／ユーザを中心とす
 
 一方、音楽配信プラットフォームでは大量の再生イベントが発生するため、すべてをブロックチェーン上で処理することは現実的ではない。
 
-また、特定ブロックチェーンや特定L2へプロトコル全体を強く依存させると、
+また、特定ブロックチェーンや特定実行環境へプロトコル全体を強く依存させると、
 
 - トランザクションコスト
 - ネットワーク Congestion
-- シーケンサー Failure
+- 合意・Validator・実行レイヤー Failure
 - ブリッジリスク
 - チェーンガバナンスリスク
 - ステーブルコイン可用性
@@ -57,25 +57,29 @@ Creator First Platform は、音楽クリエーター／ユーザを中心とす
 
 ## 2. 決定
 
-Creator First Platform は、**Ethereum-compatible L2を主実行レイヤーとし、Ethereumを精算 / セキュリティアンカーとして利用可能な構造**を基本戦略とする。
+Creator First Platform は、**本番の主実行チェーンにPolygon PoS mainnet（チェーンID `137`）、本番リハーサルと新規統合テストにPolygon Amoy（チェーンID `80002`）を使用する**。ガス資産は両環境ともPOLとし、ユーザ向けにはリレイヤーまたはペイマスターで抽象化する。
 
-ただし、プロトコル Coreを単一のL2固有機能へ固定しない。
+Polygon PoSはEVM互換のPoSサイドチェーンであり、Ethereumのrollup型L2ではない。Heimdall-v2のMilestoneによるPolygon内の確定と、Ethereumへ提出されるCheckpointを区別する。Ethereumへの追加アンカーは、高価値かつ低頻度の監査コミットメントについて必要性が認められる場合だけ採用する。
+
+プロトコル CoreをPolygon固有API、ブリッジまたは単一RPC事業者へ固定しない。
 
 ```mermaid
 flowchart TD
     APP[音楽クリエーター／ユーザアプリ]
     OFF[オフチェーンサービス]
     PROOF[証明 / コミットメントレイヤー]
-    L2[Ethereum-compatible L2]
-    ETH[Ethereum]
+    AMOY[Polygon Amoy<br>統合テスト]
+    POS[Polygon PoS mainnet<br>主実行チェーン]
+    ETH[Ethereum<br>任意監査アンカー]
 
     APP --> OFF
     OFF --> PROOF
-    PROOF --> L2
-    L2 --> ETH
+    PROOF --> AMOY
+    PROOF --> POS
+    POS -. 必要な場合だけ .-> ETH
 ```
 
-主 L2は、実装・運用時点のセキュリティ、コスト、ZK Compatibility、ステーブルコイン支援、開発者エコシステム等を評価して別ADRで決定する。
+本決定は本番開始の無条件な承認ではない。公式JPYC商品・コントラクト、RPC、ファイナリティ、ガス支援、鍵管理、監査、法務・会計および障害手順を本番移行ゲートで再確認する。
 
 ---
 
@@ -119,21 +123,21 @@ flowchart TD
     SERVICE[サービス / オラクルレイヤー]
     DATA[非公開データレイヤー]
     ZK[証明 / コミットメントレイヤー]
-    L2[実行 / 精算 L2]
-    L1[Ethereum L1]
+    POS[Polygon PoS<br>実行 / 精算]
+    ETH[Ethereum<br>任意監査アンカー]
 
     UI --> SERVICE
     SERVICE --> DATA
     DATA --> ZK
-    ZK --> L2
-    L2 --> L1
+    ZK --> POS
+    POS -. 必要な場合だけ .-> ETH
 ```
 
 各レイヤーの責務を分離し、アプリケーション業務ロジックをブロックチェーンへ過剰に移さない。
 
 ---
 
-## 5. L2を採用する理由
+## 5. Polygon PoSを採用する理由
 
 Creator First Platformでは、
 
@@ -145,15 +149,15 @@ Creator First Platformでは、
 
 等のブロックチェーントランザクションが発生する。
 
-Ethereum L1だけでこれらを処理すると、トランザクションコストやThroughputがユーザ体験と分配効率へ影響する可能性がある。
+Ethereum L1だけでこれらを処理すると、トランザクションコストやThroughputがユーザ体験と分配効率へ影響する可能性がある。Polygon PoSは低コストのEVM実行環境、短時間のMilestone確定、Polygon上で公式提供されるJPYC候補および既存のウォレット・監査Toolingを組み合わせやすい。
 
-そのため通常のプロトコル実行はL2で行い、L1はセキュリティ / 精算アンカーとして利用する。
+そのため通常のプロトコル実行とJPYC等による精算はPolygon PoS内で完結させ、ユーザへブリッジ操作を要求しない。EthereumはPolygon PoSの親チェーンおよび任意の監査アンカーとして位置付け、各ユーザ操作をEthereumへ複製しない。
 
 ---
 
 ## 6. Ethereum互換性
 
-主 L2は原則としてEthereum-compatibleであることを重視する。
+主実行チェーンはEthereum-compatibleであることを重視する。
 
 理由は、
 
@@ -171,28 +175,28 @@ Ethereum L1だけでこれらを処理すると、トランザクションコス
 
 ---
 
-## 7. L2 選定基準
+## 7. チェーン選定評価
 
-主 L2は少なくとも次の基準で評価する。
+Polygon PoSの採用と継続利用を少なくとも次の基準で評価する。
 
 | Criterion | Description |
 |---|---|
-| セキュリティ | L1依存関係、証明システム、アップグレードリスク |
+| セキュリティ | Validator、Heimdall-v2、Bor、Checkpoint、アップグレードリスク |
 | コスト | ユーザ支払、distribution、proof verification cost |
 | ファイナリティ | 精算確定までの時間 |
-| 可用性 | ネットワーク / シーケンサー availability |
+| 可用性 | ネットワーク、Validator、RPC availability |
 | データ可用性 | トランザクション dataの検証可能性 |
 | ZK 支援 | ZKP verifierおよびproof infrastructureとの適合性 |
 | EVM Compatibility | Solidity / toolingとの互換性 |
 | ステーブルコイン支援 | JPYC等の利用可能性 |
-| ブリッジセキュリティ | L1 / L2間資産移動リスク |
-| 分散化 | シーケンサー / operator依存度 |
+| ブリッジセキュリティ | Polygon / Ethereum間資産移動を行う場合のリスク |
+| 分散化 | Validator集合、運用主体への依存度 |
 | ガバナンス | プロトコル upgrade governance |
-| Exit Path | L2障害時の資産回収可能性 |
+| Exit Path | 障害時の資産・状態復旧とチェーン移行可能性 |
 | 開発者エコシステム | SDK、RPC、indexer、monitoring |
 | Longevity | 長期運用可能性 |
 
-選択理由は独立したADRに記録する。
+これらの条件が本番開始前または運用中に満たされない場合は、ガバナンスと法人承認を経て停止、縮退または移行を判断する。
 
 ---
 
@@ -209,7 +213,7 @@ Chain-independent 仕様
       ↓
 スマートコントラクト実装
       ↓
-Selected L2
+Polygon PoS実装
 ```
 
 とする。
@@ -248,9 +252,15 @@ JPYCは重要な候補であるが、プロトコル Coreを特定ステーブ�
 
 テストネットでは、金銭的価値、償還請求権または実在JPYCとの交換可能性を持たない`MockJPYC`だけをデモサブスクリプションの精算資産として承認する。Mainnet JPYCとテストトークンは異なる資産 ID、コントラクトアドレス、ネットワークおよび表示を持たなければならない。
 
-最初のスマートコントラクト開発プロフィールは、Hardhat 3、Viem、Infura RPCおよびEthereum Sepolia（チェーン ID `11155111`）とする。これはテストネット ToolingとEVM上のコントラクト境界を検証する選択であり、本番チェーンまたは主 L2の決定ではない。SepoliaではETHをガスにだけ使用し、サブスクリプションと資金庫のテスト資産には無価値・償還不可の`MockJPYC`だけを使用する。
+本番候補は、Polygon PoS（チェーンID `137`）上でJPYC発行者が公式に公表し、法務・技術・セキュリティ審査を通過した資金移動業型JPYCとする。本ADR更新時に公表されているコントラクトアドレスは`0xE7C3D8C9a439feDe00D2600032D5dB0Be71C3c29`であるが、名称だけで信頼せず、本番登録時に発行者の公式情報、チェーンID、Bytecode、プロキシ実装、Decimals、停止・凍結・アップグレード権限および利用条件を再確認する。JPYC Prepaidその他の同名・旧商品と混同しない。
+
+新規の本番リハーサルはPolygon Amoy（チェーンID `80002`）で行い、Amoy POLはガスだけ、`MockJPYC`は無価値・償還不可の試験資産だけとして使用する。Amoy上のモックコントラクトまたはテスト資産をPolygon PoS mainnetのJPYCとして表示・移行しない。
+
+最初のスマートコントラクト開発プロフィールには、Hardhat 3、Viem、Infura RPCおよびEthereum Sepolia（チェーン ID `11155111`）を使用した。これは過去のテストネット ToolingとEVM上のコントラクト境界を検証した環境であり、新規の本番リハーサル環境ではない。SepoliaではETHをガスにだけ使用し、サブスクリプションと資金庫のテスト資産には無価値・償還不可の`MockJPYC`だけを使用する。
 
 2026-08-23時点で、`MockJPYC`、サブスクリプション、テスト資金庫、一般／初期サポーター SBT、ERC-1967／UUPS プロキシ、音楽クリエーター登録台帳およびIgnition Moduleをリポジトリへ実装し、公開構成ソースコミット `9e46420ebf68a0dbe4175b43e6501a5ee0ca34a7`をEthereum Sepoliaへデプロイした。公開RPCでBytecode、コントラクト接続、計画、プロキシ実装先および音楽クリエーター登録台帳通知を検証済みである。Etherscan ソース検証、役割分離、インデクサー／ゲートウェイ接続、脅威モデルおよび独立監査は未完了である。
+
+既存のEthereum Sepolia公開デモは、過去のEVM互換性検証と比較参照のため当面維持するが、Polygon本番系のステージング環境にはしない。Amoyでは新しい鍵、RPC、デプロイID、コントラクトアドレス、資産ID、マニフェスト、インデクサー開始点および監視を用い、Sepoliaの状態・権限・テスト資産を移植しない。
 
 ---
 
@@ -306,7 +316,7 @@ ADR-0003 権利登録台帳の詳細情報はオフチェーンで管理する�
       ↓
 コミットメント / ルート
       ↓
-L2 アンカー
+Polygon PoSアンカー
 ```
 
 を記録する。
@@ -319,7 +329,7 @@ L2 アンカー
 
 ADR-0005 利用実績オラクルは生の再生イベントをオフチェーンで処理する。
 
-L2へは、
+Polygon PoSへは、
 
 - 利用実績スナップショット Identifier
 - コミットメント
@@ -335,16 +345,16 @@ flowchart LR
     ORACLE[利用実績オラクル]
     SNAP[利用実績スナップショット]
     PROOF[証明 / コミットメント]
-    L2[L2 コントラクト]
+    POS[Polygon PoSコントラクト]
 
-    EVENTS --> ORACLE --> SNAP --> PROOF --> L2
+    EVENTS --> ORACLE --> SNAP --> PROOF --> POS
 ```
 
 ---
 
 ## 14. ZK 証明連携
 
-ADR-0006に従い、L2はZK 証明検証の実行レイヤーとして利用できる。
+ADR-0006に従い、Polygon PoSはZK 証明検証の実行レイヤーとして利用できる。
 
 ただし、証明検証コストが高い場合は、
 
@@ -355,18 +365,18 @@ Large 証明
     ↓
 Compact 証明
     ↓
-L2 検証
+Polygon PoS検証
 ```
 
 等の方式を許容する。
 
-証明システムとL2の選択を過度に結合しない。
+証明システムとPolygon固有機能を過度に結合しない。
 
 ---
 
 ## 15. 分配精算
 
-ADR-0004 音楽クリエーター分配モデルによる分配結果をL2上で精算する。
+ADR-0004 音楽クリエーター分配モデルによる分配結果をPolygon PoS上で精算する。
 
 概念的には、
 
@@ -378,7 +388,7 @@ flowchart LR
     POLICY[ポリシー]
     ENGINE[分配エンジン]
     ROOT[分配ルート]
-    CONTRACT[L2 分配コントラクト]
+    CONTRACT[Polygon PoS分配コントラクト]
     PAY[音楽クリエーター／権利者]
 
     REV --> ENGINE
@@ -416,7 +426,7 @@ Recipient 主張 + 証明
 
 ---
 
-## 17. L1 アンカー記録
+## 17. Ethereumへの任意アンカー記録
 
 重要なプロトコル状態について、必要に応じてEthereum L1へアンカーする。
 
@@ -430,38 +440,38 @@ Recipient 主張 + 証明
 
 等がある。
 
-すべてのL2 状態を独自にL1へ再記録する必要はなく、利用するL2のセキュリティモデルを踏まえて必要性を判断する。
+Polygon PoSはCheckpointをEthereumへ提出するが、それだけでCFP固有の意味や長期証拠保存が自動的に成立するわけではない。一方、すべてのPolygon状態をCFPがEthereumへ再記録する必要もない。追加アンカーは、対象、頻度、検証手順、費用および復旧上の効果を示せる場合だけガバナンスで承認する。
 
 ---
 
-## 18. シーケンサーリスク
+## 18. Polygon PoSの合意・運用リスク
 
-L2ではシーケンサー障害またはCensorship リスクを考慮する。
+Polygon PoSではValidator、Heimdall-v2、Bor、Milestone、CheckpointおよびRPCの障害またはCensorship リスクを考慮する。
 
-主 L2選択時には、
+継続評価では、
 
-- シーケンサー architecture
-- forced inclusion
-- escape hatch
-- L1 withdrawal
+- Validator集合と集中度
+- MilestoneとCheckpointの進行
+- Bor / Heimdall-v2の更新・障害履歴
+- Polygon / Ethereum間の資産回収経路
 - downtime history
-- decentralization roadmap
+- プロトコル・ガバナンス変更
 
 等を評価する。
 
-シーケンサー停止によって音楽クリエーターの確定済み資産が永久に失われる設計を許容しない。
+チェーンまたは主要RPCの停止によって音楽クリエーターの確定済み資産や分配債務が復旧不能になる設計を許容しない。
 
 ---
 
 ## 19. ブリッジリスク
 
-L1 / L2および異なるチェーン間のブリッジは重大なセキュリティ境界である。
+Polygon / Ethereumおよび異なるチェーン間のブリッジは重大なセキュリティ境界である。
 
 Creator First Platformは不要なCross-chain 転送を最小化する。
 
 ```text
 Preferred:
-ユーザ → 主 L2 → 音楽クリエーター
+ユーザ → Polygon PoS → 音楽クリエーター
 
 Avoid where unnecessary:
 ユーザ → チェーン A → ブリッジ → チェーン B → ブリッジ → チェーン C
@@ -473,7 +483,7 @@ Avoid where unnecessary:
 
 ## 20. マルチチェーン戦略
 
-初期段階では主 L2を一つ選択する。
+初期段階ではPolygon PoSを単一の本番主実行チェーンとする。
 
 最初から複数チェーンへ同一プロトコル状態を展開すると、
 
@@ -488,7 +498,7 @@ Avoid where unnecessary:
 
 ```text
 MVP
-Single 主 L2
+Single Polygon PoS mainnet
 
         ↓
 
@@ -594,7 +604,7 @@ Hardware-backed 鍵管理や運用事項セキュリティを別セキュリテ�
 
 ## 25. データ可用性
 
-L2選択ではデータ可用性を重要なセキュリティ要件として評価する。
+Polygon PoSの利用ではデータ可用性を重要なセキュリティ要件として評価する。
 
 Creator First Platformが検証に必要なプロトコルデータを、特定運用者だけが保持する構造を避ける。
 
@@ -630,7 +640,7 @@ Confirmed
 
 ## 27. チェーン障害
 
-主 L2が長期間利用不能になった場合のMigration Pathを設計する。
+Polygon PoSが長期間利用不能または採用基準を満たさなくなった場合のMigration Pathを設計する。
 
 少なくとも、
 
@@ -654,7 +664,8 @@ Confirmed
 - transaction latency
 - transaction failure
 - gas / fee level
-- sequencer status
+- Milestone / Checkpoint進行
+- Validator / Bor / Heimdall-v2の状態
 - contract events
 - proof verification failure
 - bridge status
@@ -675,7 +686,7 @@ Confirmed
 - 証明検証
 - コントラクトストレージ
 - 分配 Claims
-- L1 データコスト
+- Checkpoint・任意Ethereumアンカーコスト
 - ブリッジコスト
 
 である。
@@ -689,7 +700,7 @@ Millions of 再生イベント
           ↓
 One / Few Commitments
           ↓
-L2
+Polygon PoS
 ```
 
 を基本方針とする。
@@ -764,7 +775,7 @@ ADR-0001およびADR-0002で決定されたガバナンス手続の結果を、
 
 Creator First Platformの理念は特定ブロックチェーンプロジェクトの成功に依存させない。
 
-Ethereum / L2 戦略は現時点で最も適切と判断する技術アーキテクチャであり、プロトコル原則そのものではない。
+Polygon PoS / Amoy戦略は現時点で最も適切と判断する技術アーキテクチャであり、プロトコル原則そのものではない。
 
 将来、
 
@@ -789,13 +800,13 @@ MVPでは複雑なマルチチェーンアーキテクチャを構築しない�
 ローカル開発チェーン
 
 フェーズ 2
-Ethereum-compatible テストネット / L2 テスト環境
+既存Ethereum Sepoliaデモの保全
 
 フェーズ 3
-Selected 主 L2
+Polygon Amoyで本番リハーサル
 
 フェーズ 4
-本番精算
+Polygon PoSで段階的本番精算
 
 フェーズ 5
 任意 L1 アンカー記録 / Advanced ZK 検証
@@ -822,11 +833,11 @@ Selected 主 L2
 
 ### 不変条件 3
 
-音楽クリエーター分配ポリシーを特定L2固有仕様だけで定義してはならない。
+音楽クリエーター分配ポリシーをPolygon固有仕様だけで定義してはならない。
 
 ### 不変条件 4
 
-主 L2障害によって確定済みプロトコル状態を復旧不能にしてはならない。
+Polygon PoS障害によって確定済みプロトコル状態を復旧不能にしてはならない。
 
 ### 不変条件 5
 
@@ -856,6 +867,10 @@ Selected 主 L2
 
 セキュリティとエコシステムは強いが、プラットフォームの日常的な実行レイヤーとしてコストと拡張性の制約が大きくなる可能性があるため基本方式として採用しない。
 
+### Ethereum rollup型L2
+
+低コストとEthereum由来のセキュリティ特性は有力だが、現時点では本番利用する公式JPYC、ガス支援、ブリッジ不要の一体UXをPolygon PoSほど直接構成しにくいため初期本番の主実行環境には採用しない。公式JPYC対応や運用条件が変化した場合は再評価する。
+
 ### 完全オフチェーン型プラットフォーム
 
 コストとUXは単純化できるが、精算、ガバナンス実行、分配監査の信頼最小化を実現しにくいため採用しない。
@@ -878,20 +893,21 @@ Selected 主 L2
 
 ### 利点
 
-- Ethereum ecosystemを活用できる
+- Ethereum互換のウォレット、Solidity、監査Toolingを活用できる
 - L1のみよりコストを抑えやすい
+- Polygon上で公式提供されるJPYC候補を同一チェーンで扱える
 - ステーブルコイン精算とスマートコントラクト分配を統合しやすい
 - ZKP 検証との接続が可能
 - 生の利用実績をオフチェーンに維持できる
-- プロトコルを特定L2から一定程度分離できる
+- プロトコルをPolygon固有APIから一定程度分離できる
 - 将来のチェーン Migration余地を残せる
 
 ### 欠点
 
-- L2固有のセキュリティモデルを理解する必要がある
-- シーケンサーリスクがある
+- Polygon PoS固有のValidator、Bor、Heimdall-v2、MilestoneおよびCheckpointを理解する必要がある
+- Polygon PoSはEthereum rollup型L2ではなく、異なる信頼・データ可用性モデルを持つ
 - ブリッジリスクを管理する必要がある
-- L1 / L2 ファイナリティの違いを扱う必要がある
+- Polygon内のMilestone確定とEthereum Checkpoint・ブリッジ確定の違いを扱う必要がある
 - スマートコントラクトアップグレードセキュリティが必要になる
 - チェーン Migration 戦略が必要になる
 - インフラ監視が複雑になる
@@ -900,14 +916,14 @@ Selected 主 L2
 
 ## 38. セキュリティ上の考慮事項
 
-ブロックチェーン / L2 レイヤーは少なくとも次のリスクを考慮する。
+Polygon PoSを含むブロックチェーンレイヤーは少なくとも次のリスクを考慮する。
 
 - スマートコントラクト Vulnerability
 - アップグレード鍵 Compromise
 - 資金庫鍵 Compromise
-- シーケンサー Failure
-- シーケンサー Censorship
-- L2 証明 Failure
+- Validator / Bor / Heimdall-v2 Failure
+- Validator Censorshipまたは集中
+- Milestone / Checkpoint停止
 - データ可用性 Failure
 - ブリッジ Exploit
 - RPC 操作
@@ -926,9 +942,9 @@ Selected 主 L2
 
 ADR-0003 権利登録台帳は権利状態のコミットメントをブロックチェーンへアンカーできる。
 
-ADR-0004 音楽クリエーター分配モデルは分配結果をL2で精算する。
+ADR-0004 音楽クリエーター分配モデルは分配結果をPolygon PoSで精算する。
 
-ADR-0005 利用実績オラクルは検証済み利用実績スナップショット / 証明をL2へ提供する。
+ADR-0005 利用実績オラクルは検証済み利用実績スナップショット / 証明をPolygon PoSへ提供する。
 
 ADR-0006 ゼロ知識証明戦略は証明検証レイヤーを提供する。
 
@@ -937,12 +953,12 @@ ADR-0007はこれらを実行・決済・アンカーするブロックチェー
 ```text
 権利登録台帳 ──────────┐
 利用実績オラクル ─────────────┤
-分配モデル ───────┼──> ブロックチェーン / L2
+分配モデル ───────┼──> Polygon PoS
 ZK 証明戦略 ────────┘
                                 ↓
                          精算 / アンカー
                                 ↓
-                             Ethereum
+                     任意Ethereumアンカー
 ```
 
 ---
@@ -961,6 +977,9 @@ ZK 証明戦略 ────────┘
 - ADR-0004: 音楽クリエーター分配モデル
 - ADR-0005: 利用実績オラクル
 - ADR-0006: ゼロ知識証明戦略
+- [Polygon PoS Overview](https://docs.polygon.technology/pos/overview)
+- [Polygon PoS RPC endpoints](https://docs.polygon.technology/pos/reference/rpc-endpoints)
+- [JPYC公式コントラクト情報](https://github.com/jpycoin)
 
 ---
 
@@ -974,9 +993,7 @@ ZK 証明戦略 ────────┘
 - `protocol/chain-state-spec.md`
 - `protocol/asset-registry-spec.md`
 
-さらに、実際の主 L2選定について独立したADRを作成する。
-
-候補L2を、
+Polygon PoSの継続利用を、
 
 - セキュリティ
 - コスト
@@ -987,4 +1004,4 @@ ZK 証明戦略 ────────┘
 - 開発者 Tooling
 - 分散化
 
-の観点から比較し、本番デプロイ前に決定する。
+の観点から本番デプロイ前と運用中に再評価する。
