@@ -26,7 +26,7 @@ Hardhat 3とViemを使い、公開済みのテストネット専用コントラ�
 | `CreatorFirstCFP0002DeploymentFactory` | 両院承認、レビュー、P2タイムロック後だけ固定saltでCFP-0002ポリシーをデプロイする | 本番デプロイヤー、正式な憲章・法務審査または監査を代替しない |
 | `CreatorFirstCFP0002EarlySupporterPolicy` | 初期登録から31,536,000秒未満という排他的時間条件を判定する | SBTを発行せず、配信、金銭、権利または議決権を付与しない |
 
-透明型ZKの2コントラクト、CFP-0002用アダプター／デプロイファクトリー、テスト議員登録アダプター、本番向け検証可能抽選候補はローカル実装まで完了していますが、下記の公開Sepoliaマニフェストにはまだ含まれません。テスト議員登録アダプターには既存ガバナー、サブスクリプション、音楽クリエーター登録台帳へ接続して`REGISTRAR_ROLE`を付与する専用Ignitionモジュールがあります。本番向け抽選候補は監査前のためデプロイモジュールを設けていません。公開プレーヤー用サポータ登録アダプターはSepoliaへデプロイし、既存SBTへの`RELAYER_ROLE`付与まで検証済みです。CFP-0002ポリシーはガバナンス実行時にだけ作成されます。
+透明型ZKの2コントラクト、CFP-0002用アダプター／デプロイファクトリー、本番向け検証可能抽選候補はローカル実装まで完了していますが、下記の公開Sepoliaマニフェストにはまだ含まれません。テスト議員登録アダプターは既存ガバナー、サブスクリプション、音楽クリエーター登録台帳へ接続してSepoliaへデプロイし、`REGISTRAR_ROLE`付与と公開デモ会期1の作成まで公開RPCで検証済みです。本番向け抽選候補は監査前のためデプロイモジュールを設けていません。公開プレーヤー用サポータ登録アダプターはSepoliaへデプロイし、既存SBTへの`RELAYER_ROLE`付与まで検証済みです。CFP-0002ポリシーはガバナンス実行時にだけ作成されます。
 
 SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を拒否します。初期条件の`POLICY_ROLE`、実装更新の`UPGRADER_ROLE`、署名済み意思を送る`RELAYER_ROLE`を分離し、発行済み階層を後日のポリシー更新で書き換えません。
 
@@ -47,6 +47,7 @@ SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を�
 | CreatorFirstCreatorRegistry | [`0x5676…e6E9`](https://sepolia.etherscan.io/address/0x5676d34d7C41849311b99932d8272af58b63e6E9) |
 | CreatorFirstBicameralGovernor V2 | [`0x6407…2B95`](https://sepolia.etherscan.io/address/0x640711f1C249F8F6e8921E01060c99ccc6D72B95) |
 | CreatorFirstGovernedPolicy V2 | [`0x34f2…B596`](https://sepolia.etherscan.io/address/0x34f23e860b1A6E8cD0D06514A29ea9386A92B596) |
+| テスト議員登録アダプター | [`0x39cA…729F`](https://sepolia.etherscan.io/address/0x39cAdc19b820e7BA549E6E9c2F6cc008ac2F729F) |
 
 チェーン IDは`11155111`です。[公開マニフェスト](/testnet/deployment.json)と[トランザクションを含むデプロイ記録](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Sepolia RPCからBytecode、MockJPYC 通知／主張額、サブスクリプションの資産／資金庫／計画、ERC-1967 実装スロット、音楽クリエーター登録台帳のテストネット通知、ガバナーのチェーン／タイムロック設定およびデモポリシーとの接続を再検証します。
 
@@ -104,10 +105,16 @@ npm run contracts:deploy:governance-v2:sepolia
 npm run contracts:deploy:supporter-adapter:sepolia
 ```
 
-既存公開ガバナーへテスト議員登録アダプターを追加する場合は、次の専用コマンドを使います。既定では公開済みガバナー、サブスクリプション、音楽クリエーター登録台帳へ接続し、アダプターに`REGISTRAR_ROLE`を付与します。デプロイ後はアドレスとトランザクションを公開記録へ追加し、公開マニフェストの`legislatorRegistrationAdapter`を更新するまで画面の登録操作を有効にしません。
+既存公開ガバナーへテスト議員登録アダプターを追加する場合は、次の専用コマンドを使います。既定では公開済みガバナー、サブスクリプション、音楽クリエーター登録台帳へ接続し、アダプターに`REGISTRAR_ROLE`を付与します。現在の公開デプロイでは実行済みであり、再実行時は同じIgnition Journalを確認して重複デプロイを避けます。
 
 ```sh
 npm run contracts:deploy:legislator-adapter:sepolia
+```
+
+公開デモ会期1は、次の専用モジュールで一度だけ作成しました。2026年9月1日15:28 JSTに開始し、2026年10月1日15:28 JSTに終了します。投票クレジットは25、両院の定足数は各1人です。会期ID、規則ハッシュ、時刻、トランザクションは公開デプロイ記録で検証できます。
+
+```sh
+npm run contracts:deploy:governance-session-one:sepolia
 ```
 
 実行アカウントが既存SBTの`DEFAULT_ADMIN_ROLE`を失っている場合、役割付与は停止します。その場合は権限を持つ承認済み管理主体から別途付与し、エラーを迂回するために新しい管理鍵を追加しません。

@@ -23,6 +23,9 @@ const governedPolicy = manifest.contracts.governedPolicy ? getAddress(manifest.c
 const supporterRegistrationAdapter = manifest.contracts.supporterRegistrationAdapter
   ? getAddress(manifest.contracts.supporterRegistrationAdapter)
   : undefined
+const legislatorRegistrationAdapter = manifest.contracts.legislatorRegistrationAdapter
+  ? getAddress(manifest.contracts.legislatorRegistrationAdapter)
+  : undefined
 assert.equal(Boolean(governor), Boolean(governedPolicy), 'Governance manifest must publish governor and policy together')
 const rpcUrl = process.env.SEPOLIA_READ_RPC_URL ?? 'https://ethereum-sepolia-rpc.publicnode.com'
 const client = createPublicClient({ chain: sepolia, transport: http(rpcUrl) })
@@ -47,6 +50,10 @@ if (governor && governedPolicy) {
     'function p1Delay() view returns (uint64)',
     'function p2Delay() view returns (uint64)',
     'function p3Delay() view returns (uint64)',
+    'function REGISTRAR_ROLE() view returns (bytes32)',
+    'function hasRole(bytes32 role, address account) view returns (bool)',
+    'function sessionCount() view returns (uint256)',
+    'function sessions(uint256) view returns (bytes32 ruleHash, uint64 startsAt, uint64 endsAt, uint32 voiceCreditBudget, uint32 creatorQuorum, uint32 userQuorum, bool exists)',
     'function proposalCfpRevision(uint256) view returns (uint32)',
     'function cfpProposalId(bytes32) view returns (uint256)'
   ])
@@ -70,6 +77,41 @@ if (governor && governedPolicy) {
   assert.equal(emptyCfpProposal, 0n)
   assert.equal(getAddress(policyGovernor), governor)
   assert.equal(policyVersion, 1n)
+
+  if (legislatorRegistrationAdapter) {
+    const adapterAbi = parseAbi([
+      'function governor() view returns (address)',
+      'function subscription() view returns (address)',
+      'function creatorRegistry() view returns (address)'
+    ])
+    const [adapterGovernor, adapterSubscription, adapterCreatorRegistry, registrarRole, sessionCount, session] = await Promise.all([
+      client.readContract({ address: legislatorRegistrationAdapter, abi: adapterAbi, functionName: 'governor' }),
+      client.readContract({ address: legislatorRegistrationAdapter, abi: adapterAbi, functionName: 'subscription' }),
+      client.readContract({ address: legislatorRegistrationAdapter, abi: adapterAbi, functionName: 'creatorRegistry' }),
+      client.readContract({ address: governor, abi: governanceAbi, functionName: 'REGISTRAR_ROLE' }),
+      client.readContract({ address: governor, abi: governanceAbi, functionName: 'sessionCount' }),
+      client.readContract({ address: governor, abi: governanceAbi, functionName: 'sessions', args: [1n] })
+    ])
+    assert.equal(getAddress(adapterGovernor), governor)
+    assert.equal(getAddress(adapterSubscription), addresses.subscription)
+    assert.equal(getAddress(adapterCreatorRegistry), creatorRegistry)
+    assert.equal(await client.readContract({
+      address: governor,
+      abi: governanceAbi,
+      functionName: 'hasRole',
+      args: [registrarRole, legislatorRegistrationAdapter]
+    }), true, 'Legislator registration adapter does not have REGISTRAR_ROLE')
+    assert.ok(sessionCount >= 1n, 'Public governance session is missing')
+    assert.deepEqual(session, [
+      deploymentRecord.governanceConfiguration.publicDemoSession.ruleHash,
+      BigInt(deploymentRecord.governanceConfiguration.publicDemoSession.startsAt),
+      BigInt(deploymentRecord.governanceConfiguration.publicDemoSession.endsAt),
+      deploymentRecord.governanceConfiguration.publicDemoSession.voiceCreditBudget,
+      deploymentRecord.governanceConfiguration.publicDemoSession.creatorQuorum,
+      deploymentRecord.governanceConfiguration.publicDemoSession.userQuorum,
+      true
+    ])
+  }
 }
 
 const tokenAbi = parseAbi([
@@ -143,3 +185,4 @@ if (governor && governedPolicy) {
   console.log(`- Governed Demo Policy: ${governedPolicy}`)
 }
 if (supporterRegistrationAdapter) console.log(`- Supporter registration adapter: ${supporterRegistrationAdapter}`)
+if (legislatorRegistrationAdapter) console.log(`- Legislator registration adapter: ${legislatorRegistrationAdapter}`)

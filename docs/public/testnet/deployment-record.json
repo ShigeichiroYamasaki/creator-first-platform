@@ -68,6 +68,18 @@
       "blockNumber": 11562004,
       "sourceCommit": "5431e890657d1f97cd4ef3cb387d7afc1b9bdf8f",
       "deploymentId": "sepolia-creator-first-governance-v2"
+    },
+    "legislatorRegistrationAdapter": {
+      "address": "0x39cAdc19b820e7BA549E6E9c2F6cc008ac2F729F",
+      "transactionHash": "0x4a1592ad0ddb102786efdec2261bcfb90085cb3ac6af5e583d8a011646226c64",
+      "blockNumber": 11562291,
+      "roleGrantTransactionHash": "0xbe4d80f97198faa5c910f8de3df44a27dea69177ca661068efa0087792671477",
+      "roleGrantBlockNumber": 11562296,
+      "sourceCommit": "ee46a2ba0330d75d99226e66cedc7789a1e33321",
+      "deploymentId": "sepolia-testnet-legislator-registration-adapter",
+      "governor": "0x640711f1C249F8F6e8921E01060c99ccc6D72B95",
+      "subscription": "0x7bEeD194032a8D655cF72E61889896eef97F3d90",
+      "creatorRegistry": "0x5676d34d7C41849311b99932d8272af58b63e6E9"
     }
   },
   "subscriptionPlan": {
@@ -90,7 +102,19 @@
     "upgradeDelaySeconds": 300,
     "constitutionalDelaySeconds": 900,
     "executionWindowSeconds": 604800,
-    "governedPolicyInitialVersion": 1
+    "governedPolicyInitialVersion": 1,
+    "publicDemoSession": {
+      "sessionId": 1,
+      "ruleHash": "0x7c7d4b67883b80f114dd64b09399c0d66c1c7daf6951f9fcb658a8bc41ff2b55",
+      "startsAt": 1788244104,
+      "endsAt": 1790836104,
+      "voiceCreditBudget": 25,
+      "creatorQuorum": 1,
+      "userQuorum": 1,
+      "transactionHash": "0xb5e0a394ceedfbea78f5cd4b6e3b45a9858610e83dd557cb85249ed95fa0565f",
+      "blockNumber": 11562495,
+      "deploymentId": "sepolia-testnet-governance-session-one"
+    }
   },
   "operationalWarning": "All bootstrap roles, including governance registrar, reviewer and guardian, remain assigned to the deployer. Separate operational roles before broader public testing."
 }

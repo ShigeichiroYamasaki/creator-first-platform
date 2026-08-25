@@ -14,7 +14,8 @@
     "supporterRegistrationAdapter": "0xbd6887125F9b8e000CF5a0673D7fa2a29a70D292",
     "creatorRegistry": "0x5676d34d7C41849311b99932d8272af58b63e6E9",
     "governor": "0x640711f1C249F8F6e8921E01060c99ccc6D72B95",
-    "governedPolicy": "0x34f23e860b1A6E8cD0D06514A29ea9386A92B596"
+    "governedPolicy": "0x34f23e860b1A6E8cD0D06514A29ea9386A92B596",
+    "legislatorRegistrationAdapter": "0x39cAdc19b820e7BA549E6E9c2F6cc008ac2F729F"
   },
   "testOnlyNotice": "TESTNET ONLY - NO VALUE, NO REDEMPTION, NOT PRODUCTION JPYC",
   "creatorTestOnlyNotice": "TESTNET ONLY - NO IDENTITY, RIGHTS, PAYEE OR RELEASE VERIFICATION"
