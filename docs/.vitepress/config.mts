@@ -14,6 +14,11 @@ export default defineConfig({
     base: '/creator-first-platform/',
     srcExclude: ['**/* 2.md'],
     vite: {
+      server: {
+        proxy: {
+          '/api': 'http://127.0.0.1:8787'
+        }
+      },
       plugins: [
         {
           name: 'creator-first-build-info',

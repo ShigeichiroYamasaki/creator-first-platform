@@ -58,6 +58,38 @@ export class GatewayStore {
         registered_at TEXT NOT NULL,
         context TEXT NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS account_trust_bindings (
+        binding_id TEXT PRIMARY KEY,
+        owner_id TEXT NOT NULL,
+        account_subject_commitment TEXT NOT NULL,
+        state TEXT NOT NULL,
+        passkey_credential_id TEXT,
+        wallet_address TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL
+      );
+      CREATE UNIQUE INDEX IF NOT EXISTS active_account_trust_owner
+        ON account_trust_bindings(owner_id)
+        WHERE state = 'ACTIVE';
+      CREATE TABLE IF NOT EXISTS webauthn_credentials (
+        credential_id TEXT PRIMARY KEY,
+        owner_id TEXT NOT NULL,
+        public_key TEXT NOT NULL,
+        counter INTEGER NOT NULL,
+        transports_json TEXT NOT NULL,
+        device_type TEXT NOT NULL,
+        backed_up INTEGER NOT NULL,
+        created_at TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS account_trust_audit_events (
+        event_id TEXT PRIMARY KEY,
+        binding_id TEXT NOT NULL,
+        owner_id TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        occurred_at TEXT NOT NULL,
+        detail_json TEXT NOT NULL
+      );
     `)
   }
 
@@ -197,6 +229,93 @@ export class GatewayStore {
 
   demoUserRegistrationCount() {
     return this.database.prepare('SELECT COUNT(*) AS total FROM demo_user_registrations').get().total
+  }
+
+  createTrustBinding(value) {
+    this.database.prepare(`
+      INSERT INTO account_trust_bindings (
+        binding_id, owner_id, account_subject_commitment, state, created_at, updated_at, expires_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      value.bindingId,
+      value.ownerId,
+      value.accountSubjectCommitment,
+      value.state,
+      value.createdAt,
+      value.createdAt,
+      value.expiresAt
+    )
+  }
+
+  updateTrustBinding(value) {
+    this.database.prepare(`
+      UPDATE account_trust_bindings
+      SET state = ?,
+          passkey_credential_id = COALESCE(?, passkey_credential_id),
+          wallet_address = COALESCE(?, wallet_address),
+          updated_at = ?
+      WHERE binding_id = ?
+    `).run(
+      value.state,
+      value.passkeyCredentialId ?? null,
+      value.walletAddress ?? null,
+      value.updatedAt,
+      value.bindingId
+    )
+  }
+
+  activeTrustBinding(ownerId) {
+    return this.database.prepare(`
+      SELECT * FROM account_trust_bindings
+      WHERE owner_id = ?
+      ORDER BY created_at DESC
+      LIMIT 1
+    `).get(ownerId)
+  }
+
+  recordTrustAuditEvent(value) {
+    this.database.prepare(`
+      INSERT INTO account_trust_audit_events VALUES (?, ?, ?, ?, ?, ?)
+    `).run(value.eventId, value.bindingId, value.ownerId, value.eventType, value.occurredAt, value.detail)
+  }
+
+  trustAuditEvents(bindingId) {
+    return this.database.prepare(`
+      SELECT * FROM account_trust_audit_events WHERE binding_id = ? ORDER BY occurred_at, rowid
+    `).all(bindingId)
+  }
+
+  saveWebauthnCredential(value) {
+    this.database.prepare(`
+      INSERT INTO webauthn_credentials VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      value.credentialId,
+      value.ownerId,
+      value.publicKey,
+      value.counter,
+      value.transports,
+      value.deviceType,
+      value.backedUp ? 1 : 0,
+      value.createdAt
+    )
+  }
+
+  webauthnCredentials(ownerId) {
+    return this.database.prepare(`
+      SELECT * FROM webauthn_credentials WHERE owner_id = ? ORDER BY created_at
+    `).all(ownerId)
+  }
+
+  webauthnCredential(credentialId, ownerId) {
+    return this.database.prepare(`
+      SELECT * FROM webauthn_credentials WHERE credential_id = ? AND owner_id = ?
+    `).get(credentialId, ownerId)
+  }
+
+  updateWebauthnCounter(credentialId, counter) {
+    this.database.prepare(`
+      UPDATE webauthn_credentials SET counter = ? WHERE credential_id = ?
+    `).run(counter, credentialId)
   }
 
   close() {

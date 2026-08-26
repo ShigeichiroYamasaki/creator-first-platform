@@ -35,7 +35,7 @@ test('accepts the complete generated site', async () => {
   const result = await runValidator()
 
   assert.equal(result.status, 0, result.stderr)
-  assert.match(result.stdout, /5786 internal reference\(s\)/)
+  assert.match(result.stdout, /5793 internal reference\(s\)/)
 })
 
 test('rejects an unresolved internal page reference', async () => {

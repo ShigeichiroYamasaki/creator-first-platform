@@ -22,14 +22,34 @@ export function loadConfig(environment = process.env) {
     throw new Error('GATEWAY_MEDIA_ADAPTER must be file or navidrome')
   }
 
+  const publicUri = environment.GATEWAY_PUBLIC_URI ?? 'http://127.0.0.1:5173'
+  const publicUrl = new URL(publicUri)
+  const webauthnOrigin = environment.GATEWAY_WEBAUTHN_ORIGIN ?? publicUrl.origin
+  const webauthnRpId = environment.GATEWAY_WEBAUTHN_RP_ID ?? publicUrl.hostname
+
+  if (new URL(webauthnOrigin).origin !== webauthnOrigin) {
+    throw new Error('GATEWAY_WEBAUTHN_ORIGIN must be an origin without a path')
+  }
+  if (webauthnRpId.includes('/') || webauthnRpId.includes(':')) {
+    throw new Error('GATEWAY_WEBAUTHN_RP_ID must be a hostname')
+  }
+
   return {
     host: environment.GATEWAY_HOST ?? '127.0.0.1',
     port: positiveInteger(environment.GATEWAY_PORT, 8787, 'GATEWAY_PORT'),
     basePath: basePath(environment.GATEWAY_BASE_PATH),
     allowedOrigin: environment.GATEWAY_ALLOWED_ORIGIN ?? 'http://127.0.0.1:5173',
     publicDomain: environment.GATEWAY_SIWE_DOMAIN ?? '127.0.0.1:5173',
-    publicUri: environment.GATEWAY_PUBLIC_URI ?? 'http://127.0.0.1:5173',
-    chainId: positiveInteger(environment.GATEWAY_CHAIN_ID, 84532, 'GATEWAY_CHAIN_ID'),
+    publicUri,
+    chainId: positiveInteger(environment.GATEWAY_CHAIN_ID, 80002, 'GATEWAY_CHAIN_ID'),
+    webauthnOrigin,
+    webauthnRpId,
+    webauthnRpName: environment.GATEWAY_WEBAUTHN_RP_NAME ?? 'Creator First Platform Testnet',
+    trustBindingTtlMs: positiveInteger(
+      environment.GATEWAY_TRUST_BINDING_TTL_MS,
+      10 * 60_000,
+      'GATEWAY_TRUST_BINDING_TTL_MS'
+    ),
     playbackTtlMs: positiveInteger(environment.GATEWAY_PLAYBACK_TTL_MS, 300_000, 'GATEWAY_PLAYBACK_TTL_MS'),
     monthlyByteLimit: positiveInteger(
       environment.GATEWAY_MONTHLY_BYTE_LIMIT,

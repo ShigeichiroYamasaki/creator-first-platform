@@ -2,6 +2,7 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import { createServer } from 'node:http'
 import { getAddress, recoverMessageAddress, recoverTypedDataAddress } from 'viem'
 import { catalog, publicTrack } from './catalog.js'
+import { AccountTrustError, AccountTrustService } from './AccountTrustService.js'
 import { GatewayStore } from './GatewayStore.js'
 
 const COOKIE_NAME = 'cfp_demo_session'
@@ -69,11 +70,17 @@ function capabilityAllows(required, tier) {
   return tier === 'EARLY_SUPPORTER'
 }
 
-export function createGatewayServer({ config, mediaAdapter, store = new GatewayStore(config.databasePath) }) {
+export function createGatewayServer({
+  config,
+  mediaAdapter,
+  store = new GatewayStore(config.databasePath),
+  accountTrustOptions = {}
+}) {
   const accounts = new Map()
   const challenges = new Map()
   const supportIntents = new Map()
   const supportIdempotency = new Map()
+  const accountTrust = new AccountTrustService({ config, store, ...accountTrustOptions })
   let closed = false
 
   function getAccount(request, response) {
@@ -89,12 +96,14 @@ export function createGatewayServer({ config, mediaAdapter, store = new GatewayS
       tiers: new Map(),
       demoUser: undefined,
       demoRegistrationKey: undefined,
-      demoRegistrationHash: undefined
+      demoRegistrationHash: undefined,
+      passkeyAuthenticated: false,
+      authenticationChallenge: undefined
     }
     accounts.set(platformSessionId, account)
     response.setHeader(
       'Set-Cookie',
-      `${COOKIE_NAME}=${platformSessionId}; Path=/; HttpOnly; SameSite=Strict; Max-Age=3600`
+      `${COOKIE_NAME}=${platformSessionId}; Path=/; HttpOnly; SameSite=Strict; Max-Age=3600${config.webauthnOrigin.startsWith('https://') ? '; Secure' : ''}`
     )
     return account
   }
@@ -530,6 +539,38 @@ export function createGatewayServer({ config, mediaAdapter, store = new GatewayS
       if (request.method === 'POST' && path === '/v1/demo/users') {
         return await registerDemoUser(request, response, account)
       }
+      if (request.method === 'GET' && path === '/v1/account-trust/status') {
+        return sendJson(response, 200, accountTrust.status(account))
+      }
+      if (request.method === 'POST' && path === '/v1/account-trust/bindings') {
+        return sendJson(response, 201, accountTrust.begin(account))
+      }
+      const mockJpkiMatch = /^\/v1\/account-trust\/bindings\/([A-Za-z0-9-]+)\/mock-jpki$/.exec(path)
+      if (request.method === 'POST' && mockJpkiMatch) {
+        return sendJson(response, 200, accountTrust.assertMockJpki(account, mockJpkiMatch[1], await readJson(request)))
+      }
+      const registrationOptionsMatch = /^\/v1\/account-trust\/bindings\/([A-Za-z0-9-]+)\/passkeys\/registration\/options$/.exec(path)
+      if (request.method === 'POST' && registrationOptionsMatch) {
+        return sendJson(response, 200, await accountTrust.registrationOptions(account, registrationOptionsMatch[1], await readJson(request)))
+      }
+      const registrationVerifyMatch = /^\/v1\/account-trust\/bindings\/([A-Za-z0-9-]+)\/passkeys\/registration\/verify$/.exec(path)
+      if (request.method === 'POST' && registrationVerifyMatch) {
+        return sendJson(response, 200, await accountTrust.verifyRegistration(account, registrationVerifyMatch[1], await readJson(request)))
+      }
+      if (request.method === 'POST' && path === '/v1/account-trust/passkeys/authentication/options') {
+        return sendJson(response, 200, await accountTrust.authenticationOptions(account))
+      }
+      if (request.method === 'POST' && path === '/v1/account-trust/passkeys/authentication/verify') {
+        return sendJson(response, 200, await accountTrust.verifyAuthentication(account, await readJson(request)))
+      }
+      const walletOptionsMatch = /^\/v1\/account-trust\/bindings\/([A-Za-z0-9-]+)\/wallet\/options$/.exec(path)
+      if (request.method === 'POST' && walletOptionsMatch) {
+        return sendJson(response, 200, accountTrust.walletOptions(account, walletOptionsMatch[1], await readJson(request)))
+      }
+      const walletVerifyMatch = /^\/v1\/account-trust\/bindings\/([A-Za-z0-9-]+)\/wallet\/verify$/.exec(path)
+      if (request.method === 'POST' && walletVerifyMatch) {
+        return sendJson(response, 200, await accountTrust.verifyWallet(account, walletVerifyMatch[1], await readJson(request)))
+      }
       if (request.method === 'POST' && path === '/v1/playback-sessions') {
         return await createPlayback(request, response, account)
       }
@@ -579,9 +620,10 @@ export function createGatewayServer({ config, mediaAdapter, store = new GatewayS
       throw new GatewayHttpError(404, 'NOT_FOUND', 'Route not found')
     } catch (error) {
       if (response.headersSent) return response.destroy(error)
-      const status = error instanceof GatewayHttpError ? error.status : 500
-      const code = error instanceof GatewayHttpError ? error.code : 'INTERNAL_ERROR'
-      const message = error instanceof GatewayHttpError ? error.message : 'Gateway request failed'
+      const knownError = error instanceof GatewayHttpError || error instanceof AccountTrustError
+      const status = knownError ? error.status : 500
+      const code = knownError ? error.code : 'INTERNAL_ERROR'
+      const message = knownError ? error.message : 'Gateway request failed'
       sendJson(response, status, { code, message })
     }
   })

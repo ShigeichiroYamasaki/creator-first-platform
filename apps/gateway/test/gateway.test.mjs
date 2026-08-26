@@ -250,6 +250,173 @@ test('Test User registration is private, idempotent and bound to one demo sessio
   assert.deepEqual(unrelated.body, { registered: false })
 })
 
+test('Account Trust binds Mock JPKI, a server-verified passkey and an Amoy wallet in one transaction', async (context) => {
+  const config = loadConfig({
+    GATEWAY_PORT: '8787',
+    GATEWAY_DATABASE_PATH: ':memory:',
+    GATEWAY_MEDIA_ROOT: new URL('../../../docker/navidrome/music', import.meta.url).pathname,
+    GATEWAY_CHAIN_ID: '80002',
+    GATEWAY_WEBAUTHN_RP_ID: '127.0.0.1',
+    GATEWAY_WEBAUTHN_ORIGIN: 'http://127.0.0.1:5173'
+  })
+  const calls = []
+  const webauthn = {
+    async generateRegistrationOptions(options) {
+      calls.push(['registration-options', options])
+      return { challenge: 'registration-challenge', rp: { id: options.rpID, name: options.rpName } }
+    },
+    async verifyRegistrationResponse(options) {
+      calls.push(['registration-verify', options])
+      assert.equal(options.expectedChallenge, 'registration-challenge')
+      assert.equal(options.expectedOrigin, config.webauthnOrigin)
+      assert.equal(options.expectedRPID, config.webauthnRpId)
+      return {
+        verified: true,
+        registrationInfo: {
+          credential: {
+            id: 'credential-demo-1',
+            publicKey: new Uint8Array([1, 2, 3, 4]),
+            counter: 0,
+            transports: ['internal']
+          },
+          credentialDeviceType: 'multiDevice',
+          credentialBackedUp: true,
+          userVerified: true
+        }
+      }
+    },
+    async generateAuthenticationOptions(options) {
+      calls.push(['authentication-options', options])
+      return { challenge: 'authentication-challenge', rpId: options.rpID }
+    },
+    async verifyAuthenticationResponse(options) {
+      calls.push(['authentication-verify', options])
+      assert.equal(options.expectedChallenge, 'authentication-challenge')
+      assert.equal(options.credential.id, 'credential-demo-1')
+      return { verified: true, authenticationInfo: { newCounter: 1 } }
+    }
+  }
+  const gateway = createGatewayServer({
+    config,
+    mediaAdapter: new FileMediaAdapter(config.mediaRoot),
+    accountTrustOptions: { webauthn }
+  })
+  const address = await gateway.listen(0)
+  context.after(() => gateway.close())
+  const api = client(`http://127.0.0.1:${address.port}${config.basePath}`)
+  const wallet = privateKeyToAccount(TEST_PRIVATE_KEY)
+  const otherWallet = privateKeyToAccount(`0x${'abcdef0123456789'.repeat(4)}`)
+
+  await api.request('/v1/demo/users', {
+    method: 'POST',
+    body: JSON.stringify({
+      displayName: 'Trust Demo User',
+      termsVersion: 'demo-terms-v1',
+      privacyNoticeVersion: 'demo-privacy-v1',
+      acceptedTerms: true,
+      acceptedPrivacyNotice: true,
+      acknowledgedTestOnly: true,
+      idempotencyKey: 'trust-demo-user-1'
+    })
+  })
+  const begun = await json(await api.request('/v1/account-trust/bindings', { method: 'POST' }))
+  assert.equal(begun.response.status, 201)
+  assert.equal(begun.body.state, 'CREATED')
+  assert.equal(begun.body.mockJpki.mode, 'MOCK_JPKI_TEST_ONLY')
+
+  const badCsrf = await json(await api.request(`/v1/account-trust/bindings/${begun.body.bindingId}/mock-jpki`, {
+    method: 'POST',
+    body: JSON.stringify({
+      csrfToken: 'wrong-token',
+      challenge: begun.body.mockJpki.challenge,
+      acknowledgedTestOnly: true,
+      consentToBinding: true
+    })
+  }))
+  assert.equal(badCsrf.response.status, 403)
+  assert.equal(badCsrf.body.code, 'TRUST_CSRF_INVALID')
+
+  const jpki = await json(await api.request(`/v1/account-trust/bindings/${begun.body.bindingId}/mock-jpki`, {
+    method: 'POST',
+    body: JSON.stringify({
+      csrfToken: begun.body.csrfToken,
+      challenge: begun.body.mockJpki.challenge,
+      acknowledgedTestOnly: true,
+      consentToBinding: true
+    })
+  }))
+  assert.equal(jpki.body.state, 'JPKI_ASSERTED')
+  const replayedJpki = await json(await api.request(`/v1/account-trust/bindings/${begun.body.bindingId}/mock-jpki`, {
+    method: 'POST',
+    body: JSON.stringify({
+      csrfToken: begun.body.csrfToken,
+      challenge: begun.body.mockJpki.challenge,
+      acknowledgedTestOnly: true,
+      consentToBinding: true
+    })
+  }))
+  assert.equal(replayedJpki.response.status, 409)
+  assert.equal(replayedJpki.body.code, 'TRUST_BINDING_STATE_INVALID')
+
+  const registrationOptions = await api.request(`/v1/account-trust/bindings/${begun.body.bindingId}/passkeys/registration/options`, {
+    method: 'POST', body: JSON.stringify({ csrfToken: begun.body.csrfToken })
+  })
+  assert.equal(registrationOptions.status, 200)
+  const registered = await json(await api.request(`/v1/account-trust/bindings/${begun.body.bindingId}/passkeys/registration/verify`, {
+    method: 'POST',
+    body: JSON.stringify({ csrfToken: begun.body.csrfToken, response: { id: 'credential-demo-1', response: {} } })
+  }))
+  assert.equal(registered.body.state, 'PASSKEY_REGISTERED')
+
+  const wrongChain = await json(await api.request(`/v1/account-trust/bindings/${begun.body.bindingId}/wallet/options`, {
+    method: 'POST',
+    body: JSON.stringify({ csrfToken: begun.body.csrfToken, walletAddress: wallet.address, chainId: 11155111 })
+  }))
+  assert.equal(wrongChain.response.status, 400)
+  assert.equal(wrongChain.body.code, 'CHAIN_NOT_ALLOWED')
+
+  const walletOptions = await json(await api.request(`/v1/account-trust/bindings/${begun.body.bindingId}/wallet/options`, {
+    method: 'POST',
+    body: JSON.stringify({ csrfToken: begun.body.csrfToken, walletAddress: wallet.address, chainId: 80002 })
+  }))
+  assert.equal(walletOptions.body.disclosure.paymentAuthorizationIncluded, false)
+  const wrongSignature = await otherWallet.signTypedData(walletOptions.body.typedData)
+  const rejectedWallet = await json(await api.request(`/v1/account-trust/bindings/${begun.body.bindingId}/wallet/verify`, {
+    method: 'POST', body: JSON.stringify({ csrfToken: begun.body.csrfToken, signature: wrongSignature })
+  }))
+  assert.equal(rejectedWallet.response.status, 401)
+  assert.equal(rejectedWallet.body.code, 'WALLET_BINDING_SIGNER_MISMATCH')
+
+  const signature = await wallet.signTypedData(walletOptions.body.typedData)
+  const activated = await json(await api.request(`/v1/account-trust/bindings/${begun.body.bindingId}/wallet/verify`, {
+    method: 'POST', body: JSON.stringify({ csrfToken: begun.body.csrfToken, signature })
+  }))
+  assert.equal(activated.body.state, 'ACTIVE')
+  assert.equal(activated.body.chainId, 80002)
+  assert.equal(activated.body.walletAddress, wallet.address)
+
+  const status = await json(await api.request('/v1/account-trust/status'))
+  assert.equal(status.body.binding.state, 'ACTIVE')
+  assert.equal(status.body.binding.passkeyRegistered, true)
+  assert.equal(status.body.mode, 'MOCK_JPKI_TEST_ONLY')
+  assert.deepEqual(
+    gateway.store.trustAuditEvents(begun.body.bindingId).map((event) => event.event_type),
+    ['CREATED', 'JPKI_ASSERTED', 'PASSKEY_REGISTERED', 'WALLET_BOUND', 'ACTIVE']
+  )
+
+  await api.request('/v1/account-trust/passkeys/authentication/options', { method: 'POST' })
+  const authenticated = await json(await api.request('/v1/account-trust/passkeys/authentication/verify', {
+    method: 'POST', body: JSON.stringify({ response: { id: 'credential-demo-1', response: {} } })
+  }))
+  assert.equal(authenticated.body.authenticated, true)
+  assert.equal(
+    gateway.store.database.prepare('SELECT counter FROM webauthn_credentials WHERE credential_id = ?').get('credential-demo-1').counter,
+    1
+  )
+  assert.equal(calls.some(([name]) => name === 'registration-verify'), true)
+  assert.equal(calls.some(([name]) => name === 'authentication-verify'), true)
+})
+
 test('single Range parser rejects multi-range and out-of-bounds input', () => {
   assert.deepEqual(parseSingleRange(undefined, 100), { start: 0, end: 99, partial: false })
   assert.deepEqual(parseSingleRange('bytes=20-29', 100), { start: 20, end: 29, partial: true })

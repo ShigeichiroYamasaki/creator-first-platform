@@ -4,7 +4,7 @@
 **Version:** 0.1.0  
 **Protocol Domain:** account / identity  
 **Specification ID:** SPEC-ACCOUNT-002  
-**Last Updated:** 2026-08-19
+**Last Updated:** 2026-08-26
 
 ## Related Documents
 
@@ -14,6 +14,7 @@
 - Whitepaper: `docs/whitepaper/09-technology.md`
 - Whitepaper: `docs/whitepaper/10-security.md`
 - ADR: `docs/adr/ADR-0008-account-wallet-identity-strategy.md`
+- ADR: `docs/adr/ADR-0019-jpki-passkey-wallet-binding-testnet.md`
 - Standard: [ERC-4361 Sign-In with Ethereum](https://eips.ethereum.org/EIPS/eip-4361)
 - Standard: [ERC-1271 Standard Signature Validation Method for Contracts](https://eips.ethereum.org/EIPS/eip-1271)
 - Standard: [EIP-712 Typed Structured Data Hashing and Signing](https://eips.ethereum.org/EIPS/eip-712)
@@ -29,6 +30,12 @@
 ## Goal
 
 Define a secure, replay-resistant process for proving control of an EVM wallet and linking it to a Platform Account for explicitly approved purposes without treating the wallet as the person's complete identity.
+
+## Current Implementation Conformance
+
+The ADR-0019 local pilot issues an EIP-712 `WalletBindingIntent` only after Mock JPKI and server-verified WebAuthn registration have advanced the same short-lived binding transaction. It binds an opaque account-subject commitment, checksummed wallet, Polygon Amoy chain ID `80002`, random nonce, issue time, deadline, purpose and policy version, then recovers and compares the signer before recording `WALLET_BOUND` and `ACTIVE`. Tests reject CSRF mismatch, state/challenge replay, a non-Amoy chain and a different signer.
+
+This is an EOA-only, local test profile. It does not implement ERC-1271, production Platform Account sessions, unlinking, purpose expansion, recovery, active-dependency migration, rate limiting, durable idempotency across process restart or public deployment. It therefore provides partial evidence only and does not meet this specification's complete acceptance criteria.
 
 ## Scope
 

@@ -15,6 +15,37 @@ Polygon Amoyのコントラクトアドレスとソースコミットを公開�
   <TestnetUserJourneyDemo />
 </ClientOnly>
 
+## JPKI・パスキー・MetaMask結合
+
+次のデモは、上で登録した仮名テストユーザに、モックJPKI結果、FIDO2／WebAuthnパスキー、Polygon AmoyのMetaMaskウォレットを順番に結び付けます。公開GitHub Pagesでは安全なRP境界と状態を持つAPIがないため操作を無効にし、ローカル同一オリジン構成またはCFP専用HTTPSドメインでだけ有効にします。
+
+```mermaid
+flowchart LR
+    CARD[マイナンバーカード＋NFC読取<br/>管理された実カード試験のみ]
+    PASSKEY[端末内認証器／FIDO2キー<br/>パスキー秘密鍵]
+    BROWSER[ブラウザ<br/>WebAuthn]
+    WALLET[MetaMask<br/>ウォレット秘密鍵]
+    TRUST[アカウント・トラストサービス<br/>短命結合状態・監査]
+    JPKI[JPKIアダプター<br/>現在はモック]
+    VERIFY[WebAuthn／EIP-712検証]
+    AMOY[Polygon Amoy]
+
+    CARD -. 将来の管理試験 .-> JPKI
+    PASSKEY --> BROWSER
+    WALLET --> BROWSER
+    BROWSER --> TRUST
+    TRUST --> JPKI
+    TRUST --> VERIFY
+    VERIFY --> BROWSER
+    WALLET -->|ユーザが承認した取引のみ| AMOY
+```
+
+現在必要なハードウェアは、WebAuthn対応ブラウザ、端末内認証器またはFIDO2セキュリティキー、MetaMaskを利用できる端末です。マイナンバーカードとNFC対応スマートフォン／ICカードリーダーは、認定事業者の試験接続を行う段階でだけ必要になります。
+
+<ClientOnly>
+  <AccountTrustDemo />
+</ClientOnly>
+
 ## データと資産の境界
 
 | 項目 | この公開利用フロー | ローカルゲートウェイ連携版 |

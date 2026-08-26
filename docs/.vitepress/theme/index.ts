@@ -20,6 +20,7 @@ export default {
     app.component('TestUserRegistrationDemo', TestUserRegistrationDemo)
     app.component('TestnetGovernanceDemo', TestnetGovernanceDemo)
     app.component('TestnetUserJourneyDemo', defineAsyncComponent(() => import('./TestnetUserJourneyDemo.vue')))
+    app.component('AccountTrustDemo', defineAsyncComponent(() => import('./AccountTrustDemo.vue')))
     app.component('TestnetCreatorJourneyDemo', defineAsyncComponent(() => import('./TestnetCreatorJourneyDemo.vue')))
     app.component('TreasuryFlowDemo', TreasuryFlowDemo)
     app.component('UserServiceDemo', UserServiceDemo)

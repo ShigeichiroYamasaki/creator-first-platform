@@ -4,7 +4,7 @@
 **Version:** 0.1.0  
 **Protocol Domain:** account / identity  
 **Specification ID:** SPEC-ACCOUNT-003  
-**Last Updated:** 2026-08-19
+**Last Updated:** 2026-08-26
 
 ## Related Documents
 
@@ -15,6 +15,7 @@
 - Whitepaper: `docs/whitepaper/10-security.md`
 - Whitepaper: `docs/whitepaper/11-legal-sto-tax.md`
 - ADR: `docs/adr/ADR-0008-account-wallet-identity-strategy.md`
+- ADR: `docs/adr/ADR-0019-jpki-passkey-wallet-binding-testnet.md`
 - Standard: [W3C Web Authentication Level 3](https://www.w3.org/TR/webauthn-3/)
 - Guidance: [NIST SP 800-63B-4 Authentication and Lifecycle Management](https://pages.nist.gov/800-63-4/sp800-63b.html)
 
@@ -32,7 +33,9 @@ Define a durable Platform Account lifecycle with secure authenticator binding, s
 
 ## Current Implementation Conformance
 
-The local `POST /v1/demo/users` implementation is not an implementation of Account registration defined by this specification. It attaches an ephemeral Alias profile and notice-version record to an automatically generated synthetic Demo Principal. It performs no authenticator ceremony, creates no `PENDING` or `ACTIVE` Platform Account, supplies no recovery path and cannot satisfy `REQ-ACCOUNT-068`–`REQ-ACCOUNT-114` acceptance. Its registration state MUST NOT be used as Account, Subscription, Wallet Link, Credential or legal-identity authorization input. It is permitted only as a bounded fixture under `MOCK-ASSUMPTION-001` while `OQ-ACCOUNT-LIFECYCLE-001` and `OQ-ACCOUNT-LIFECYCLE-002` remain open.
+The local `POST /v1/demo/users` implementation alone is not an implementation of Account registration defined by this specification. It attaches an ephemeral Alias profile and notice-version record to an automatically generated synthetic Demo Principal, and its registration state MUST NOT be used as Account, Subscription, Wallet Link, Credential or legal-identity authorization input.
+
+The ADR-0019 Account Trust pilot adds a bounded `CREATED → JPKI_ASSERTED → PASSKEY_REGISTERED → WALLET_BOUND → ACTIVE` binding transaction. It verifies WebAuthn registration and authentication server-side, stores only public-key credential metadata, verifies an operation-bound Polygon Amoy EIP-712 wallet signature and records state transitions. Its JPKI result is explicitly non-cryptographic Mock data, `ACTIVE` is a pilot binding state rather than the production Platform Account state, and it supplies no recovery, restriction, closure, rate-limit, notification or production retention implementation. It therefore gives local test evidence for parts of `REQ-ACCOUNT-068`, `REQ-ACCOUNT-069`, `REQ-ACCOUNT-078`, `REQ-ACCOUNT-099`, `REQ-ACCOUNT-101` and `REQ-ACCOUNT-105`, but cannot satisfy `REQ-ACCOUNT-068`–`REQ-ACCOUNT-114` acceptance as a whole. It remains a bounded fixture under `MOCK-ASSUMPTION-001` while the production Open Questions remain open.
 
 ## Scope
 
