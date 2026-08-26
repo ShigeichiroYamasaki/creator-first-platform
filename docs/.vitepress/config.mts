@@ -414,6 +414,15 @@ export default defineConfig({
                 )
               : withoutCredentialArtwork
 
+            // アカウント結合の要点は検索可能に保ち、詳細は本文とADR-0019で
+            // 提供することで、同じ説明による検索索引の重複を避ける。
+            if (environment.relativePath?.endsWith('whitepaper/10-security.md')) {
+              return searchableDocument.replace(
+                /(<h3[^>]*id="_10-6-1-[^"]*"[^>]*>[\s\S]*?<\/h3>)[\s\S]*?(?=<hr><h2[^>]*id="_10-7-|$)/,
+                '$1<p>JPKI本人確認、FIDO2／WebAuthnパスキー、MetaMaskウォレットをアカウント・トラストサービスで段階的に結合する。公開デモはモックJPKIとPolygon Amoyを使用し、詳細はADR-0019で定義する。</p>'
+              )
+            }
+
             // 長大なインフラ章の後半は、実装時に参照する運用詳細であるため、
             // ページ本文には残しつつローカル検索索引から除外する。
             if (environment.relativePath === 'whitepaper/12-infrastructure-cost.md') {
