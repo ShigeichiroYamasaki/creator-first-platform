@@ -9,7 +9,7 @@ description: GitHub Pages上でテストユーザ登録、Polygon Amoy ウォレ
 
 **日付:** 2026-08-23
 
-**最終更新日:** 2026-08-26
+**最終更新日:** 2026-08-27
 
 ## 背景
 
@@ -28,7 +28,7 @@ flowchart LR
     PROFILE[Tab-local テストプロフィール]
     WALLET[EIP-1193 ウォレット]
     MANIFEST[Same-origin デプロイマニフェスト]
-    SEPOLIA[Polygon Amoy]
+    AMOY[Polygon Amoy]
     TOKEN[MockJPYC]
     SUB[サブスクリプションコントラクト]
     PLAYER[Synthetic 音声プレーヤー]
@@ -37,8 +37,8 @@ flowchart LR
 
     PROFILE --> WALLET
     MANIFEST --> WALLET
-    WALLET --> SEPOLIA
-    SEPOLIA --> TOKEN --> SUB
+    WALLET --> AMOY
+    AMOY --> TOKEN --> SUB
     SUB -. confirmed UI state .-> PLAYER
     PLAYER -->|EIP-712署名 + ユーザのガス| ADAPTER --> SBT
 ```

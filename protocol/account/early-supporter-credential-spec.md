@@ -4,7 +4,7 @@
 **Version:** 0.1.0
 **Protocol Domain:** account / credential / entitlement
 **Specification ID:** SPEC-ACCOUNT-004
-**Last Updated:** 2026-08-22
+**Last Updated:** 2026-08-27
 
 ## Related Documents
 
@@ -287,6 +287,10 @@ Audit records cover qualification decision, disclosure version, consent, issuer 
 | REQ-EARLY-SUPPORTER-033–038 | Contract / Wallet / Relayer / privilege | one Contract-selected tier is replay-safe; history remains versioned; bounded off-chain and on-chain exercise works; registration cannot authorize payment |
 
 Adversarial tests include arbitrary look-alike contracts, forged Wallet Links, duplicate Qualification, transfer attempts, stale and reorganized events, issuer compromise simulation, replayed consent, concurrent reissuance, old-Wallet use, scope widening, Policy rollback and direct Media Adapter access.
+
+## Testnet Implementation Profile
+
+The CFP testnet profile starts on Polygon Amoy with chain ID `80002`. Only the exact Supporter Credential deployment recorded as active in the reviewed same-origin deployment manifest is approved. A token, SBT, issuer claim or lifecycle event from any other chain or unlisted Contract Address is untrusted and creates no CFP testnet qualification, privilege, history, migration claim or replacement right.
 
 ## Acceptance Criteria
 

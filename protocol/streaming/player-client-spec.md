@@ -4,7 +4,7 @@
 **Version:** 0.1.0
 **Protocol Domain:** streaming / client
 **Specification ID:** SPEC-STREAMING-002
-**Last Updated:** 2026-08-24
+**Last Updated:** 2026-08-27
 
 ## Related Documents
 
@@ -156,7 +156,7 @@ General Supporter and Early Supporter are independently rendered tiers of one Su
 - **REQ-PLAYER-016:** Logout and Account switching MUST stop active playback, clear in-memory protected session state, close applicable sessions and prevent one Account's Credential or Community view from appearing under another Account.
 - **REQ-PLAYER-017:** The Player MUST provide non-sensitive and actionable UI states for authentication, authorization, Rights, Subscription, Credential, Range, upstream, offline and unsupported-media failures.
 - **REQ-PLAYER-018:** The Player MUST provide keyboard-operable playback controls, programmatic labels, visible focus, sufficient contrast and status announcements for material asynchronous Wallet, Credential and playback outcomes.
-- **REQ-PLAYER-019:** The Testnet Demo MUST identify its environment, chain and test assets, and MUST distinguish MockJPYC and Test ETH from production money or a subscription price.
+- **REQ-PLAYER-019:** The Testnet Demo MUST identify Polygon Amoy, chain ID `80002` and its test assets, and MUST distinguish MockJPYC and Test POL from production money or a subscription price.
 - **REQ-PLAYER-020:** The Testnet Demo MUST serve the PWA and Gateway API from an approved same-origin boundary unless an alternative CORS, cookie and signing-domain threat review is recorded.
 - **REQ-PLAYER-039:** Before Supporter registration, the Player MUST disclose Creator, public non-transferable SBT, chain, Contract, nonce or deadline, consent version and Gas sponsor, then sign and submit only unchanged Gateway-issued typed data for the active Wallet Link.
 - **REQ-PLAYER-040:** The Player MUST NOT select Early tier and MUST distinguish signature, relay, submitted, confirming, finalized general or Early tier, effective privilege, failure, revocation and burn from authoritative state.
@@ -345,7 +345,7 @@ Browser and adversarial tests MUST include direct Navidrome URL attempts, inject
 - General Supporter, Early Supporter, pending Credential and effective Community capability are visibly distinct and match authoritative Read Model state.
 - No protected audio, Playback Session, Wallet signature or private key remains in persistent client storage after logout or reload.
 - Client observations remain untrusted inputs to Usage Verification.
-- Testnet chain and assets cannot be mistaken for production payment, and Test ETH is shown only as gas when relevant.
+- Polygon Amoy and its test assets cannot be mistaken for production payment, and Test POL is shown only as gas when relevant.
 - The e2-micro Demo serves static Player assets without adding a resident Player application server.
 - Accessibility tests cover keyboard, focus, programmatic labels, contrast, reduced motion and asynchronous status announcements.
 - OSS dependencies and copied code have a recorded version, license, modification and notice trail.

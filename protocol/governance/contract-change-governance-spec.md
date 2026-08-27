@@ -4,7 +4,7 @@
 **Version:** 0.1.0
 **Protocol Domain:** governance / voting / contract evolution
 **Specification ID:** SPEC-GOVERNANCE-001
-**Last Updated:** 2026-08-25
+**Last Updated:** 2026-08-27
 
 ## Related Documents
 
@@ -285,7 +285,7 @@ The audit bundle records Session, membership roots, Proposal Revision, Rule Vers
 
 ## Testnet Implementation Profile
 
-The first executable profile is implemented by `CreatorFirstBicameralGovernor` and the harmless `CreatorFirstGovernedPolicy` target. It binds a CFP identifier hash and revision to the immutable proposal payload, validates session-bound equal Voice Credit, quadratic replacement accounting, separate Creator House and User House outcomes, joint approval, exact calldata binding, review evidence, P3 referendum-evidence presence, class-based delay, execution expiry and guardian cancellation. Separate public House routes may filter write controls by the connected member's committed House, but UI routing never establishes membership or changes the canonical on-chain result.
+The first executable profile starts on Polygon Amoy with chain ID `80002` and is implemented by the exact `CreatorFirstBicameralGovernor` and harmless `CreatorFirstGovernedPolicy` deployments recorded as active in the reviewed same-origin deployment manifest. Governance contracts, memberships, votes, SBTs or execution claims from another chain or unlisted Contract Address are untrusted and create no CFP testnet authority, history, migration claim or replacement right. The profile binds a CFP identifier hash and revision to the immutable proposal payload, validates session-bound equal Voice Credit, quadratic replacement accounting, separate Creator House and User House outcomes, joint approval, exact calldata binding, review evidence, P3 referendum-evidence presence, class-based delay, execution expiry and guardian cancellation. Separate public House routes may filter write controls by the connected member's committed House, but UI routing never establishes membership or changes the canonical on-chain result.
 
 `CreatorFirstTestnetLegislatorRegistrationAdapter` is the bounded test membership profile. It accepts only an active test subscription for User House or an active unverified test Creator registry entry for Creator House, and delegates final one-House and deadline enforcement to the Governor. The public UI MUST keep registration disabled until the adapter address and role grant are present in the reviewed Polygon Amoy deployment manifest.
 

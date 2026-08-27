@@ -205,7 +205,7 @@ export default defineConfig({
               { text: 'テストネット版ガバナンス', link: '/demo/governance' },
               { text: '音楽クリエータ院議会', link: '/demo/creator-house' },
               { text: 'ユーザ院議会', link: '/demo/user-house' },
-              { text: 'Sepoliaスマートコントラクト', link: '/demo/testnet-contracts' },
+              { text: 'Polygon Amoyスマートコントラクト', link: '/demo/testnet-contracts' },
               { text: 'ローカル音楽ストリーミング', link: '/demo/local-streaming' },
               { text: 'ローカルストリーミングゲートウェイ', link: '/demo/local-gateway' }
             ]

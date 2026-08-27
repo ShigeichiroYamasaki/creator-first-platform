@@ -368,12 +368,12 @@ test('Account Trust binds Mock JPKI, a server-verified passkey and an Amoy walle
   }))
   assert.equal(registered.body.state, 'PASSKEY_REGISTERED')
 
-  const wrongChain = await json(await api.request(`/v1/account-trust/bindings/${begun.body.bindingId}/wallet/options`, {
+  const unsupportedChain = await json(await api.request(`/v1/account-trust/bindings/${begun.body.bindingId}/wallet/options`, {
     method: 'POST',
-    body: JSON.stringify({ csrfToken: begun.body.csrfToken, walletAddress: wallet.address, chainId: 11155111 })
+    body: JSON.stringify({ csrfToken: begun.body.csrfToken, walletAddress: wallet.address, chainId: 1 })
   }))
-  assert.equal(wrongChain.response.status, 400)
-  assert.equal(wrongChain.body.code, 'CHAIN_NOT_ALLOWED')
+  assert.equal(unsupportedChain.response.status, 400)
+  assert.equal(unsupportedChain.body.code, 'CHAIN_NOT_ALLOWED')
 
   const walletOptions = await json(await api.request(`/v1/account-trust/bindings/${begun.body.bindingId}/wallet/options`, {
     method: 'POST',
