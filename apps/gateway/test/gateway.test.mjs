@@ -250,6 +250,66 @@ test('Test User registration is private, idempotent and bound to one demo sessio
   assert.deepEqual(unrelated.body, { registered: false })
 })
 
+test('Administrator issues a wallet-agnostic invitation and the invited person claims it with SIWE', async (context) => {
+  const config = loadConfig({
+    GATEWAY_PORT: '8787',
+    GATEWAY_DATABASE_PATH: ':memory:',
+    GATEWAY_MEDIA_ROOT: new URL('../../../docker/navidrome/music', import.meta.url).pathname,
+    GATEWAY_ADMIN_TOKEN: 'test-admin-token-with-sufficient-entropy',
+    GATEWAY_INVITATION_PUBLIC_URL: 'https://example.test/demo/participant-registration'
+  })
+  const gateway = createGatewayServer({ config, mediaAdapter: new FileMediaAdapter(config.mediaRoot) })
+  const address = await gateway.listen(0)
+  context.after(() => gateway.close())
+  const api = client(`http://127.0.0.1:${address.port}${config.basePath}`)
+  const adminHeaders = { Authorization: 'Bearer test-admin-token-with-sufficient-entropy' }
+
+  const unauthorized = await api.request('/v1/admin/participant-invitations')
+  assert.equal(unauthorized.status, 401)
+  const created = await json(await api.request('/v1/admin/participant-invitations', {
+    method: 'POST',
+    headers: adminHeaders,
+    body: JSON.stringify({ email: 'participant@example.test', displayName: 'Demo Participant', roles: 3, expiresInHours: 24 })
+  }))
+  assert.equal(created.response.status, 201)
+  assert.match(created.body.invitationUri, /^https:\/\/example\.test\/demo\/participant-registration#invite=/)
+  assert.equal(created.body.roles, 3)
+
+  const inspected = await json(await api.request(`/v1/participant-invitations/${created.body.token}`))
+  assert.equal(inspected.response.status, 200)
+  assert.equal(inspected.body.displayName, 'Demo Participant')
+  assert.equal('email' in inspected.body, false)
+  assert.equal('token' in inspected.body, false)
+
+  const sent = await json(await api.request(`/v1/admin/participant-invitations/${created.body.invitationId}/send`, {
+    method: 'POST', headers: adminHeaders, body: JSON.stringify({ token: created.body.token })
+  }))
+  assert.equal(sent.response.status, 200)
+  assert.equal(sent.body.delivery.mode, 'outbox')
+  assert.equal(gateway.invitationMailer.outbox.length, 1)
+
+  const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+  const challenge = await json(await api.request('/v1/auth/siwe/nonce', {
+    method: 'POST', body: JSON.stringify({ address: account.address, chainId: config.chainId })
+  }))
+  const signature = await account.signMessage({ message: challenge.body.message })
+  assert.equal((await api.request('/v1/auth/siwe/verify', {
+    method: 'POST', body: JSON.stringify({ challengeId: challenge.body.challengeId, message: challenge.body.message, signature })
+  })).status, 200)
+  const claimed = await json(await api.request(`/v1/participant-invitations/${created.body.token}/claim`, {
+    method: 'POST', body: JSON.stringify({ acceptedTerms: true, acknowledgedTestOnly: true })
+  }))
+  assert.equal(claimed.response.status, 200)
+  assert.equal(claimed.body.state, 'CLAIMED')
+  assert.equal('claimedWallet' in claimed.body, false)
+
+  const replay = await json(await api.request(`/v1/participant-invitations/${created.body.token}/claim`, {
+    method: 'POST', body: JSON.stringify({ acceptedTerms: true, acknowledgedTestOnly: true })
+  }))
+  assert.equal(replay.response.status, 200)
+  assert.equal(replay.body.state, 'CLAIMED')
+})
+
 test('Account Trust binds Mock JPKI, a server-verified passkey and an Amoy wallet in one transaction', async (context) => {
   const config = loadConfig({
     GATEWAY_PORT: '8787',

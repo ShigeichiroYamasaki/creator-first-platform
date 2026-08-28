@@ -144,6 +144,15 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     deployer,
     deployer,
   ], { value: initialTestPolFunding });
+  const participantRegistry = m.contract("CreatorFirstTestnetParticipantRegistry", [
+    admin,
+    deployer,
+    testnetPolDistributor,
+  ]);
+  const testPolRegistrarRole = m.staticCall(testnetPolDistributor, "REGISTRAR_ROLE");
+  m.call(testnetPolDistributor, "grantRole", [testPolRegistrarRole, participantRegistry], {
+    id: "GrantParticipantRegistryTestPolRegistrarRole",
+  });
   const transparentZKMockProfileId = keccak256(
     stringToHex("cfp.testnet.transparent-zk.mock.v1"),
   );
@@ -173,5 +182,6 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     transparentZKMockVerifier,
     transparentZKRegistry,
     testnetPolDistributor,
+    participantRegistry,
   };
 });

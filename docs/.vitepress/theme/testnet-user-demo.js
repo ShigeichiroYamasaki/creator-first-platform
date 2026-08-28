@@ -7,6 +7,10 @@ export const AMOY_MIN_PRIORITY_FEE_PER_GAS = 25_000_000_000n
 export const AMOY_FALLBACK_BASE_FEE_PER_GAS = 1_000_000_000n
 export const DEMO_SUPPORTER_CREATOR_ID = keccak256(stringToHex('creator:synthetic-demo-artist'))
 export const DEMO_SUPPORTER_CONSENT_VERSION = keccak256(stringToHex('supporter-demo-consent-v1'))
+export const TESTNET_USER_ROLE = 1
+export const TESTNET_CREATOR_ROLE = 2
+export const TESTNET_USER_ENROLLMENT_CONSENT_VERSION = keccak256(stringToHex('participant-user-demo-consent-v1'))
+export const TESTNET_CREATOR_ENROLLMENT_CONSENT_VERSION = keccak256(stringToHex('participant-creator-demo-consent-v1'))
 const PUBLIC_SITE_ORIGIN = 'https://shigeichiroyamasaki.github.io'
 const SUPPORTER_METADATA_PATHS = new Map([
   ['/creator-first-platform/sbt/supporter.json', '/creator-first-platform/images/supporter-sbt-example.webp'],
@@ -204,6 +208,33 @@ export const creatorRegistryAbi = [
   }
 ]
 
+export const participantRegistryAbi = [
+  {
+    type: 'function', name: 'participantIdByWallet', stateMutability: 'view',
+    inputs: [{ name: 'wallet', type: 'address' }], outputs: [{ name: '', type: 'bytes32' }]
+  },
+  {
+    type: 'function', name: 'participants', stateMutability: 'view',
+    inputs: [{ name: 'participantId', type: 'bytes32' }],
+    outputs: [
+      { name: 'wallet', type: 'address' }, { name: 'approvedRoles', type: 'uint8' },
+      { name: 'registeredRoles', type: 'uint8' }, { name: 'approvedAt', type: 'uint64' },
+      { name: 'approvalExpiresAt', type: 'uint64' }, { name: 'active', type: 'bool' },
+      { name: 'initialFundingCompleted', type: 'bool' }
+    ]
+  },
+  {
+    type: 'function', name: 'isRegistered', stateMutability: 'view',
+    inputs: [{ name: 'wallet', type: 'address' }, { name: 'role', type: 'uint8' }],
+    outputs: [{ name: '', type: 'bool' }]
+  },
+  {
+    type: 'function', name: 'registerSelf', stateMutability: 'nonpayable',
+    inputs: [{ name: 'role', type: 'uint8' }, { name: 'consentVersion', type: 'bytes32' }],
+    outputs: []
+  }
+]
+
 function hasValidAddress(value) {
   return typeof value === 'string' && isAddress(value) && !/^0x0{40}$/i.test(value)
 }
@@ -235,6 +266,13 @@ export function validateDeploymentManifest(value) {
     !hasValidAddress(contracts.testPolDistributor)
   ) {
     throw new Error('Active deployment manifest contains an invalid Test POL distributor address.')
+  }
+  if (
+    contracts.participantRegistry !== undefined &&
+    contracts.participantRegistry !== null &&
+    !hasValidAddress(contracts.participantRegistry)
+  ) {
+    throw new Error('Active deployment manifest contains an invalid participant registry address.')
   }
   return { ...value, active: true }
 }
@@ -299,6 +337,10 @@ export async function getAmoyTransactionFees(publicClient) {
 
 export function hasActiveCreatorRegistry(manifest) {
   return Boolean(manifest?.active && hasValidAddress(manifest?.contracts?.creatorRegistry))
+}
+
+export function hasActiveParticipantRegistry(manifest) {
+  return Boolean(manifest?.active && hasValidAddress(manifest?.contracts?.participantRegistry))
 }
 
 export function hasActiveSupporterRegistration(manifest) {

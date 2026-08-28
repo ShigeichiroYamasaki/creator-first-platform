@@ -24,5 +24,7 @@ export default {
     app.component('TestnetCreatorJourneyDemo', defineAsyncComponent(() => import('./TestnetCreatorJourneyDemo.vue')))
     app.component('TreasuryFlowDemo', TreasuryFlowDemo)
     app.component('UserServiceDemo', UserServiceDemo)
+    app.component('ParticipantAdminDemo', defineAsyncComponent(() => import('./ParticipantAdminDemo.vue')))
+    app.component('ParticipantInvitationRegistration', defineAsyncComponent(() => import('./ParticipantInvitationRegistration.vue')))
   }
 }

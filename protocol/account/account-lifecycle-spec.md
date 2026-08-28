@@ -4,7 +4,7 @@
 **Version:** 0.1.0  
 **Protocol Domain:** account / identity  
 **Specification ID:** SPEC-ACCOUNT-003  
-**Last Updated:** 2026-08-26
+**Last Updated:** 2026-08-28
 
 ## Related Documents
 
@@ -16,6 +16,7 @@
 - Whitepaper: `docs/whitepaper/11-legal-sto-tax.md`
 - ADR: `docs/adr/ADR-0008-account-wallet-identity-strategy.md`
 - ADR: `docs/adr/ADR-0019-jpki-passkey-wallet-binding-testnet.md`
+- ADR: `docs/adr/ADR-0020-wallet-agnostic-participant-invitations.md`
 - Standard: [W3C Web Authentication Level 3](https://www.w3.org/TR/webauthn-3/)
 - Guidance: [NIST SP 800-63B-4 Authentication and Lifecycle Management](https://pages.nist.gov/800-63-4/sp800-63b.html)
 
@@ -34,6 +35,8 @@ Define a durable Platform Account lifecycle with secure authenticator binding, s
 ## Current Implementation Conformance
 
 The local `POST /v1/demo/users` implementation alone is not an implementation of Account registration defined by this specification. It attaches an ephemeral Alias profile and notice-version record to an automatically generated synthetic Demo Principal, and its registration state MUST NOT be used as Account, Subscription, Wallet Link, Credential or legal-identity authorization input.
+
+The ADR-0020 participant-invitation pilot implements a separate pre-registration boundary. An authorized operator creates a time-bounded role invitation without knowing a Wallet address; only a token digest is retained, while the one-time token is delivered in a URL fragment. The invited person later selects a Polygon Amoy Wallet and proves control with a server-verified SIWE signature before the invitation can be claimed. This claim is test-participant approval evidence only: it is not a production Platform Account, legal identity, Creator verification, Rights verification, payee verification or on-chain role by itself.
 
 The ADR-0019 Account Trust pilot adds a bounded `CREATED → JPKI_ASSERTED → PASSKEY_REGISTERED → WALLET_BOUND → ACTIVE` binding transaction. It verifies WebAuthn registration and authentication server-side, stores only public-key credential metadata, verifies an operation-bound Polygon Amoy EIP-712 wallet signature and records state transitions. Its JPKI result is explicitly non-cryptographic Mock data, `ACTIVE` is a pilot binding state rather than the production Platform Account state, and it supplies no recovery, restriction, closure, rate-limit, notification or production retention implementation. It therefore gives local test evidence for parts of `REQ-ACCOUNT-068`, `REQ-ACCOUNT-069`, `REQ-ACCOUNT-078`, `REQ-ACCOUNT-099`, `REQ-ACCOUNT-101` and `REQ-ACCOUNT-105`, but cannot satisfy `REQ-ACCOUNT-068`–`REQ-ACCOUNT-114` acceptance as a whole. It remains a bounded fixture under `MOCK-ASSUMPTION-001` while the production Open Questions remain open.
 
@@ -201,6 +204,17 @@ PENDING → ACTIVE → RESTRICTED → ACTIVE
 
 - **REQ-ACCOUNT-113:** An implementation MAY support password authentication only under an approved profile with modern salted password hashing, compromised-password screening, rate limiting and migration toward phishing-resistant methods.
 - **REQ-ACCOUNT-114:** An implementation MAY support guest or pseudonymous Accounts with reduced capabilities, provided their state and upgrade path are explicit and they cannot bypass eligibility, payment, rights or legal requirements.
+
+### Test participant invitation profile
+
+- **REQ-ACCOUNT-123:** A pre-registration invitation MUST NOT require the operator to know or select the participant Wallet address before the participant claims it.
+- **REQ-ACCOUNT-124:** Invitation tokens MUST be generated from a cryptographically secure random source, be single-use and time-bounded, and only a one-way digest MUST be retained after issuance.
+- **REQ-ACCOUNT-125:** Contact addresses, legal names, invitation tokens and directly reversible derivatives MUST NOT be written to a public blockchain.
+- **REQ-ACCOUNT-126:** Claiming an invitation MUST require server-side verification of control of the Wallet selected by the invited person and MUST bind the result to the invitation, role set, consent context and Polygon Amoy chain identifier.
+- **REQ-ACCOUNT-127:** Public invitation inspection MUST NOT disclose the contact address or administrator-only audit data.
+- **REQ-ACCOUNT-128:** Administrator invitation operations MUST require server-side authentication; knowledge of an unlisted administrator-page URL MUST NOT grant authority.
+- **REQ-ACCOUNT-129:** Email delivery acceptance, Wallet proof, off-chain invitation claim, on-chain role registration and Test POL funding MUST be separately observable states and MUST NOT be represented as one atomic success.
+- **REQ-ACCOUNT-130:** A participant invitation or Wallet signature MUST NOT by itself grant production Account, Creator, Rights Holder, payee, legal-identity or governance eligibility.
 
 ## Invariants
 

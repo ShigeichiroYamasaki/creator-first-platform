@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
-import { createPublicClient, createWalletClient, custom, formatUnits, keccak256, toHex, type Address, type EIP1193Provider, type Hash } from 'viem'
+import { createPublicClient, createWalletClient, custom, formatUnits, keccak256, toHex, zeroHash, type Address, type EIP1193Provider, type Hash } from 'viem'
 import { polygonAmoy } from 'viem/chains'
 import {
   createSupporterTypedData,
@@ -9,11 +9,15 @@ import {
   DEMO_SUPPORTER_CREATOR_ID,
   getAmoyTransactionFees,
   hasActiveSupporterRegistration,
+  hasActiveParticipantRegistry,
   mockJpycAbi,
   AMOY_CHAIN_ID,
   supporterRegistrationAdapterAbi,
   supporterSbtAbi,
   subscriptionAbi,
+  participantRegistryAbi,
+  TESTNET_USER_ENROLLMENT_CONSENT_VERSION,
+  TESTNET_USER_ROLE,
   validateDeploymentManifest,
   validateSupporterMetadata,
   switchProviderToAmoy
@@ -36,6 +40,7 @@ type Deployment = {
     treasury: Address | null
     supporterSbt: Address | null
     supporterRegistrationAdapter?: Address | null
+    participantRegistry?: Address | null
   }
 }
 type Track = { id: string; title: string; artist: string; frequency: number; subscriberOnly: boolean }
@@ -56,6 +61,12 @@ const manifestError = ref('')
 const walletAddress = ref<Address>()
 const walletChainId = ref<number>()
 const walletMessage = ref('')
+const participantId = ref<Hash>(zeroHash)
+const approvedParticipantRoles = ref(0)
+const registeredParticipantRoles = ref(0)
+const participantApprovalExpiresAt = ref(0n)
+const participantActive = ref(false)
+const initialFundingCompleted = ref(false)
 const busyAction = ref('')
 const balance = ref(0n)
 const allowance = ref(0n)
@@ -83,7 +94,11 @@ const aliasValid = computed(() => /^[\p{L}\p{N}_ -]{2,24}$/u.test(normalizedAlia
 const ready = computed(() => aliasValid.value && acceptedTerms.value && acceptedPrivacy.value && acknowledgedTestOnly.value)
 const correctChain = computed(() => walletChainId.value === AMOY_CHAIN_ID)
 const contractsReady = computed(() => Boolean(deployment.value?.active && deployment.value.contracts.mockJpyc && deployment.value.contracts.subscription))
-const chainActionsReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && contractsReady.value && !busyAction.value))
+const participantRegistryReady = computed(() => hasActiveParticipantRegistry(deployment.value))
+const userPreApproved = computed(() => participantActive.value && (approvedParticipantRoles.value & TESTNET_USER_ROLE) !== 0 && participantApprovalExpiresAt.value >= BigInt(Math.floor(Date.now() / 1000)))
+const userRegistered = computed(() => participantActive.value && (registeredParticipantRoles.value & TESTNET_USER_ROLE) !== 0)
+const participantSelfRegistrationReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && participantRegistryReady.value && userPreApproved.value && !userRegistered.value && !busyAction.value))
+const chainActionsReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && contractsReady.value && (!participantRegistryReady.value || userRegistered.value) && !busyAction.value))
 const supporterRegistrationReady = computed(() => hasActiveSupporterRegistration(deployment.value))
 const supporterActionReady = computed(() => Boolean(
   profile.value && walletAddress.value && correctChain.value && supporterRegistrationReady.value &&
@@ -130,19 +145,25 @@ function clearOnchainState(): void {
   supporterTier.value = 0
   supporterTokenUri.value = ''
   supporterMetadata.value = undefined
+  participantId.value = zeroHash
+  approvedParticipantRoles.value = 0
+  registeredParticipantRoles.value = 0
+  participantApprovalExpiresAt.value = 0n
+  participantActive.value = false
+  initialFundingCompleted.value = false
 }
 const handleAccountsChanged = async (value: Address[] | string): Promise<void> => {
   const accounts = Array.isArray(value) ? value : []
   walletAddress.value = accounts[0]
   clearOnchainState()
   walletMessage.value = accounts[0] ? 'Wallet Accountが変更されました。状態を再確認します。' : 'Wallet接続が解除されました。'
-  if (accounts[0] && correctChain.value && contractsReady.value) await refreshOnchainState(true)
+  if (accounts[0] && correctChain.value) await refreshOnchainState(true)
 }
 const handleChainChanged = async (value: Address[] | string): Promise<void> => {
   walletChainId.value = typeof value === 'string' ? Number.parseInt(value, 16) : undefined
   clearOnchainState()
   walletMessage.value = correctChain.value ? 'Polygon Amoyへ変更されました。状態を再確認します。' : '対象外Networkへ変更されたため、Contract操作と限定Trackを停止しました。'
-  if (correctChain.value && walletAddress.value && contractsReady.value) await refreshOnchainState(true)
+  if (correctChain.value && walletAddress.value) await refreshOnchainState(true)
 }
 function attachProviderListeners(): void {
   if (!provider?.on || listenersAttached) return
@@ -167,7 +188,7 @@ async function connectWallet(): Promise<void> {
     attachProviderListeners()
     await readChainId()
     walletMessage.value = correctChain.value ? 'WalletをPolygon Amoyへ接続しました。' : 'Walletを接続しました。Polygon Amoyへ切り替えてください。'
-    if (correctChain.value && contractsReady.value) await refreshOnchainState(true)
+    if (correctChain.value) await refreshOnchainState(true)
   } catch (error) {
     walletMessage.value = error instanceof Error ? error.message : 'Wallet接続が拒否されました。'
   } finally { busyAction.value = '' }
@@ -179,7 +200,7 @@ async function switchToAmoy(): Promise<void> {
     await switchProviderToAmoy(provider)
     await readChainId()
     walletMessage.value = 'Polygon Amoyへ切り替えました。'
-    if (contractsReady.value) await refreshOnchainState(true)
+    await refreshOnchainState(true)
   } catch (error) {
     walletMessage.value = error instanceof Error ? error.message : 'Polygon Amoyへの切替が拒否されました。'
   } finally { busyAction.value = '' }
@@ -194,9 +215,35 @@ function clients() {
     subscription: deployment.value.contracts.subscription
   }
 }
+async function refreshParticipantEnrollment(publicClient: ReturnType<typeof createPublicClient>): Promise<void> {
+  const registry = deployment.value?.contracts.participantRegistry
+  const account = walletAddress.value
+  if (!registry || !account || !participantRegistryReady.value) return
+  const nextParticipantId = await publicClient.readContract({
+    address: registry,
+    abi: participantRegistryAbi,
+    functionName: 'participantIdByWallet',
+    args: [account]
+  }) as Hash
+  participantId.value = nextParticipantId
+  if (nextParticipantId === zeroHash) return
+  const record = await publicClient.readContract({
+    address: registry,
+    abi: participantRegistryAbi,
+    functionName: 'participants',
+    args: [nextParticipantId]
+  }) as readonly [Address, number, number, bigint, bigint, boolean, boolean]
+  approvedParticipantRoles.value = Number(record[1])
+  registeredParticipantRoles.value = Number(record[2])
+  participantApprovalExpiresAt.value = record[4]
+  participantActive.value = record[5]
+  initialFundingCompleted.value = record[6]
+}
 async function refreshOnchainState(force = false): Promise<void> {
+  if (!walletAddress.value || !correctChain.value || !contractsReady.value) return
   if (!force && !chainActionsReady.value) return
   const { publicClient, mockJpyc, subscription } = clients()
+  await refreshParticipantEnrollment(publicClient)
   const account = walletAddress.value as Address
   const [nextBalance, nextAllowance, plan, nextActive, nextUntil] = await Promise.all([
     publicClient.readContract({ address: mockJpyc, abi: mockJpycAbi, functionName: 'balanceOf', args: [account] }),
@@ -253,6 +300,21 @@ async function refreshOnchainState(force = false): Promise<void> {
       }
     }
   }
+}
+async function registerUserParticipant(): Promise<void> {
+  const registry = deployment.value?.contracts.participantRegistry
+  if (!registry) return
+  await transact('ユーザ本人登録', async () => {
+    const { publicClient, walletClient } = clients()
+    const fees = await getAmoyTransactionFees(publicClient)
+    return walletClient.writeContract({
+      address: registry,
+      abi: participantRegistryAbi,
+      functionName: 'registerSelf',
+      args: [TESTNET_USER_ROLE, TESTNET_USER_ENROLLMENT_CONSENT_VERSION],
+      ...fees
+    })
+  })
 }
 async function transact(action: string, submit: () => Promise<Hash>): Promise<void> {
   busyAction.value = action
@@ -392,7 +454,7 @@ onBeforeUnmount(() => {
       <p class="safety"><strong>重要:</strong> tJPYCは無価値・償還不可で、実在JPYCではありません。ETHはAmoy POL Gasにだけ使い、秘密鍵やSeed Phraseは入力しません。</p>
     </header>
     <ol class="steps" aria-label="Test User Journey steps">
-      <li :class="{ done: profile }">1. Profile</li><li :class="{ done: walletAddress && correctChain }">2. Wallet</li><li :class="{ done: subscriptionActive }">3. Subscription</li><li>4. Player</li><li :class="{ done: supporterTokenId > 0n }">5. SBT</li>
+      <li :class="{ done: profile }">1. Profile</li><li :class="{ done: walletAddress && correctChain }">2. Wallet</li><li :class="{ done: userRegistered }">3. Enrollment</li><li :class="{ done: subscriptionActive }">4. Subscription</li><li>5. Player</li><li :class="{ done: supporterTokenId > 0n }">6. SBT</li>
     </ol>
 
     <section class="panel" aria-labelledby="profile-title">
@@ -429,8 +491,22 @@ onBeforeUnmount(() => {
       <div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">{{ walletAddress ? 'Walletを再接続' : 'Walletを接続' }}</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToAmoy">Polygon Amoyへ切替</button><button class="secondary" type="button" :disabled="!chainActionsReady" @click="refreshOnchainState()">状態を更新</button></div>
     </section>
 
+    <section class="panel" aria-labelledby="enrollment-title">
+      <h3 id="enrollment-title">3. 招待登録とユーザ本人登録</h3>
+      <div class="status-grid">
+        <div><span>参加者登録台帳</span><strong>{{ participantRegistryReady ? '公開済み' : '未デプロイ' }}</strong></div>
+        <div><span>招待確認後の運営承認</span><strong>{{ userPreApproved ? '承認済み' : participantId !== zeroHash ? '期限切れ／停止' : '未承認' }}</strong></div>
+        <div><span>ユーザ本人登録</span><strong>{{ userRegistered ? '登録済み' : '未登録' }}</strong></div>
+        <div><span>初回Test POL</span><strong>{{ initialFundingCompleted ? '処理済み' : '未処理' }}</strong></div>
+      </div>
+      <p v-if="!participantRegistryReady" class="notice">参加者登録コントラクトが公開マニフェストへ登録されるまで、従来の利用フローだけを表示します。</p>
+      <p v-else-if="!userPreApproved && !userRegistered" class="notice">Alias登録だけでは参加承認になりません。運営が個人情報を含まない参加者ID、完全なWallet Address、ユーザ役割および登録期限を事前承認し、最小限のTest POLを配布した後に本人登録できます。</p>
+      <p v-else>接続ウォレット本人がTransactionを送信することで、承認済みユーザ役割と同意版をPolygon Amoyへ記録します。MetaMaskの「資金を追加」から実資産を購入する必要はありません。</p>
+      <button class="primary" type="button" :disabled="!participantSelfRegistrationReady" @click="registerUserParticipant">本人としてユーザ登録</button>
+    </section>
+
     <section class="panel" aria-labelledby="payment-title">
-      <h3 id="payment-title">3. mockJPYC課金</h3>
+      <h3 id="payment-title">4. mockJPYC課金</h3>
       <div class="status-grid">
         <div><span>tJPYC残高</span><strong>{{ balanceLabel }}</strong></div><div><span>Plan価格</span><strong>{{ priceLabel }}</strong></div><div><span>Allowance</span><strong>{{ allowanceEnough ? '承認済み' : '未承認' }}</strong></div><div><span>Subscription</span><strong>{{ subscriptionActive ? `有効 / ${formatDate(activeUntil)}` : '無効' }}</strong></div>
       </div>
@@ -441,7 +517,7 @@ onBeforeUnmount(() => {
     </section>
 
     <section class="panel" aria-labelledby="player-title">
-      <h3 id="player-title">4. 音楽プレーヤー操作</h3>
+      <h3 id="player-title">5. 音楽プレーヤー操作</h3>
       <p>このページ内で生成した短い合成音だけを使います。Navidrome、Gateway、実在楽曲または再生証跡には接続しません。</p>
       <div class="track-list"><button v-for="track in tracks" :key="track.id" type="button" :class="{ selected: selectedTrack.id === track.id }" @click="selectTrack(track)"><strong>{{ track.title }}</strong><span>{{ track.artist }}</span><small>{{ track.subscriberOnly ? 'Subscription限定' : '誰でも試聴可' }}</small></button></div>
       <div class="now-playing"><span class="art" aria-hidden="true">♪</span><div><strong>{{ selectedTrack.title }}</strong><span>{{ selectedTrack.artist }}</span></div></div>
@@ -476,5 +552,5 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.testnet-journey{display:grid;gap:1.25rem;margin:1.75rem 0}.journey-heading,.panel{padding:clamp(1rem,3vw,1.6rem);border:1px solid var(--vp-c-divider);border-radius:16px;background:var(--vp-c-bg-soft)}.journey-heading h2,.panel h3{margin-top:.25rem;border:0}.kicker{margin:0;color:var(--vp-c-brand-1);font-size:.82rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.safety,.notice{padding:.8rem 1rem;border-left:4px solid var(--vp-c-warning-1);border-radius:6px;background:var(--vp-c-warning-soft)}.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;padding:0;list-style:none}.steps li{padding:.65rem .4rem;border:1px solid var(--vp-c-divider);border-radius:999px;text-align:center;font-size:.85rem;font-weight:700}.steps li.done{border-color:var(--vp-c-brand-1);color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.registration,.profile-summary{display:grid;gap:.8rem}.registration>label,legend{font-weight:700}.registration input[type=text]{min-height:44px;padding:.65rem .8rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}fieldset{display:grid;gap:.65rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:10px}fieldset label{display:grid;grid-template-columns:1.2rem 1fr;gap:.6rem;align-items:start}input[type=checkbox]{width:1rem;height:1rem;margin-top:.25rem}.actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}button{min-height:44px;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;font:inherit;font-weight:700;cursor:pointer}button.primary{color:var(--vp-c-white);background:var(--vp-c-brand-1)}button.secondary{color:var(--vp-c-brand-1);background:transparent}button:disabled{cursor:not-allowed;opacity:.45}.badge{width:fit-content;padding:.25rem .55rem;border-radius:999px;font-size:.8rem;font-weight:700}.badge.success{color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.status-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}.status-grid>div{display:grid;gap:.2rem;padding:.75rem;border:1px solid var(--vp-c-divider);border-radius:10px;background:var(--vp-c-bg)}.status-grid span,.track-list span,.now-playing span{color:var(--vp-c-text-2);font-size:.85rem}.error{color:var(--vp-c-danger-1)}.track-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.track-list button{display:grid;gap:.2rem;text-align:left;color:var(--vp-c-text-1);background:var(--vp-c-bg);border-color:var(--vp-c-divider)}.track-list button.selected{border-color:var(--vp-c-brand-1);box-shadow:0 0 0 2px var(--vp-c-brand-soft)}.track-list small{color:var(--vp-c-brand-1)}.now-playing{display:flex;gap:.8rem;align-items:center;margin:1rem 0 .6rem}.now-playing>div{display:grid}.art{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;color:var(--vp-c-white);background:linear-gradient(135deg,var(--vp-c-brand-1),#7c3aed);font-size:1.4rem}.supporter-action{margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--vp-c-divider)}.supporter-action h4{margin:.25rem 0;border:0}.credential-card{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:1rem;align-items:center;margin:1rem 0;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:14px;background:var(--vp-c-bg)}.credential-card img{width:100%;height:auto;border-radius:12px}.credential-card figcaption{display:grid;gap:.5rem}.credential-card figcaption span{color:var(--vp-c-text-2);font-size:.9rem}audio{width:100%}code{overflow-wrap:anywhere}@media(max-width:640px){.steps,.status-grid,.track-list,.credential-card{grid-template-columns:1fr}.actions button{width:100%}}
+.testnet-journey{display:grid;gap:1.25rem;margin:1.75rem 0}.journey-heading,.panel{padding:clamp(1rem,3vw,1.6rem);border:1px solid var(--vp-c-divider);border-radius:16px;background:var(--vp-c-bg-soft)}.journey-heading h2,.panel h3{margin-top:.25rem;border:0}.kicker{margin:0;color:var(--vp-c-brand-1);font-size:.82rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.safety,.notice{padding:.8rem 1rem;border-left:4px solid var(--vp-c-warning-1);border-radius:6px;background:var(--vp-c-warning-soft)}.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem;padding:0;list-style:none}.steps li{padding:.65rem .4rem;border:1px solid var(--vp-c-divider);border-radius:999px;text-align:center;font-size:.85rem;font-weight:700}.steps li.done{border-color:var(--vp-c-brand-1);color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.registration,.profile-summary{display:grid;gap:.8rem}.registration>label,legend{font-weight:700}.registration input[type=text]{min-height:44px;padding:.65rem .8rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}fieldset{display:grid;gap:.65rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:10px}fieldset label{display:grid;grid-template-columns:1.2rem 1fr;gap:.6rem;align-items:start}input[type=checkbox]{width:1rem;height:1rem;margin-top:.25rem}.actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}button{min-height:44px;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;font:inherit;font-weight:700;cursor:pointer}button.primary{color:var(--vp-c-white);background:var(--vp-c-brand-1)}button.secondary{color:var(--vp-c-brand-1);background:transparent}button:disabled{cursor:not-allowed;opacity:.45}.badge{width:fit-content;padding:.25rem .55rem;border-radius:999px;font-size:.8rem;font-weight:700}.badge.success{color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.status-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}.status-grid>div{display:grid;gap:.2rem;padding:.75rem;border:1px solid var(--vp-c-divider);border-radius:10px;background:var(--vp-c-bg)}.status-grid span,.track-list span,.now-playing span{color:var(--vp-c-text-2);font-size:.85rem}.error{color:var(--vp-c-danger-1)}.track-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.track-list button{display:grid;gap:.2rem;text-align:left;color:var(--vp-c-text-1);background:var(--vp-c-bg);border-color:var(--vp-c-divider)}.track-list button.selected{border-color:var(--vp-c-brand-1);box-shadow:0 0 0 2px var(--vp-c-brand-soft)}.track-list small{color:var(--vp-c-brand-1)}.now-playing{display:flex;gap:.8rem;align-items:center;margin:1rem 0 .6rem}.now-playing>div{display:grid}.art{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;color:var(--vp-c-white);background:linear-gradient(135deg,var(--vp-c-brand-1),#7c3aed);font-size:1.4rem}.supporter-action{margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--vp-c-divider)}.supporter-action h4{margin:.25rem 0;border:0}.credential-card{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:1rem;align-items:center;margin:1rem 0;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:14px;background:var(--vp-c-bg)}.credential-card img{width:100%;height:auto;border-radius:12px}.credential-card figcaption{display:grid;gap:.5rem}.credential-card figcaption span{color:var(--vp-c-text-2);font-size:.9rem}audio{width:100%}code{overflow-wrap:anywhere}@media(max-width:720px){.steps{grid-template-columns:repeat(3,1fr)}}@media(max-width:640px){.steps,.status-grid,.track-list,.credential-card{grid-template-columns:1fr}.actions button{width:100%}}
 </style>

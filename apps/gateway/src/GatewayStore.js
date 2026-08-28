@@ -90,6 +90,26 @@ export class GatewayStore {
         occurred_at TEXT NOT NULL,
         detail_json TEXT NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS participant_invitations (
+        invitation_id TEXT PRIMARY KEY,
+        token_hash TEXT NOT NULL UNIQUE,
+        email TEXT NOT NULL,
+        display_name TEXT NOT NULL,
+        role_bits INTEGER NOT NULL,
+        state TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        expires_at TEXT NOT NULL,
+        sent_at TEXT,
+        claimed_at TEXT,
+        claimed_wallet TEXT
+      );
+      CREATE TABLE IF NOT EXISTS participant_invitation_audit_events (
+        event_id TEXT PRIMARY KEY,
+        invitation_id TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        occurred_at TEXT NOT NULL,
+        detail_json TEXT NOT NULL
+      );
     `)
   }
 
@@ -229,6 +249,66 @@ export class GatewayStore {
 
   demoUserRegistrationCount() {
     return this.database.prepare('SELECT COUNT(*) AS total FROM demo_user_registrations').get().total
+  }
+
+  createParticipantInvitation(value) {
+    this.database.prepare(`
+      INSERT INTO participant_invitations (
+        invitation_id, token_hash, email, display_name, role_bits, state, created_at, expires_at
+      ) VALUES (?, ?, ?, ?, ?, 'CREATED', ?, ?)
+    `).run(
+      value.invitationId,
+      value.tokenHash,
+      value.email,
+      value.displayName,
+      value.roleBits,
+      value.createdAt,
+      value.expiresAt
+    )
+  }
+
+  participantInvitationById(invitationId) {
+    return this.database.prepare('SELECT * FROM participant_invitations WHERE invitation_id = ?').get(invitationId)
+  }
+
+  participantInvitationByTokenHash(tokenHash) {
+    return this.database.prepare('SELECT * FROM participant_invitations WHERE token_hash = ?').get(tokenHash)
+  }
+
+  participantInvitations() {
+    return this.database.prepare(`
+      SELECT invitation_id, email, display_name, role_bits, state, created_at, expires_at,
+             sent_at, claimed_at, claimed_wallet
+      FROM participant_invitations ORDER BY created_at DESC
+    `).all()
+  }
+
+  markParticipantInvitationSent(invitationId, sentAt) {
+    return this.database.prepare(`
+      UPDATE participant_invitations SET state = 'SENT', sent_at = ?
+      WHERE invitation_id = ? AND state IN ('CREATED', 'SENT')
+    `).run(sentAt, invitationId).changes
+  }
+
+  claimParticipantInvitation(invitationId, walletAddress, claimedAt) {
+    return this.database.prepare(`
+      UPDATE participant_invitations
+      SET state = 'CLAIMED', claimed_wallet = ?, claimed_at = ?
+      WHERE invitation_id = ? AND state IN ('CREATED', 'SENT') AND expires_at > ?
+    `).run(walletAddress, claimedAt, invitationId, claimedAt).changes
+  }
+
+  recordParticipantInvitationEvent(value) {
+    this.database.prepare(`
+      INSERT INTO participant_invitation_audit_events VALUES (?, ?, ?, ?, ?)
+    `).run(value.eventId, value.invitationId, value.eventType, value.occurredAt, JSON.stringify(value.detail ?? {}))
+  }
+
+  participantInvitationEvents(invitationId) {
+    return this.database.prepare(`
+      SELECT event_type, occurred_at, detail_json
+      FROM participant_invitation_audit_events WHERE invitation_id = ? ORDER BY occurred_at, rowid
+    `).all(invitationId)
   }
 
   createTrustBinding(value) {

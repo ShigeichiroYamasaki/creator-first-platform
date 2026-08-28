@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
-import { createPublicClient, createWalletClient, custom, keccak256, parseEventLogs, toHex, type Address, type EIP1193Provider, type Hash } from 'viem'
+import { createPublicClient, createWalletClient, custom, keccak256, parseEventLogs, toHex, zeroHash, type Address, type EIP1193Provider, type Hash } from 'viem'
 import { polygonAmoy } from 'viem/chains'
-import { AMOY_CHAIN_ID, creatorRegistryAbi, getAmoyTransactionFees, hasActiveCreatorRegistry, switchProviderToAmoy, validateDeploymentManifest } from './testnet-user-demo.js'
+import { AMOY_CHAIN_ID, creatorRegistryAbi, getAmoyTransactionFees, hasActiveCreatorRegistry, hasActiveParticipantRegistry, participantRegistryAbi, switchProviderToAmoy, TESTNET_CREATOR_ENROLLMENT_CONSENT_VERSION, TESTNET_CREATOR_ROLE, validateDeploymentManifest } from './testnet-user-demo.js'
 
 type CreatorProfile = { registered: true; creatorId: string; artistName: string; entityType: string; genre: string; state: 'BROWSER_DEMO_ONLY'; createdAt: string }
 type DemoProvider = EIP1193Provider & {
   on?: (event: 'accountsChanged' | 'chainChanged', listener: (value: Address[] | string) => void) => void
   removeListener?: (event: 'accountsChanged' | 'chainChanged', listener: (value: Address[] | string) => void) => void
 }
-type Deployment = { active: boolean; chainId: number; sourceCommit: string | null; contracts: { creatorRegistry?: Address | null } }
+type Deployment = { active: boolean; chainId: number; sourceCommit: string | null; contracts: { creatorRegistry?: Address | null; participantRegistry?: Address | null } }
 type ReleaseSummary = { releaseId: string; title: string; releaseType: string; transactionHash: Hash; declaredAt: string }
 
 const profileKey = 'creator-first-browser-creator-v1'
@@ -20,6 +20,12 @@ const deployment = ref<Deployment>()
 const manifestError = ref('')
 const walletAddress = ref<Address>()
 const walletChainId = ref<number>()
+const participantId = ref<Hash>(zeroHash)
+const approvedParticipantRoles = ref(0)
+const registeredParticipantRoles = ref(0)
+const participantApprovalExpiresAt = ref(0n)
+const participantActive = ref(false)
+const initialFundingCompleted = ref(false)
 const creatorId = ref(0n)
 const creatorReleaseCount = ref(0n)
 const creatorActive = ref(false)
@@ -36,7 +42,11 @@ let listenersAttached = false
 
 const correctChain = computed(() => walletChainId.value === AMOY_CHAIN_ID)
 const registryReady = computed(() => hasActiveCreatorRegistry(deployment.value))
-const chainReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && registryReady.value && !busyAction.value))
+const participantRegistryReady = computed(() => hasActiveParticipantRegistry(deployment.value))
+const creatorPreApproved = computed(() => participantActive.value && (approvedParticipantRoles.value & TESTNET_CREATOR_ROLE) !== 0 && participantApprovalExpiresAt.value >= BigInt(Math.floor(Date.now() / 1000)))
+const creatorParticipantRegistered = computed(() => participantActive.value && (registeredParticipantRoles.value & TESTNET_CREATOR_ROLE) !== 0)
+const participantSelfRegistrationReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && participantRegistryReady.value && creatorPreApproved.value && !creatorParticipantRegistered.value && !busyAction.value))
+const chainReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && registryReady.value && (!participantRegistryReady.value || creatorParticipantRegistered.value) && !busyAction.value))
 const registeredOnchain = computed(() => creatorId.value > 0n)
 const normalizedTitle = computed(() => title.value.trim().normalize('NFKC'))
 const titleValid = computed(() => /^[\p{L}\p{N}_ .,'’&()!-]{2,60}$/u.test(normalizedTitle.value))
@@ -69,10 +79,23 @@ function clients() {
     walletClient: createWalletClient({ account: walletAddress.value, chain: polygonAmoy, transport })
   }
 }
-function clearOnchainState(): void { creatorId.value = 0n; creatorReleaseCount.value = 0n; creatorActive.value = false; payoutAddress.value = undefined }
+function clearOnchainState(): void {
+  creatorId.value = 0n; creatorReleaseCount.value = 0n; creatorActive.value = false; payoutAddress.value = undefined
+  participantId.value = zeroHash; approvedParticipantRoles.value = 0; registeredParticipantRoles.value = 0
+  participantApprovalExpiresAt.value = 0n; participantActive.value = false; initialFundingCompleted.value = false
+}
 async function refreshOnchainState(): Promise<void> {
   if (!walletAddress.value || !correctChain.value || !registryReady.value) return
   const { publicClient, registry } = clients()
+  const enrollmentRegistry = deployment.value?.contracts.participantRegistry
+  if (enrollmentRegistry && participantRegistryReady.value) {
+    participantId.value = await publicClient.readContract({ address: enrollmentRegistry, abi: participantRegistryAbi, functionName: 'participantIdByWallet', args: [walletAddress.value] }) as Hash
+    if (participantId.value !== zeroHash) {
+      const participant = await publicClient.readContract({ address: enrollmentRegistry, abi: participantRegistryAbi, functionName: 'participants', args: [participantId.value] }) as readonly [Address, number, number, bigint, bigint, boolean, boolean]
+      approvedParticipantRoles.value = Number(participant[1]); registeredParticipantRoles.value = Number(participant[2])
+      participantApprovalExpiresAt.value = participant[4]; participantActive.value = participant[5]; initialFundingCompleted.value = participant[6]
+    }
+  }
   creatorId.value = await publicClient.readContract({ address: registry, abi: creatorRegistryAbi, functionName: 'creatorIdByAccount', args: [walletAddress.value] }) as bigint
   if (creatorId.value === 0n) { creatorReleaseCount.value = 0n; creatorActive.value = false; payoutAddress.value = undefined; return }
   const record = await publicClient.readContract({ address: registry, abi: creatorRegistryAbi, functionName: 'creators', args: [creatorId.value] }) as readonly [Address, Address, Hash, bigint, number, boolean]
@@ -134,6 +157,15 @@ async function registerOnchain(): Promise<void> {
     return walletClient.writeContract({ address: registry, abi: creatorRegistryAbi, functionName: 'registerCreator', args: [profileCommitment(), walletAddress.value as Address], ...fees })
   })
 }
+async function registerCreatorParticipant(): Promise<void> {
+  const enrollmentRegistry = deployment.value?.contracts.participantRegistry
+  if (!enrollmentRegistry) return
+  await submit('音楽クリエーター本人登録', async () => {
+    const { publicClient, walletClient } = clients()
+    const fees = await getAmoyTransactionFees(publicClient)
+    return walletClient.writeContract({ address: enrollmentRegistry, abi: participantRegistryAbi, functionName: 'registerSelf', args: [TESTNET_CREATOR_ROLE, TESTNET_CREATOR_ENROLLMENT_CONSENT_VERSION], ...fees })
+  })
+}
 async function declareRelease(): Promise<void> {
   if (!releaseReady.value) return
   const commitments = releaseCommitments()
@@ -177,16 +209,18 @@ onBeforeUnmount(() => {
 <template>
   <section class="creator-journey" aria-labelledby="creator-journey-title">
     <header><p class="kicker">Polygon Amoy · creator commitments · test only</p><h2 id="creator-journey-title">Test Creator Journey</h2><p>仮名Profile、Wallet、Creator登録、作品の権利自己申告を順番に検証します。</p><p class="safety"><strong>重要:</strong> 本人確認、権利確認、配信許諾、報酬受取資格、音源登録または作品公開ではありません。実在情報を入力しないでください。</p></header>
-    <ol class="steps"><li :class="{ done: profile }">1. Profile</li><li :class="{ done: walletAddress && correctChain }">2. Wallet</li><li :class="{ done: registeredOnchain }">3. Creator</li><li :class="{ done: creatorReleaseCount > 0n }">4. Release</li></ol>
+    <ol class="steps"><li :class="{ done: profile }">1. Profile</li><li :class="{ done: walletAddress && correctChain }">2. Wallet</li><li :class="{ done: creatorParticipantRegistered }">3. Enrollment</li><li :class="{ done: registeredOnchain }">4. Creator</li><li :class="{ done: creatorReleaseCount > 0n }">5. Release</li></ol>
 
     <section v-if="!profile" class="panel"><h3>1. Test Creator Profile</h3><p>このタブにCreator Profileがありません。先に個人情報を含まない仮名Profileを作成してください。</p><a class="primary link" :href="withBase('/demo/creator-registration')">Test Creatorを登録</a></section>
     <section v-else class="panel"><h3>1. Test Creator Profile</h3><div class="status-grid"><div><span>Artist</span><strong>{{ profile.artistName }}</strong></div><div><span>Entity</span><strong>{{ profile.entityType }}</strong></div><div><span>Genre</span><strong>{{ profile.genre }}</strong></div><div><span>保存</span><strong>現在のタブのみ</strong></div></div></section>
 
     <section class="panel"><h3>2. WalletとDeployment</h3><div class="status-grid"><div><span>Deployment</span><strong>{{ manifestError ? '無効' : registryReady ? '公開済み' : 'Creator Registry未公開' }}</strong></div><div><span>Network</span><strong>{{ walletChainId ?? '未接続' }}<template v-if="walletChainId"> / {{ correctChain ? 'Polygon Amoy' : '対象外' }}</template></strong></div><div><span>Wallet</span><strong>{{ shortAddress(walletAddress) }}</strong></div><div><span>Registry</span><strong>{{ shortAddress(deployment?.contracts.creatorRegistry) }}</strong></div></div><p v-if="manifestError" class="error">{{ manifestError }}</p><div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">Walletを接続</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToAmoy">Polygon Amoyへ切替</button><button class="secondary" type="button" :disabled="!chainReady" @click="refreshOnchainState">状態を更新</button></div></section>
 
-    <section class="panel"><h3>3. Creator Commitment登録</h3><div class="status-grid"><div><span>Creator ID</span><strong>{{ registeredOnchain ? creatorId.toString() : '未登録' }}</strong></div><div><span>状態</span><strong>{{ registeredOnchain ? creatorActive ? 'Active' : 'Inactive' : '未登録' }}</strong></div><div><span>Payout候補</span><strong>{{ shortAddress(payoutAddress) }}</strong></div><div><span>Release数</span><strong>{{ creatorReleaseCount.toString() }}</strong></div></div><p>Profile内容そのものではなくsalt付きcommitmentを登録します。Payout候補は接続Walletですが、本人・Payee・税務確認や送金を行いません。</p><button class="primary" type="button" :disabled="!chainReady || registeredOnchain" @click="registerOnchain">CreatorをPolygon Amoyへ登録</button></section>
+    <section class="panel"><h3>3. 招待登録と音楽クリエーター本人登録</h3><div class="status-grid"><div><span>参加者登録台帳</span><strong>{{ participantRegistryReady ? '公開済み' : '未デプロイ' }}</strong></div><div><span>招待確認後の運営承認</span><strong>{{ creatorPreApproved ? '承認済み' : participantId !== zeroHash ? '期限切れ／停止' : '未承認' }}</strong></div><div><span>本人登録</span><strong>{{ creatorParticipantRegistered ? '登録済み' : '未登録' }}</strong></div><div><span>初回Test POL</span><strong>{{ initialFundingCompleted ? '処理済み' : '未処理' }}</strong></div></div><p v-if="!participantRegistryReady" class="safety">参加者登録コントラクトが公開マニフェストへ登録されるまでは、従来の自己申告デモだけを表示します。</p><p v-else-if="!creatorPreApproved && !creatorParticipantRegistered" class="safety">仮名Profileだけでは参加承認になりません。招待された本人がWalletを署名確認した後、運営が音楽クリエーター役割を承認し、最小限のTest POLを配布します。</p><p v-else>接続ウォレット本人がTransactionを送信し、承認済み音楽クリエーター役割と同意版を記録します。これは本人確認、権利確認、Payee確認または配信許諾ではありません。</p><button class="primary" type="button" :disabled="!participantSelfRegistrationReady" @click="registerCreatorParticipant">本人として音楽クリエーター登録</button></section>
 
-    <section class="panel"><h3>4. 作品の自己申告Commitment</h3><form class="release-form" @submit.prevent="declareRelease"><label for="testnet-release-title">作品名（合成Demo用）</label><input id="testnet-release-title" v-model="title" type="text" minlength="2" maxlength="60" autocomplete="off" placeholder="Synthetic First Song" required><label for="testnet-release-type">Release種別</label><select id="testnet-release-type" v-model="releaseType"><option>SINGLE</option><option>EP</option><option>ALBUM</option></select><label class="check"><input v-model="rightsAcknowledged" type="checkbox"> ハッシュ登録は権利確認・配信許諾・作品公開ではなく、取消可能な自己申告にすぎないことを確認しました</label><button class="primary" type="submit" :disabled="!releaseReady">作品Commitmentを登録</button></form><p v-if="registeredOnchain && !creatorActive" class="error">Inactive Creatorは新しい作品を申告できません。</p><ul v-if="releases.length" class="release-list"><li v-for="release in releases" :key="release.releaseId"><div><strong>#{{ release.releaseId }} {{ release.title }}</strong><span>{{ release.releaseType }} · SELF_DECLARED_UNVERIFIED</span></div><a :href="`https://amoy.polygonscan.com/tx/${release.transactionHash}`" target="_blank" rel="noopener noreferrer">Transaction</a></li></ul></section>
+    <section class="panel"><h3>4. Creator Commitment登録</h3><div class="status-grid"><div><span>Creator ID</span><strong>{{ registeredOnchain ? creatorId.toString() : '未登録' }}</strong></div><div><span>状態</span><strong>{{ registeredOnchain ? creatorActive ? 'Active' : 'Inactive' : '未登録' }}</strong></div><div><span>Payout候補</span><strong>{{ shortAddress(payoutAddress) }}</strong></div><div><span>Release数</span><strong>{{ creatorReleaseCount.toString() }}</strong></div></div><p>Profile内容そのものではなくsalt付きcommitmentを登録します。Payout候補は接続Walletですが、本人・Payee・税務確認や送金を行いません。</p><button class="primary" type="button" :disabled="!chainReady || registeredOnchain" @click="registerOnchain">CreatorをPolygon Amoyへ登録</button></section>
+
+    <section class="panel"><h3>5. 作品の自己申告Commitment</h3><form class="release-form" @submit.prevent="declareRelease"><label for="testnet-release-title">作品名（合成Demo用）</label><input id="testnet-release-title" v-model="title" type="text" minlength="2" maxlength="60" autocomplete="off" placeholder="Synthetic First Song" required><label for="testnet-release-type">Release種別</label><select id="testnet-release-type" v-model="releaseType"><option>SINGLE</option><option>EP</option><option>ALBUM</option></select><label class="check"><input v-model="rightsAcknowledged" type="checkbox"> ハッシュ登録は権利確認・配信許諾・作品公開ではなく、取消可能な自己申告にすぎないことを確認しました</label><button class="primary" type="submit" :disabled="!releaseReady">作品Commitmentを登録</button></form><p v-if="registeredOnchain && !creatorActive" class="error">Inactive Creatorは新しい作品を申告できません。</p><ul v-if="releases.length" class="release-list"><li v-for="release in releases" :key="release.releaseId"><div><strong>#{{ release.releaseId }} {{ release.title }}</strong><span>{{ release.releaseType }} · SELF_DECLARED_UNVERIFIED</span></div><a :href="`https://amoy.polygonscan.com/tx/${release.transactionHash}`" target="_blank" rel="noopener noreferrer">Transaction</a></li></ul></section>
     <p v-if="lastTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastTransaction}`" target="_blank" rel="noopener noreferrer">直近TransactionをEtherscanで確認</a></p><p aria-live="polite">{{ message }}</p>
   </section>
 </template>

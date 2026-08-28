@@ -8,11 +8,16 @@ import {
   DEMO_SUPPORTER_CONSENT_VERSION,
   DEMO_SUPPORTER_CREATOR_ID,
   hasActiveCreatorRegistry,
+  hasActiveParticipantRegistry,
   hasActiveSupporterRegistration,
   getAmoyTransactionFees,
   AMOY_CHAIN_ID,
   AMOY_FALLBACK_BASE_FEE_PER_GAS,
   AMOY_MIN_PRIORITY_FEE_PER_GAS,
+  TESTNET_CREATOR_ENROLLMENT_CONSENT_VERSION,
+  TESTNET_CREATOR_ROLE,
+  TESTNET_USER_ENROLLMENT_CONSENT_VERSION,
+  TESTNET_USER_ROLE,
   resolveAmoyTransactionFees,
   validateDeploymentManifest,
   validateSupporterMetadata
@@ -119,10 +124,19 @@ test('rejects an active manifest with an invalid chain, address, or source commi
     ...base,
     contracts: { ...base.contracts, testPolDistributor: 'invalid' }
   }), /Test POL distributor/)
+  assert.throws(() => validateDeploymentManifest({
+    ...base,
+    contracts: { ...base.contracts, participantRegistry: 'invalid' }
+  }), /participant registry/)
   assert.equal(hasActiveCreatorRegistry(validateDeploymentManifest(base)), false)
   assert.equal(hasActiveCreatorRegistry(validateDeploymentManifest({
     ...base,
     contracts: { ...base.contracts, creatorRegistry: '0x5555555555555555555555555555555555555555' }
+  })), true)
+  assert.equal(hasActiveParticipantRegistry(validateDeploymentManifest(base)), false)
+  assert.equal(hasActiveParticipantRegistry(validateDeploymentManifest({
+    ...base,
+    contracts: { ...base.contracts, participantRegistry: '0x7777777777777777777777777777777777777777' }
   })), true)
   assert.equal(hasActiveSupporterRegistration(validateDeploymentManifest({
     ...base,
@@ -135,6 +149,14 @@ test('rejects an active manifest with an invalid chain, address, or source commi
     ...base,
     contracts: { ...base.contracts, supporterRegistrationAdapter: 'invalid' }
   }), /registration adapter/)
+})
+
+test('publishes distinct participant roles and consent versions', () => {
+  assert.equal(TESTNET_USER_ROLE, 1)
+  assert.equal(TESTNET_CREATOR_ROLE, 2)
+  assert.match(TESTNET_USER_ENROLLMENT_CONSENT_VERSION, /^0x[0-9a-f]{64}$/i)
+  assert.match(TESTNET_CREATOR_ENROLLMENT_CONSENT_VERSION, /^0x[0-9a-f]{64}$/i)
+  assert.notEqual(TESTNET_USER_ENROLLMENT_CONSENT_VERSION, TESTNET_CREATOR_ENROLLMENT_CONSENT_VERSION)
 })
 
 test('builds the exact short-lived Supporter SBT EIP-712 intent', () => {

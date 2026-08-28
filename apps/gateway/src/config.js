@@ -26,6 +26,20 @@ export function loadConfig(environment = process.env) {
   const publicUrl = new URL(publicUri)
   const webauthnOrigin = environment.GATEWAY_WEBAUTHN_ORIGIN ?? publicUrl.origin
   const webauthnRpId = environment.GATEWAY_WEBAUTHN_RP_ID ?? publicUrl.hostname
+  const mailMode = environment.GATEWAY_MAIL_MODE ?? 'outbox'
+
+  if (!['outbox', 'webhook'].includes(mailMode)) {
+    throw new Error('GATEWAY_MAIL_MODE must be outbox or webhook')
+  }
+  if (mailMode === 'webhook' && (!environment.GATEWAY_MAIL_WEBHOOK_URL || !environment.GATEWAY_MAIL_WEBHOOK_TOKEN)) {
+    throw new Error('Webhook mail mode requires GATEWAY_MAIL_WEBHOOK_URL and GATEWAY_MAIL_WEBHOOK_TOKEN')
+  }
+  if (environment.GATEWAY_ADMIN_TOKEN && environment.GATEWAY_ADMIN_TOKEN.length < 32) {
+    throw new Error('GATEWAY_ADMIN_TOKEN must contain at least 32 characters')
+  }
+  if (mailMode === 'webhook' && new URL(environment.GATEWAY_MAIL_WEBHOOK_URL).protocol !== 'https:') {
+    throw new Error('GATEWAY_MAIL_WEBHOOK_URL must use HTTPS')
+  }
 
   if (new URL(webauthnOrigin).origin !== webauthnOrigin) {
     throw new Error('GATEWAY_WEBAUTHN_ORIGIN must be an origin without a path')
@@ -45,6 +59,11 @@ export function loadConfig(environment = process.env) {
     webauthnOrigin,
     webauthnRpId,
     webauthnRpName: environment.GATEWAY_WEBAUTHN_RP_NAME ?? 'Creator First Platform Testnet',
+    adminToken: environment.GATEWAY_ADMIN_TOKEN,
+    invitationPublicUrl: environment.GATEWAY_INVITATION_PUBLIC_URL ?? `${publicUrl.origin}/creator-first-platform/demo/participant-registration`,
+    mailMode,
+    mailWebhookUrl: environment.GATEWAY_MAIL_WEBHOOK_URL,
+    mailWebhookToken: environment.GATEWAY_MAIL_WEBHOOK_TOKEN,
     trustBindingTtlMs: positiveInteger(
       environment.GATEWAY_TRUST_BINDING_TTL_MS,
       10 * 60_000,

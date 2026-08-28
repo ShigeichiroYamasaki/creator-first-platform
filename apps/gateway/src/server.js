@@ -4,6 +4,8 @@ import { getAddress, recoverMessageAddress, recoverTypedDataAddress } from 'viem
 import { catalog, publicTrack } from './catalog.js'
 import { AccountTrustError, AccountTrustService } from './AccountTrustService.js'
 import { GatewayStore } from './GatewayStore.js'
+import { InvitationMailer } from './InvitationMailer.js'
+import { ParticipantInvitationError, ParticipantInvitationService } from './ParticipantInvitationService.js'
 
 const COOKIE_NAME = 'cfp_demo_session'
 const POLICY_VERSION = 'gateway-demo-policy-v1'
@@ -81,6 +83,8 @@ export function createGatewayServer({
   const supportIntents = new Map()
   const supportIdempotency = new Map()
   const accountTrust = new AccountTrustService({ config, store, ...accountTrustOptions })
+  const invitationMailer = accountTrustOptions.invitationMailer ?? new InvitationMailer(config)
+  const participantInvitations = new ParticipantInvitationService({ config, store, mailer: invitationMailer })
   let closed = false
 
   function getAccount(request, response) {
@@ -539,6 +543,27 @@ export function createGatewayServer({
       if (request.method === 'POST' && path === '/v1/demo/users') {
         return await registerDemoUser(request, response, account)
       }
+      if (request.method === 'GET' && path === '/v1/admin/participant-invitations') {
+        participantInvitations.requireAdministrator(request)
+        return sendJson(response, 200, { invitations: participantInvitations.list() })
+      }
+      if (request.method === 'POST' && path === '/v1/admin/participant-invitations') {
+        participantInvitations.requireAdministrator(request)
+        return sendJson(response, 201, participantInvitations.create(await readJson(request)))
+      }
+      const invitationSendMatch = /^\/v1\/admin\/participant-invitations\/([A-Za-z0-9-]+)\/send$/.exec(path)
+      if (request.method === 'POST' && invitationSendMatch) {
+        participantInvitations.requireAdministrator(request)
+        return sendJson(response, 200, await participantInvitations.send(invitationSendMatch[1], await readJson(request)))
+      }
+      const invitationMatch = /^\/v1\/participant-invitations\/([A-Za-z0-9_-]{32,128})$/.exec(path)
+      if (request.method === 'GET' && invitationMatch) {
+        return sendJson(response, 200, participantInvitations.inspect(invitationMatch[1]))
+      }
+      const invitationClaimMatch = /^\/v1\/participant-invitations\/([A-Za-z0-9_-]{32,128})\/claim$/.exec(path)
+      if (request.method === 'POST' && invitationClaimMatch) {
+        return sendJson(response, 200, participantInvitations.claim(invitationClaimMatch[1], account, await readJson(request)))
+      }
       if (request.method === 'GET' && path === '/v1/account-trust/status') {
         return sendJson(response, 200, accountTrust.status(account))
       }
@@ -620,7 +645,7 @@ export function createGatewayServer({
       throw new GatewayHttpError(404, 'NOT_FOUND', 'Route not found')
     } catch (error) {
       if (response.headersSent) return response.destroy(error)
-      const knownError = error instanceof GatewayHttpError || error instanceof AccountTrustError
+      const knownError = error instanceof GatewayHttpError || error instanceof AccountTrustError || error instanceof ParticipantInvitationError
       const status = knownError ? error.status : 500
       const code = knownError ? error.code : 'INTERNAL_ERROR'
       const message = knownError ? error.message : 'Gateway request failed'
@@ -631,6 +656,7 @@ export function createGatewayServer({
   return {
     server,
     store,
+    invitationMailer,
     async listen(port = config.port, host = config.host) {
       await new Promise((resolve, reject) => {
         server.once('error', reject)

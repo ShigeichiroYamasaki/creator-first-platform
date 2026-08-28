@@ -154,7 +154,11 @@ export default defineConfig({
     sitemap: {
       hostname: 'https://shigeichiroyamasaki.github.io/creator-first-platform/',
       transformItems(items) {
-        return items.filter(({ url }) => !url.endsWith('whitepaper/06-economics-mathjax'))
+        return items.filter(({ url }) =>
+          !url.endsWith('whitepaper/06-economics-mathjax') &&
+          !url.includes('admin/') &&
+          !url.endsWith('demo/participant-registration')
+        )
       }
     },
     transformHead({ pageData, title, description }) {

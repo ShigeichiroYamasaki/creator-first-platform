@@ -3,6 +3,8 @@ import { readFile } from 'node:fs/promises'
 const requiredFiles = [
   'apps/gateway/src/server.js',
   'apps/gateway/src/AccountTrustService.js',
+  'apps/gateway/src/ParticipantInvitationService.js',
+  'apps/gateway/src/InvitationMailer.js',
   'apps/gateway/src/GatewayStore.js',
   'apps/gateway/src/media/FileMediaAdapter.js',
   'apps/gateway/src/media/NavidromeMediaAdapter.js',
@@ -28,7 +30,10 @@ const requirements = [
   ['verifyRegistrationResponse', 'WebAuthn registration verification'],
   ['verifyAuthenticationResponse', 'WebAuthn authentication verification'],
   ['WALLET_BINDING_SIGNER_MISMATCH', 'Wallet binding signer check'],
-  ['account_trust_audit_events', 'Account Trust audit record']
+  ['account_trust_audit_events', 'Account Trust audit record'],
+  ['/v1/admin/participant-invitations', 'administrator invitation API'],
+  ['participant_invitation_audit_events', 'participant invitation audit record'],
+  ['INVITATION_ALREADY_CLAIMED', 'single-use invitation enforcement']
 ]
 
 const missing = requirements.filter(([needle]) => !source.includes(needle))
@@ -46,7 +51,11 @@ const consistencyRequirements = [
   ['docs/protocol/vertical-slice.md', 'エンドツーエンド最小縦断実装は未成立', 'Vertical Slice status'],
   ['docs/status.md', 'ローカル再生・アカウント結合部分実装', 'Project status'],
   ['docs/adr/ADR-0019-jpki-passkey-wallet-binding-testnet.md', 'SimpleWebAuthnによる登録・認証検証', 'ADR-0019 implementation boundary'],
-  ['docs/demo/test-user-registration.md', '<AccountTrustDemo />', 'Account Trust demo UI']
+  ['docs/demo/test-user-registration.md', '<AccountTrustDemo />', 'Account Trust demo UI'],
+  ['docs/adr/ADR-0020-wallet-agnostic-participant-invitations.md', '一回限りトークン', 'ADR-0020 invitation boundary'],
+  ['protocol/account/account-lifecycle-spec.md', 'REQ-ACCOUNT-123', 'Account invitation requirements'],
+  ['docs/admin/participant-invitations.md', '<ParticipantAdminDemo />', 'participant administrator UI'],
+  ['docs/demo/participant-registration.md', '<ParticipantInvitationRegistration />', 'participant invitation claim UI']
 ]
 
 const consistencyContents = new Map(await Promise.all(
