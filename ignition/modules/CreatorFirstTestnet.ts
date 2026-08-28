@@ -27,6 +27,7 @@ export default buildModule("CreatorFirstTestnet", (m) => {
   );
   const monthlyPrice = m.getParameter("monthlyPrice", 1_000n * ONE_TOKEN);
   const monthlyDuration = m.getParameter("monthlyDuration", 30n * 24n * 60n * 60n);
+  const initialTestPolFunding = m.getParameter("initialTestPolFunding", 2n * 10n ** 16n);
   const supporterMetadataUri = m.getParameter(
     "supporterMetadataUri",
     "https://shigeichiroyamasaki.github.io/creator-first-platform/sbt/supporter.json",
@@ -138,6 +139,11 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     proofPolicyManager,
     proofPauser,
   ]);
+  const testnetPolDistributor = m.contract("CreatorFirstTestnetPolDistributor", [
+    admin,
+    deployer,
+    deployer,
+  ], { value: initialTestPolFunding });
   const transparentZKMockProfileId = keccak256(
     stringToHex("cfp.testnet.transparent-zk.mock.v1"),
   );
@@ -166,5 +172,6 @@ export default buildModule("CreatorFirstTestnet", (m) => {
     cfp0002DeploymentFactory,
     transparentZKMockVerifier,
     transparentZKRegistry,
+    testnetPolDistributor,
   };
 });

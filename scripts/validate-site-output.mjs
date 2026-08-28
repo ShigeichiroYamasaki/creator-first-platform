@@ -48,6 +48,7 @@ const requiredEnglishProtocolRoutes = [
   'en/protocol/specs/transparent-zk-verification',
   'en/protocol/specs/production-service-lifecycle'
 ]
+const requiredEnglishDemoRoutes = ['en/demo/']
 const requiredHomeLabels = [
   '>本文へ移動</a>',
   'aria-label="サイト内を検索"',
@@ -375,6 +376,10 @@ for (const route of requiredProtocolRoutes) {
 for (const route of requiredEnglishProtocolRoutes) {
   const url = new URL(route, publicOrigin).href
   if (!indexableUrls.has(url)) errors.push(`required English Protocol page is not indexable: ${url}`)
+}
+for (const route of requiredEnglishDemoRoutes) {
+  const url = new URL(route, publicOrigin).href
+  if (!indexableUrls.has(url)) errors.push(`required English Demo page is not indexable: ${url}`)
 }
 
 const assetDirectory = join(outputDirectory, 'assets')

@@ -11,10 +11,23 @@ const englishTheme = {
     { text: 'Home', link: '/en/' },
     { text: 'Whitepaper', link: '/en/whitepaper/' },
     { text: 'Protocol', link: '/en/protocol/' },
-    { text: 'Testnet demo', link: '/demo/' },
+    { text: 'Testnet demo', link: '/en/demo/' },
     { text: 'GitHub', link: 'https://github.com/ShigeichiroYamasaki/creator-first-platform' }
   ],
   sidebar: {
+    '/en/demo/': [
+      {
+        text: 'Testnet demo',
+        items: [
+          { text: 'Overview', link: '/en/demo/' },
+          { text: 'MetaMask and Amoy guide (Japanese)', link: '/demo/metamask-amoy-setup' },
+          { text: 'User services (Japanese UI)', link: '/demo/user-services' },
+          { text: 'Creator services (Japanese UI)', link: '/demo/creator-services' },
+          { text: 'Governance demo (Japanese UI)', link: '/demo/governance' },
+          { text: 'Published contracts', link: '/demo/testnet-contracts' }
+        ]
+      }
+    ],
     '/en/whitepaper/': [
       {
         text: 'Whitepaper',

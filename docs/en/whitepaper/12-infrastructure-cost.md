@@ -18,7 +18,7 @@ Polygon's [current faucet documentation](https://docs.polygon.technology/tools/g
 
 ### Controlled participant funding
 
-The public experiment is invitation or pre-registration based. It is not an open anonymous faucet. After approval and wallet-binding proof, an off-chain distributor may top a participant up toward approximately **0.6 Test POL**, counted once per person across user and creator roles. A person who already has enough Test POL receives no additional amount.
+The public experiment is invitation or pre-registration based. It is not an open anonymous faucet. After approval and wallet-binding proof, an off-chain distributor provides only the minimum initial Test POL and may replenish it for approved operations up to a cumulative **0.5 Test POL per person**, counted once across user and creator roles. A person who already has enough Test POL receives no additional amount.
 
 Required controls are:
 
@@ -31,7 +31,7 @@ Required controls are:
 - monitoring, low-balance alerts and an emergency stop; and
 - a published statement that test assets create no refund, reward or future entitlement.
 
-A 20-person experiment therefore needs at most about 12 Test POL under the nominal cap; 50 people need at most about 30 Test POL, before allowing for retries and operator transactions. The actual request should use measured median gas and a safety margin rather than assuming every participant consumes the full cap.
+A 20-person experiment therefore needs at most 10 Test POL under the nominal cap; 50 people need at most 25 Test POL, before allowing for operator transactions. Because distribution is incremental, actual demand should be materially lower. The operating budget should use measured gas and a safety margin rather than assuming every participant consumes the full cap.
 
 ## Cost gates
 

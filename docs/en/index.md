@@ -16,7 +16,7 @@ hero:
       link: /en/protocol/
     - theme: alt
       text: Open the testnet demo
-      link: /demo/
+      link: /en/demo/
     - theme: alt
       text: 日本語
       link: /
@@ -76,7 +76,7 @@ The operating legal entity is intended to be a Japanese corporation. It would ex
 
 ## Public experiment and faucet purpose
 
-The public experiment uses **Polygon Amoy (chain ID 80002)**. Approved participants register in advance; registration is not an anonymous automated faucet. The planned onboarding service verifies a participant record and wallet binding, then may top the wallet up toward a capped test balance of approximately **0.6 Test POL per person across all roles**. It may also issue MockJPYC for payment-flow testing.
+The public experiment uses **Polygon Amoy (chain ID 80002)**. Approved participants register in advance; registration is not an anonymous automated faucet. The testnet distributor contract binds an opaque approved participant ID to one wallet, provides only the minimum initial Test POL, and permits replenishment for approved operations up to a cumulative **0.5 Test POL per participant across all roles**. Person-level duplicate approval and transaction submission remain responsibilities of the separately secured off-chain operator. The experiment may also issue MockJPYC for payment-flow testing.
 
 Polygon's current [test-token faucet documentation](https://docs.polygon.technology/tools/gas/matic-faucet) states that the former official Polygon Faucet is no longer available and directs developers to listed third-party faucets. Accordingly, these English materials support a third-party faucet, ecosystem-support or community review request; they must not describe a submission as an application to an operating “official Polygon Faucet” unless Polygon introduces a new official programme.
 
@@ -92,7 +92,7 @@ The distributor must enforce participant approval, one-person caps, replay prote
 
 ## Evidence and implementation status
 
-The source, contracts, deployment manifests, protocol specifications and test code are public on [GitHub](https://github.com/ShigeichiroYamasaki/creator-first-platform). The [English protocol index](/en/protocol/) distinguishes draft requirements from deployed demonstrations. The Japanese [testnet demo](/demo/) is the current interactive interface; English user-interface coverage is still in progress.
+The source, contracts, deployment manifests, protocol specifications and test code are public on [GitHub](https://github.com/ShigeichiroYamasaki/creator-first-platform). The [English protocol index](/en/protocol/) distinguishes draft requirements from deployed demonstrations. The [English testnet demo guide](/en/demo/) explains the experiment; interactive service screens remain primarily in Japanese.
 
 ## Document authority
 
