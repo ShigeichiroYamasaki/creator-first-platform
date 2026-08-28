@@ -20,6 +20,7 @@ const englishTheme = {
         text: 'Testnet demo',
         items: [
           { text: 'Overview', link: '/en/demo/' },
+          { text: 'Amoy Test POL funding request', link: '/en/demo/amoy-pol-funding-request' },
           { text: 'MetaMask and Amoy guide (Japanese)', link: '/demo/metamask-amoy-setup' },
           { text: 'User services (Japanese UI)', link: '/demo/user-services' },
           { text: 'Creator services (Japanese UI)', link: '/demo/creator-services' },

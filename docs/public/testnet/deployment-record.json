@@ -5,7 +5,8 @@
   "chainId": 80002,
   "status": "active",
   "deployedAt": "2026-08-26",
-  "sourceCommit": "16b33334e6457337054c66824620d64cbed4f473",
+  "updatedAt": "2026-08-28",
+  "sourceCommit": "19987da6ca367635f18da8e753782c87318e678c",
   "deploymentTool": "Hardhat Ignition 3.14.0",
   "deploymentId": "amoy-creator-first-testnet",
   "compiler": {
@@ -104,6 +105,20 @@
       "blockNumber": 45852691,
       "profileRegistrationTransactionHash": "0x6be74e613e557d32f91fbcab0f4cfef16923681059a64e7db884ed52f5dfeb68",
       "profileRegistrationBlockNumber": 45852705
+    },
+    "testPolDistributor": {
+      "address": "0x8a0B3F08EC1Bd4231be92320381a1bAc56D112BE",
+      "transactionHash": "0x0f356550ffd775f9e93c0c4f42671f8c8287d0711646397fe0a97d312cede2e9",
+      "blockNumber": 46090934,
+      "sourceCommit": "19987da6ca367635f18da8e753782c87318e678c",
+      "deploymentId": "amoy-creator-first-testnet",
+      "initialFundingAtomic": "20000000000000000",
+      "initialTargetAtomic": "20000000000000000",
+      "maximumTargetAtomic": "50000000000000000",
+      "maximumPerDistributionAtomic": "50000000000000000",
+      "lifetimeCapPerParticipantAtomic": "500000000000000000",
+      "dailyGlobalBudgetAtomic": "1000000000000000000",
+      "cooldownSeconds": 600
     }
   },
   "subscriptionPlan": {

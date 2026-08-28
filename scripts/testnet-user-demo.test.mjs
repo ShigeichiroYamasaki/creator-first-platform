@@ -78,7 +78,9 @@ test('ships a safe Polygon Amoy manifest and verifies reviewed addresses when ac
   assert.match(record.contracts.supporterRegistrationAdapter.transactionHash, /^0x[0-9a-f]{64}$/i)
   assert.match(record.contracts.supporterRegistrationAdapter.roleGrantTransactionHash, /^0x[0-9a-f]{64}$/i)
   assert.equal(record.contracts.creatorRegistry.address, parsed.contracts.creatorRegistry)
-  assert.equal(record.contracts.creatorRegistry.sourceCommit, parsed.sourceCommit)
+  assert.match(record.contracts.creatorRegistry.sourceCommit, /^[0-9a-f]{40}$/i)
+  assert.equal(record.contracts.testPolDistributor.address, parsed.contracts.testPolDistributor)
+  assert.equal(record.contracts.testPolDistributor.sourceCommit, parsed.sourceCommit)
   assert.equal(record.contracts.legislatorRegistrationAdapter.address, parsed.contracts.legislatorRegistrationAdapter)
   assert.equal(record.contracts.legislatorRegistrationAdapter.governor, parsed.contracts.governor)
   assert.equal(record.contracts.legislatorRegistrationAdapter.subscription, parsed.contracts.subscription)
@@ -113,6 +115,10 @@ test('rejects an active manifest with an invalid chain, address, or source commi
   assert.throws(() => validateDeploymentManifest({ ...base, chainId: 1 }), /Polygon Amoy/)
   assert.throws(() => validateDeploymentManifest({ ...base, sourceCommit: 'short' }), /source commit/)
   assert.throws(() => validateDeploymentManifest({ ...base, contracts: { ...base.contracts, mockJpyc: '0x0' } }), /contract address/)
+  assert.throws(() => validateDeploymentManifest({
+    ...base,
+    contracts: { ...base.contracts, testPolDistributor: 'invalid' }
+  }), /Test POL distributor/)
   assert.equal(hasActiveCreatorRegistry(validateDeploymentManifest(base)), false)
   assert.equal(hasActiveCreatorRegistry(validateDeploymentManifest({
     ...base,

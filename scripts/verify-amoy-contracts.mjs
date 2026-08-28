@@ -26,7 +26,20 @@ const supporterRegistrationAdapter = manifest.contracts.supporterRegistrationAda
 const legislatorRegistrationAdapter = manifest.contracts.legislatorRegistrationAdapter
   ? getAddress(manifest.contracts.legislatorRegistrationAdapter)
   : undefined
+const testPolDistributor = manifest.contracts.testPolDistributor
+  ? getAddress(manifest.contracts.testPolDistributor)
+  : undefined
 assert.equal(Boolean(governor), Boolean(governedPolicy), 'Governance manifest must publish governor and policy together')
+assert.equal(
+  getAddress(deploymentRecord.contracts.testPolDistributor.address),
+  testPolDistributor,
+  'Test POL distributor deployment record mismatch'
+)
+assert.equal(
+  deploymentRecord.contracts.testPolDistributor.sourceCommit,
+  manifest.sourceCommit,
+  'Test POL distributor source commit mismatch'
+)
 const rpcUrl = process.env.AMOY_READ_RPC_URL ?? 'https://polygon-amoy-bor-rpc.publicnode.com'
 const client = createPublicClient({ chain: polygonAmoy, transport: http(rpcUrl) })
 
@@ -173,6 +186,39 @@ if (supporterRegistrationAdapter) {
   }), true, 'Supporter registration adapter does not have RELAYER_ROLE')
 }
 
+if (testPolDistributor) {
+  const distributorAbi = parseAbi([
+    'function TESTNET_NOTICE() view returns (string)',
+    'function INITIAL_TARGET_BALANCE() view returns (uint256)',
+    'function MAX_TARGET_BALANCE() view returns (uint256)',
+    'function MAX_PER_DISTRIBUTION() view returns (uint256)',
+    'function LIFETIME_CAP_PER_PARTICIPANT() view returns (uint256)',
+    'function DAILY_GLOBAL_BUDGET() view returns (uint256)',
+    'function TOP_UP_COOLDOWN() view returns (uint64)',
+    'function paused() view returns (bool)'
+  ])
+  const [notice, initialTarget, maximumTarget, maximumTransfer, lifetimeCap, dailyBudget, cooldown, paused] =
+    await Promise.all([
+      client.readContract({ address: testPolDistributor, abi: distributorAbi, functionName: 'TESTNET_NOTICE' }),
+      client.readContract({ address: testPolDistributor, abi: distributorAbi, functionName: 'INITIAL_TARGET_BALANCE' }),
+      client.readContract({ address: testPolDistributor, abi: distributorAbi, functionName: 'MAX_TARGET_BALANCE' }),
+      client.readContract({ address: testPolDistributor, abi: distributorAbi, functionName: 'MAX_PER_DISTRIBUTION' }),
+      client.readContract({ address: testPolDistributor, abi: distributorAbi, functionName: 'LIFETIME_CAP_PER_PARTICIPANT' }),
+      client.readContract({ address: testPolDistributor, abi: distributorAbi, functionName: 'DAILY_GLOBAL_BUDGET' }),
+      client.readContract({ address: testPolDistributor, abi: distributorAbi, functionName: 'TOP_UP_COOLDOWN' }),
+      client.readContract({ address: testPolDistributor, abi: distributorAbi, functionName: 'paused' })
+    ])
+  assert.equal(notice, 'TESTNET ONLY - AMOY POL HAS NO MONETARY VALUE OR PRODUCTION RIGHTS')
+  assert.equal(initialTarget, 2n * 10n ** 16n)
+  assert.equal(maximumTarget, 5n * 10n ** 16n)
+  assert.equal(maximumTransfer, 5n * 10n ** 16n)
+  assert.equal(lifetimeCap, 5n * 10n ** 17n)
+  assert.equal(dailyBudget, 10n ** 18n)
+  assert.equal(cooldown, 600n)
+  assert.equal(paused, false)
+  assert.equal(deploymentRecord.contracts.testPolDistributor.initialFundingAtomic, '20000000000000000')
+}
+
 console.log(`Polygon Amoy deployment verified at source commit ${manifest.sourceCommit}:`)
 console.log(`- MockJPYC: ${addresses.mockJpyc}`)
 console.log(`- Subscription: ${addresses.subscription}`)
@@ -186,3 +232,4 @@ if (governor && governedPolicy) {
 }
 if (supporterRegistrationAdapter) console.log(`- Supporter registration adapter: ${supporterRegistrationAdapter}`)
 if (legislatorRegistrationAdapter) console.log(`- Legislator registration adapter: ${legislatorRegistrationAdapter}`)
+if (testPolDistributor) console.log(`- Test POL distributor: ${testPolDistributor}`)

@@ -229,6 +229,13 @@ export function validateDeploymentManifest(value) {
   ) {
     throw new Error('Active deployment manifest contains an invalid supporter registration adapter address.')
   }
+  if (
+    contracts.testPolDistributor !== undefined &&
+    contracts.testPolDistributor !== null &&
+    !hasValidAddress(contracts.testPolDistributor)
+  ) {
+    throw new Error('Active deployment manifest contains an invalid Test POL distributor address.')
+  }
   return { ...value, active: true }
 }
 

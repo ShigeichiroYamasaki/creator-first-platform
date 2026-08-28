@@ -48,7 +48,7 @@ const requiredEnglishProtocolRoutes = [
   'en/protocol/specs/transparent-zk-verification',
   'en/protocol/specs/production-service-lifecycle'
 ]
-const requiredEnglishDemoRoutes = ['en/demo/']
+const requiredEnglishDemoRoutes = ['en/demo/', 'en/demo/amoy-pol-funding-request']
 const requiredHomeLabels = [
   '>本文へ移動</a>',
   'aria-label="サイト内を検索"',

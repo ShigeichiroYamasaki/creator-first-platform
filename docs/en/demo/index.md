@@ -52,6 +52,8 @@ A low wallet balance alone never authorises a transfer. Replenishment must be bo
 
 The distributor contract and its unit tests are implemented locally. It binds one opaque pre-approved participant ID to one wallet and enforces an initial `0.02 Test POL` target, a `0.05 Test POL` target and transfer ceiling, a cumulative `0.5 Test POL` allowance, a ten-minute cooldown, a `1 Test POL` global daily budget, operation-ID replay rejection, pause control and withdrawal only while paused. Participant and operation identifiers must be random or strongly salted; they must not be direct hashes of names, email addresses or other personal data.
 
+The contract is deployed on Polygon Amoy at [`0x8a0B3F08EC1Bd4231be92320381a1bAc56D112BE`](https://amoy.polygonscan.com/address/0x8a0B3F08EC1Bd4231be92320381a1bAc56D112BE). Its initial `0.02 Test POL` funding, bytecode, limits and unpaused state were independently re-read through a public RPC. The [Amoy Test POL funding request evidence](/en/demo/amoy-pol-funding-request) names this contract as the transparent funding destination.
+
 Automatic decisions and transaction submission still require a separately secured off-chain operator. Person-level duplicate review, measured-gas calibration, retry, reorganisation, concurrency, budget-exhaustion and user-facing stop handling are not yet connected. Test POL creates no refund, reward, production entitlement or claim against CFP.
 
 ## Implementation order
@@ -93,7 +95,7 @@ Wallet addresses and transactions are public on Polygon Amoy. Session-only profi
 | Governance | Bicameral governors and simplified test qualification published; production identity, secret ballots, appeals and audit are incomplete |
 | Streaming gateway | Local mock implemented; not deployed publicly |
 | Navidrome | Local adapter implemented; production private network and canonical mapping are absent |
-| Incremental Test POL distributor | Contract and unit tests implemented; Amoy deployment and off-chain operator connection in progress |
+| Incremental Test POL distributor | [Contract deployed on Amoy](https://amoy.polygonscan.com/address/0x8a0B3F08EC1Bd4231be92320381a1bAc56D112BE); off-chain operator and participant-review connection remain in progress |
 | Rights, usage and distribution | Draft specifications; not implemented as a production service |
 
 ## Production blockers

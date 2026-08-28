@@ -5,7 +5,7 @@ description: Hardhat 3、Viem、Polygon AmoyでCreator First PlatformのMockJPYC
 
 # Polygon Amoy スマートコントラクトデモ
 
-Hardhat 3とViemを使い、公開済みのテストネット専用コントラクトをPolygon Amoyへデプロイしました。次の表には、公開済み構成に加えて、次回デプロイ対象としてローカル実装した透明型ZK境界、CFP-0002検証境界、テスト議員登録、本番向け抽選候補も示します。CFP識別子・改訂結合と両院別結果取得を備えたガバナーV2は、ソースコミット `16b33334e6457337054c66824620d64cbed4f473`からデプロイしています。
+Hardhat 3とViemを使い、公開済みのテストネット専用コントラクトをPolygon Amoyへデプロイしました。次の表には、公開済み構成に加えて、本番向け抽選候補も示します。統合公開記録のソースコミットは`19987da6ca367635f18da8e753782c87318e678c`です。各コントラクトの元のデプロイトランザクションとソースコミットは公開デプロイ記録で区別します。
 
 | コントラクト | テストネット上の責務 | 本番境界 |
 | --- | --- | --- |
@@ -53,6 +53,7 @@ SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を�
 | CFP-0002デプロイファクトリー | [`0x3052…28Cb`](https://amoy.polygonscan.com/address/0x3052B01311C4BDDa6B97f2c21029C80b848A28Cb) |
 | 透明型ZKモック検証者 | [`0x2d61…a80f`](https://amoy.polygonscan.com/address/0x2d61d67cBe34208b524980F815358184858ba80f) |
 | 透明型ZK受付台帳 | [`0x4378…cCc3`](https://amoy.polygonscan.com/address/0x4378586fE4835C4dEbe86084426f4ac98fBfcCc3) |
+| テストPOL段階補充コントラクト | [`0x8a0B…12BE`](https://amoy.polygonscan.com/address/0x8a0B3F08EC1Bd4231be92320381a1bAc56D112BE) |
 
 チェーン IDは`80002`です。[公開マニフェスト](/testnet/deployment.json)と[トランザクションを含むデプロイ記録](/testnet/deployment-record.json)を機械可読JSONで提供します。次のコマンドは公開Polygon Amoy RPCからBytecode、MockJPYC 通知／主張額、サブスクリプションの資産／資金庫／計画、ERC-1967 実装スロット、音楽クリエーター登録台帳のテストネット通知、ガバナーのチェーン／タイムロック設定およびデモポリシーとの接続を再検証します。
 
