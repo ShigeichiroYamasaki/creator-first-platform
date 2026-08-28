@@ -35,7 +35,7 @@ test('accepts the complete generated site', async () => {
   const result = await runValidator()
 
   assert.equal(result.status, 0, result.stderr)
-  assert.match(result.stdout, /5794 internal reference\(s\)/)
+  assert.match(result.stdout, /7596 internal reference\(s\)/)
 })
 
 test('rejects an unresolved internal page reference', async () => {
@@ -105,7 +105,7 @@ test('rejects a duplicate indexable description', async () => {
 test('rejects a raw search index over its parsing budget', async () => {
   const result = await runValidator(async (directory) => {
     const chunks = join(directory, 'assets/chunks')
-    const searchIndex = (await readdir(chunks)).find((file) => file.startsWith('@localSearchIndex'))
+    const searchIndex = (await readdir(chunks)).find((file) => file.startsWith('@localSearchIndexroot'))
     await appendFile(join(chunks, searchIndex), ' '.repeat(600_000), 'utf8')
   })
 
@@ -116,7 +116,7 @@ test('rejects a raw search index over its parsing budget', async () => {
 test('rejects a gzip search index over its transfer budget', async () => {
   const result = await runValidator(async (directory) => {
     const chunks = join(directory, 'assets/chunks')
-    const searchIndex = (await readdir(chunks)).find((file) => file.startsWith('@localSearchIndex'))
+    const searchIndex = (await readdir(chunks)).find((file) => file.startsWith('@localSearchIndexroot'))
     await appendFile(join(chunks, searchIndex), randomBytes(100_000))
   })
 

@@ -5,6 +5,8 @@ description: Creator First Platformの本番実装前に、合成データと金
 
 # テストネットデモ
 
+[最初に読む：MetaMaskのインストールとPolygon Amoy接続手順](/demo/metamask-amoy-setup)
+
 Creator First Platformは、まずテストネット上のデモシステムでプロトコル、ストリーミングゲートウェイ、スマートコントラクト連携、失敗時の挙動を検証し、その証拠をレビューした後に本番系を実装します。
 
 ::: warning 公開テストネットは実験環境です

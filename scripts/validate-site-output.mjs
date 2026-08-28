@@ -32,6 +32,22 @@ const requiredProtocolRoutes = [
   'protocol/specs/playback-verification',
   'protocol/specs/creator-distribution'
 ]
+const requiredEnglishProtocolRoutes = [
+  'en/protocol/',
+  'en/protocol/specs/account-lifecycle',
+  'en/protocol/specs/wallet-linking',
+  'en/protocol/specs/early-supporter-credential',
+  'en/protocol/specs/subscription-settlement',
+  'en/protocol/specs/settlement-asset-registry',
+  'en/protocol/specs/rights-registry',
+  'en/protocol/specs/playback-authorization',
+  'en/protocol/specs/player-client',
+  'en/protocol/specs/playback-verification',
+  'en/protocol/specs/creator-distribution',
+  'en/protocol/specs/governance-change',
+  'en/protocol/specs/transparent-zk-verification',
+  'en/protocol/specs/production-service-lifecycle'
+]
 const requiredHomeLabels = [
   '>本文へ移動</a>',
   'aria-label="サイト内を検索"',
@@ -41,6 +57,16 @@ const forbiddenHomeLabels = [
   '>Skip to content</a>',
   'aria-label="Search"',
   '>Search</span>'
+]
+const requiredEnglishHomeLabels = [
+  '>Skip to content</a>',
+  'aria-label="Search"',
+  '>Search</span>'
+]
+const forbiddenEnglishHomeLabels = [
+  '>本文へ移動</a>',
+  'aria-label="サイト内を検索"',
+  '>検索</span>'
 ]
 
 async function siteFiles(directory) {
@@ -100,6 +126,11 @@ for (const file of files) {
   const diagrams = [...source.matchAll(/<figure class="mermaid-diagram">([\s\S]*?)<\/figure>/g)]
   const urlPath = outputUrlPath(file)
   const isNotFoundPage = displayPath.endsWith('/404.html')
+  const isEnglishPage = urlPath.startsWith('/creator-first-platform/en/')
+  const expectedLanguage = isEnglishPage ? 'en-US' : 'ja-JP'
+  const expectedImageAlt = isEnglishPage
+    ? 'Creator First Platform symbol'
+    : 'Creator First Platformのシンボル'
   const idValues = matches(source, /\sid="([^"]+)"/g).map(decodeHtmlAttribute)
   const ids = new Set(idValues)
   const titles = matches(source, /<title>([^<]+)<\/title>/g)
@@ -120,7 +151,7 @@ for (const file of files) {
     if (!/<details class="mermaid-diagram__source">/.test(diagram[1])) {
       errors.push(`${displayPath}: Mermaid diagram ${index + 1} has no static text alternative`)
     }
-    if (!/<summary>[^<]+のテキスト表現を表示<\/summary>/.test(diagram[1])) {
+    if (!/<summary>(?:[^<]+のテキスト表現を表示|Show [^<]+ as text)<\/summary>/.test(diagram[1])) {
       errors.push(`${displayPath}: Mermaid diagram ${index + 1} has no meaningful summary`)
     }
     if (!/<pre><code>\s*\S/.test(diagram[1])) {
@@ -128,8 +159,8 @@ for (const file of files) {
     }
   }
 
-  if (!source.includes('<html lang="ja-JP"')) {
-    errors.push(`${displayPath}: document language is not ja-JP`)
+  if (!source.includes(`<html lang="${expectedLanguage}"`)) {
+    errors.push(`${displayPath}: document language is not ${expectedLanguage}`)
   }
   if (titles.length !== 1 || !titles[0].trim()) {
     errors.push(`${displayPath}: expected exactly one non-empty title`)
@@ -140,7 +171,7 @@ for (const file of files) {
   if (twitterImages.length !== 1 || twitterImages[0] !== socialImageUrl) {
     errors.push(`${displayPath}: expected exactly one canonical twitter:image`)
   }
-  if (!source.includes('<meta property="og:image:alt" content="Creator First Platformのシンボル">')) {
+  if (!source.includes(`<meta property="og:image:alt" content="${expectedImageAlt}">`)) {
     errors.push(`${displayPath}: missing og:image:alt`)
   }
   if (
@@ -150,7 +181,7 @@ for (const file of files) {
   ) {
     errors.push(`${displayPath}: missing or incorrect og:image type or dimensions`)
   }
-  if (!source.includes('<meta name="twitter:image:alt" content="Creator First Platformのシンボル">')) {
+  if (!source.includes(`<meta name="twitter:image:alt" content="${expectedImageAlt}">`)) {
     errors.push(`${displayPath}: missing twitter:image:alt`)
   }
   if (structuredData.length !== 1) {
@@ -162,7 +193,7 @@ for (const file of files) {
         website['@context'] !== 'https://schema.org' ||
         website['@type'] !== 'WebSite' ||
         website.url !== publicOrigin ||
-        website.inLanguage !== 'ja-JP' ||
+        website.inLanguage !== expectedLanguage ||
         website.image !== socialImageUrl
       ) {
         errors.push(`${displayPath}: JSON-LD WebSite metadata is incomplete or inconsistent`)
@@ -301,6 +332,7 @@ for (const reference of internalReferences) {
 const sitemapSource = await readFile(join(outputDirectory, 'sitemap.xml'), 'utf8')
 const sitemapUrls = new Set(matches(sitemapSource, /<loc>(.*?)<\/loc>/g))
 const homeSource = await readFile(join(outputDirectory, 'index.html'), 'utf8')
+const englishHomeSource = await readFile(join(outputDirectory, 'en/index.html'), 'utf8')
 let buildInfo
 
 try {
@@ -323,6 +355,12 @@ for (const label of requiredHomeLabels) {
 for (const label of forbiddenHomeLabels) {
   if (homeSource.includes(label)) errors.push(`index.html: untranslated UI fragment ${label}`)
 }
+for (const label of requiredEnglishHomeLabels) {
+  if (!englishHomeSource.includes(label)) errors.push(`en/index.html: missing localized UI fragment ${label}`)
+}
+for (const label of forbiddenEnglishHomeLabels) {
+  if (englishHomeSource.includes(label)) errors.push(`en/index.html: untranslated UI fragment ${label}`)
+}
 
 for (const [url, displayPath] of indexableUrls) {
   if (!sitemapUrls.has(url)) errors.push(`${displayPath}: canonical URL is missing from sitemap`)
@@ -333,6 +371,10 @@ for (const url of sitemapUrls) {
 for (const route of requiredProtocolRoutes) {
   const url = new URL(route, publicOrigin).href
   if (!indexableUrls.has(url)) errors.push(`required Protocol page is not indexable: ${url}`)
+}
+for (const route of requiredEnglishProtocolRoutes) {
+  const url = new URL(route, publicOrigin).href
+  if (!indexableUrls.has(url)) errors.push(`required English Protocol page is not indexable: ${url}`)
 }
 
 const assetDirectory = join(outputDirectory, 'assets')
@@ -357,17 +399,21 @@ if (appAssets.length !== 1) {
   }
 }
 
-if (searchAssets.length !== 1) {
-  errors.push(`assets: expected exactly one local search index chunk, found ${searchAssets.length}`)
+if (searchAssets.length !== 2) {
+  errors.push(`assets: expected one local search index chunk per locale, found ${searchAssets.length}`)
 } else {
-  const searchAsset = await readFile(searchAssets[0])
-  searchAssetBytes = searchAsset.byteLength
-  searchAssetGzipBytes = gzipSync(searchAsset, { level: 9 }).byteLength
-  if (searchAssetBytes > 1_500_000) {
-    errors.push(`${relative(outputDirectory, searchAssets[0])}: raw search index is ${searchAssetBytes} bytes (limit: 1500000)`)
-  }
-  if (searchAssetGzipBytes > 335_000) {
-    errors.push(`${relative(outputDirectory, searchAssets[0])}: gzip search index is ${searchAssetGzipBytes} bytes (limit: 335000)`)
+  for (const searchAssetPath of searchAssets) {
+    const searchAsset = await readFile(searchAssetPath)
+    const bytes = searchAsset.byteLength
+    const gzipBytes = gzipSync(searchAsset, { level: 9 }).byteLength
+    searchAssetBytes += bytes
+    searchAssetGzipBytes += gzipBytes
+    if (bytes > 1_500_000) {
+      errors.push(`${relative(outputDirectory, searchAssetPath)}: raw search index is ${bytes} bytes (limit: 1500000)`)
+    }
+    if (gzipBytes > 335_000) {
+      errors.push(`${relative(outputDirectory, searchAssetPath)}: gzip search index is ${gzipBytes} bytes (limit: 335000)`)
+    }
   }
 }
 

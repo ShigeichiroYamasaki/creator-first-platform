@@ -204,6 +204,18 @@
   background: var(--vp-c-brand-2);
 }
 
+.vp-doc img[src*="/images/guides/metamask/"] {
+  display: block;
+  width: auto;
+  max-width: min(100%, 52rem);
+  max-height: 44rem;
+  margin: 1.25rem auto 0.65rem;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  object-fit: contain;
+}
+
 @media (max-width: 640px) {
   .demo-service-grid {
     grid-template-columns: 1fr;

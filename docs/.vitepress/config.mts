@@ -6,10 +6,103 @@ const buildCommit = githubCommit && /^[0-9a-f]{40}$/.test(githubCommit)
   ? githubCommit
   : 'local'
 
+const englishTheme = {
+  nav: [
+    { text: 'Home', link: '/en/' },
+    { text: 'Whitepaper', link: '/en/whitepaper/' },
+    { text: 'Protocol', link: '/en/protocol/' },
+    { text: 'Testnet demo', link: '/demo/' },
+    { text: 'GitHub', link: 'https://github.com/ShigeichiroYamasaki/creator-first-platform' }
+  ],
+  sidebar: {
+    '/en/whitepaper/': [
+      {
+        text: 'Whitepaper',
+        items: [
+          { text: 'Overview', link: '/en/whitepaper/' },
+          { text: '01 Vision', link: '/en/whitepaper/01-vision' },
+          { text: '02 Market and problem', link: '/en/whitepaper/02-market' },
+          { text: '03 Rights and money', link: '/en/whitepaper/03-rights-and-money' },
+          { text: '04 Platform architecture', link: '/en/whitepaper/04-platform-architecture' },
+          { text: '05 Creator onboarding', link: '/en/whitepaper/05-creator-onboarding' },
+          { text: '06 Economic model', link: '/en/whitepaper/06-economics' },
+          { text: '07 Governance', link: '/en/whitepaper/07-governance' },
+          { text: '08 Discovery and community', link: '/en/whitepaper/08-discovery-community' },
+          { text: '09 Technology', link: '/en/whitepaper/09-technology' },
+          { text: '10 Security', link: '/en/whitepaper/10-security' },
+          { text: '11 Legal, STO and tax', link: '/en/whitepaper/11-legal-sto-tax' },
+          { text: '12 Infrastructure and cost', link: '/en/whitepaper/12-infrastructure-cost' },
+          { text: '13 Roadmap', link: '/en/whitepaper/13-roadmap' }
+        ]
+      }
+    ],
+    '/en/protocol/': [
+      {
+        text: 'Protocol specifications',
+        items: [
+          { text: 'Overview', link: '/en/protocol/' },
+          { text: 'Account lifecycle', link: '/en/protocol/specs/account-lifecycle' },
+          { text: 'Wallet linking', link: '/en/protocol/specs/wallet-linking' },
+          { text: 'Supporter credential', link: '/en/protocol/specs/early-supporter-credential' },
+          { text: 'Subscription settlement', link: '/en/protocol/specs/subscription-settlement' },
+          { text: 'Settlement asset registry', link: '/en/protocol/specs/settlement-asset-registry' },
+          { text: 'Rights registry', link: '/en/protocol/specs/rights-registry' },
+          { text: 'Playback authorization', link: '/en/protocol/specs/playback-authorization' },
+          { text: 'Player client', link: '/en/protocol/specs/player-client' },
+          { text: 'Playback verification', link: '/en/protocol/specs/playback-verification' },
+          { text: 'Creator distribution', link: '/en/protocol/specs/creator-distribution' },
+          { text: 'Governance change', link: '/en/protocol/specs/governance-change' },
+          { text: 'Transparent ZK verification', link: '/en/protocol/specs/transparent-zk-verification' },
+          { text: 'Production lifecycle', link: '/en/protocol/specs/production-service-lifecycle' }
+        ]
+      }
+    ]
+  },
+  notFound: {
+    title: 'Page not found',
+    quote: 'The URL may have changed or the page may not be published yet.',
+    linkLabel: 'Return to the Creator First Platform home page',
+    linkText: 'Return home'
+  },
+  footer: {
+    message: 'A verifiable music platform for independent music creators and users',
+    copyright: 'Creator First Platform'
+  },
+  editLink: {
+    pattern: 'https://github.com/ShigeichiroYamasaki/creator-first-platform/edit/main/docs/:path',
+    text: 'Edit this page on GitHub'
+  },
+  lastUpdated: { text: 'Last updated' },
+  outline: { level: [2, 3] as [number, number], label: 'On this page' },
+  docFooter: { prev: 'Previous page', next: 'Next page' },
+  returnToTopLabel: 'Return to top',
+  sidebarMenuLabel: 'Menu',
+  darkModeSwitchLabel: 'Theme',
+  lightModeSwitchTitle: 'Switch to light theme',
+  darkModeSwitchTitle: 'Switch to dark theme',
+  langMenuLabel: 'Change language',
+  skipToContentLabel: 'Skip to content',
+  search: { provider: 'local' as const }
+}
+
 export default defineConfig({
-    lang: 'ja-JP',
-    title: 'Creator First Platform',
-    description: '音楽クリエーターとユーザが共同統治する、音楽クリエーター中心の音楽配信プラットフォーム構想',
+    locales: {
+      root: {
+        label: '日本語',
+        lang: 'ja-JP',
+        link: '/',
+        title: 'Creator First Platform',
+        description: '音楽クリエーターとユーザが共同統治する、音楽クリエーター中心の音楽配信プラットフォーム構想'
+      },
+      en: {
+        label: 'English',
+        lang: 'en-US',
+        link: '/en/',
+        title: 'Creator First Platform',
+        description: 'A creator-first music platform governed jointly by independent music creators and users',
+        themeConfig: englishTheme
+      }
+    },
 
     base: '/creator-first-platform/',
     srcExclude: ['**/* 2.md'],
@@ -51,10 +144,6 @@ export default defineConfig({
       }
     },
     transformHead({ pageData, title, description }) {
-      if (pageData.isNotFound) {
-        return [['meta', { name: 'robots', content: 'noindex' }]]
-      }
-
       const route = pageData.relativePath
         .replace(/(^|\/)index\.md$/, '$1')
         .replace(/\.md$/, '')
@@ -63,15 +152,47 @@ export default defineConfig({
         'https://shigeichiroyamasaki.github.io/creator-first-platform/'
       ).href
 
+      const isEnglish = pageData.relativePath.startsWith('en/')
+      const language = isEnglish ? 'en-US' : 'ja-JP'
+      const openGraphLocale = isEnglish ? 'en_US' : 'ja_JP'
+      const imageAlt = isEnglish
+        ? 'Creator First Platform symbol'
+        : 'Creator First Platformのシンボル'
+      const websiteDescription = isEnglish
+        ? 'A creator-first music platform governed jointly by independent music creators and users'
+        : '音楽クリエーターとユーザが共同統治する、音楽クリエーター中心の音楽配信プラットフォーム構想'
+
       const head = [
         ['link', { rel: 'canonical', href: canonicalUrl }],
         ['meta', { property: 'og:title', content: title }],
         ['meta', { property: 'og:description', content: description }],
         ['meta', { property: 'og:url', content: canonicalUrl }],
+        ['meta', { property: 'og:locale', content: openGraphLocale }],
+        ['meta', { property: 'og:image:alt', content: imageAlt }],
         ['meta', { name: 'twitter:card', content: 'summary' }],
         ['meta', { name: 'twitter:title', content: title }],
-        ['meta', { name: 'twitter:description', content: description }]
+        ['meta', { name: 'twitter:description', content: description }],
+        ['meta', { name: 'twitter:image:alt', content: imageAlt }],
+        [
+          'script',
+          { type: 'application/ld+json' },
+          JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'Creator First Platform',
+            url: 'https://shigeichiroyamasaki.github.io/creator-first-platform/',
+            description: websiteDescription,
+            inLanguage: language,
+            image: 'https://shigeichiroyamasaki.github.io/creator-first-platform/creator-first-platform-symbol.png',
+            sameAs: 'https://github.com/ShigeichiroYamasaki/creator-first-platform'
+          })
+        ]
       ]
+
+      if (pageData.isNotFound) {
+        head.push(['meta', { name: 'robots', content: 'noindex' }])
+        return head
+      }
 
       if (pageData.frontmatter.robots) {
         head.push(['meta', { name: 'robots', content: pageData.frontmatter.robots }])
@@ -84,7 +205,6 @@ export default defineConfig({
       ['meta', { name: 'theme-color', content: '#3451b2' }],
       ['meta', { property: 'og:type', content: 'website' }],
       ['meta', { property: 'og:site_name', content: 'Creator First Platform' }],
-      ['meta', { property: 'og:locale', content: 'ja_JP' }],
       [
         'meta',
         {
@@ -95,7 +215,6 @@ export default defineConfig({
       ['meta', { property: 'og:image:type', content: 'image/png' }],
       ['meta', { property: 'og:image:width', content: '1254' }],
       ['meta', { property: 'og:image:height', content: '1254' }],
-      ['meta', { property: 'og:image:alt', content: 'Creator First Platformのシンボル' }],
       [
         'meta',
         {
@@ -103,7 +222,6 @@ export default defineConfig({
           content: 'https://shigeichiroyamasaki.github.io/creator-first-platform/creator-first-platform-symbol.png'
         }
       ],
-      ['meta', { name: 'twitter:image:alt', content: 'Creator First Platformのシンボル' }],
       [
         'link',
         {
@@ -112,21 +230,7 @@ export default defineConfig({
           href: '/creator-first-platform/sitemap.xml'
         }
       ],
-      ['link', { rel: 'icon', href: '/creator-first-platform/creator-first-platform-symbol.png' }],
-      [
-        'script',
-        { type: 'application/ld+json' },
-        JSON.stringify({
-          '@context': 'https://schema.org',
-          '@type': 'WebSite',
-          name: 'Creator First Platform',
-          url: 'https://shigeichiroyamasaki.github.io/creator-first-platform/',
-          description: '音楽クリエーターとユーザが共同統治する、音楽クリエーター中心の音楽配信プラットフォーム構想',
-          inLanguage: 'ja-JP',
-          image: 'https://shigeichiroyamasaki.github.io/creator-first-platform/creator-first-platform-symbol.png',
-          sameAs: 'https://github.com/ShigeichiroYamasaki/creator-first-platform'
-        })
-      ]
+      ['link', { rel: 'icon', href: '/creator-first-platform/creator-first-platform-symbol.png' }]
     ],
 
     cleanUrls: true,
@@ -141,12 +245,19 @@ export default defineConfig({
 
           if (language === 'mermaid' || language === 'mmd') {
             const directive = token.content.trim().split(/\s+/)[0]
-            const labels: Record<string, string> = {
-              flowchart: 'フローチャート',
-              graph: 'フローチャート',
-              sequenceDiagram: 'シーケンス図'
-            }
-            const label = labels[directive] ?? 'Mermaid図'
+            const isEnglish = environment.relativePath?.startsWith('en/')
+            const labels: Record<string, string> = isEnglish
+              ? {
+                  flowchart: 'Flowchart',
+                  graph: 'Flowchart',
+                  sequenceDiagram: 'Sequence diagram'
+                }
+              : {
+                  flowchart: 'フローチャート',
+                  graph: 'フローチャート',
+                  sequenceDiagram: 'シーケンス図'
+                }
+            const label = labels[directive] ?? (isEnglish ? 'Mermaid diagram' : 'Mermaid図')
             const encodedGraph = encodeURIComponent(token.content)
             const escapedSource = markdown.utils.escapeHtml(token.content)
 
@@ -154,7 +265,7 @@ export default defineConfig({
               '<figure class="mermaid-diagram">',
               `<ClientOnly><MermaidDiagram id="mermaid-${index}" graph="${encodedGraph}" label="${label}" /></ClientOnly>`,
               '<details class="mermaid-diagram__source">',
-              `<summary>${label}のテキスト表現を表示</summary>`,
+              `<summary>${isEnglish ? `Show ${label.toLowerCase()} as text` : `${label}のテキスト表現を表示`}</summary>`,
               `<pre v-pre><code>${escapedSource}</code></pre>`,
               '</details>',
               '</figure>'
@@ -169,6 +280,7 @@ export default defineConfig({
       siteTitle: 'Creator First Platform',
       logo: '/creator-first-platform-symbol.png',
       externalLinkIcon: true,
+      i18nRouting: false,
 
       notFound: {
         title: 'ページが見つかりません',
@@ -195,6 +307,7 @@ export default defineConfig({
             text: 'デモ',
             items: [
               { text: 'テストネットデモ入口', link: '/demo/' },
+              { text: 'MetaMask・Amoy接続手順', link: '/demo/metamask-amoy-setup' },
               { text: 'ユーザ向けサービス', link: '/demo/user-services' },
               { text: 'テストユーザ登録デモ', link: '/demo/test-user-registration' },
               { text: 'ユーザ向け利用デモ', link: '/demo/user-service' },

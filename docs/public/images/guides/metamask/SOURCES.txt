@@ -1,0 +1,32 @@
+MetaMask guide screenshot sources
+
+These screenshots are unmodified UI images published by the MetaMask Help Center and are reproduced as attributed visual quotations for the beginner setup guide.
+
+Retrieved: 2026-08-28
+
+get-metamask.png
+Source page: https://support.metamask.io/start/getting-started-with-metamask
+Original: https://metamask-support.myfilebase.com/ipfs/QmWmyN41SCENtkuAC9V82mJwBwCpdNmZiHgY26Bj1tVWDM
+SHA-256: ac3d86ed55ababb4abf3fc54d680dc5144572c700fb90c281371b38d3771c54f
+
+chrome-store.png
+Source page: https://support.metamask.io/start/getting-started-with-metamask
+Original: https://metamask-support.myfilebase.com/ipfs/Qmf7912GYHVDNRtWWuEQeVGTNMVvJR91Doyjn1j2QckESi
+SHA-256: 5d392acdf37f93fed96dba992fb966c444173944c6a268bddfe2fa1f7b678f8c
+
+networks-menu.png
+Source page: https://support.metamask.io/configure/networks/how-to-add-a-custom-network-rpc
+Original: https://metamask-support.myfilebase.com/ipfs/Qmddr95e4fpNHU9pnV9xgs6gD5LkqjZ49nUFj895gEiimd
+SHA-256: afccdecaa5fe61b2d5da12bdbee67164b3ee37b6f01384a04f4b08ad2a3e0710
+
+add-custom-network.png
+Source page: https://support.metamask.io/configure/networks/how-to-add-a-custom-network-rpc
+Original: https://metamask-support.myfilebase.com/ipfs/QmcQxhLZwdwKo6gKtv9R97Nim2W4dTjJNpztLce4Cb6dpR
+SHA-256: fd5fd534216135969816350cfc8cffc7cbe37cf9a56053a48b45ec95295bd35b
+
+custom-network-form.png
+Source page: https://support.metamask.io/configure/networks/how-to-add-a-custom-network-rpc
+Original: https://metamask-support.myfilebase.com/ipfs/QmTpG9YqthXfXyNS735V3ga9gxFE2XDT4EGaNCB7pKiWjV
+SHA-256: 30ab9d651c6dfaa4969146e2bf8303ea9582475a524ac94b6e69770f8a786e43
+
+MetaMask and its UI are owned by their respective rights holders. These files are not CFP-created product artwork and must not be reused as CFP branding.

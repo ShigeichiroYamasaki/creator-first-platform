@@ -6,6 +6,9 @@ hero:
   name: "Creator First Platform"
   text: "音楽クリエーターとユーザが共同で統治する音楽プラットフォーム"
   actions:
+    - theme: alt
+      text: English
+      link: /en/
     - theme: brand
       text: テストネットデモを開く
       link: /demo/
