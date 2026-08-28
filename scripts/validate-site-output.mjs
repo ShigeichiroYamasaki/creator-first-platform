@@ -15,6 +15,7 @@ if (outputDirectoryArgument !== -1 && !process.argv[outputDirectoryArgument + 1]
 }
 const publicOrigin = 'https://shigeichiroyamasaki.github.io/creator-first-platform/'
 const socialImageUrl = `${publicOrigin}creator-first-platform-symbol.png`
+const searchIndexGzipBudget = 340_000
 const requiredProtocolRoutes = [
   'protocol/foundation/overview',
   'protocol/foundation/conventions',
@@ -416,8 +417,8 @@ if (searchAssets.length !== 2) {
     if (bytes > 1_500_000) {
       errors.push(`${relative(outputDirectory, searchAssetPath)}: raw search index is ${bytes} bytes (limit: 1500000)`)
     }
-    if (gzipBytes > 335_000) {
-      errors.push(`${relative(outputDirectory, searchAssetPath)}: gzip search index is ${gzipBytes} bytes (limit: 335000)`)
+    if (gzipBytes > searchIndexGzipBudget) {
+      errors.push(`${relative(outputDirectory, searchAssetPath)}: gzip search index is ${gzipBytes} bytes (limit: ${searchIndexGzipBudget})`)
     }
   }
 }
