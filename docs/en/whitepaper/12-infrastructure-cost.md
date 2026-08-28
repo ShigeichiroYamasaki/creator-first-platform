@@ -31,7 +31,7 @@ Required controls are:
 - monitoring, low-balance alerts and an emergency stop; and
 - a published statement that test assets create no refund, reward or future entitlement.
 
-A 20-person experiment therefore needs at most 10 Test POL under the nominal cap; 50 people need at most 25 Test POL, before allowing for operator transactions. Because distribution is incremental, actual demand should be materially lower. The operating budget should use measured gas and a safety margin rather than assuming every participant consumes the full cap.
+A 100-person experiment therefore has an absolute participant-distribution ceiling of 50 Test POL under the nominal cap. CFP's current support request separately budgets up to 15 Test POL for operator-paid deployment, integration, registration, distribution, governance-administration, demonstration and retry transactions, producing a maximum experiment request of 65 Test POL. The operator reserve never increases the 0.5 POL participant cap. Because participant funding is incremental and the contract's global daily distribution budget is 1 Test POL, actual demand should be measured and funding should be staged rather than assuming every participant consumes the full cap.
 
 ## Cost gates
 
