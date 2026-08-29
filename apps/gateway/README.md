@@ -68,7 +68,7 @@ GATEWAY_GMAIL_APP_PASSWORD_FILE=/run/secrets/gmail-app-password \
 npm run gateway:dev
 ```
 
-Gmail送信は公開実験の確認メールと審査結果に限定し、宣伝メールや不特定多数への配信には使用しません。送信量、迷惑メール判定、アカウント停止、アプリパスワード失効の影響を受けるため、本番系では独自ドメインのトランザクションメールサービスへ移行します。
+Gmail送信は暗黙TLS（465）を優先し、接続できない場合だけSTARTTLS（587）へ切り替えます。公開実験の確認メールと審査結果に限定し、宣伝メールや不特定多数への配信には使用しません。送信量、迷惑メール判定、アカウント停止、アプリパスワード失効の影響を受けるため、本番系では独自ドメインのトランザクションメールサービスへ移行します。
 
 `http://127.0.0.1:5173/#/register`では、Aliasだけを使うTest Userを登録できます。これはGateway ProcessとCookie Session内だけで有効なTest-only Profileであり、本番Platform Account、本人確認、AuthenticatorまたはWallet Linkではありません。Gatewayは別途、起動時に合成Demo Principalを自動生成してMock認可に使用するため、Test User登録の有無はPlayback、Subscription、WalletまたはSBT資格を変更しません。
 

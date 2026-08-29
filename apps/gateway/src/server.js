@@ -683,6 +683,7 @@ export function createGatewayServer({
       const status = knownError ? error.status : 500
       const code = knownError ? error.code : 'INTERNAL_ERROR'
       const message = knownError ? error.message : 'Gateway request failed'
+      if (!knownError) console.error(`Gateway request failed: ${error.message}`)
       sendJson(response, status, { code, message })
     }
   })

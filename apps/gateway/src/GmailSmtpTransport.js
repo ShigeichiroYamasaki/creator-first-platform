@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { connect as connectTcp } from 'node:net'
 import { connect } from 'node:tls'
 
 function singleLine(value, name) {
@@ -44,7 +45,7 @@ class SmtpSession {
     this.lines = []
     this.waiters = []
     socket.setEncoding('utf8')
-    socket.on('data', (chunk) => {
+    this.onData = (chunk) => {
       this.buffer += chunk
       let boundary
       while ((boundary = this.buffer.indexOf('\r\n')) >= 0) {
@@ -52,10 +53,14 @@ class SmtpSession {
         this.buffer = this.buffer.slice(boundary + 2)
       }
       this.flush()
-    })
-    socket.on('error', (error) => this.rejectAll(error))
-    socket.on('timeout', () => this.rejectAll(new Error('Gmail SMTP connection timed out')))
-    socket.on('close', () => this.rejectAll(new Error('Gmail SMTP connection closed unexpectedly')))
+    }
+    this.onError = (error) => this.rejectAll(error)
+    this.onTimeout = () => this.rejectAll(new Error('Gmail SMTP connection timed out'))
+    this.onClose = () => this.rejectAll(new Error('Gmail SMTP connection closed unexpectedly'))
+    socket.on('data', this.onData)
+    socket.on('error', this.onError)
+    socket.on('timeout', this.onTimeout)
+    socket.on('close', this.onClose)
   }
 
   flush() {
@@ -89,6 +94,22 @@ class SmtpSession {
     this.socket.write(`${command}\r\n`)
     return this.reply(expectedCodes)
   }
+
+  detach() {
+    this.socket.off('data', this.onData)
+    this.socket.off('error', this.onError)
+    this.socket.off('timeout', this.onTimeout)
+    this.socket.off('close', this.onClose)
+  }
+}
+
+function secure(socket, timeoutMs) {
+  socket.setTimeout(timeoutMs)
+  return new Promise((resolve, reject) => {
+    socket.once('secureConnect', () => resolve(socket))
+    socket.once('error', reject)
+    socket.once('timeout', () => reject(new Error('Gmail SMTP connection timed out')))
+  })
 }
 
 export class GmailSmtpTransport {
@@ -99,23 +120,55 @@ export class GmailSmtpTransport {
   }
 
   async send(payload) {
+    try {
+      return await this.sendImplicitTls(payload)
+    } catch (error) {
+      if (/rejected the operation/.test(error.message)) throw error
+      return this.sendStartTls(payload)
+    }
+  }
+
+  async authenticateAndSend(socket, session, payload) {
+    await session.command('EHLO creator-first-platform', [250])
+    const auth = Buffer.from(`\0${this.address}\0${this.appPassword}`, 'utf8').toString('base64')
+    await session.command(`AUTH PLAIN ${auth}`, [235])
+    await session.command(`MAIL FROM:<${this.address}>`, [250])
+    await session.command(`RCPT TO:<${mailbox(payload.to, 'recipient')}>`, [250, 251])
+    await session.command('DATA', [354])
+    socket.write(`${smtpMessage(payload, this.address)}\r\n.\r\n`)
+    await session.reply([250])
+    await session.command('QUIT', [221])
+    return { mode: 'gmail-smtp', deliveryId: payload.deliveryId }
+  }
+
+  async sendImplicitTls(payload) {
     const socket = connect({ host: 'smtp.gmail.com', port: 465, servername: 'smtp.gmail.com', rejectUnauthorized: true })
     socket.setTimeout(this.timeoutMs)
     const session = new SmtpSession(socket)
     try {
       await session.reply([220])
-      await session.command('EHLO creator-first-platform', [250])
-      const auth = Buffer.from(`\0${this.address}\0${this.appPassword}`, 'utf8').toString('base64')
-      await session.command(`AUTH PLAIN ${auth}`, [235])
-      await session.command(`MAIL FROM:<${this.address}>`, [250])
-      await session.command(`RCPT TO:<${mailbox(payload.to, 'recipient')}>`, [250, 251])
-      await session.command('DATA', [354])
-      socket.write(`${smtpMessage(payload, this.address)}\r\n.\r\n`)
-      await session.reply([250])
-      await session.command('QUIT', [221])
-      return { mode: 'gmail-smtp', deliveryId: payload.deliveryId }
+      return await this.authenticateAndSend(socket, session, payload)
     } finally {
       socket.destroy()
+    }
+  }
+
+  async sendStartTls(payload) {
+    const plainSocket = connectTcp({ host: 'smtp.gmail.com', port: 587 })
+    plainSocket.setTimeout(this.timeoutMs)
+    const plainSession = new SmtpSession(plainSocket)
+    let tlsSocket
+    try {
+      await plainSession.reply([220])
+      await plainSession.command('EHLO creator-first-platform', [250])
+      await plainSession.command('STARTTLS', [220])
+      plainSession.detach()
+      tlsSocket = connect({ socket: plainSocket, servername: 'smtp.gmail.com', rejectUnauthorized: true })
+      await secure(tlsSocket, this.timeoutMs)
+      const tlsSession = new SmtpSession(tlsSocket)
+      return await this.authenticateAndSend(tlsSocket, tlsSession, payload)
+    } finally {
+      ;(tlsSocket ?? plainSocket).destroy()
     }
   }
 }
