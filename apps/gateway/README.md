@@ -48,6 +48,18 @@ GATEWAY_CREATOR_APPLICATION_PUBLIC_URL='https://public.example/creator-first-pla
 npm run gateway:dev
 ```
 
+少人数の無償版運用実験では、`11rou.yamasaki@gmail.com`を送信元とするGmail SMTPモードも選択できます。Googleアカウントの通常パスワードは使用せず、2段階認証を有効にしたうえでこのゲートウェー専用に発行したアプリパスワードだけを使います。アプリパスワードはチャット、Git、ブラウザ、VMメタデータへ恒久保存せず、実行環境の秘密情報として設定します。
+
+```sh
+GATEWAY_ADMIN_TOKEN='十分長いランダム値' \
+GATEWAY_MAIL_MODE=gmail-smtp \
+GATEWAY_GMAIL_ADDRESS='11rou.yamasaki@gmail.com' \
+GATEWAY_GMAIL_APP_PASSWORD='専用アプリパスワード' \
+npm run gateway:dev
+```
+
+Gmail送信は公開実験の確認メールと審査結果に限定し、宣伝メールや不特定多数への配信には使用しません。送信量、迷惑メール判定、アカウント停止、アプリパスワード失効の影響を受けるため、本番系では独自ドメインのトランザクションメールサービスへ移行します。
+
 `http://127.0.0.1:5173/#/register`では、Aliasだけを使うTest Userを登録できます。これはGateway ProcessとCookie Session内だけで有効なTest-only Profileであり、本番Platform Account、本人確認、AuthenticatorまたはWallet Linkではありません。Gatewayは別途、起動時に合成Demo Principalを自動生成してMock認可に使用するため、Test User登録の有無はPlayback、Subscription、WalletまたはSBT資格を変更しません。
 
 ## Navidrome adapter
@@ -74,6 +86,7 @@ Credential、内部Media ID、OpenSubsonic URLまたは`Remote-User`をPlayerへ
 - Supporter SBT、Early判定、RelayerおよびBlockchain TransactionはMockであり、JPYCを扱わない
 - Test User登録ではAlias、同意版、Opaque IDだけを扱い、メール、電話番号、Passwordまたは法的氏名を収集しない
 - 事前登録メールは参加者管理の明示目的でだけGatewayへ保存し、公開招待API、URLおよび公開チェーンへ返さない
+- Gmailの通常パスワードは使用せず、専用アプリパスワードをGit、ログ、公開JavaScriptまたはメール監査記録へ保存しない
 - 申請、メール確認、運営審査、招待状、メール配信、SIWEによる本人登録、オンチェーン役割登録およびTest POL配布を別状態として監査する
 - JPKI連携は明確に表示した非暗号学的モックだけとし、実カード、電子証明書、暗証番号、氏名、住所またはマイナンバーを取得しない
 - WebAuthnはchallenge、origin、RP ID、署名、ユーザ検証、資格情報、カウンタおよびバックアップ状態をサーバ側で検証する

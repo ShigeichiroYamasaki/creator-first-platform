@@ -4,6 +4,7 @@ const requiredFiles = [
   'apps/gateway/src/server.js',
   'apps/gateway/src/AccountTrustService.js',
   'apps/gateway/src/ParticipantApplicationService.js',
+  'apps/gateway/src/GmailSmtpTransport.js',
   'apps/gateway/src/ParticipantInvitationService.js',
   'apps/gateway/src/InvitationMailer.js',
   'apps/gateway/src/GatewayStore.js',
@@ -39,7 +40,9 @@ const requirements = [
   ['participant_applications', 'participant application store'],
   ['EMAIL_VERIFICATION_REQUIRED', 'participant email verification state'],
   ['UNDER_REVIEW', 'participant review state'],
-  ['APPROVED_INVITATION_SENT', 'participant approval notice state']
+  ['APPROVED_INVITATION_SENT', 'participant approval notice state'],
+  ['gmail-smtp', 'Gmail SMTP delivery mode'],
+  ['smtp.gmail.com', 'Gmail TLS endpoint']
 ]
 
 const missing = requirements.filter(([needle]) => !source.includes(needle))

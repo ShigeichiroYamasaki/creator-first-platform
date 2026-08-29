@@ -28,8 +28,8 @@ export function loadConfig(environment = process.env) {
   const webauthnRpId = environment.GATEWAY_WEBAUTHN_RP_ID ?? publicUrl.hostname
   const mailMode = environment.GATEWAY_MAIL_MODE ?? 'outbox'
 
-  if (!['outbox', 'webhook'].includes(mailMode)) {
-    throw new Error('GATEWAY_MAIL_MODE must be outbox or webhook')
+  if (!['outbox', 'webhook', 'gmail-smtp'].includes(mailMode)) {
+    throw new Error('GATEWAY_MAIL_MODE must be outbox, webhook or gmail-smtp')
   }
   if (mailMode === 'webhook' && (!environment.GATEWAY_MAIL_WEBHOOK_URL || !environment.GATEWAY_MAIL_WEBHOOK_TOKEN)) {
     throw new Error('Webhook mail mode requires GATEWAY_MAIL_WEBHOOK_URL and GATEWAY_MAIL_WEBHOOK_TOKEN')
@@ -39,6 +39,14 @@ export function loadConfig(environment = process.env) {
   }
   if (mailMode === 'webhook' && new URL(environment.GATEWAY_MAIL_WEBHOOK_URL).protocol !== 'https:') {
     throw new Error('GATEWAY_MAIL_WEBHOOK_URL must use HTTPS')
+  }
+  const gmailAddress = environment.GATEWAY_GMAIL_ADDRESS?.trim().toLowerCase()
+  const gmailAppPassword = environment.GATEWAY_GMAIL_APP_PASSWORD?.replace(/\s/g, '')
+  if (mailMode === 'gmail-smtp' && (!gmailAddress || !gmailAppPassword)) {
+    throw new Error('Gmail SMTP mode requires GATEWAY_GMAIL_ADDRESS and GATEWAY_GMAIL_APP_PASSWORD')
+  }
+  if (mailMode === 'gmail-smtp' && (!/^[^\s@]+@gmail\.com$/.test(gmailAddress) || gmailAppPassword.length < 16)) {
+    throw new Error('Gmail SMTP mode requires a Gmail address and a dedicated app password')
   }
 
   if (new URL(webauthnOrigin).origin !== webauthnOrigin) {
@@ -66,6 +74,8 @@ export function loadConfig(environment = process.env) {
     mailMode,
     mailWebhookUrl: environment.GATEWAY_MAIL_WEBHOOK_URL,
     mailWebhookToken: environment.GATEWAY_MAIL_WEBHOOK_TOKEN,
+    gmailAddress,
+    gmailAppPassword,
     trustBindingTtlMs: positiveInteger(
       environment.GATEWAY_TRUST_BINDING_TTL_MS,
       10 * 60_000,

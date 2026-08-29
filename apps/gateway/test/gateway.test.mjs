@@ -3,6 +3,7 @@ import { createServer } from 'node:http'
 import test from 'node:test'
 import { privateKeyToAccount } from 'viem/accounts'
 import { loadConfig } from '../src/config.js'
+import { InvitationMailer } from '../src/InvitationMailer.js'
 import { FileMediaAdapter } from '../src/media/FileMediaAdapter.js'
 import { NavidromeMediaAdapter } from '../src/media/NavidromeMediaAdapter.js'
 import { parseSingleRange } from '../src/media/range.js'
@@ -384,6 +385,35 @@ test('Participant applies, verifies email, receives approval invitation and clai
   assert.equal(claimed.body.state, 'CLAIMED')
   const current = await json(await api.request('/v1/participant-applications/current'))
   assert.equal(current.body.application.state, 'INVITATION_CLAIMED')
+})
+
+test('Gmail SMTP mode sends application mail through the configured account without exposing its app password', async () => {
+  const config = loadConfig({
+    GATEWAY_PORT: '8787',
+    GATEWAY_DATABASE_PATH: ':memory:',
+    GATEWAY_MEDIA_ROOT: new URL('../../../docker/navidrome/music', import.meta.url).pathname,
+    GATEWAY_MAIL_MODE: 'gmail-smtp',
+    GATEWAY_GMAIL_ADDRESS: '11rou.yamasaki@gmail.com',
+    GATEWAY_GMAIL_APP_PASSWORD: 'abcd efgh ijkl mnop'
+  })
+  const calls = []
+  const mailer = new InvitationMailer(config, fetch, {
+    async send(payload) {
+      calls.push(payload)
+      return { mode: 'gmail-smtp', deliveryId: payload.deliveryId }
+    }
+  })
+  const delivery = await mailer.sendApplicationVerification({
+    applicationId: 'application-test-1',
+    to: 'applicant@example.test',
+    displayName: 'Demo Listener',
+    verificationUri: 'https://example.test/demo#verify-application=test-token'
+  })
+  assert.equal(delivery.mode, 'gmail-smtp')
+  assert.equal(calls.length, 1)
+  assert.equal(calls[0].to, 'applicant@example.test')
+  assert.equal(calls[0].text.includes('test-token'), true)
+  assert.equal(JSON.stringify(calls).includes(config.gmailAppPassword), false)
 })
 
 test('Account Trust binds Mock JPKI, a server-verified passkey and an Amoy wallet in one transaction', async (context) => {
