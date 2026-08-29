@@ -113,10 +113,11 @@ function secure(socket, timeoutMs) {
 }
 
 export class GmailSmtpTransport {
-  constructor({ address, appPassword, timeoutMs = 15_000 }) {
+  constructor({ address, appPassword, timeoutMs = 15_000, networkFamily = 0 }) {
     this.address = mailbox(address, 'Gmail address')
     this.appPassword = singleLine(appPassword, 'Gmail app password').replace(/\s/g, '')
     this.timeoutMs = timeoutMs
+    this.networkFamily = networkFamily
   }
 
   async send(payload) {
@@ -142,7 +143,10 @@ export class GmailSmtpTransport {
   }
 
   async sendImplicitTls(payload) {
-    const socket = connect({ host: 'smtp.gmail.com', port: 465, servername: 'smtp.gmail.com', rejectUnauthorized: true })
+    const socket = connect({
+      host: 'smtp.gmail.com', port: 465, servername: 'smtp.gmail.com', rejectUnauthorized: true,
+      ...(this.networkFamily ? { family: this.networkFamily } : {})
+    })
     socket.setTimeout(this.timeoutMs)
     const session = new SmtpSession(socket)
     try {
@@ -154,7 +158,10 @@ export class GmailSmtpTransport {
   }
 
   async sendStartTls(payload) {
-    const plainSocket = connectTcp({ host: 'smtp.gmail.com', port: 587 })
+    const plainSocket = connectTcp({
+      host: 'smtp.gmail.com', port: 587,
+      ...(this.networkFamily ? { family: this.networkFamily } : {})
+    })
     plainSocket.setTimeout(this.timeoutMs)
     const plainSession = new SmtpSession(plainSocket)
     let tlsSocket

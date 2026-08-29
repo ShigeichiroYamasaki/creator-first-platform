@@ -64,6 +64,10 @@ export function loadConfig(environment = process.env) {
   if (mailMode === 'gmail-smtp' && (!/^[^\s@]+@gmail\.com$/.test(gmailAddress) || gmailAppPassword.length < 16)) {
     throw new Error('Gmail SMTP mode requires a Gmail address and a dedicated app password')
   }
+  const gmailNetworkFamily = Number(environment.GATEWAY_GMAIL_NETWORK_FAMILY ?? 0)
+  if (![0, 4, 6].includes(gmailNetworkFamily)) {
+    throw new Error('GATEWAY_GMAIL_NETWORK_FAMILY must be 0, 4 or 6')
+  }
 
   if (new URL(webauthnOrigin).origin !== webauthnOrigin) {
     throw new Error('GATEWAY_WEBAUTHN_ORIGIN must be an origin without a path')
@@ -93,6 +97,7 @@ export function loadConfig(environment = process.env) {
     mailWebhookToken: environment.GATEWAY_MAIL_WEBHOOK_TOKEN,
     gmailAddress,
     gmailAppPassword,
+    gmailNetworkFamily,
     trustBindingTtlMs: positiveInteger(
       environment.GATEWAY_TRUST_BINDING_TTL_MS,
       10 * 60_000,

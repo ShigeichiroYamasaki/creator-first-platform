@@ -6,7 +6,11 @@ export class InvitationMailer {
     this.config = config
     this.fetch = fetchImplementation
     this.gmailTransport = gmailTransport ?? (config.mailMode === 'gmail-smtp'
-      ? new GmailSmtpTransport({ address: config.gmailAddress, appPassword: config.gmailAppPassword })
+      ? new GmailSmtpTransport({
+          address: config.gmailAddress,
+          appPassword: config.gmailAppPassword,
+          networkFamily: config.gmailNetworkFamily
+        })
       : null)
     this.outbox = []
   }

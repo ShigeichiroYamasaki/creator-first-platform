@@ -430,10 +430,12 @@ test('Gateway reads administrator and Gmail credentials from mounted secret file
       GATEWAY_MAIL_MODE: 'gmail-smtp',
       GATEWAY_GMAIL_ADDRESS: '11rou.yamasaki@gmail.com',
       GATEWAY_GMAIL_APP_PASSWORD_FILE: gmailPasswordFile,
+      GATEWAY_GMAIL_NETWORK_FAMILY: '6',
       GATEWAY_ADMIN_TOKEN_FILE: adminTokenFile
     })
     assert.equal(config.gmailAppPassword, 'abcdefghijklmnop')
     assert.equal(config.adminToken, 'a'.repeat(64))
+    assert.equal(config.gmailNetworkFamily, 6)
   } finally {
     rmSync(directory, { recursive: true, force: true })
   }
