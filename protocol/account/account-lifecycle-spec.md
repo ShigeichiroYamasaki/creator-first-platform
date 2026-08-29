@@ -4,7 +4,7 @@
 **Version:** 0.1.0  
 **Protocol Domain:** account / identity  
 **Specification ID:** SPEC-ACCOUNT-003  
-**Last Updated:** 2026-08-28
+**Last Updated:** 2026-08-29
 
 ## Related Documents
 
@@ -215,6 +215,10 @@ PENDING → ACTIVE → RESTRICTED → ACTIVE
 - **REQ-ACCOUNT-128:** Administrator invitation operations MUST require server-side authentication; knowledge of an unlisted administrator-page URL MUST NOT grant authority.
 - **REQ-ACCOUNT-129:** Email delivery acceptance, Wallet proof, off-chain invitation claim, on-chain role registration and Test POL funding MUST be separately observable states and MUST NOT be represented as one atomic success.
 - **REQ-ACCOUNT-130:** A participant invitation or Wallet signature MUST NOT by itself grant production Account, Creator, Rights Holder, payee, legal-identity or governance eligibility.
+- **REQ-ACCOUNT-131:** The participant view MUST distinguish invitation creation, email delivery, Wallet proof, invitation claim, operator on-chain approval, initial Test POL funding and role self-registration, and MUST identify the actor responsible for the next incomplete step.
+- **REQ-ACCOUNT-132:** A dual-role invitation MUST reuse one invitation and Wallet proof while preserving independent User and Creator role registration and service-entry states.
+- **REQ-ACCOUNT-133:** The participant view MUST present different post-claim procedures and qualification boundaries for User and Creator roles.
+- **REQ-ACCOUNT-134:** A participant-facing operation MUST NOT state or imply that an operator-controlled on-chain step, funding step or role activation succeeded unless authoritative evidence confirms that distinct state.
 
 ## Invariants
 
@@ -350,6 +354,7 @@ Audit access MUST be restricted and audited. Retention must balance security, ac
 | REQ-ACCOUNT-101–105 | Privacy / authorization / retention | No biometric collection, silent operator mutation, unlawful erasure, identifier reuse or on-chain secrets |
 | REQ-ACCOUNT-106–112 | Security / UX conformance | Implemented SHOULD behavior is tested or deviation is documented under conventions |
 | REQ-ACCOUNT-113–114 | Optional conformance | Password or guest profiles preserve every MUST, MUST NOT and invariant |
+| REQ-ACCOUNT-123–134 | Participant invitation / UX / integration | Wallet-agnostic single-use invitations preserve privacy, expose distinct actor-owned states and branch into independent User and Creator procedures |
 
 Tests MUST include registration races, session fixation, stolen/expired session, CSRF, credential stuffing, WebAuthn origin/RP/challenge/signature failures, authenticator-removal orphaning, recovery takeover, concurrent closure, legal hold and enumeration attempts.
 

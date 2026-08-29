@@ -55,7 +55,10 @@ const consistencyRequirements = [
   ['docs/adr/ADR-0020-wallet-agnostic-participant-invitations.md', '一回限りトークン', 'ADR-0020 invitation boundary'],
   ['protocol/account/account-lifecycle-spec.md', 'REQ-ACCOUNT-123', 'Account invitation requirements'],
   ['docs/admin/participant-invitations.md', '<ParticipantAdminDemo />', 'participant administrator UI'],
-  ['docs/demo/participant-registration.md', '<ParticipantInvitationRegistration />', 'participant invitation claim UI']
+  ['docs/demo/participant-registration.md', '<ParticipantInvitationRegistration />', 'participant invitation claim UI'],
+  ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', 'ユーザ向け参加', 'role-specific participant view'],
+  ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', '音楽クリエーター向け参加', 'creator-specific participant view'],
+  ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', '運営の処理を待ってください', 'operator-owned participant state']
 ]
 
 const consistencyContents = new Map(await Promise.all(
