@@ -321,7 +321,7 @@ test('Participant applies, verifies email, receives approval invitation and clai
     GATEWAY_MEDIA_ROOT: new URL('../../../docker/navidrome/music', import.meta.url).pathname,
     GATEWAY_ADMIN_TOKEN: 'test-admin-token-with-sufficient-entropy',
     GATEWAY_INVITATION_PUBLIC_URL: 'https://example.test/demo/participant-registration',
-    GATEWAY_APPLICATION_PUBLIC_URL: 'https://example.test/demo/test-user-registration'
+    GATEWAY_APPLICATION_STATUS_PUBLIC_URL: 'https://example.test/demo/participant-application-status'
   })
   const gateway = createGatewayServer({ config, mediaAdapter: new FileMediaAdapter(config.mediaRoot) })
   const address = await gateway.listen(0)
@@ -345,6 +345,7 @@ test('Participant applies, verifies email, receives approval invitation and clai
   assert.equal(application.body.emailHint, 'l***@example.test')
   assert.equal('email' in application.body, false)
   assert.equal(gateway.invitationMailer.outbox.length, 1)
+  assert.match(gateway.invitationMailer.outbox[0].text, /https:\/\/example\.test\/demo\/participant-application-status#verify-application=/)
   const repeated = await json(await api.request('/v1/participant-applications', {
     method: 'POST',
     body: JSON.stringify({

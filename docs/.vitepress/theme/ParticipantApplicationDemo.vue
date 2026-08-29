@@ -23,9 +23,10 @@ type Application = {
   rejectionCode?: string | null
 }
 
-const props = withDefaults(defineProps<{ displayName?: string; role?: number }>(), {
+const props = withDefaults(defineProps<{ displayName?: string; role?: number; statusOnly?: boolean }>(), {
   displayName: '',
-  role: 1
+  role: 1,
+  statusOnly: false
 })
 
 const email = ref('')
@@ -185,6 +186,11 @@ onMounted(async () => {
           <button type="button" class="secondary" :disabled="busy" @click="loadCurrent()">現在の状態を確認する</button>
         </div>
       </div>
+    </div>
+
+    <div v-else-if="statusOnly" class="application-state application-empty">
+      <span class="state-icon" aria-hidden="true">📭</span>
+      <div><h4>このブラウザには確認中の申請がありません</h4><p>確認メールに記載されたリンクを開いてください。新しく申請する場合は、音楽リスナーまたは音楽クリエータの参加ページから始めます。</p></div>
     </div>
 
     <form v-else class="application-form" @submit.prevent="submitApplication">

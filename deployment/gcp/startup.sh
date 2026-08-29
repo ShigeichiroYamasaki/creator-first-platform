@@ -55,7 +55,15 @@ if [[ ! -s "${APP_DIR}/secrets/gmail-app-password" ]]; then
   echo "CREATOR_FIRST_DEPLOY_STATUS=failed_missing_gmail_secret"
   exit 1
 fi
-if [[ ! -s "${APP_DIR}/secrets/admin-token" ]]; then
+admin_token="$(metadata_value gateway-admin-token || true)"
+if [[ -n "${admin_token}" ]]; then
+  if [[ ! "${admin_token}" =~ ^[0-9a-f]{64}$ ]]; then
+    echo "CREATOR_FIRST_DEPLOY_STATUS=failed_invalid_admin_token"
+    exit 1
+  fi
+  umask 077
+  printf '%s' "${admin_token}" > "${APP_DIR}/secrets/admin-token"
+elif [[ ! -s "${APP_DIR}/secrets/admin-token" ]]; then
   umask 077
   openssl rand -hex 32 > "${APP_DIR}/secrets/admin-token"
 fi
@@ -245,8 +253,7 @@ GATEWAY_MEDIA_ADAPTER=file
 GATEWAY_MEDIA_ROOT=/music
 GATEWAY_CHAIN_ID=80002
 GATEWAY_INVITATION_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/participant-registration
-GATEWAY_APPLICATION_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/test-user-registration
-GATEWAY_CREATOR_APPLICATION_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/creator-workspace
+GATEWAY_APPLICATION_STATUS_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/participant-application-status
 ENV
 chmod 0640 "${APP_DIR}/bootstrap/gateway.env"
 docker-compose -p creator-first-streaming up -d --force-recreate --no-deps participant-gateway

@@ -164,6 +164,7 @@ export default defineConfig({
           !url.endsWith('whitepaper/06-economics-mathjax') &&
           !url.includes('admin/') &&
           !url.endsWith('demo/participant-registration') &&
+          !url.endsWith('demo/participant-application-status') &&
           !url.endsWith('demo/cloud-entry')
         )
       }

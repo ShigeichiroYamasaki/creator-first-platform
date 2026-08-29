@@ -34,7 +34,7 @@ npm run docs:dev
 GATEWAY_ADMIN_TOKEN='ローカル試験用に生成した十分長いランダム値' npm run gateway:dev
 ```
 
-参加希望者はユーザまたは音楽クリエータの体験ページでメールアドレスを入力して申請し、最初に届く確認リンクを開きます。次に`http://127.0.0.1:5173/creator-first-platform/admin/participant-invitations`を開くと、管理者はメール確認済みの申請を審査できます。承認すると、参加者のEOAを知らない状態でユーザ／音楽クリエーター資格と期限を持つ一回限りの招待URIがメール送信されます。参加者は招待URIからMetaMaskを接続し、SIWE署名後に本人登録します。管理者による個別招待は例外対応として利用できます。管理ページは公開ナビゲーションへ載せず`noindex`としていますが、URL秘匿は認証ではありません。
+参加希望者はユーザまたは音楽クリエータの体験ページでメールアドレスを入力して申請し、最初に届く確認リンクを開きます。確認リンクは仮名・仮想通貨ワレット・音楽機能を含まない専用の`/creator-first-platform/demo/participant-application-status`へ遷移し、メール確認と審査待ち状態だけを表示します。次に`http://127.0.0.1:5173/creator-first-platform/admin/participant-invitations`を開くと、管理者はメール確認済みの申請を審査できます。承認すると、参加者のEOAを知らない状態でユーザ／音楽クリエーター資格と期限を持つ一回限りの招待URIがメール送信されます。参加者は招待URIからMetaMaskを接続し、SIWE署名後に本人登録します。管理者による個別招待は例外対応として利用できます。管理ページは公開ナビゲーションへ載せず`noindex`としていますが、URL秘匿は認証ではありません。
 
 既定の`GATEWAY_MAIL_MODE=outbox`はメールを外部送信せず、テスト用Outboxへ保存します。メール送信事業者へ接続する場合は、秘密情報をブラウザへ置かず、Gatewayから認証付きWebhookを呼びます。
 
@@ -43,8 +43,7 @@ GATEWAY_ADMIN_TOKEN='十分長いランダム値' \
 GATEWAY_MAIL_MODE=webhook \
 GATEWAY_MAIL_WEBHOOK_URL='https://mail-adapter.example/api/send' \
 GATEWAY_MAIL_WEBHOOK_TOKEN='メールアダプター専用トークン' \
-GATEWAY_APPLICATION_PUBLIC_URL='https://public.example/creator-first-platform/demo/test-user-registration' \
-GATEWAY_CREATOR_APPLICATION_PUBLIC_URL='https://public.example/creator-first-platform/demo/creator-workspace' \
+GATEWAY_APPLICATION_STATUS_PUBLIC_URL='https://public.example/creator-first-platform/demo/participant-application-status' \
 npm run gateway:dev
 ```
 

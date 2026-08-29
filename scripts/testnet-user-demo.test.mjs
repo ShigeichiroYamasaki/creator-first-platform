@@ -22,7 +22,7 @@ import {
   validateDeploymentManifest,
   validateSupporterMetadata
 } from '../docs/.vitepress/theme/testnet-user-demo.js'
-import { cloudDemoTarget, parseCloudDemoRuntime } from '../docs/.vitepress/theme/cloud-demo-runtime.js'
+import { cloudAdminTarget, cloudDemoTarget, parseCloudDemoRuntime } from '../docs/.vitepress/theme/cloud-demo-runtime.js'
 
 const manifestPath = new URL('../docs/public/testnet/deployment.json', import.meta.url)
 const deploymentRecordPath = new URL('../docs/public/testnet/deployment-record.json', import.meta.url)
@@ -37,6 +37,10 @@ test('routes operational registration to the same-origin Google Cloud demo', asy
   assert.equal(
     cloudDemoTarget(runtime, '/creator-first-platform/demo/test-user-registration?role=user#step=application'),
     'https://visibility-housing-burns-markets.trycloudflare.com/creator-first-platform/demo/test-user-registration?role=user#step=application'
+  )
+  assert.equal(
+    cloudAdminTarget(runtime),
+    'https://visibility-housing-burns-markets.trycloudflare.com/creator-first-platform/admin/participant-invitations'
   )
   assert.throws(() => cloudDemoTarget(runtime, '/whitepaper/'), /outside the public experiment/)
   assert.throws(() => parseCloudDemoRuntime({ ...runtime, origin: 'http://example.test' }), /HTTPS origin/)

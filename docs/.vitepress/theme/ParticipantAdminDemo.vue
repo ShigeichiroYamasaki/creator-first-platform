@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { withBase } from 'vitepress'
+import { resolveCloudAdminTarget } from './cloud-demo-runtime.js'
 
 type Invitation = { invitationId: string; email: string; displayName: string; roles: number; state: string; expiresAt: string; invitationUri?: string; token?: string; sentAt?: string | null; claimedWallet?: string | null }
 type Application = { applicationId: string; email: string; displayName: string; roles: number; state: string; createdAt: string; invitationId?: string | null; rejectionCode?: string | null }
@@ -16,6 +18,19 @@ const lastInvitationUri = ref('')
 const lastMailPreview = ref('')
 const error = ref('')
 const busy = ref(false)
+const connectingToCloud = ref(false)
+
+onMounted(async () => {
+  if (location.origin !== 'https://shigeichiroyamasaki.github.io') return
+  connectingToCloud.value = true
+  try {
+    const target = await resolveCloudAdminTarget(new URL(withBase('/demo-runtime.json'), location.origin).href)
+    location.replace(target)
+  } catch (cause) {
+    error.value = cause instanceof Error ? cause.message : 'クラウド版の運営画面へ接続できませんでした'
+    connectingToCloud.value = false
+  }
+})
 
 async function api(path: string, init: RequestInit = {}) {
   const response = await fetch(`/api${path}`, {
@@ -112,6 +127,7 @@ async function copyUri() {
 
 <template>
   <section class="participant-admin">
+    <div v-if="connectingToCloud" class="panel"><h2>クラウド版の運営画面へ接続しています</h2><p>申請データが保存されているGoogle クラウドVMへ移動します。</p></div>
     <p class="warning">管理者専用です。管理トークン、実験参加者のメールアドレス、招待URIを公開リポジトリやブラウザ保存領域へ保存しないでください。</p>
     <div class="panel">
       <h2>管理者認証</h2>

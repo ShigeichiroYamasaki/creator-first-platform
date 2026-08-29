@@ -134,10 +134,7 @@ export class ParticipantApplicationService {
 
   async sendVerification(applicationId, verificationToken) {
     const row = this.store.participantApplicationById(applicationId)
-    const applicationUrl = row.role_bits === PARTICIPANT_CREATOR_ROLE
-      ? this.config.creatorApplicationPublicUrl
-      : this.config.applicationPublicUrl
-    const verificationUri = `${applicationUrl}#verify-application=${verificationToken}`
+    const verificationUri = `${this.config.applicationStatusPublicUrl}#verify-application=${verificationToken}`
     const delivery = await this.mailer.sendApplicationVerification({
       applicationId,
       to: row.email,

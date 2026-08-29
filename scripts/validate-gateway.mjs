@@ -70,6 +70,8 @@ const consistencyRequirements = [
   ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', '運営の処理を待ってください', 'operator-owned participant state'],
   ['docs/.vitepress/theme/TestnetUserJourneyDemo.vue', '<ParticipantApplicationDemo', 'user application UI'],
   ['docs/.vitepress/theme/TestnetCreatorJourneyDemo.vue', '<ParticipantApplicationDemo', 'creator application UI'],
+  ['docs/demo/participant-application-status.md', '<ParticipantApplicationDemo status-only />', 'dedicated application status UI'],
+  ['apps/gateway/src/ParticipantApplicationService.js', 'applicationStatusPublicUrl', 'dedicated verification URL'],
   ['docs/adr/ADR-0020-wallet-agnostic-participant-invitations.md', 'EMAIL_VERIFICATION_REQUIRED', 'ADR-0020 application states'],
   ['protocol/account/account-lifecycle-spec.md', 'REQ-ACCOUNT-140', 'Account application requirements']
 ]

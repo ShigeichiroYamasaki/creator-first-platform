@@ -22,7 +22,16 @@ export function parseCloudDemoRuntime(value) {
   if (!/^[0-9a-f]{40}$/.test(requiredString(value.sourceCommit, 'sourceCommit'))) {
     throw new Error('Cloud demo runtime sourceCommit is invalid.')
   }
-  return Object.freeze({ origin: originUrl.origin, pathPrefix })
+  const adminPath = requiredString(value.adminPath, 'adminPath')
+  if (adminPath !== '/creator-first-platform/admin/participant-invitations') {
+    throw new Error('Cloud demo runtime adminPath is invalid.')
+  }
+  return Object.freeze({ origin: originUrl.origin, pathPrefix, adminPath })
+}
+
+export function cloudAdminTarget(runtimeValue) {
+  const runtime = parseCloudDemoRuntime(runtimeValue)
+  return new URL(runtime.adminPath, runtime.origin).href
 }
 
 export function cloudDemoTarget(runtimeValue, requestedPath = DEFAULT_DEMO_PATH) {
@@ -38,4 +47,10 @@ export async function resolveCloudDemoTarget(manifestUrl, requestedPath, fetchIm
   const response = await fetchImpl(manifestUrl, { cache: 'no-store', credentials: 'same-origin' })
   if (!response.ok) throw new Error(`Cloud demo runtime could not be loaded (HTTP ${response.status}).`)
   return cloudDemoTarget(await response.json(), requestedPath)
+}
+
+export async function resolveCloudAdminTarget(manifestUrl, fetchImpl = fetch) {
+  const response = await fetchImpl(manifestUrl, { cache: 'no-store', credentials: 'same-origin' })
+  if (!response.ok) throw new Error(`Cloud demo runtime could not be loaded (HTTP ${response.status}).`)
+  return cloudAdminTarget(await response.json())
 }

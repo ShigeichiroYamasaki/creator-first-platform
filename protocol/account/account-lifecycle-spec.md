@@ -4,7 +4,7 @@
 **Version:** 0.1.0  
 **Protocol Domain:** account / identity  
 **Specification ID:** SPEC-ACCOUNT-003  
-**Last Updated:** 2026-08-29
+**Last Updated:** 2026-08-30
 
 ## Related Documents
 
@@ -222,7 +222,7 @@ PENDING → ACTIVE → RESTRICTED → ACTIVE
 - **REQ-ACCOUNT-135:** A public-experiment application MUST be distinct from an invitation and MUST NOT itself grant any off-chain or on-chain participant role, funding, entitlement or production Account status.
 - **REQ-ACCOUNT-136:** An application MUST NOT enter operator review until control of its contact email has been verified through a single-use, time-bounded token whose retained form is a one-way digest.
 - **REQ-ACCOUNT-137:** Approval MUST create a distinct single-use invitation and push a notice to the verified contact channel; it MUST NOT require the operator to pre-collect or choose the applicant Wallet.
-- **REQ-ACCOUNT-138:** Applicant-facing status MUST distinguish email verification, operator review, approval and invitation claim, while avoiding disclosure of the full contact address or whether an unrelated address exists.
+- **REQ-ACCOUNT-138:** Applicant-facing status MUST distinguish email verification, operator review, approval and invitation claim, while avoiding disclosure of the full contact address or whether an unrelated address exists; a verification link MUST open a dedicated status surface and MUST NOT require repetition of Alias, Wallet or service-use steps.
 - **REQ-ACCOUNT-139:** Application creation and verification-message resend MUST be idempotent or rate-limited by the applicable test profile, and a resend MUST invalidate the previously issued verification token.
 - **REQ-ACCOUNT-140:** Application decisions, notification delivery, invitation creation and invitation claim MUST be separately auditable; a delivery failure MUST NOT be represented as applicant approval notice or invitation claim success.
 
