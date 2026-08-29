@@ -120,6 +120,9 @@ chmod 0644 "${APP_DIR}/music/local-test-tone.wav"
 cd "${APP_DIR}"
 docker-compose -p creator-first-streaming pull
 docker-compose -p creator-first-streaming up -d --remove-orphans
+# The static site directory is atomically replaced above. Recreate containers
+# that bind-mount it so they cannot keep serving the previous directory inode.
+docker-compose -p creator-first-streaming up -d --force-recreate docs-demo bootstrap-gateway cloudflared
 
 for attempt in $(seq 1 60); do
   if curl -fsS http://127.0.0.1:8080/creator-first-platform/demo/ >/dev/null && \
