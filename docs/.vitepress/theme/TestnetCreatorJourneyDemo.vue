@@ -65,7 +65,7 @@ function profileCommitment(): Hash {
   })))
 }
 function releaseCommitments() {
-  if (!profile.value || !walletAddress.value) throw new Error('仮の活動情報または財布アプリの接続がありません。')
+  if (!profile.value || !walletAddress.value) throw new Error('仮の活動情報または仮想通貨ワレットの接続がありません。')
   const nonce = crypto.randomUUID()
   return {
     metadata: keccak256(toHex(JSON.stringify({ domain: 'CREATOR_FIRST_TESTNET_RELEASE_V1', nonce, title: normalizedTitle.value, releaseType: releaseType.value }))),
@@ -74,7 +74,7 @@ function releaseCommitments() {
 }
 function clients() {
   const registry = deployment.value?.contracts.creatorRegistry
-  if (!provider || !walletAddress.value || !registry || !registryReady.value) throw new Error('活動の記録先または財布アプリを利用できません。')
+  if (!provider || !walletAddress.value || !registry || !registryReady.value) throw new Error('活動の記録先または仮想通貨ワレットを利用できません。')
   const transport = custom(provider)
   return {
     registry,
@@ -108,7 +108,7 @@ async function refreshOnchainState(): Promise<void> {
 }
 const handleAccountsChanged = async (value: Address[] | string): Promise<void> => {
   walletAddress.value = Array.isArray(value) ? value[0] : undefined
-  clearOnchainState(); message.value = walletAddress.value ? '財布アプリのアカウントが変わりました。状態を確認します。' : '財布アプリの接続が解除されました。'
+  clearOnchainState(); message.value = walletAddress.value ? '仮想通貨ワレットのアカウントが変わりました。状態を確認します。' : '仮想通貨ワレットの接続が解除されました。'
   if (walletAddress.value) await refreshOnchainState()
 }
 const handleChainChanged = async (value: Address[] | string): Promise<void> => {
@@ -122,15 +122,15 @@ function attachListeners(): void {
 }
 async function connectWallet(): Promise<void> {
   provider = providerFromWindow()
-  if (!provider) { message.value = '財布アプリが見つかりません。MetaMaskをインストールしてください。'; return }
+  if (!provider) { message.value = '仮想通貨ワレットが見つかりません。MetaMaskをインストールしてください。'; return }
   busyAction.value = 'wallet'
   try {
     const accounts = await provider.request({ method: 'eth_requestAccounts' }) as Address[]
     walletAddress.value = accounts[0]
     walletChainId.value = Number.parseInt(await provider.request({ method: 'eth_chainId' }) as string, 16)
-    attachListeners(); message.value = correctChain.value ? '財布アプリを練習用ネットワークへ接続しました。' : '練習用ネットワークへ切り替えてください。'
+    attachListeners(); message.value = correctChain.value ? '仮想通貨ワレットを練習用ネットワークへ接続しました。' : '練習用ネットワークへ切り替えてください。'
     await refreshOnchainState()
-  } catch (error) { message.value = error instanceof Error ? error.message : '財布アプリを接続できませんでした。' }
+  } catch (error) { message.value = error instanceof Error ? error.message : '仮想通貨ワレットを接続できませんでした。' }
   finally { busyAction.value = '' }
 }
 async function switchToAmoy(): Promise<void> {
@@ -211,17 +211,17 @@ onBeforeUnmount(() => {
 
 <template>
   <section class="creator-journey" aria-labelledby="creator-journey-title">
-    <header><p class="kicker">実在作品を使わない公開実験</p><h2 id="creator-journey-title">音楽クリエータの活動体験</h2><p>仮の活動情報、財布アプリ、実験参加の確認、テスト作品の自己申告を順番に試します。</p><p class="safety"><strong>重要:</strong> 本人、作品の権利、配信許可、報酬の受取資格を確認するものではありません。実在情報を入力しないでください。</p></header>
-    <ol class="steps"><li :class="{ done: profile }">1. 活動情報</li><li :class="{ done: walletAddress && correctChain }">2. 財布アプリ</li><li :class="{ done: creatorParticipantRegistered }">3. 参加確認</li><li :class="{ done: registeredOnchain }">4. 活動登録</li><li :class="{ done: creatorReleaseCount > 0n }">5. テスト作品</li></ol>
+    <header><p class="kicker">実在作品を使わない公開実験</p><h2 id="creator-journey-title">音楽クリエータの活動体験</h2><p>仮の活動情報、仮想通貨ワレット、実験参加の確認、テスト作品の自己申告を順番に試します。</p><p class="safety"><strong>重要:</strong> 本人、作品の権利、配信許可、報酬の受取資格を確認するものではありません。実在情報を入力しないでください。</p></header>
+    <ol class="steps"><li :class="{ done: profile }">1. 活動情報</li><li :class="{ done: walletAddress && correctChain }">2. 仮想通貨ワレット</li><li :class="{ done: creatorParticipantRegistered }">3. 参加確認</li><li :class="{ done: registeredOnchain }">4. 活動登録</li><li :class="{ done: creatorReleaseCount > 0n }">5. テスト作品</li></ol>
 
     <section v-if="!profile" class="panel"><h3>1. 仮の活動情報</h3><p>このタブに活動情報がありません。先に個人情報を含まない仮の活動情報を作成してください。</p><a class="primary link" :href="withBase('/demo/creator-registration')">仮の活動情報を登録</a></section>
     <section v-else class="panel"><h3>1. 仮の活動情報</h3><div class="status-grid"><div><span>活動名</span><strong>{{ profile.artistName }}</strong></div><div><span>活動形態</span><strong>{{ entityLabel(profile.entityType) }}</strong></div><div><span>音楽の分野</span><strong>{{ profile.genre }}</strong></div><div><span>保存場所</span><strong>現在のタブのみ</strong></div></div></section>
 
-    <section class="panel"><h3>2. 財布アプリをつなぐ</h3><div class="status-grid"><div><span>実験の準備</span><strong>{{ manifestError ? '利用停止中' : registryReady ? '利用できます' : '準備中' }}</strong></div><div><span>練習用ネットワーク</span><strong>{{ walletChainId ? (correctChain ? '接続済み' : '切替が必要') : '未接続' }}</strong></div><div><span>財布アプリ</span><strong>{{ shortAddress(walletAddress) }}</strong></div><div><span>記録先</span><strong>{{ deployment?.contracts.creatorRegistry ? '確認済み' : '準備中' }}</strong></div></div><p v-if="manifestError" class="error">{{ manifestError }}</p><div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">財布アプリをつなぐ</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToAmoy">練習用ネットワークへ切り替える</button><button class="secondary" type="button" :disabled="!chainReady" @click="refreshOnchainState">表示を更新</button></div></section>
+    <section class="panel"><h3>2. 仮想通貨ワレットをつなぐ</h3><div class="status-grid"><div><span>実験の準備</span><strong>{{ manifestError ? '利用停止中' : registryReady ? '利用できます' : '準備中' }}</strong></div><div><span>練習用ネットワーク</span><strong>{{ walletChainId ? (correctChain ? '接続済み' : '切替が必要') : '未接続' }}</strong></div><div><span>仮想通貨ワレット</span><strong>{{ shortAddress(walletAddress) }}</strong></div><div><span>記録先</span><strong>{{ deployment?.contracts.creatorRegistry ? '確認済み' : '準備中' }}</strong></div></div><p v-if="manifestError" class="error">{{ manifestError }}</p><div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">仮想通貨ワレットをつなぐ</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToAmoy">練習用ネットワークへ切り替える</button><button class="secondary" type="button" :disabled="!chainReady" @click="refreshOnchainState">表示を更新</button></div></section>
 
-    <section class="panel"><h3>3. 実験参加登録を確認</h3><div class="status-grid"><div><span>実験参加の受付</span><strong>{{ participantRegistryReady ? '利用できます' : '準備中' }}</strong></div><div><span>運営の確認</span><strong>{{ creatorPreApproved ? '確認済み' : participantId !== zeroHash ? '期限切れ／停止' : '確認待ち' }}</strong></div><div><span>本人による登録</span><strong>{{ creatorParticipantRegistered ? '登録済み' : '未登録' }}</strong></div><div><span>練習用の手数料残高</span><strong>{{ initialFundingCompleted ? '受取済み' : '準備待ち' }}</strong></div></div><p v-if="!participantRegistryReady" class="safety">実験参加登録の受付を準備しています。申請受付サーバが公開されるまで、入力内容は送信されません。</p><p v-else-if="!creatorPreApproved && !creatorParticipantRegistered" class="safety">まだ招待されていない場合は、この画面から実験参加を申請できます。メール確認と運営の承認後に届く招待リンクから登録を続けてください。</p><p v-else>本人が財布アプリで確認し、音楽クリエータとしての実験参加を記録します。これは本人、権利者、報酬の受取人または配信許可の確認ではありません。</p><ParticipantApplicationDemo v-if="!creatorPreApproved && !creatorParticipantRegistered" :display-name="profile?.artistName ?? ''" :role="2" /><button v-if="creatorPreApproved && !creatorParticipantRegistered" class="primary" type="button" :disabled="!participantSelfRegistrationReady" @click="registerCreatorParticipant">音楽クリエータとして登録</button><p v-else-if="creatorParticipantRegistered"><strong>実験参加登録は完了しています。</strong></p></section>
+    <section class="panel"><h3>3. 実験参加登録を確認</h3><div class="status-grid"><div><span>実験参加の受付</span><strong>{{ participantRegistryReady ? '利用できます' : '準備中' }}</strong></div><div><span>運営の確認</span><strong>{{ creatorPreApproved ? '確認済み' : participantId !== zeroHash ? '期限切れ／停止' : '確認待ち' }}</strong></div><div><span>本人による登録</span><strong>{{ creatorParticipantRegistered ? '登録済み' : '未登録' }}</strong></div><div><span>練習用の手数料残高</span><strong>{{ initialFundingCompleted ? '受取済み' : '準備待ち' }}</strong></div></div><p v-if="!participantRegistryReady" class="safety">実験参加登録の受付を準備しています。申請受付サーバが公開されるまで、入力内容は送信されません。</p><p v-else-if="!creatorPreApproved && !creatorParticipantRegistered" class="safety">まだ招待されていない場合は、この画面から実験参加を申請できます。メール確認と運営の承認後に届く招待リンクから登録を続けてください。</p><p v-else>本人が仮想通貨ワレットで確認し、音楽クリエータとしての実験参加を記録します。これは本人、権利者、報酬の受取人または配信許可の確認ではありません。</p><ParticipantApplicationDemo v-if="!creatorPreApproved && !creatorParticipantRegistered" :display-name="profile?.artistName ?? ''" :role="2" /><button v-if="creatorPreApproved && !creatorParticipantRegistered" class="primary" type="button" :disabled="!participantSelfRegistrationReady" @click="registerCreatorParticipant">音楽クリエータとして登録</button><p v-else-if="creatorParticipantRegistered"><strong>実験参加登録は完了しています。</strong></p></section>
 
-    <section class="panel"><h3>4. 活動したことを記録</h3><div class="status-grid"><div><span>実験用登録番号</span><strong>{{ registeredOnchain ? creatorId.toString() : '未登録' }}</strong></div><div><span>状態</span><strong>{{ registeredOnchain ? creatorActive ? '利用中' : '停止中' : '未登録' }}</strong></div><div><span>接続した財布</span><strong>{{ shortAddress(payoutAddress) }}</strong></div><div><span>テスト作品数</span><strong>{{ creatorReleaseCount.toString() }}</strong></div></div><p>活動情報そのものを公開せず、その時点で登録したことだけを確認できる形で記録します。本人確認、報酬の受取確認または送金は行いません。</p><button class="primary" type="button" :disabled="!chainReady || registeredOnchain" @click="registerOnchain">活動したことを記録する</button></section>
+    <section class="panel"><h3>4. 活動したことを記録</h3><div class="status-grid"><div><span>実験用登録番号</span><strong>{{ registeredOnchain ? creatorId.toString() : '未登録' }}</strong></div><div><span>状態</span><strong>{{ registeredOnchain ? creatorActive ? '利用中' : '停止中' : '未登録' }}</strong></div><div><span>接続した仮想通貨ワレット</span><strong>{{ shortAddress(payoutAddress) }}</strong></div><div><span>テスト作品数</span><strong>{{ creatorReleaseCount.toString() }}</strong></div></div><p>活動情報そのものを公開せず、その時点で登録したことだけを確認できる形で記録します。本人確認、報酬の受取確認または送金は行いません。</p><button class="primary" type="button" :disabled="!chainReady || registeredOnchain" @click="registerOnchain">活動したことを記録する</button></section>
 
     <section class="panel"><h3>5. テスト作品を自己申告</h3><form class="release-form" @submit.prevent="declareRelease"><label for="testnet-release-title">架空の作品名</label><input id="testnet-release-title" v-model="title" type="text" minlength="2" maxlength="60" autocomplete="off" placeholder="Synthetic First Song" required><label for="testnet-release-type">作品の形式</label><select id="testnet-release-type" v-model="releaseType"><option value="SINGLE">シングル</option><option value="EP">EP</option><option value="ALBUM">アルバム</option></select><label class="check"><input v-model="rightsAcknowledged" type="checkbox"> この記録は権利確認、配信許可、作品公開ではなく、取り下げ可能な自己申告であることを確認しました</label><button class="primary" type="submit" :disabled="!releaseReady">テスト作品を自己申告する</button></form><p v-if="registeredOnchain && !creatorActive" class="error">活動を停止している間は新しい作品を申告できません。</p><ul v-if="releases.length" class="release-list"><li v-for="release in releases" :key="release.releaseId"><div><strong>#{{ release.releaseId }} {{ release.title }}</strong><span>{{ release.releaseType }} · 未確認の自己申告</span></div><a :href="`https://amoy.polygonscan.com/tx/${release.transactionHash}`" target="_blank" rel="noopener noreferrer">操作記録</a></li></ul></section>
     <p v-if="lastTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastTransaction}`" target="_blank" rel="noopener noreferrer">直前の操作記録を確認</a></p><p aria-live="polite">{{ message }}</p>

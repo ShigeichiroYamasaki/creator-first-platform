@@ -21,7 +21,7 @@ const choices = computed(() => {
         icon: '👀',
         eyebrow: '操作せずに見る',
         title: '画面だけ見てみる',
-        description: '音楽一覧や応援状態の見本を、財布アプリをつながずに確認します。',
+        description: '音楽一覧や応援状態の見本を、仮想通貨ワレットをつながずに確認します。',
         link: '/demo/user-service',
         action: '音楽サービスの見本を見る'
       }
@@ -34,7 +34,7 @@ const choices = computed(() => {
         icon: '🎵',
         eyebrow: '順番に操作する',
         title: 'はじめから体験する',
-        description: '仮の活動名を登録し、財布アプリとテスト作品の登録を順番に試します。',
+        description: '仮の活動名を登録し、仮想通貨ワレットとテスト作品の登録を順番に試します。',
         link: '/demo/creator-registration',
         action: '音楽クリエータとして参加登録する'
       },

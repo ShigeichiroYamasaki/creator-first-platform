@@ -55,7 +55,7 @@ const stateView = computed(() => ({
   },
   APPROVED_INVITATION_SENT: {
     icon: '✅', title: '申請が承認されました',
-    text: '参加登録用のメールを送りました。メールの「参加登録を始める」リンクから、本人が使う財布アプリを登録してください。'
+    text: '参加登録用のメールを送りました。メールの「参加登録を始める」リンクから、本人が使う仮想通貨ワレットを登録してください。'
   },
   INVITATION_CLAIMED: {
     icon: '⏳', title: '本人による参加登録が完了しました',
@@ -171,7 +171,7 @@ onMounted(async () => {
     <form v-else class="application-form" @submit.prevent="submitApplication">
       <div class="application-intro">
         <span aria-hidden="true">📨</span>
-        <div><h4>実験参加者として申請する</h4><p>メール確認と運営の承認後に、参加登録用のメールが届きます。財布の番号を申請フォームへ入力する必要はありません。</p></div>
+        <div><h4>実験参加者として申請する</h4><p>メール確認と運営の承認後に、参加登録用のメールが届きます。仮想通貨ワレットのアドレスを申請フォームへ入力する必要はありません。</p></div>
       </div>
       <label>確認メールを受け取るメールアドレス<input v-model="email" type="email" autocomplete="email" required placeholder="name@example.com"></label>
       <label class="check"><input v-model="acceptedPrivacyNotice" type="checkbox"><span>メールアドレスを申請確認、審査結果、参加案内のために利用することを確認しました</span></label>

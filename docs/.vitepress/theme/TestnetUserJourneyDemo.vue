@@ -119,7 +119,7 @@ function saveProfile(): void {
   const value: DemoProfile = { registered: true, testUserId: newTestUserId(), displayName: normalizedAlias.value, state: 'TESTNET_DEMO_PROFILE', createdAt: new Date().toISOString() }
   sessionStorage.setItem(storageKey, JSON.stringify(value))
   profile.value = value
-  walletMessage.value = `${value.displayName} を実験用の仮名として登録しました。次に財布アプリをつなげます。`
+  walletMessage.value = `${value.displayName} を実験用の仮名として登録しました。次に仮想通貨ワレットをつなげます。`
 }
 function resetProfile(): void {
   sessionStorage.removeItem(storageKey)
@@ -128,7 +128,7 @@ function resetProfile(): void {
   acceptedTerms.value = false
   acceptedPrivacy.value = false
   acknowledgedTestOnly.value = false
-  walletMessage.value = 'このタブの仮名だけを削除しました。財布アプリの接続や公開された操作記録は削除されません。'
+  walletMessage.value = 'このタブの仮名だけを削除しました。仮想通貨ワレットの接続や公開された操作記録は削除されません。'
 }
 function providerFromWindow(): DemoProvider | undefined {
   return (window as Window & { ethereum?: DemoProvider }).ethereum
@@ -156,7 +156,7 @@ const handleAccountsChanged = async (value: Address[] | string): Promise<void> =
   const accounts = Array.isArray(value) ? value : []
   walletAddress.value = accounts[0]
   clearOnchainState()
-  walletMessage.value = accounts[0] ? '財布アプリのアカウントが変わりました。状態を確認します。' : '財布アプリの接続が解除されました。'
+  walletMessage.value = accounts[0] ? '仮想通貨ワレットのアカウントが変わりました。状態を確認します。' : '仮想通貨ワレットの接続が解除されました。'
   if (accounts[0] && correctChain.value) await refreshOnchainState(true)
 }
 const handleChainChanged = async (value: Address[] | string): Promise<void> => {
@@ -178,7 +178,7 @@ async function readChainId(): Promise<void> {
 async function connectWallet(): Promise<void> {
   provider = providerFromWindow()
   if (!provider) {
-    walletMessage.value = '財布アプリが見つかりません。MetaMaskをインストールしてから接続してください。'
+    walletMessage.value = '仮想通貨ワレットが見つかりません。MetaMaskをインストールしてから接続してください。'
     return
   }
   busyAction.value = 'wallet'
@@ -187,10 +187,10 @@ async function connectWallet(): Promise<void> {
     walletAddress.value = accounts[0]
     attachProviderListeners()
     await readChainId()
-    walletMessage.value = correctChain.value ? '財布アプリを練習用ネットワークへ接続しました。' : '財布アプリを接続しました。練習用ネットワークへ切り替えてください。'
+    walletMessage.value = correctChain.value ? '仮想通貨ワレットを練習用ネットワークへ接続しました。' : '仮想通貨ワレットを接続しました。練習用ネットワークへ切り替えてください。'
     if (correctChain.value) await refreshOnchainState(true)
   } catch (error) {
-    walletMessage.value = error instanceof Error ? error.message : '財布アプリの接続がキャンセルされました。'
+    walletMessage.value = error instanceof Error ? error.message : '仮想通貨ワレットの接続がキャンセルされました。'
   } finally { busyAction.value = '' }
 }
 async function switchToAmoy(): Promise<void> {
@@ -206,7 +206,7 @@ async function switchToAmoy(): Promise<void> {
   } finally { busyAction.value = '' }
 }
 function clients() {
-  if (!provider || !walletAddress.value || !deployment.value?.contracts.mockJpyc || !deployment.value.contracts.subscription) throw new Error('財布アプリまたは練習用の記録先を利用できません。')
+  if (!provider || !walletAddress.value || !deployment.value?.contracts.mockJpyc || !deployment.value.contracts.subscription) throw new Error('仮想通貨ワレットまたは練習用の記録先を利用できません。')
   const transport = custom(provider)
   return {
     publicClient: createPublicClient({ chain: polygonAmoy, transport }),
@@ -374,7 +374,7 @@ async function registerAsSupporter(): Promise<void> {
       nonce: nonce as bigint,
       deadline
     })
-    supporterMessage.value = '財布アプリで、応援の証明書を受け取ることを確認してください。'
+    supporterMessage.value = '仮想通貨ワレットで、応援の証明書を受け取ることを確認してください。'
     const signature = await walletClient.signTypedData({ account: walletAddress.value, ...typedData })
     const fees = await getAmoyTransactionFees(publicClient)
     const hash = await walletClient.writeContract({
@@ -450,11 +450,11 @@ onBeforeUnmount(() => {
     <header class="journey-heading">
       <p class="kicker">実際のお金を使わない公開実験</p>
       <h2 id="testnet-journey-title">音楽を楽しむ体験</h2>
-      <p>仮の名前、財布アプリ、練習用の月額利用、音楽プレーヤー、応援の証明書を順番に試します。</p>
+      <p>仮の名前、仮想通貨ワレット、練習用の月額利用、音楽プレーヤー、応援の証明書を順番に試します。</p>
       <p class="safety"><strong>重要:</strong> 表示される残高は換金できない練習用です。実際のお金、秘密鍵、復旧用の単語列は使いません。</p>
     </header>
     <ol class="steps" aria-label="音楽リスナーとして参加する手順">
-      <li :class="{ done: profile }">1. 仮の名前</li><li :class="{ done: walletAddress && correctChain }">2. 財布アプリ</li><li :class="{ done: userRegistered }">3. 参加確認</li><li :class="{ done: subscriptionActive }">4. 月額利用</li><li>5. 音楽</li><li :class="{ done: supporterTokenId > 0n }">6. 応援証明</li>
+      <li :class="{ done: profile }">1. 仮の名前</li><li :class="{ done: walletAddress && correctChain }">2. 仮想通貨ワレット</li><li :class="{ done: userRegistered }">3. 参加確認</li><li :class="{ done: subscriptionActive }">4. 月額利用</li><li>5. 音楽</li><li :class="{ done: supporterTokenId > 0n }">6. 応援証明</li>
     </ol>
 
     <section class="panel" aria-labelledby="profile-title">
@@ -467,11 +467,11 @@ onBeforeUnmount(() => {
       <form v-else class="registration" @submit.prevent="saveProfile">
         <label for="demo-alias">画面に表示する仮の名前</label>
         <input id="demo-alias" v-model="alias" type="text" minlength="2" maxlength="24" autocomplete="off" placeholder="Demo Listener 01" required>
-        <small>実名、メール、電話番号、パスワード、財布の番号は入力しないでください。</small>
+        <small>実名、メール、電話番号、パスワード、仮想通貨ワレットのアドレスは入力しないでください。</small>
         <p v-if="alias && !aliasValid" class="error" role="alert">2〜24文字の文字・数字・空白・_・-を使ってください。</p>
         <fieldset><legend>実験の利用条件と情報の取扱い</legend>
           <label><input v-model="acceptedTerms" type="checkbox"> 実際のお金や本番利用の権利がない実験であることに同意します</label>
-          <label><input v-model="acceptedPrivacy" type="checkbox"> 仮の名前はこのタブだけに保存され、財布の番号と操作記録は公開されることを確認しました</label>
+          <label><input v-model="acceptedPrivacy" type="checkbox"> 仮の名前はこのタブだけに保存され、仮想通貨ワレットのアドレスと操作記録は公開されることを確認しました</label>
           <label><input v-model="acknowledgedTestOnly" type="checkbox"> 表示されるお金と手数料残高は練習用であることを理解しました</label>
         </fieldset>
         <button class="primary" type="submit" :disabled="!ready">仮の名前を登録</button>
@@ -479,16 +479,16 @@ onBeforeUnmount(() => {
     </section>
 
     <section class="panel" aria-labelledby="wallet-title">
-      <h3 id="wallet-title">2. 財布アプリをつなぐ</h3>
+      <h3 id="wallet-title">2. 仮想通貨ワレットをつなぐ</h3>
       <div class="status-grid">
         <div><span>実験の準備</span><strong>{{ manifestError ? '利用停止中' : deployment?.active ? '利用できます' : '準備中' }}</strong></div>
         <div><span>練習用ネットワーク</span><strong>{{ walletChainId ? (correctChain ? '接続済み' : '切替が必要') : '未接続' }}</strong></div>
-        <div><span>財布アプリ</span><strong>{{ shortAddress(walletAddress) }}</strong></div>
+        <div><span>仮想通貨ワレット</span><strong>{{ shortAddress(walletAddress) }}</strong></div>
         <div><span>公開内容の確認</span><strong>{{ deployment?.sourceCommit ? '確認済み' : '準備中' }}</strong></div>
       </div>
       <p v-if="manifestError" class="error" role="alert">{{ manifestError }} 書込み操作を停止しました。</p>
-      <p v-else-if="deployment && !deployment.active" class="notice">練習用の記録先を準備しています。財布アプリの接続だけ試せますが、その先の操作はできません。</p>
-      <div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">{{ walletAddress ? '財布アプリをつなぎ直す' : '財布アプリをつなぐ' }}</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToAmoy">練習用ネットワークへ切り替える</button><button class="secondary" type="button" :disabled="!chainActionsReady" @click="refreshOnchainState()">表示を更新</button></div>
+      <p v-else-if="deployment && !deployment.active" class="notice">練習用の記録先を準備しています。仮想通貨ワレットの接続だけ試せますが、その先の操作はできません。</p>
+      <div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">{{ walletAddress ? '仮想通貨ワレットをつなぎ直す' : '仮想通貨ワレットをつなぐ' }}</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToAmoy">練習用ネットワークへ切り替える</button><button class="secondary" type="button" :disabled="!chainActionsReady" @click="refreshOnchainState()">表示を更新</button></div>
     </section>
 
     <section class="panel" aria-labelledby="enrollment-title">
@@ -501,7 +501,7 @@ onBeforeUnmount(() => {
       </div>
       <p v-if="!participantRegistryReady" class="notice">参加資格を記録する準備を進めています。未申請の場合は、下のフォームから参加者登録を申請できます。</p>
       <p v-else-if="!userPreApproved && !userRegistered" class="notice">運営の事前承認がまだ確認できません。未申請の場合は、下のフォームから参加者登録を申請してください。</p>
-      <p v-else>本人が財布アプリで確認し、音楽リスナーとしての実験参加を記録します。実際のお金を購入する必要はありません。</p>
+      <p v-else>本人が仮想通貨ワレットで確認し、音楽リスナーとしての実験参加を記録します。実際のお金を購入する必要はありません。</p>
       <ParticipantApplicationDemo v-if="!userPreApproved && !userRegistered" :display-name="profile?.displayName ?? ''" :role="1" />
       <button v-if="userPreApproved && !userRegistered" class="primary" type="button" :disabled="!participantSelfRegistrationReady" @click="registerUserParticipant">音楽リスナーとして登録</button>
       <p v-else-if="userRegistered" class="badge success">音楽リスナーとしての参加登録が完了しています</p>
@@ -513,7 +513,7 @@ onBeforeUnmount(() => {
         <div><span>練習用の残高</span><strong>{{ balanceLabel }}</strong></div><div><span>月額利用の練習価格</span><strong>{{ priceLabel }}</strong></div><div><span>利用の確認</span><strong>{{ allowanceEnough ? '確認済み' : '未確認' }}</strong></div><div><span>月額利用</span><strong>{{ subscriptionActive ? `利用中 / ${formatDate(activeUntil)}` : '未開始' }}</strong></div>
       </div>
       <div class="actions"><button class="primary" type="button" :disabled="!chainActionsReady" @click="claimMockJpyc">練習用のお金を受け取る</button><button class="secondary" type="button" :disabled="!chainActionsReady || !planEnabled || balance < planPrice" @click="approveSubscription">今回使う金額を確認</button><button class="primary" type="button" :disabled="!chainActionsReady || !planEnabled || !allowanceEnough || balance < planPrice" @click="subscribe">月額利用を始める</button></div>
-      <p class="notice">各ボタンを押すと財布アプリに確認画面が出ます。表示額を超える利用や実際のお金による支払いは行いません。</p>
+      <p class="notice">各ボタンを押すと仮想通貨ワレットに確認画面が出ます。表示額を超える利用や実際のお金による支払いは行いません。</p>
       <p v-if="lastTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastTransaction}`" target="_blank" rel="noopener noreferrer">直前の操作記録を確認</a></p>
       <p aria-live="polite">{{ walletMessage }}</p>
     </section>

@@ -40,7 +40,7 @@ const nextActionTitle = computed(() => {
   if (!invitation.value) return '招待を確認中'
   if (isUnavailable.value) return '運営に連絡する'
   if (isClaimed.value) return '登録できました'
-  if (!wallet.value) return '財布アプリをつなぐ'
+  if (!wallet.value) return '仮想通貨ワレットをつなぐ'
   return '内容を確認して登録する'
 })
 const nextActionIcon = computed(() => {
@@ -56,7 +56,7 @@ const nextAction = computed(() => {
   if (!invitation.value) return '招待内容を確認しています。'
   if (isUnavailable.value) return 'この招待は利用できません。運営へお問い合わせください。'
   if (isClaimed.value) return '本人登録は完了しています。運営の処理を待ってください。'
-  if (!wallet.value) return 'オレンジ色のキツネが目印の財布アプリを開きます。'
+  if (!wallet.value) return 'オレンジ色のキツネが目印の仮想通貨ワレットを開きます。'
   return '2項目を確認し、本人登録を完了してください。'
 })
 
@@ -89,10 +89,10 @@ async function connectAndVerifyWallet() {
   busy.value = true
   try {
     const ethereum = (window as unknown as { ethereum?: { request: (value: unknown) => Promise<unknown> } }).ethereum
-    if (!ethereum) throw new Error('財布アプリ（MetaMask）が見つかりません。インストールしてから、もう一度お試しください。')
+    if (!ethereum) throw new Error('仮想通貨ワレット（MetaMask）が見つかりません。インストールしてから、もう一度お試しください。')
     await switchProviderToAmoy(ethereum)
     const chainId = await ethereum.request({ method: 'eth_chainId' })
-    if (Number(chainId) !== AMOY_CHAIN_ID) throw new Error('財布アプリを練習用ネットワーク（Polygon Amoy）へ切り替えてください。')
+    if (Number(chainId) !== AMOY_CHAIN_ID) throw new Error('仮想通貨ワレットを練習用ネットワーク（Polygon Amoy）へ切り替えてください。')
     const client = createWalletClient({ chain: polygonAmoy, transport: custom(ethereum) })
     const [address] = await client.requestAddresses()
     wallet.value = getAddress(address)
@@ -169,7 +169,7 @@ onMounted(() => {
 
       <ol class="progress" aria-label="登録の進捗">
         <li class="done"><b aria-hidden="true">✉</b><span><em>1</em> 招待</span></li>
-        <li :class="{ done: Boolean(wallet) || isClaimed, current: !wallet && !isClaimed && !isUnavailable }"><b aria-hidden="true">🦊</b><span><em>2</em> 財布アプリ</span></li>
+        <li :class="{ done: Boolean(wallet) || isClaimed, current: !wallet && !isClaimed && !isUnavailable }"><b aria-hidden="true">🦊</b><span><em>2</em> 仮想通貨ワレット</span></li>
         <li :class="{ done: isClaimed, current: Boolean(wallet) && !isClaimed && !isUnavailable }"><b aria-hidden="true">✓</b><span><em>3</em> 登録</span></li>
       </ol>
 
@@ -181,15 +181,15 @@ onMounted(() => {
       <div v-else-if="!wallet && !isClaimed" class="action-card current-card">
         <span class="action-icon fox-icon" aria-hidden="true">🦊</span>
         <div>
-          <h3>財布アプリをつなぐ</h3>
+          <h3>仮想通貨ワレットをつなぐ</h3>
           <p>オレンジ色のキツネが目印のアプリを開きます。練習用ネットワークへの切替は自動で案内します。</p>
           <div class="term-chips" aria-label="使用する技術">
-            <span><i aria-hidden="true">🦊</i> 財布アプリ <small>MetaMask</small></span>
+            <span><i aria-hidden="true">🦊</i> 仮想通貨ワレット <small>MetaMask</small></span>
             <span><i aria-hidden="true">🧪</i> 練習用ネットワーク <small>Polygon Amoy</small></span>
           </div>
           <button class="primary-button" type="button" :disabled="busy" @click="connectAndVerifyWallet">
             <span aria-hidden="true">🦊</span>
-            <span>{{ busy ? '確認しています…' : '財布アプリを開く' }}<small v-if="!busy">MetaMask</small></span>
+            <span>{{ busy ? '確認しています…' : '仮想通貨ワレットを開く' }}<small v-if="!busy">MetaMask</small></span>
           </button>
           <p class="no-payment"><span aria-hidden="true">🛡️</span> この操作では支払いは発生しません</p>
         </div>
@@ -199,7 +199,7 @@ onMounted(() => {
         <span class="action-icon" aria-hidden="true">✍️</span>
         <div>
           <h3>内容を確認して登録</h3>
-          <p class="wallet"><span aria-hidden="true">✅</span> 財布アプリを確認しました <code>{{ wallet }}</code></p>
+          <p class="wallet"><span aria-hidden="true">✅</span> 仮想通貨ワレットを確認しました <code>{{ wallet }}</code></p>
           <label class="check-row"><input v-model="acceptedTerms" type="checkbox" /><span aria-hidden="true">📄</span><span>公開実験の利用条件に同意します</span></label>
           <label class="check-row"><input v-model="acknowledgedTestOnly" type="checkbox" /><span aria-hidden="true">🧪</span><span>練習用で、実際のお金ではないことを確認します</span></label>
           <button class="primary-button" type="button" :disabled="!acceptedTerms || !acknowledgedTestOnly || busy" @click="claim">

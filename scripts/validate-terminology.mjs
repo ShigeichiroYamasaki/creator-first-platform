@@ -12,6 +12,8 @@ const documentationRoots = [
   'docs/demo',
 ];
 const standaloneDocuments = ['docs/index.md', 'docs/status.md'];
+const interfaceRoots = ['docs/.vitepress/theme'];
+const standaloneInterfaceFiles = ['docs/.vitepress/config.mts'];
 const excludedDirectories = new Set(['en']);
 const canonicalEnglishPatterns = englishTermReplacements.map(([source]) => {
   const escaped = source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -41,6 +43,23 @@ async function markdownFiles(relativeDirectory) {
     if (entry.isDirectory() && !excludedDirectories.has(entry.name)) {
       files.push(...await markdownFiles(relativePath));
     } else if (entry.isFile() && entry.name.endsWith('.md')) {
+      files.push(relativePath);
+    }
+  }
+
+  return files;
+}
+
+async function interfaceFiles(relativeDirectory) {
+  const directoryUrl = new URL(`${relativeDirectory}/`, repositoryRoot);
+  const entries = await readdir(directoryUrl, { withFileTypes: true });
+  const files = [];
+
+  for (const entry of entries) {
+    const relativePath = path.posix.join(relativeDirectory, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...await interfaceFiles(relativePath));
+    } else if (entry.isFile() && ['.vue', '.js', '.ts', '.mts'].includes(path.posix.extname(entry.name))) {
       files.push(relativePath);
     }
   }
@@ -96,9 +115,22 @@ for (const relativePath of files.sort()) {
   }
 }
 
+const uiFiles = [
+  ...standaloneInterfaceFiles,
+  ...(await Promise.all(interfaceRoots.map(interfaceFiles))).flat(),
+];
+for (const relativePath of uiFiles.sort()) {
+  const source = await readFile(new URL(relativePath, repositoryRoot), 'utf8');
+  for (const [index, line] of source.split('\n').entries()) {
+    if (line.includes('財布')) {
+      failures.push(`${relativePath}:${index + 1}: use 仮想通貨ワレット instead of 財布`);
+    }
+  }
+}
+
 if (failures.length > 0) {
   console.error(`Terminology validation failed:\n- ${failures.join('\n- ')}`);
   process.exitCode = 1;
 } else {
-  console.log(`Terminology validation passed for ${files.length} document(s).`);
+  console.log(`Terminology validation passed for ${files.length} document(s) and ${uiFiles.length} interface source file(s).`);
 }

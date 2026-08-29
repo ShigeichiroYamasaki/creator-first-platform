@@ -139,7 +139,7 @@ onMounted(() => {
             <li><span>作品の権利確認</span><strong>未提出</strong></li>
             <li><span>報酬の受取先</span><strong>未設定</strong></li>
           </ul>
-          <p class="boundary-copy">公開実験では本人確認書類、契約、権利資料、音源、財布の情報、税務・支払情報を受け付けません。</p>
+          <p class="boundary-copy">公開実験では本人確認書類、契約、権利資料、音源、仮想通貨ワレットの情報、税務・支払情報を受け付けません。</p>
         </section>
       </div>
 

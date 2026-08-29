@@ -157,7 +157,7 @@ function bindWallet() {
     const value = transaction.value
     if (!value) throw new Error('追加確認が開始されていません。')
     const provider = (window as Window & { ethereum?: EIP1193Provider }).ethereum
-    if (!provider) throw new Error('財布アプリが見つかりません。MetaMaskを準備してください。')
+    if (!provider) throw new Error('仮想通貨ワレットが見つかりません。MetaMaskを準備してください。')
     await switchProviderToAmoy(provider)
     const accounts = await provider.request({ method: 'eth_requestAccounts' }) as Address[]
     const walletAddress = getAddress(accounts[0])
@@ -196,7 +196,7 @@ onMounted(() => run('status', refreshStatus))
     <div class="trust-demo__heading">
       <div>
         <p class="trust-demo__eyebrow">本人確認ではない追加実験</p>
-        <h2 id="account-trust-title">カード・端末認証・財布アプリを結び付ける実験</h2>
+        <h2 id="account-trust-title">カード・端末認証・仮想通貨ワレットを結び付ける実験</h2>
       </div>
       <span class="trust-demo__state">{{ currentState }}</span>
     </div>
@@ -226,16 +226,16 @@ onMounted(() => run('status', refreshStatus))
         <button :disabled="currentState !== 'JPKI_ASSERTED' || Boolean(busy)" @click="registerPasskey">端末の認証を登録</button>
       </li>
       <li :class="{ complete: isActive }">
-        <strong>財布アプリを確認</strong>
-        <span>練習用ネットワークで、本人がこの財布アプリを使う意思だけを確認します。残高は移動しません。</span>
-        <button :disabled="currentState !== 'PASSKEY_REGISTERED' || Boolean(busy)" @click="bindWallet">財布アプリを結び付ける</button>
+        <strong>仮想通貨ワレットを確認</strong>
+        <span>練習用ネットワークで、本人がこの仮想通貨ワレットを使う意思だけを確認します。残高は移動しません。</span>
+        <button :disabled="currentState !== 'PASSKEY_REGISTERED' || Boolean(busy)" @click="bindWallet">仮想通貨ワレットを結び付ける</button>
       </li>
     </ol>
 
     <div v-if="isActive" class="trust-demo__active">
       <strong>結合完了</strong>
-      <span>カード、端末の認証、財布アプリのテスト用の関連付けが完了しました。</span>
-      <span>接続した財布: {{ status?.binding?.walletAddress }}</span>
+      <span>カード、端末の認証、仮想通貨ワレットのテスト用の関連付けが完了しました。</span>
+      <span>接続した仮想通貨ワレット: {{ status?.binding?.walletAddress }}</span>
       <button :disabled="Boolean(busy)" @click="authenticatePasskey">端末の認証でもう一度確認</button>
     </div>
   </section>
