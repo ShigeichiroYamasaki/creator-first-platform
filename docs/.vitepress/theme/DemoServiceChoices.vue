@@ -14,7 +14,7 @@ const choices = computed(() => {
         eyebrow: '順番に操作する',
         title: 'はじめから体験する',
         description: '仮の名前を登録し、練習用のお金、月額利用、音楽プレーヤー、応援の証明書を順番に試します。',
-        link: '/demo/test-user-registration',
+        link: '/demo/cloud-entry?path=/creator-first-platform/demo/test-user-registration',
         action: '音楽リスナーとして参加する'
       },
       {
@@ -35,7 +35,7 @@ const choices = computed(() => {
         eyebrow: '順番に操作する',
         title: 'はじめから体験する',
         description: '仮の活動名を登録し、仮想通貨ワレットとテスト作品の登録を順番に試します。',
-        link: '/demo/creator-registration',
+        link: '/demo/cloud-entry?path=/creator-first-platform/demo/creator-registration',
         action: '音楽クリエータとして参加登録する'
       },
       {

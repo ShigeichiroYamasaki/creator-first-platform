@@ -37,7 +37,7 @@ onMounted(() => {
     <div v-if="!profile" class="notice-card">
       <h3>仮の名前はまだ登録されていません</h3>
       <p>音楽一覧はそのまま見られます。登録状態も試す場合は、先に仮の名前を登録してください。</p>
-      <a class="primary-link" :href="withBase('/demo/test-user-registration')">音楽リスナーとして参加する</a>
+      <a class="primary-link" :href="withBase('/demo/cloud-entry?path=/creator-first-platform/demo/test-user-registration')">音楽リスナーとして参加する</a>
     </div>
 
     <div class="catalog-grid" aria-label="実験用の音楽一覧">

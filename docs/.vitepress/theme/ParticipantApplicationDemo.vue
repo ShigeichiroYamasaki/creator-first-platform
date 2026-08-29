@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { withBase } from 'vitepress'
+import { resolveCloudDemoTarget } from './cloud-demo-runtime.js'
 
 type ApplicationState =
   | 'EMAIL_VERIFICATION_REQUIRED'
@@ -147,7 +149,24 @@ async function verifyFromEmail(token: string) {
   }
 }
 
+async function redirectStaticSiteToCloud() {
+  if (location.origin !== 'https://shigeichiroyamasaki.github.io') return false
+  try {
+    const requestedPath = `${location.pathname}${location.search}${location.hash}`
+    const target = await resolveCloudDemoTarget(
+      new URL(withBase('/demo-runtime.json'), location.origin).href,
+      requestedPath
+    )
+    location.replace(target)
+  } catch {
+    serviceAvailable.value = false
+    error.value = 'クラウド版の接続先を確認できませんでした。入力内容は送信されていません。'
+  }
+  return true
+}
+
 onMounted(async () => {
+  if (await redirectStaticSiteToCloud()) return
   const verificationToken = new URLSearchParams(location.hash.slice(1)).get('verify-application')
   if (verificationToken) await verifyFromEmail(verificationToken)
   else await loadCurrent()
