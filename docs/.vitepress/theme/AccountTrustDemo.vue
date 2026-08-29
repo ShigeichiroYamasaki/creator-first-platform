@@ -111,7 +111,7 @@ function beginBinding() {
     if (!value) throw new Error('先にこのページ上部でテストユーザを登録してください。')
     await ensureGatewayUser(value)
     transaction.value = await request('/v1/account-trust/bindings', { method: 'POST' })
-    message.value = '結合トランザクションを作成しました。モックJPKI確認へ進んでください。'
+    message.value = '追加確認を開始しました。次の確認へ進んでください。'
   })
 }
 
@@ -119,7 +119,7 @@ function assertMockJpki() {
   return run('jpki', async () => {
     const value = transaction.value
     if (!value || !mockConsent.value || !testOnlyAcknowledged.value) {
-      throw new Error('モックJPKIのテスト専用表示と結合同意を確認してください。')
+      throw new Error('本人確認ではないテストであることと、同じ手続きへの関連付けを確認してください。')
     }
     const result = await request(`/v1/account-trust/bindings/${value.bindingId}/mock-jpki`, {
       method: 'POST',
@@ -131,15 +131,15 @@ function assertMockJpki() {
       })
     })
     value.state = result.state
-    message.value = 'モックJPKI結果を同じ結合トランザクションへ固定しました。'
+    message.value = 'テスト用のカード確認結果を同じ手続きへ関連付けました。'
   })
 }
 
 function registerPasskey() {
   return run('passkey', async () => {
     const value = transaction.value
-    if (!value) throw new Error('結合トランザクションがありません。')
-    if (!passkeySupported.value) throw new Error('このブラウザはWebAuthnパスキーに対応していません。')
+    if (!value) throw new Error('追加確認が開始されていません。')
+    if (!passkeySupported.value) throw new Error('このブラウザは端末の画面ロックや指紋を使う認証に対応していません。')
     const optionsJSON = await request(`/v1/account-trust/bindings/${value.bindingId}/passkeys/registration/options`, {
       method: 'POST', body: JSON.stringify({ csrfToken: value.csrfToken })
     })
@@ -155,9 +155,9 @@ function registerPasskey() {
 function bindWallet() {
   return run('wallet', async () => {
     const value = transaction.value
-    if (!value) throw new Error('結合トランザクションがありません。')
+    if (!value) throw new Error('追加確認が開始されていません。')
     const provider = (window as Window & { ethereum?: EIP1193Provider }).ethereum
-    if (!provider) throw new Error('MetaMask等のEIP-1193ウォレットが見つかりません。')
+    if (!provider) throw new Error('財布アプリが見つかりません。MetaMaskを準備してください。')
     await switchProviderToAmoy(provider)
     const accounts = await provider.request({ method: 'eth_requestAccounts' }) as Address[]
     const walletAddress = getAddress(accounts[0])
@@ -195,8 +195,8 @@ onMounted(() => run('status', refreshStatus))
   <section class="trust-demo" aria-labelledby="account-trust-title">
     <div class="trust-demo__heading">
       <div>
-        <p class="trust-demo__eyebrow">TEST ONLY · MOCK JPKI</p>
-        <h2 id="account-trust-title">JPKI・パスキー・MetaMask結合デモ</h2>
+        <p class="trust-demo__eyebrow">本人確認ではない追加実験</p>
+        <h2 id="account-trust-title">カード・端末認証・財布アプリを結び付ける実験</h2>
       </div>
       <span class="trust-demo__state">{{ currentState }}</span>
     </div>
@@ -204,42 +204,39 @@ onMounted(() => run('status', refreshStatus))
     <p>{{ message }}</p>
     <p v-if="errorMessage" class="trust-demo__error" role="alert">{{ errorMessage }}</p>
     <div v-if="!enabled" class="trust-demo__notice">
-      公開GitHub Pagesでは認証操作を無効にしています。`npm run gateway:dev`と`npm run docs:dev`を起動し、
-      <code>http://127.0.0.1:5173/creator-first-platform/demo/test-user-registration</code>で試してください。
+      この追加実験は公開ページでは操作できません。通常の音楽体験には必要ありません。
     </div>
 
     <ol class="trust-demo__steps">
       <li :class="{ complete: currentState !== '未開始' }">
-        <strong>結合トランザクション</strong>
-        <span>上部のテストユーザを、短命・一回限りの処理へ結び付けます。</span>
+        <strong>追加確認を始める</strong>
+        <span>この画面で登録した仮の名前に、一回限りの確認手続きを用意します。</span>
         <button :disabled="!enabled || Boolean(busy) || isActive" @click="beginBinding">開始</button>
       </li>
       <li :class="{ complete: !['未開始', 'CREATED'].includes(currentState) }">
-        <strong>モックJPKI</strong>
-        <span>実カードや個人情報を使わず、JPKIアダプター境界だけを検証します。</span>
+        <strong>テスト用のカード確認</strong>
+        <span>本物のマイナンバーカードや個人情報を使わず、確認結果の受け渡しだけを試します。</span>
         <label><input v-model="testOnlyAcknowledged" type="checkbox"> 本人確認ではないテスト結果と理解した</label>
         <label><input v-model="mockConsent" type="checkbox"> 同じ結合処理への関連付けに同意する</label>
-        <button :disabled="currentState !== 'CREATED' || Boolean(busy)" @click="assertMockJpki">モックJPKIを確認</button>
+        <button :disabled="currentState !== 'CREATED' || Boolean(busy)" @click="assertMockJpki">テスト結果を確認</button>
       </li>
       <li :class="{ complete: ['PASSKEY_REGISTERED', 'ACTIVE'].includes(currentState) }">
-        <strong>FIDO2／WebAuthnパスキー</strong>
-        <span>ブラウザの認証器を使い、秘密鍵や生体情報をサーバへ送らずに登録します。</span>
-        <button :disabled="currentState !== 'JPKI_ASSERTED' || Boolean(busy)" @click="registerPasskey">パスキーを登録</button>
+        <strong>端末の画面ロックや指紋で確認</strong>
+        <span>パソコンやスマートフォンの安全な認証機能を使います。指紋などの情報は外部へ送りません。</span>
+        <button :disabled="currentState !== 'JPKI_ASSERTED' || Boolean(busy)" @click="registerPasskey">端末の認証を登録</button>
       </li>
       <li :class="{ complete: isActive }">
-        <strong>MetaMaskウォレット</strong>
-        <span>Polygon Amoy限定のEIP-712結合意思へ署名します。送金・Approveは含みません。</span>
-        <button :disabled="currentState !== 'PASSKEY_REGISTERED' || Boolean(busy)" @click="bindWallet">ウォレットを結合</button>
+        <strong>財布アプリを確認</strong>
+        <span>練習用ネットワークで、本人がこの財布アプリを使う意思だけを確認します。残高は移動しません。</span>
+        <button :disabled="currentState !== 'PASSKEY_REGISTERED' || Boolean(busy)" @click="bindWallet">財布アプリを結び付ける</button>
       </li>
     </ol>
 
     <div v-if="isActive" class="trust-demo__active">
       <strong>結合完了</strong>
-      <span>保証レベル: WALLET_BOUND</span>
-      <span>RP ID: {{ status?.rpId }}</span>
-      <span>Chain ID: {{ status?.chainId }}</span>
-      <span>Wallet: {{ status?.binding?.walletAddress }}</span>
-      <button :disabled="Boolean(busy)" @click="authenticatePasskey">パスキーで再認証</button>
+      <span>カード、端末の認証、財布アプリのテスト用の関連付けが完了しました。</span>
+      <span>接続した財布: {{ status?.binding?.walletAddress }}</span>
+      <button :disabled="Boolean(busy)" @click="authenticatePasskey">端末の認証でもう一度確認</button>
     </div>
   </section>
 </template>

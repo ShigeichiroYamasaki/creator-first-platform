@@ -74,7 +74,7 @@ async function copyUri() {
 
 <template>
   <section class="participant-admin">
-    <p class="warning">管理者専用です。管理トークン、参加者のメールアドレス、招待URIを公開リポジトリやブラウザ保存領域へ保存しないでください。</p>
+    <p class="warning">管理者専用です。管理トークン、実験参加者のメールアドレス、招待URIを公開リポジトリやブラウザ保存領域へ保存しないでください。</p>
     <div class="panel">
       <h2>管理者認証</h2>
       <label>Gateway管理トークン<input v-model="adminToken" type="password" autocomplete="off" /></label>
@@ -83,7 +83,7 @@ async function copyUri() {
     </div>
     <form class="panel" @submit.prevent="createInvitation">
       <h2>事前登録用URIを発行</h2>
-      <label>参加者名<input v-model="displayName" required minlength="2" maxlength="80" /></label>
+      <label>実験参加者名<input v-model="displayName" required minlength="2" maxlength="80" /></label>
       <label>メールアドレス<input v-model="email" required type="email" autocomplete="off" /></label>
       <label>参加資格<select v-model.number="roles"><option :value="1">ユーザ</option><option :value="2">音楽クリエーター</option><option :value="3">両方</option></select></label>
       <label>有効時間<input v-model.number="expiresInHours" type="number" min="1" max="720" /></label>
@@ -100,7 +100,7 @@ async function copyUri() {
     <p v-if="error" class="error">{{ error }}</p>
     <div class="panel">
       <h2>招待状況</h2>
-      <div class="table-wrap"><table><thead><tr><th>参加者</th><th>資格</th><th>状態</th><th>本人選択Wallet</th><th>期限</th></tr></thead><tbody><tr v-for="item in invitations" :key="item.invitationId"><td>{{ item.displayName }}<br><small>{{ item.email }}</small></td><td>{{ item.roles === 1 ? 'ユーザ' : item.roles === 2 ? '音楽クリエーター' : '両方' }}</td><td>{{ item.state }}</td><td><code>{{ item.claimedWallet ?? '未選択' }}</code></td><td>{{ new Date(item.expiresAt).toLocaleString('ja-JP') }}</td></tr></tbody></table></div>
+      <div class="table-wrap"><table><thead><tr><th>実験参加者</th><th>資格</th><th>状態</th><th>本人選択Wallet</th><th>期限</th></tr></thead><tbody><tr v-for="item in invitations" :key="item.invitationId"><td>{{ item.displayName }}<br><small>{{ item.email }}</small></td><td>{{ item.roles === 1 ? 'ユーザ' : item.roles === 2 ? '音楽クリエーター' : '両方' }}</td><td>{{ item.state }}</td><td><code>{{ item.claimedWallet ?? '未選択' }}</code></td><td>{{ new Date(item.expiresAt).toLocaleString('ja-JP') }}</td></tr></tbody></table></div>
     </div>
   </section>
 </template>

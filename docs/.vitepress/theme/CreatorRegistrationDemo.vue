@@ -53,7 +53,7 @@ function saveProfile(): void {
   }
   sessionStorage.setItem(storageKey, JSON.stringify(value))
   profile.value = value
-  message.value = `${value.artistName} をブラウザ内のTest Creatorとして登録しました。`
+  message.value = `${value.artistName} をこのタブ内の実験用音楽クリエータとして登録しました。`
 }
 
 function resetProfile(): void {
@@ -66,7 +66,11 @@ function resetProfile(): void {
   acceptedTerms.value = false
   acceptedPrivacy.value = false
   acknowledgedRightsBoundary.value = false
-  message.value = 'このタブのCreator Profileと作品Draftを削除しました。'
+  message.value = 'このタブの活動情報とテスト作品を削除しました。'
+}
+
+function entityLabel(value: CreatorProfile['entityType']): string {
+  return ({ INDIVIDUAL: '個人', BAND: 'バンド', UNIT: 'ユニット', LABEL: '自主レーベル' } as const)[value]
 }
 
 onMounted(() => {
@@ -94,53 +98,53 @@ onMounted(() => {
 <template>
   <section class="creator-demo" aria-labelledby="creator-registration-title">
     <div class="demo-heading">
-      <p class="demo-kicker">Synthetic profile · Session only</p>
-      <h2 id="creator-registration-title">Test Creatorを登録する</h2>
+      <p class="demo-kicker">実験用・このタブだけに保存</p>
+      <h2 id="creator-registration-title">仮の活動情報を登録する</h2>
       <p>公開用の仮名だけを登録します。実名、連絡先、本人確認、契約、税務または支払情報は入力しないでください。</p>
     </div>
 
     <div v-if="profile" class="registered-card">
-      <span class="status-badge">登録済み · Browser demo</span>
+      <span class="status-badge">登録済み・実験用</span>
       <h3>{{ profile.artistName }}</h3>
       <dl>
-        <div><dt>活動形態</dt><dd>{{ profile.entityType }}</dd></div>
-        <div><dt>Genre</dt><dd>{{ profile.genre }}</dd></div>
-        <div><dt>Creator ID</dt><dd><code>{{ profile.creatorId }}</code></dd></div>
+        <div><dt>活動形態</dt><dd>{{ entityLabel(profile.entityType) }}</dd></div>
+        <div><dt>音楽の分野</dt><dd>{{ profile.genre }}</dd></div>
+        <div><dt>実験用登録番号</dt><dd><code>{{ profile.creatorId }}</code></dd></div>
         <div><dt>登録時刻</dt><dd>{{ new Date(profile.createdAt).toLocaleString('ja-JP') }}</dd></div>
       </dl>
-      <p class="boundary-copy">この登録は本人確認、Rights Holder、Payee、契約主体または公開Artist Profileを証明しません。</p>
+      <p class="boundary-copy">この登録は、本人、作品の権利者、報酬の受取人または契約相手であることを証明しません。</p>
       <div class="action-row">
-        <a class="primary-link" :href="withBase('/demo/creator-workspace')">Creator Workspaceを利用</a>
+        <a class="primary-link" :href="withBase('/demo/creator-workspace')">活動体験へ進む</a>
         <button class="secondary-action" type="button" @click="resetProfile">このタブの登録を削除</button>
       </div>
     </div>
 
     <form v-else class="registration-form" @submit.prevent="saveProfile">
-      <label for="creator-artist-name">Artist名（Demo用）</label>
+      <label for="creator-artist-name">仮の活動名</label>
       <input id="creator-artist-name" v-model="artistName" type="text" minlength="2" maxlength="40" autocomplete="off" aria-describedby="creator-name-help" placeholder="Demo Artist 01" required>
       <p id="creator-name-help" class="field-help">2〜40文字。実在人物・団体の名称や法的氏名を入力しないでください。</p>
-      <p v-if="artistName && !nameValid" class="field-error" role="alert">Artist名の形式を確認してください。</p>
+      <p v-if="artistName && !nameValid" class="field-error" role="alert">活動名の文字を確認してください。</p>
 
       <label for="creator-entity-type">活動形態</label>
       <select id="creator-entity-type" v-model="entityType">
-        <option value="INDIVIDUAL">Individual</option>
-        <option value="BAND">Band</option>
-        <option value="UNIT">Unit</option>
-        <option value="LABEL">Independent Label</option>
+        <option value="INDIVIDUAL">個人</option>
+        <option value="BAND">バンド</option>
+        <option value="UNIT">ユニット</option>
+        <option value="LABEL">自主レーベル</option>
       </select>
 
-      <label for="creator-genre">Genre（Demo用）</label>
+      <label for="creator-genre">音楽の分野（実験用）</label>
       <input id="creator-genre" v-model="genre" type="text" minlength="2" maxlength="30" autocomplete="off" placeholder="Electronic" required>
-      <p v-if="genre && !genreValid" class="field-error" role="alert">Genreの形式を確認してください。</p>
+      <p v-if="genre && !genreValid" class="field-error" role="alert">音楽の分野の文字を確認してください。</p>
 
       <fieldset>
-        <legend>Demo利用条件・Privacy Notice v1</legend>
-        <label><input v-model="acceptedTerms" type="checkbox"> 金銭的価値や継続利用を保証しないDemo条件に同意します</label>
-        <label><input v-model="acceptedPrivacy" type="checkbox"> 入力がこのタブのSession Storageだけに保存されることを確認しました</label>
+        <legend>実験の利用条件と情報の取扱い</legend>
+        <label><input v-model="acceptedTerms" type="checkbox"> 実際のお金や本番利用の権利がない実験であることに同意します</label>
+        <label><input v-model="acceptedPrivacy" type="checkbox"> 入力内容がこのタブだけに保存されることを確認しました</label>
         <label><input v-model="acknowledgedRightsBoundary" type="checkbox"> 登録だけでは本人・権利・契約・報酬受取資格を証明しないことを理解しました</label>
       </fieldset>
 
-      <button class="primary-action" type="submit" :disabled="!ready">Test Creatorを登録</button>
+      <button class="primary-action" type="submit" :disabled="!ready">仮の活動情報を登録</button>
     </form>
 
     <p class="demo-message" aria-live="polite">{{ message }}</p>

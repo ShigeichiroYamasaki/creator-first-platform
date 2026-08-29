@@ -10,18 +10,20 @@ const choices = computed(() => {
   if (props.kind === 'user') {
     return [
       {
-        eyebrow: 'Registration',
-        title: '登録する',
-        description: 'AliasとDemo利用条件を登録し、このタブだけのTest Userを作成します。',
+        icon: '🎧',
+        eyebrow: '順番に操作する',
+        title: 'はじめから体験する',
+        description: '仮の名前を登録し、練習用のお金、月額利用、音楽プレーヤー、応援の証明書を順番に試します。',
         link: '/demo/test-user-registration',
-        action: 'Test User登録へ'
+        action: '音楽リスナーとして参加する'
       },
       {
-        eyebrow: 'Use',
-        title: '利用する',
-        description: '登録状態を確認し、合成CatalogとローカルPlayerへの利用導線を試します。',
+        icon: '👀',
+        eyebrow: '操作せずに見る',
+        title: '画面だけ見てみる',
+        description: '音楽一覧や応援状態の見本を、財布アプリをつながずに確認します。',
         link: '/demo/user-service',
-        action: 'ユーザ向け利用デモへ'
+        action: '音楽サービスの見本を見る'
       }
     ]
   }
@@ -29,36 +31,40 @@ const choices = computed(() => {
   if (props.kind === 'creator') {
     return [
       {
-        eyebrow: 'Registration',
-        title: '登録する',
-        description: 'Artist名、活動形態、Genreを登録し、このタブだけのCreator Profileを作成します。',
+        icon: '🎵',
+        eyebrow: '順番に操作する',
+        title: 'はじめから体験する',
+        description: '仮の活動名を登録し、財布アプリとテスト作品の登録を順番に試します。',
         link: '/demo/creator-registration',
-        action: 'Creator登録へ'
+        action: '音楽クリエータとして参加登録する'
       },
       {
-        eyebrow: 'Workspace',
-        title: '利用する',
-        description: '作品Draft、権利申告状態、確認Task、合成AnalyticsをCreator Workspaceで試します。',
+        icon: '👀',
+        eyebrow: '操作せずに見る',
+        title: '活動画面だけ見てみる',
+        description: 'テスト作品や確認事項を管理する画面の見本を確認します。',
         link: '/demo/creator-workspace',
-        action: 'Creator Workspaceへ'
+        action: '音楽クリエータの活動画面を見る'
       }
     ]
   }
 
   return [
     {
-      eyebrow: 'For listeners',
-      title: 'ユーザ向けサービス',
-      description: 'Test User登録と、Catalog／Player利用のテスト導線を選択します。',
+      icon: '🎧',
+      eyebrow: '音楽を聴く立場',
+      title: '音楽リスナーとして参加',
+      description: '音楽サブスクリプションサービスの利用、音楽クリエータの応援、サービス改善や経営への参加などを試します。',
       link: '/demo/user-services',
-      action: 'ユーザ向けサービス'
+      action: '音楽リスナーとして進む'
     },
     {
-      eyebrow: 'For music creators',
-      title: '音楽クリエータサービス',
-      description: 'Creator登録と、作品・権利・分析を扱うWorkspaceのテスト導線を選択します。',
+      icon: '🎵',
+      eyebrow: '音楽をつくる立場',
+      title: '音楽クリエータとして参加',
+      description: '音源などの登録、ファンからの応援や交流、収益分配ルールづくりへの参加を試します。',
       link: '/demo/creator-services',
-      action: '音楽クリエータサービス'
+      action: '音楽クリエータとして進む'
     }
   ]
 })
@@ -67,6 +73,7 @@ const choices = computed(() => {
 <template>
   <div class="demo-service-grid">
     <article v-for="choice in choices" :key="choice.link" class="demo-service-card">
+      <span class="demo-service-icon" aria-hidden="true">{{ choice.icon }}</span>
       <p class="demo-service-eyebrow">{{ choice.eyebrow }}</p>
       <h2>{{ choice.title }}</h2>
       <p>{{ choice.description }}</p>

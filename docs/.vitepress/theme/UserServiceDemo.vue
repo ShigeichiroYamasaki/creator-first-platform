@@ -28,28 +28,27 @@ onMounted(() => {
   <section class="user-service-demo" aria-labelledby="user-service-title">
     <div class="user-heading">
       <div>
-        <p class="demo-kicker">Listener service · Synthetic catalog</p>
-        <h2 id="user-service-title">ユーザ向け利用デモ</h2>
+        <p class="demo-kicker">操作せずに見られる実験用画面</p>
+        <h2 id="user-service-title">音楽サービスの画面見本</h2>
       </div>
       <span v-if="profile" class="status-badge">{{ profile.displayName }}</span>
     </div>
 
     <div v-if="!profile" class="notice-card">
-      <h3>Test Userは未登録です</h3>
-      <p>Catalogは確認できますが、登録状態の表示を試すには先にAliasを登録してください。</p>
-      <a class="primary-link" :href="withBase('/demo/test-user-registration')">Test User登録へ</a>
+      <h3>仮の名前はまだ登録されていません</h3>
+      <p>音楽一覧はそのまま見られます。登録状態も試す場合は、先に仮の名前を登録してください。</p>
+      <a class="primary-link" :href="withBase('/demo/test-user-registration')">音楽リスナーとして参加する</a>
     </div>
 
-    <div class="catalog-grid" aria-label="合成Catalog">
-      <article><span class="track-number">01</span><div><h3>First Light</h3><p>AO · Synthetic Dawn</p></div><span class="capability">Base Plan</span></article>
-      <article><span class="track-number">02</span><div><h3>Supporter Signal</h3><p>AO · Synthetic Dawn</p></div><span class="capability">Supporter</span></article>
-      <article><span class="track-number">03</span><div><h3>Early Echo</h3><p>Lumen · Five Second Studies</p></div><span class="capability">Early</span></article>
+    <div class="catalog-grid" aria-label="実験用の音楽一覧">
+      <article><span class="track-number">01</span><div><h3>First Light</h3><p>AO · Synthetic Dawn</p></div><span class="capability">月額利用</span></article>
+      <article><span class="track-number">02</span><div><h3>Supporter Signal</h3><p>AO · Synthetic Dawn</p></div><span class="capability">応援した方</span></article>
+      <article><span class="track-number">03</span><div><h3>Early Echo</h3><p>Lumen · Five Second Studies</p></div><span class="capability">初期から応援</span></article>
     </div>
 
     <div class="notice-card">
-      <h3>再生・Gateway連携</h3>
-      <p>この公開ページはCatalog表示だけの合成Fixtureです。短命Playback Session、Range配信、Wallet接続を含むPlayer MVPはローカル環境で検証します。</p>
-      <a class="secondary-link" :href="withBase('/demo/local-gateway')">ローカルPlayerの利用手順</a>
+      <h3>このページは画面見本です</h3>
+      <p>表示される作品や音楽クリエーターは架空で、この画面から実際の音楽は配信しません。</p>
     </div>
   </section>
 </template>

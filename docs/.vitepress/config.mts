@@ -9,15 +9,21 @@ const buildCommit = githubCommit && /^[0-9a-f]{40}$/.test(githubCommit)
 const englishTheme = {
   nav: [
     { text: 'Home', link: '/en/' },
+    { text: 'Free public trial', link: '/en/demo/' },
     { text: 'Whitepaper', link: '/en/whitepaper/' },
-    { text: 'Protocol', link: '/en/protocol/' },
-    { text: 'Testnet demo', link: '/en/demo/' },
+    {
+      text: 'Documents',
+      items: [
+        { text: 'Protocol', link: '/en/protocol/' },
+        { text: 'Current status', link: '/status' }
+      ]
+    },
     { text: 'GitHub', link: 'https://github.com/ShigeichiroYamasaki/creator-first-platform' }
   ],
   sidebar: {
     '/en/demo/': [
       {
-        text: 'Testnet demo',
+        text: 'Free public trial',
         items: [
           { text: 'Overview', link: '/en/demo/' },
           { text: 'Amoy Test POL funding request', link: '/en/demo/amoy-pol-funding-request' },
@@ -309,14 +315,19 @@ export default defineConfig({
 
       nav: [
         { text: 'ホーム', link: '/' },
-        { text: 'テストネットデモ', link: '/demo/' },
-        { text: '現在の状況', link: '/status' },
-        { text: '用語表', link: '/terminology' },
+        { text: '無償版運用実験', link: '/demo/' },
         { text: 'ホワイトペーパー', link: '/whitepaper/' },
         { text: 'ガバナンス', link: '/governance/' },
-        { text: 'プロトコル', link: '/protocol/' },
         { text: 'CFP', link: '/proposals/' },
-        { text: 'ADR 一覧', link: '/adr/' }
+        {
+          text: '文書',
+          items: [
+            { text: '現在の状況', link: '/status' },
+            { text: '用語表', link: '/terminology' },
+            { text: 'プロトコル', link: '/protocol/' },
+            { text: 'ADR 一覧', link: '/adr/' }
+          ]
+        }
       ],
 
       sidebar: {
@@ -324,14 +335,14 @@ export default defineConfig({
           {
             text: 'デモ',
             items: [
-              { text: 'テストネットデモ入口', link: '/demo/' },
-              { text: 'MetaMask・Amoy接続手順', link: '/demo/metamask-amoy-setup' },
-              { text: 'ユーザ向けサービス', link: '/demo/user-services' },
-              { text: 'テストユーザ登録デモ', link: '/demo/test-user-registration' },
-              { text: 'ユーザ向け利用デモ', link: '/demo/user-service' },
-              { text: '音楽クリエーター向けサービス', link: '/demo/creator-services' },
-              { text: 'テスト音楽クリエーター登録デモ', link: '/demo/creator-registration' },
-              { text: '音楽クリエーター作業画面デモ', link: '/demo/creator-workspace' },
+              { text: '無償版運用実験の入口', link: '/demo/' },
+              { text: '財布アプリの準備', link: '/demo/metamask-amoy-setup' },
+              { text: '音楽リスナーとして参加', link: '/demo/user-services' },
+              { text: '音楽リスナーの利用体験', link: '/demo/test-user-registration' },
+              { text: '音楽サービスの画面見本', link: '/demo/user-service' },
+              { text: '音楽クリエータとして参加', link: '/demo/creator-services' },
+              { text: '音楽クリエータの参加登録', link: '/demo/creator-registration' },
+              { text: '音楽クリエータの活動体験', link: '/demo/creator-workspace' },
               { text: '資金フロー可視化デモ', link: '/demo/treasury-dashboard' },
               { text: 'テストネット版ガバナンス', link: '/demo/governance' },
               { text: '音楽クリエータ院議会', link: '/demo/creator-house' },

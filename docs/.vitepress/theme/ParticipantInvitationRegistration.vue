@@ -212,7 +212,7 @@ onMounted(() => {
         <span class="action-icon success-icon" aria-hidden="true">✅</span>
         <div>
           <h3>登録できました</h3>
-          <p><span aria-hidden="true">⏳</span> 現在は運営の処理待ちです。参加者による操作はありません。</p>
+          <p><span aria-hidden="true">⏳</span> 現在は運営の処理待ちです。実験参加者による操作はありません。</p>
           <ul class="roles">
             <li v-if="hasUserRole"><b><i aria-hidden="true">🎧</i> ユーザ向け参加</b><span>運営承認後に利用できます</span></li>
             <li v-if="hasCreatorRole"><b><i aria-hidden="true">🎵</i> 音楽クリエーター向け参加</b><span>運営承認後に利用できます</span></li>

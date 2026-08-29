@@ -81,7 +81,7 @@ const supporterTokenId = ref(0n)
 const supporterTier = ref(0)
 const supporterTokenUri = ref('')
 const supporterMetadata = ref<SupporterMetadata>()
-const supporterMessage = ref('プレーヤーから対象アーティストへのサポータ登録を開始できます。')
+const supporterMessage = ref('好きな音楽クリエーターを応援した証明書を、この画面から受け取れます。')
 const selectedTrack = ref(tracks[0])
 const toneUrls = new Map<string, string>()
 const audioElement = ref<HTMLAudioElement>()
@@ -119,7 +119,7 @@ function saveProfile(): void {
   const value: DemoProfile = { registered: true, testUserId: newTestUserId(), displayName: normalizedAlias.value, state: 'TESTNET_DEMO_PROFILE', createdAt: new Date().toISOString() }
   sessionStorage.setItem(storageKey, JSON.stringify(value))
   profile.value = value
-  walletMessage.value = `${value.displayName} をTestnet Demo Profileとして登録しました。次にWalletを接続できます。`
+  walletMessage.value = `${value.displayName} を実験用の仮名として登録しました。次に財布アプリをつなげます。`
 }
 function resetProfile(): void {
   sessionStorage.removeItem(storageKey)
@@ -128,7 +128,7 @@ function resetProfile(): void {
   acceptedTerms.value = false
   acceptedPrivacy.value = false
   acknowledgedTestOnly.value = false
-  walletMessage.value = 'このタブのProfileだけを削除しました。Wallet接続やBlockchain上の履歴は削除されません。'
+  walletMessage.value = 'このタブの仮名だけを削除しました。財布アプリの接続や公開された操作記録は削除されません。'
 }
 function providerFromWindow(): DemoProvider | undefined {
   return (window as Window & { ethereum?: DemoProvider }).ethereum
@@ -156,13 +156,13 @@ const handleAccountsChanged = async (value: Address[] | string): Promise<void> =
   const accounts = Array.isArray(value) ? value : []
   walletAddress.value = accounts[0]
   clearOnchainState()
-  walletMessage.value = accounts[0] ? 'Wallet Accountが変更されました。状態を再確認します。' : 'Wallet接続が解除されました。'
+  walletMessage.value = accounts[0] ? '財布アプリのアカウントが変わりました。状態を確認します。' : '財布アプリの接続が解除されました。'
   if (accounts[0] && correctChain.value) await refreshOnchainState(true)
 }
 const handleChainChanged = async (value: Address[] | string): Promise<void> => {
   walletChainId.value = typeof value === 'string' ? Number.parseInt(value, 16) : undefined
   clearOnchainState()
-  walletMessage.value = correctChain.value ? 'Polygon Amoyへ変更されました。状態を再確認します。' : '対象外Networkへ変更されたため、Contract操作と限定Trackを停止しました。'
+  walletMessage.value = correctChain.value ? '練習用ネットワークへ切り替わりました。状態を確認します。' : '別のネットワークへ切り替わったため、記録操作と限定音源を停止しました。'
   if (correctChain.value && walletAddress.value) await refreshOnchainState(true)
 }
 function attachProviderListeners(): void {
@@ -178,7 +178,7 @@ async function readChainId(): Promise<void> {
 async function connectWallet(): Promise<void> {
   provider = providerFromWindow()
   if (!provider) {
-    walletMessage.value = 'EIP-1193対応Walletが見つかりません。Walletをインストールしてから明示的に接続してください。'
+    walletMessage.value = '財布アプリが見つかりません。MetaMaskをインストールしてから接続してください。'
     return
   }
   busyAction.value = 'wallet'
@@ -187,10 +187,10 @@ async function connectWallet(): Promise<void> {
     walletAddress.value = accounts[0]
     attachProviderListeners()
     await readChainId()
-    walletMessage.value = correctChain.value ? 'WalletをPolygon Amoyへ接続しました。' : 'Walletを接続しました。Polygon Amoyへ切り替えてください。'
+    walletMessage.value = correctChain.value ? '財布アプリを練習用ネットワークへ接続しました。' : '財布アプリを接続しました。練習用ネットワークへ切り替えてください。'
     if (correctChain.value) await refreshOnchainState(true)
   } catch (error) {
-    walletMessage.value = error instanceof Error ? error.message : 'Wallet接続が拒否されました。'
+    walletMessage.value = error instanceof Error ? error.message : '財布アプリの接続がキャンセルされました。'
   } finally { busyAction.value = '' }
 }
 async function switchToAmoy(): Promise<void> {
@@ -199,14 +199,14 @@ async function switchToAmoy(): Promise<void> {
   try {
     await switchProviderToAmoy(provider)
     await readChainId()
-    walletMessage.value = 'Polygon Amoyへ切り替えました。'
+    walletMessage.value = '練習用ネットワークへ切り替えました。'
     await refreshOnchainState(true)
   } catch (error) {
-    walletMessage.value = error instanceof Error ? error.message : 'Polygon Amoyへの切替が拒否されました。'
+    walletMessage.value = error instanceof Error ? error.message : '練習用ネットワークへの切替がキャンセルされました。'
   } finally { busyAction.value = '' }
 }
 function clients() {
-  if (!provider || !walletAddress.value || !deployment.value?.contracts.mockJpyc || !deployment.value.contracts.subscription) throw new Error('Walletまたは検証済みContract Addressが利用できません。')
+  if (!provider || !walletAddress.value || !deployment.value?.contracts.mockJpyc || !deployment.value.contracts.subscription) throw new Error('財布アプリまたは練習用の記録先を利用できません。')
   const transport = custom(provider)
   return {
     publicClient: createPublicClient({ chain: polygonAmoy, transport }),
@@ -290,13 +290,13 @@ async function refreshOnchainState(force = false): Promise<void> {
     if (supporterTokenUri.value) {
       try {
         const metadataResponse = await fetch(supporterTokenUri.value, { cache: 'no-store' })
-        if (!metadataResponse.ok) throw new Error(`SBT metadata HTTP ${metadataResponse.status}`)
+        if (!metadataResponse.ok) throw new Error(`応援の証明書情報を取得できません（HTTP ${metadataResponse.status}）`)
         supporterMetadata.value = validateSupporterMetadata(
           await metadataResponse.json(),
           supporterTokenUri.value
         ) as SupporterMetadata
       } catch (error) {
-        supporterMessage.value = error instanceof Error ? error.message : 'SBTメタデータを取得できません。'
+        supporterMessage.value = error instanceof Error ? error.message : '応援の証明書情報を取得できません。'
       }
     }
   }
@@ -304,7 +304,7 @@ async function refreshOnchainState(force = false): Promise<void> {
 async function registerUserParticipant(): Promise<void> {
   const registry = deployment.value?.contracts.participantRegistry
   if (!registry) return
-  await transact('ユーザ本人登録', async () => {
+  await transact('音楽リスナーとしての実験参加登録', async () => {
     const { publicClient, walletClient } = clients()
     const fees = await getAmoyTransactionFees(publicClient)
     return walletClient.writeContract({
@@ -322,25 +322,25 @@ async function transact(action: string, submit: () => Promise<Hash>): Promise<vo
   try {
     const hash = await submit()
     lastTransaction.value = hash
-    walletMessage.value = `${action} transactionを送信しました。確定を待っています。`
+    walletMessage.value = `${action}の操作を送信しました。完了を待っています。`
     const { publicClient } = clients()
     const receipt = await publicClient.waitForTransactionReceipt({ hash })
-    if (receipt.status !== 'success') throw new Error(`${action} transactionがrevertしました。`)
+    if (receipt.status !== 'success') throw new Error(`${action}の操作が完了しませんでした。`)
     await refreshOnchainState(true)
-    walletMessage.value = `${action} transactionがPolygon Amoyで確定しました。`
+    walletMessage.value = `${action}が完了しました。`
   } catch (error) {
     walletMessage.value = error instanceof Error ? error.message : `${action}に失敗しました。`
   } finally { busyAction.value = '' }
 }
 async function claimMockJpyc(): Promise<void> {
-  await transact('MockJPYC取得', async () => {
+  await transact('練習用のお金の受取り', async () => {
     const { publicClient, walletClient, mockJpyc } = clients()
     const fees = await getAmoyTransactionFees(publicClient)
     return walletClient.writeContract({ address: mockJpyc, abi: mockJpycAbi, functionName: 'claim', ...fees })
   })
 }
 async function approveSubscription(): Promise<void> {
-  await transact('利用承認', async () => {
+  await transact('今回使う金額の確認', async () => {
     const { publicClient, walletClient, mockJpyc, subscription } = clients()
     const fees = await getAmoyTransactionFees(publicClient)
     return walletClient.writeContract({ address: mockJpyc, abi: mockJpycAbi, functionName: 'approve', args: [subscription, planPrice.value], ...fees })
@@ -349,7 +349,7 @@ async function approveSubscription(): Promise<void> {
 async function subscribe(): Promise<void> {
   if (!profile.value) return
   const paymentReference = keccak256(toHex(`${profile.value.testUserId}:${Date.now()}`))
-  await transact('Subscription', async () => {
+  await transact('月額利用の開始', async () => {
     const { publicClient, walletClient, subscription } = clients()
     const fees = await getAmoyTransactionFees(publicClient)
     return walletClient.writeContract({ address: subscription, abi: subscriptionAbi, functionName: 'subscribe', args: [paymentReference, planVersion.value], ...fees })
@@ -374,7 +374,7 @@ async function registerAsSupporter(): Promise<void> {
       nonce: nonce as bigint,
       deadline
     })
-    supporterMessage.value = 'Walletで公開・譲渡不能なSupporter SBTの意思表示に署名してください。'
+    supporterMessage.value = '財布アプリで、応援の証明書を受け取ることを確認してください。'
     const signature = await walletClient.signTypedData({ account: walletAddress.value, ...typedData })
     const fees = await getAmoyTransactionFees(publicClient)
     const hash = await walletClient.writeContract({
@@ -386,14 +386,14 @@ async function registerAsSupporter(): Promise<void> {
       ...fees
     })
     lastSbtTransaction.value = hash
-    supporterMessage.value = 'SBT発行Transactionを送信しました。Polygon Amoyでの確定を待っています。'
+    supporterMessage.value = '応援の証明書を受け取る操作を送信しました。完了を待っています。'
     const receipt = await publicClient.waitForTransactionReceipt({ hash })
-    if (receipt.status !== 'success') throw new Error('Supporter SBT発行Transactionがrevertしました。')
+    if (receipt.status !== 'success') throw new Error('応援の証明書を受け取る操作が完了しませんでした。')
     await refreshOnchainState(true)
-    if (supporterTokenId.value === 0n) throw new Error('Transactionは確定しましたが、有効なSBTを確認できません。')
-    supporterMessage.value = `${supporterTierLabel.value} SBT #${supporterTokenId.value}を取得しました。`
+    if (supporterTokenId.value === 0n) throw new Error('操作は完了しましたが、有効な応援の証明書を確認できません。')
+    supporterMessage.value = `${supporterTierLabel.value}の応援証明書 #${supporterTokenId.value} を受け取りました。`
   } catch (error) {
-    supporterMessage.value = error instanceof Error ? error.message : 'Supporter SBT登録に失敗しました。'
+    supporterMessage.value = error instanceof Error ? error.message : '応援の証明書を受け取れませんでした。'
   } finally { busyAction.value = '' }
 }
 async function selectTrack(track: Track): Promise<void> {
@@ -403,7 +403,7 @@ async function selectTrack(track: Track): Promise<void> {
   audioElement.value.pause()
   audioElement.value.src = toneUrls.get(track.id) ?? ''
   audioElement.value.load()
-  playerMessage.value = track.subscriberOnly && !subscriptionActive.value ? 'この合成Trackは有効なTestnet Subscriptionがある場合だけ再生できます。' : `${track.title} を選択しました。`
+  playerMessage.value = track.subscriberOnly && !subscriptionActive.value ? 'このテスト音は、練習用の月額利用を開始すると再生できます。' : `${track.title} を選択しました。`
 }
 async function playSelected(): Promise<void> {
   if (!audioElement.value || !canPlaySelected.value) return
@@ -418,9 +418,9 @@ function shortAddress(value: string | null | undefined): string { return value ?
 async function loadDeployment(): Promise<void> {
   try {
     const response = await fetch(withBase('/testnet/deployment.json'), { cache: 'no-store' })
-    if (!response.ok) throw new Error(`Deployment manifest HTTP ${response.status}`)
+    if (!response.ok) throw new Error(`実験の公開情報を取得できません（HTTP ${response.status}）`)
     deployment.value = validateDeploymentManifest(await response.json()) as Deployment
-  } catch (error) { manifestError.value = error instanceof Error ? error.message : 'Deployment manifestを検証できません。' }
+  } catch (error) { manifestError.value = error instanceof Error ? error.message : '実験の公開情報を確認できません。' }
 }
 function restoreProfile(): void {
   try {
@@ -448,103 +448,103 @@ onBeforeUnmount(() => {
 <template>
   <section class="testnet-journey" aria-labelledby="testnet-journey-title">
     <header class="journey-heading">
-      <p class="kicker">Polygon Amoy · mockJPYC · synthetic audio</p>
-      <h2 id="testnet-journey-title">Test User Journey</h2>
-      <p>匿名Demo Profileの登録から、Wallet接続、test-only課金、Player操作、Supporter SBT取得までを順番に確認します。</p>
-      <p class="safety"><strong>重要:</strong> tJPYCは無価値・償還不可で、実在JPYCではありません。ETHはAmoy POL Gasにだけ使い、秘密鍵やSeed Phraseは入力しません。</p>
+      <p class="kicker">実際のお金を使わない公開実験</p>
+      <h2 id="testnet-journey-title">音楽を楽しむ体験</h2>
+      <p>仮の名前、財布アプリ、練習用の月額利用、音楽プレーヤー、応援の証明書を順番に試します。</p>
+      <p class="safety"><strong>重要:</strong> 表示される残高は換金できない練習用です。実際のお金、秘密鍵、復旧用の単語列は使いません。</p>
     </header>
-    <ol class="steps" aria-label="Test User Journey steps">
-      <li :class="{ done: profile }">1. Profile</li><li :class="{ done: walletAddress && correctChain }">2. Wallet</li><li :class="{ done: userRegistered }">3. Enrollment</li><li :class="{ done: subscriptionActive }">4. Subscription</li><li>5. Player</li><li :class="{ done: supporterTokenId > 0n }">6. SBT</li>
+    <ol class="steps" aria-label="音楽リスナーとして参加する手順">
+      <li :class="{ done: profile }">1. 仮の名前</li><li :class="{ done: walletAddress && correctChain }">2. 財布アプリ</li><li :class="{ done: userRegistered }">3. 参加確認</li><li :class="{ done: subscriptionActive }">4. 月額利用</li><li>5. 音楽</li><li :class="{ done: supporterTokenId > 0n }">6. 応援証明</li>
     </ol>
 
     <section class="panel" aria-labelledby="profile-title">
-      <h3 id="profile-title">1. Test User登録</h3>
+      <h3 id="profile-title">1. 仮の名前を登録</h3>
       <div v-if="profile" class="profile-summary">
         <span class="badge success">登録済み</span><strong>{{ profile.displayName }}</strong><code>{{ profile.testUserId }}</code>
-        <p>AliasとIDはこのタブのSession Storageだけに保存され、Platform Accountや本人確認にはなりません。</p>
-        <button class="secondary" type="button" @click="resetProfile">Profileを削除</button>
+        <p>仮の名前と実験用番号はこのタブだけに保存され、本番アカウントや本人確認には使われません。</p>
+        <button class="secondary" type="button" @click="resetProfile">仮の名前を削除</button>
       </div>
       <form v-else class="registration" @submit.prevent="saveProfile">
-        <label for="demo-alias">デモ表示用Alias</label>
+        <label for="demo-alias">画面に表示する仮の名前</label>
         <input id="demo-alias" v-model="alias" type="text" minlength="2" maxlength="24" autocomplete="off" placeholder="Demo Listener 01" required>
-        <small>実名、メール、電話番号、Password、Wallet Addressは入力しないでください。</small>
+        <small>実名、メール、電話番号、パスワード、財布の番号は入力しないでください。</small>
         <p v-if="alias && !aliasValid" class="error" role="alert">2〜24文字の文字・数字・空白・_・-を使ってください。</p>
-        <fieldset><legend>Demo利用条件・Privacy Notice v2</legend>
-          <label><input v-model="acceptedTerms" type="checkbox"> 金銭的価値や継続利用を保証しないTestnet Demo条件に同意します</label>
-          <label><input v-model="acceptedPrivacy" type="checkbox"> Aliasはこのタブ内だけに保存され、Wallet AddressはBlockchain上で公開されることを確認しました</label>
-          <label><input v-model="acknowledgedTestOnly" type="checkbox"> tJPYCは実在JPYCではなく、Amoy POLはGasにだけ使うことを理解しました</label>
+        <fieldset><legend>実験の利用条件と情報の取扱い</legend>
+          <label><input v-model="acceptedTerms" type="checkbox"> 実際のお金や本番利用の権利がない実験であることに同意します</label>
+          <label><input v-model="acceptedPrivacy" type="checkbox"> 仮の名前はこのタブだけに保存され、財布の番号と操作記録は公開されることを確認しました</label>
+          <label><input v-model="acknowledgedTestOnly" type="checkbox"> 表示されるお金と手数料残高は練習用であることを理解しました</label>
         </fieldset>
-        <button class="primary" type="submit" :disabled="!ready">Test Userを登録</button>
+        <button class="primary" type="submit" :disabled="!ready">仮の名前を登録</button>
       </form>
     </section>
 
     <section class="panel" aria-labelledby="wallet-title">
-      <h3 id="wallet-title">2. WalletとPolygon Amoy</h3>
+      <h3 id="wallet-title">2. 財布アプリをつなぐ</h3>
       <div class="status-grid">
-        <div><span>Deployment</span><strong>{{ manifestError ? '無効' : deployment?.active ? '公開済み' : '未デプロイ' }}</strong></div>
-        <div><span>Network</span><strong>{{ walletChainId ?? '未接続' }}<template v-if="walletChainId"> / {{ correctChain ? 'Polygon Amoy' : '対象外' }}</template></strong></div>
-        <div><span>Wallet</span><strong>{{ shortAddress(walletAddress) }}</strong></div>
-        <div><span>Source Commit</span><strong>{{ deployment?.sourceCommit?.slice(0, 12) ?? '未公開' }}</strong></div>
+        <div><span>実験の準備</span><strong>{{ manifestError ? '利用停止中' : deployment?.active ? '利用できます' : '準備中' }}</strong></div>
+        <div><span>練習用ネットワーク</span><strong>{{ walletChainId ? (correctChain ? '接続済み' : '切替が必要') : '未接続' }}</strong></div>
+        <div><span>財布アプリ</span><strong>{{ shortAddress(walletAddress) }}</strong></div>
+        <div><span>公開内容の確認</span><strong>{{ deployment?.sourceCommit ? '確認済み' : '準備中' }}</strong></div>
       </div>
       <p v-if="manifestError" class="error" role="alert">{{ manifestError }} 書込み操作を停止しました。</p>
-      <p v-else-if="deployment && !deployment.active" class="notice">Polygon Amoy Contract Addressがまだ公開されていないため、Wallet接続は試せますが、tJPYC取得・承認・課金は無効です。Addressを手入力して回避することはできません。</p>
-      <div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">{{ walletAddress ? 'Walletを再接続' : 'Walletを接続' }}</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToAmoy">Polygon Amoyへ切替</button><button class="secondary" type="button" :disabled="!chainActionsReady" @click="refreshOnchainState()">状態を更新</button></div>
+      <p v-else-if="deployment && !deployment.active" class="notice">練習用の記録先を準備しています。財布アプリの接続だけ試せますが、その先の操作はできません。</p>
+      <div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">{{ walletAddress ? '財布アプリをつなぎ直す' : '財布アプリをつなぐ' }}</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToAmoy">練習用ネットワークへ切り替える</button><button class="secondary" type="button" :disabled="!chainActionsReady" @click="refreshOnchainState()">表示を更新</button></div>
     </section>
 
     <section class="panel" aria-labelledby="enrollment-title">
-      <h3 id="enrollment-title">3. 招待登録とユーザ本人登録</h3>
+      <h3 id="enrollment-title">3. 実験参加登録を確認</h3>
       <div class="status-grid">
-        <div><span>参加者登録台帳</span><strong>{{ participantRegistryReady ? '公開済み' : '未デプロイ' }}</strong></div>
-        <div><span>招待確認後の運営承認</span><strong>{{ userPreApproved ? '承認済み' : participantId !== zeroHash ? '期限切れ／停止' : '未承認' }}</strong></div>
-        <div><span>ユーザ本人登録</span><strong>{{ userRegistered ? '登録済み' : '未登録' }}</strong></div>
-        <div><span>初回Test POL</span><strong>{{ initialFundingCompleted ? '処理済み' : '未処理' }}</strong></div>
+        <div><span>実験参加の受付</span><strong>{{ participantRegistryReady ? '利用できます' : '準備中' }}</strong></div>
+        <div><span>運営の確認</span><strong>{{ userPreApproved ? '確認済み' : participantId !== zeroHash ? '期限切れ／停止' : '確認待ち' }}</strong></div>
+        <div><span>本人による登録</span><strong>{{ userRegistered ? '登録済み' : '未登録' }}</strong></div>
+        <div><span>練習用の手数料残高</span><strong>{{ initialFundingCompleted ? '受取済み' : '準備待ち' }}</strong></div>
       </div>
-      <p v-if="!participantRegistryReady" class="notice">参加者登録コントラクトが公開マニフェストへ登録されるまで、従来の利用フローだけを表示します。</p>
-      <p v-else-if="!userPreApproved && !userRegistered" class="notice">Alias登録だけでは参加承認になりません。運営が個人情報を含まない参加者ID、完全なWallet Address、ユーザ役割および登録期限を事前承認し、最小限のTest POLを配布した後に本人登録できます。</p>
-      <p v-else>接続ウォレット本人がTransactionを送信することで、承認済みユーザ役割と同意版をPolygon Amoyへ記録します。MetaMaskの「資金を追加」から実資産を購入する必要はありません。</p>
-      <button class="primary" type="button" :disabled="!participantSelfRegistrationReady" @click="registerUserParticipant">本人としてユーザ登録</button>
+      <p v-if="!participantRegistryReady" class="notice">実験参加登録の受付を準備しています。運営から利用開始の連絡が届くまでお待ちください。</p>
+      <p v-else-if="!userPreApproved && !userRegistered" class="notice">仮の名前を登録しただけでは公開実験を利用できません。招待登録後に運営の確認と練習用残高の準備が必要です。</p>
+      <p v-else>本人が財布アプリで確認し、音楽リスナーとしての実験参加を記録します。実際のお金を購入する必要はありません。</p>
+      <button class="primary" type="button" :disabled="!participantSelfRegistrationReady" @click="registerUserParticipant">音楽リスナーとして登録</button>
     </section>
 
     <section class="panel" aria-labelledby="payment-title">
-      <h3 id="payment-title">4. mockJPYC課金</h3>
+      <h3 id="payment-title">4. 練習用のお金で月額利用を試す</h3>
       <div class="status-grid">
-        <div><span>tJPYC残高</span><strong>{{ balanceLabel }}</strong></div><div><span>Plan価格</span><strong>{{ priceLabel }}</strong></div><div><span>Allowance</span><strong>{{ allowanceEnough ? '承認済み' : '未承認' }}</strong></div><div><span>Subscription</span><strong>{{ subscriptionActive ? `有効 / ${formatDate(activeUntil)}` : '無効' }}</strong></div>
+        <div><span>練習用の残高</span><strong>{{ balanceLabel }}</strong></div><div><span>月額利用の練習価格</span><strong>{{ priceLabel }}</strong></div><div><span>利用の確認</span><strong>{{ allowanceEnough ? '確認済み' : '未確認' }}</strong></div><div><span>月額利用</span><strong>{{ subscriptionActive ? `利用中 / ${formatDate(activeUntil)}` : '未開始' }}</strong></div>
       </div>
-      <div class="actions"><button class="primary" type="button" :disabled="!chainActionsReady" @click="claimMockJpyc">2,000 tJPYCを1回取得</button><button class="secondary" type="button" :disabled="!chainActionsReady || !planEnabled || balance < planPrice" @click="approveSubscription">Plan価格だけ承認</button><button class="primary" type="button" :disabled="!chainActionsReady || !planEnabled || !allowanceEnough || balance < planPrice" @click="subscribe">Subscriptionを開始</button></div>
-      <p class="notice">各ボタンは確認画面をWalletに表示します。自動署名・無制限Approve・ETHによる料金支払いは行いません。</p>
-      <p v-if="lastTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastTransaction}`" target="_blank" rel="noopener noreferrer">直近TransactionをPolygon Amoy Etherscanで確認</a></p>
+      <div class="actions"><button class="primary" type="button" :disabled="!chainActionsReady" @click="claimMockJpyc">練習用のお金を受け取る</button><button class="secondary" type="button" :disabled="!chainActionsReady || !planEnabled || balance < planPrice" @click="approveSubscription">今回使う金額を確認</button><button class="primary" type="button" :disabled="!chainActionsReady || !planEnabled || !allowanceEnough || balance < planPrice" @click="subscribe">月額利用を始める</button></div>
+      <p class="notice">各ボタンを押すと財布アプリに確認画面が出ます。表示額を超える利用や実際のお金による支払いは行いません。</p>
+      <p v-if="lastTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastTransaction}`" target="_blank" rel="noopener noreferrer">直前の操作記録を確認</a></p>
       <p aria-live="polite">{{ walletMessage }}</p>
     </section>
 
     <section class="panel" aria-labelledby="player-title">
       <h3 id="player-title">5. 音楽プレーヤー操作</h3>
-      <p>このページ内で生成した短い合成音だけを使います。Navidrome、Gateway、実在楽曲または再生証跡には接続しません。</p>
-      <div class="track-list"><button v-for="track in tracks" :key="track.id" type="button" :class="{ selected: selectedTrack.id === track.id }" @click="selectTrack(track)"><strong>{{ track.title }}</strong><span>{{ track.artist }}</span><small>{{ track.subscriberOnly ? 'Subscription限定' : '誰でも試聴可' }}</small></button></div>
+      <p>このページで作った短いテスト音だけを使います。実在する楽曲の配信ではありません。</p>
+      <div class="track-list"><button v-for="track in tracks" :key="track.id" type="button" :class="{ selected: selectedTrack.id === track.id }" @click="selectTrack(track)"><strong>{{ track.title }}</strong><span>{{ track.artist }}</span><small>{{ track.subscriberOnly ? '月額利用中だけ再生可能' : 'いつでも試聴可能' }}</small></button></div>
       <div class="now-playing"><span class="art" aria-hidden="true">♪</span><div><strong>{{ selectedTrack.title }}</strong><span>{{ selectedTrack.artist }}</span></div></div>
       <audio ref="audioElement" controls preload="metadata" :aria-label="`${selectedTrack.title} player`" />
       <div class="actions"><button class="primary" type="button" :disabled="!canPlaySelected" @click="playSelected">再生</button><button class="secondary" type="button" @click="pauseSelected">一時停止</button></div>
-      <p v-if="!canPlaySelected" class="notice">Subscriber TrackはPolygon Amoy上の有効なSubscriptionを確認後に解放されます。Preview Trackはいつでも操作できます。</p>
+      <p v-if="!canPlaySelected" class="notice">このテスト音は、練習用の月額利用を開始すると再生できます。試聴用のテスト音はいつでも再生できます。</p>
       <p aria-live="polite">{{ playerMessage }}</p>
       <div class="supporter-action">
-        <h4>Synthetic Demo Artistのサポータになる</h4>
-        <p>この操作は支援の意思表示をPolygon Amoy上の公開・譲渡不能なSBTとして記録します。JPYCの移転、Token Approval、継続課金は含みません。</p>
+        <h4>テスト用音楽クリエーターを応援する</h4>
+        <p>応援する気持ちを、他人へ渡せないデジタル証明書として記録します。支払いまたは継続課金はありません。</p>
         <div class="status-grid">
-          <div><span>資格</span><strong>{{ supporterTierLabel }}</strong></div>
-          <div><span>Token ID</span><strong>{{ supporterTokenId || '未発行' }}</strong></div>
+          <div><span>応援の状態</span><strong>{{ supporterTierLabel }}</strong></div>
+          <div><span>証明書番号</span><strong>{{ supporterTokenId || '未発行' }}</strong></div>
         </div>
-        <p v-if="!supporterRegistrationReady" class="notice">公開デモ用登録アダプターはまだPolygon Amoyへデプロイされていません。Contract Addressを公開マニフェストで検証できるまで、書込み操作は無効です。</p>
+        <p v-if="!supporterRegistrationReady" class="notice">応援の証明書を用意しているため、現在この操作は利用できません。</p>
         <div class="actions">
           <button class="primary" type="button" :disabled="!supporterActionReady" @click="registerAsSupporter">
-            {{ supporterTokenId > 0n ? 'SBT取得済み' : busyAction === 'Supporter SBT' ? '署名・発行中…' : 'サポータになってSBTを得る' }}
+            {{ supporterTokenId > 0n ? '応援の証明書を取得済み' : busyAction === 'Supporter SBT' ? '確認・発行中…' : '応援して証明書を受け取る' }}
           </button>
-          <button class="secondary" type="button" :disabled="!walletAddress || !correctChain || !contractsReady || Boolean(busyAction)" @click="refreshOnchainState(true)">SBT状態を更新</button>
+          <button class="secondary" type="button" :disabled="!walletAddress || !correctChain || !contractsReady || Boolean(busyAction)" @click="refreshOnchainState(true)">証明書の状態を更新</button>
         </div>
         <figure v-if="supporterMetadata" class="credential-card">
           <img :src="supporterMetadata.image" :alt="`${supporterMetadata.name}の資格証明画像`" width="360" height="360">
           <figcaption><strong>{{ supporterMetadata.name }}</strong><span>{{ supporterMetadata.description }}</span></figcaption>
         </figure>
-        <p v-if="supporterTokenUri"><a :href="supporterTokenUri" target="_blank" rel="noopener noreferrer">SBTメタデータを確認</a></p>
-        <p v-if="lastSbtTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastSbtTransaction}`" target="_blank" rel="noopener noreferrer">SBT発行TransactionをPolygon Amoy Etherscanで確認</a></p>
+        <p v-if="supporterTokenUri"><a :href="supporterTokenUri" target="_blank" rel="noopener noreferrer">証明書の公開情報を確認</a></p>
+        <p v-if="lastSbtTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastSbtTransaction}`" target="_blank" rel="noopener noreferrer">証明書を受け取った記録を確認</a></p>
         <p aria-live="polite">{{ supporterMessage }}</p>
       </div>
     </section>

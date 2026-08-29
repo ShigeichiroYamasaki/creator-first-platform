@@ -5,7 +5,7 @@ description: Public technical evidence and bounded-use policy for a Creator Firs
 
 # Amoy Test POL Funding Request Evidence
 
-[日本語のテストネットデモ](/demo/)
+[日本語の無償版運用実験](/demo/)
 
 This page is the public evidence package for a Polygon ecosystem-support or listed third-party faucet request. Polygon's current [test-token faucet documentation](https://docs.polygon.technology/tools/gas/matic-faucet) states that the former official Polygon Faucet is no longer available. This project therefore does not represent this page as an application to a currently operating official Polygon Faucet.
 

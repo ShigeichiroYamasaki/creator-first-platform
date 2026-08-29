@@ -1,16 +1,17 @@
 ---
 layout: home
-description: 音楽クリエーターとユーザの共同統治、権利管理、検証可能な分配を設計する音楽クリエーターファースト音楽プラットフォーム構想。
+description: 音楽クリエーターとユーザが、将来の音楽サービスの価値と使いやすさをともに確かめる無償版運用実験と専門資料の入口。
 
 hero:
   name: "Creator First Platform"
-  text: "音楽クリエーターとユーザが共同で統治する音楽プラットフォーム"
+  text: "音楽クリエーターとユーザが、ともにつくる音楽プラットフォーム"
+  tagline: "本番サービスを始める前に、公開実験を通じて価値・使いやすさ・運営方法を確かめます。"
   actions:
     - theme: alt
       text: English
       link: /en/
     - theme: brand
-      text: テストネットデモを開く
+      text: 無償版運用実験を開く
       link: /demo/
     - theme: alt
       text: ホワイトペーパーを読む
@@ -29,8 +30,8 @@ hero:
       link: https://github.com/ShigeichiroYamasaki/creator-first-platform
 
 features:
-  - title: テストネットデモ
-    details: 本番実装の前に、金銭的価値を持たないテストネットと合成データで再生・決済・権利・利用証跡・分配の最小縦断実装を検証します。
+  - title: 無償版運用実験
+    details: 本番実装の前に、金銭的価値を持たないテスト環境と合成データで再生・決済・権利・利用証跡・分配の最小構成を検証します。
     link: /demo/
 
   - title: 音楽クリエータ院議会デモ
@@ -50,7 +51,7 @@ features:
     link: /whitepaper/01-vision
 
   - title: CFP文書
-    details: 音楽クリエーターとユーザがプラットフォームの制度やプロトコルの変更・拡張を提案し、議論と熟議につなげる公開提案制度です。
+    details: 音楽クリエーターとユーザが制度やプロトコルの変更・拡張を提案し、議論と熟議につなげる公開提案制度です。
     link: /proposals/
 
   - title: ガバナンス
@@ -58,11 +59,11 @@ features:
     link: /whitepaper/07-governance
 
   - title: ADR一覧
-    details: アーキテクチャ決定記録として、重要な設計判断、その理由、代替案、影響を記録し、プロトコル仕様と実装へ接続します。
+    details: 重要な設計判断、その理由、代替案、影響を記録し、プロトコル仕様と実装へ接続します。
     link: /adr/
 
-  - title: プロトコル仕様
-    details: ADRで決定された設計を、Codexや開発者が実装できる要件、不変条件、インターフェース、エラー条件、テスト条件へ落とし込んだ仕様です。
+  - title: プロトコル仕様・スマートコントラクト仕様
+    details: ADRで決定された設計を、実装要件、不変条件、インターフェース、エラー条件、テスト条件へ落とし込んだ仕様です。
     link: /protocol/
 
   - title: 本番サービス設計
@@ -70,252 +71,117 @@ features:
     link: /adr/ADR-0018-production-service-architecture
 ---
 
+<nav class="homepage-language-switch" aria-label="Language selection">
+  <strong>Language / 言語</strong>
+  <span aria-current="page">日本語</span>
+  <a href="/creator-first-platform/en/" lang="en">English</a>
+</nav>
+
 <div class="homepage-symbol">
-  <img src="/creator-first-platform-symbol.png" alt="Creator First Platform symbol" />
+  <img src="/creator-first-platform-symbol.png" alt="Creator First Platformのシンボル" />
 </div>
 
-<div class="document-meta">
-
-<div class="document-meta__version">ホワイトペーパー v1.0</div>
-
-<div class="document-meta__row">
-  <span class="document-meta__label">Publication 日付</span>
-  <span>2026-07-27</span>
-</div>
-
-<div class="document-meta__row">
-  <span class="document-meta__label">Revision 日付</span>
-  <span>2026-08-26</span>
-</div>
-
-<div class="document-meta__row">
-  <span class="document-meta__label">Author</span>
-  <span>山崎重一郎 (Shigeichiro Yamasaki)</span>
-</div>
-
-</div>
-
-::: warning 現在は設計・公開テストネット検証段階です
-本サイトは、稼働中の本番音楽配信サービス、決済サービス、DAOまたはSTOの案内ではありません。プロトコル仕様は草案であり、公開テストネットデモは部分稼働中ですが、本番サービスではありません。法務・金融・税務上の記述は個別案件への専門的助言ではありません。詳しくは[現在の状況](/status)と[テストネットデモ](/demo/)を確認してください。
+::: warning 現在は公開実験の段階です
+これは稼働中の本番音楽配信サービス、決済サービス、投資または証券の募集ではありません。デモで使う資産や資格に実際の金銭的価値はありません。
 :::
 
-## Creator First Platform
-
-Creator First Platform は、音楽を中心とするデジタルコンテンツの流通において、
-**音楽クリエーターの権利と持続可能な活動、ユーザの自由で豊かな利用体験、公正で検証可能なエコシステム**を中心に据えるプラットフォームです。
-
-ここでいう音楽クリエーターは、メジャーレーベルに属さず、制作・流通・マーケティング等の重要判断を自ら行う**アーティストダイレクト型の独立系アーティスト**です。TuneCore等の専門サービスを利用していても、委託先と契約範囲をアーティスト側が統制していれば対象になり得ます。
-
----
-
-## 音楽クリエーター／ユーザがプロトコルを統治する
-
-Creator First Platform のガバナンスは、単純なトークン投票ではありません。
-
-> **音楽クリエーター／ユーザ → 抽選議会 → 熟議 → プロトコル仕様 → スマートコントラクト → 自動執行**
-
-```mermaid
-flowchart LR
-    CU[音楽クリエーター／ユーザ]
-    ELIGIBLE[適格コミュニティ]
-    SORT[検証可能抽選]
-    HOUSE[音楽クリエータ院議会 / ユーザ院議会]
-    DELIB[熟議]
-    SPEC[プロトコル仕様]
-    CODE[検証済みスマートコントラクト]
-    EXEC[自動実行]
-
-    CU --> ELIGIBLE --> SORT --> HOUSE --> DELIB --> SPEC --> CODE --> EXEC
-```
-
----
-
-## ホワイトペーパー
-
-ホワイトペーパーは、Creator First Platform の現時点における基本設計をまとめた文書です。
-
-[ホワイトペーパーを読む →](/whitepaper/01-vision)
-
----
-
-## CFP文書
-
-**CFP**は、Creator First Platform の制度、経済モデル、技術、ガバナンス、プロトコルなどについて、変更や新しい仕組みを提案するための公開文書制度です。
-
-ホワイトペーパーが、
-
-> **現時点で合意されているプラットフォームの基本設計**
-
-を表すのに対して、CFP は、
-
-> **その設計を変更・拡張するための提案**
-
-を表します。
-
-[CFP 一覧を見る →](/proposals/)
-
----
-
-## ADR一覧 — アーキテクチャ意思決定記録
-
-ADR（アーキテクチャ決定記録）は、Creator First Platform における重要な技術・制度設計について、
-
-- どの設計を採用したか
-- なぜその設計を選んだか
-- どの代替案を検討したか
-- どのような影響や制約があるか
-
-を記録するための文書です。
-
-ADR は、ホワイトペーパーや CFP と実装コードの間をつなぐ **設計判断の履歴**として機能します。
-
-```mermaid
-flowchart LR
-    WP[ホワイトペーパー]
-    CFP[CFP]
-    GOV[ガバナンス決定]
-    ADR[ADR]
-    SPEC[プロトコル仕様]
-    ISSUE[GitHub課題]
-    CODE[実装]
-
-    WP --> CFP --> GOV --> ADR --> SPEC --> ISSUE --> CODE
-```
-
-[ADR一覧を見る →](/adr/)
-
----
-
-## プロトコル仕様
-
-プロトコル仕様は、ADRで採用された設計を、**Codexや開発者がそのまま実装作業へつなげられる仕様**へ変換する文書です。
-
-プロトコルでは、例えば次の内容を定義します。
-
-- Actors
-- Inputs / Outputs
-- 状態
-- MUST / MUST NOT / SHOULD
-- 不変条件
-- 状態 Transitions
-- Interfaces
-- Error Conditions
-- セキュリティ要件
-- プライバシー要件
-- テスト要件
-- 受入基準
-
-```mermaid
-flowchart LR
-    ADR[ADR]
-    SPEC[プロトコル仕様]
-    ISSUE[GitHub課題]
-    AI[Codex]
-    CODE[コード + テスト]
-    PR[プルリクエスト]
-
-    ADR --> SPEC --> ISSUE --> AI --> CODE --> PR
-```
-
-プロトコル仕様を、人間とAIエージェントの間の **実装契約**として利用します。
-
-[プロトコル仕様を見る →](/protocol/)
-
----
-
-## プラットフォームの5つの入口
-
-```mermaid
-flowchart TD
-    TOP[Creator First Platform]
-
-    TOP --> WP[ホワイトペーパー]
-    TOP --> CFP[CFP]
-    TOP --> GOV[ガバナンス]
-    TOP --> ADR[ADR一覧]
-    TOP --> PROTOCOL[プロトコル仕様]
-
-    WP --> CURRENT[現在の基本設計]
-    CFP --> CHANGE[変更・拡張の提案]
-    GOV --> DECISION[正統な意思決定]
-    ADR --> DESIGN[採用した設計と理由]
-    PROTOCOL --> IMPLEMENT[実装可能な仕様]
-```
-
-### ホワイトペーパー
-
-**何を目指すか、プラットフォームをどのような原則で設計するか**を説明します。
-
-### CFP
-
-**何を変更・拡張したいか**を提案します。
-
-### ガバナンス
-
-**どの提案を採用するか**を音楽クリエーター／ユーザの正統なプロセスで決定します。
-
-### ADR一覧
-
-**なぜその設計を採用したのか**を記録します。
-
-### プロトコル仕様
-
-**何を、どの条件で実装するか**を定義し、GitHub課題と Codex に接続します。
-
----
-
-## ホワイトペーパーから Codex 実装まで
-
-```mermaid
-flowchart LR
-    VISION[ビジョン]
-    WP[ホワイトペーパー]
-    CFP[CFP]
-    GOV[ガバナンス]
-    ADR[ADR]
-    SPEC[プロトコル仕様]
-    ISSUE[GitHub課題]
-    AI[Codex]
-    CODE[コード + テスト]
-    PR[プルリクエスト]
-    REVIEW[レビュー]
-    RELEASE[リリース]
-
-    VISION --> WP --> CFP --> GOV --> ADR --> SPEC --> ISSUE --> AI --> CODE --> PR --> REVIEW --> RELEASE
-```
-
-この構造によって、人間とガバナンスが、
-
-- 何を目指すか
-- 何を変更するか
-- どの設計を採用するか
-
-を決め、Codex が、
-
-- 仕様に沿った実装
-- テスト
-- CI対応
-- ドキュメント同期
-- プルリクエスト作成
-
-を支援できるようにします。
-
----
-
-## 目指すもの
-
-音楽クリエーターとユーザがプラットフォームの構成主体となり、
-
-- 価値を創る
-- 音楽を利用する
-- 新しい音楽クリエーターを発見する
-- 音楽クリエーターを支援する
-- プラットフォームのルール形成に参加する
-
-ことができる環境を作ります。
-
-**Creator First Platform は、音楽を出発点として、企業・音楽クリエーター・ユーザ・コードの関係を再設計するプロジェクトです。**
-
-<div class="site-copyright">
-  © 2026 Creator First Platform
+## 無償版運用実験の目的
+
+Creator First Platform は、完成した仕組みを一方的に提供するのではなく、**音楽クリエーターとユーザが実際に試し、感じたことを次の設計へ反映する**ことを重視しています。
+
+公開実験では、主に次の点を確かめます。
+
+<div class="experiment-purpose-grid">
+  <div class="experiment-purpose-card">
+    <span aria-hidden="true">💡</span>
+    <h3>価値が伝わるか</h3>
+    <p>音楽クリエーターを応援しながら音楽を楽しむという考え方が、実験参加者にとって魅力的かを確かめます。</p>
+  </div>
+  <div class="experiment-purpose-card">
+    <span aria-hidden="true">🧭</span>
+    <h3>迷わず使えるか</h3>
+    <p>初めて使う人でも、登録から利用まで直感的に進められるかを確かめます。</p>
+  </div>
+  <div class="experiment-purpose-card">
+    <span aria-hidden="true">🤝</span>
+    <h3>公平に参加できるか</h3>
+    <p>ユーザと音楽クリエーターの双方が、支援やルール形成に無理なく参加できるかを確かめます。</p>
+  </div>
+  <div class="experiment-purpose-card">
+    <span aria-hidden="true">🛡️</span>
+    <h3>安全に運営できるか</h3>
+    <p>誤操作や不正利用を防ぎ、実験参加者が安心して試せる運営方法を確かめます。</p>
+  </div>
 </div>
+
+## プロジェクトにおける位置づけ
+
+無償版運用実験は本番サービスの縮小版ではなく、**本番化する価値があるか、何を改善すべきかを判断するための公開実験**です。
+
+<div class="experiment-journey" aria-label="プロジェクトの進行段階">
+  <div class="experiment-phase"><span>1</span><strong>構想</strong><small>目指す価値を定める</small></div>
+  <div class="experiment-arrow" aria-hidden="true">→</div>
+  <div class="experiment-phase experiment-phase--current"><span>2</span><strong>公開実験</strong><small>現在地：実験参加者と試す</small></div>
+  <div class="experiment-arrow" aria-hidden="true">→</div>
+  <div class="experiment-phase"><span>3</span><strong>評価と改善</strong><small>結果を公開して見直す</small></div>
+  <div class="experiment-arrow" aria-hidden="true">→</div>
+  <div class="experiment-phase"><span>4</span><strong>本番化の判断</strong><small>法務・運営面も含めて判断する</small></div>
+</div>
+
+実験で得た利用状況、意見、問題点を記録し、改善後にもう一度検証します。本番化は、使いやすさ、安全性、音楽クリエーターへの有益性、法務・運営上の条件を満たせると判断した後の別段階です。
+
+## 実験参加者に試してほしいこと
+
+公開実験への参加には、運営による事前登録と招待メールが必要です。募集時に案内されるフォームまたはメールから申し込み、招待を受け取ってから各体験へ進みます。詳しくは[事前登録から参加までの流れ](/demo/)を確認してください。
+
+<div class="participant-path-grid">
+  <div class="participant-path-card">
+    <span class="participant-path-icon" aria-hidden="true">🎧</span>
+    <div>
+      <h3>音楽リスナーとして参加</h3>
+      <p>音楽サブスクリプションサービスの利用、音楽クリエータの応援、サービス改善や経営への参加などを試します。</p>
+      <a href="/creator-first-platform/demo/user-services">ユーザ向けデモへ →</a>
+    </div>
+  </div>
+  <div class="participant-path-card">
+    <span class="participant-path-icon" aria-hidden="true">🎵</span>
+    <div>
+      <h3>音楽クリエータとして参加</h3>
+      <p>音源などの登録、ファンからの応援や交流、収益分配ルールづくりへの参加を試します。</p>
+      <a href="/creator-first-platform/demo/creator-services">音楽クリエーター向けデモへ →</a>
+    </div>
+  </div>
+</div>
+
+## この実験だけでは決まらないこと
+
+- 本人、著作権、原盤権、配信許諾などの法的な確認
+- 本番サービスにおける契約、料金、報酬または投資上の権利
+- 本番で採用する最終的な運営体制やサービス仕様
+- 個々の実験参加者や作品の商業的な評価
+
+実験への参加は、本番サービスへの加入、採用、投資または将来の利益を約束するものではありません。
+
+<div class="home-demo-cta">
+  <span aria-hidden="true">🧪</span>
+  <div><h2>公開実験を体験する</h2><p>初めての方には、準備と参加手順を順番に案内します。</p></div>
+  <a href="/creator-first-platform/demo/">無償版運用実験を開く</a>
+</div>
+
+## プロジェクトについて詳しく知る
+
+- [ホワイトペーパー](/whitepaper/01-vision)：目指す価値、権利、経済、ガバナンスと本番化までの考え方
+- [CFP文書](/proposals/)：実験参加者を含むコミュニティが制度の変更や新しい仕組みを提案するための公開文書
+- [ADR一覧](/adr/)：技術・制度設計の判断、その理由、代替案と影響の記録
+- [プロトコル仕様・スマートコントラクト仕様](/protocol/)：実装要件、不変条件、インターフェースとテスト条件
+- [GitHub](https://github.com/ShigeichiroYamasaki/creator-first-platform)：文書、ソースコード、変更履歴
+- [現在の状況](/status)：公開済み、検証中、未実装、専門家確認が必要な事項の区別
+
+<div class="document-meta">
+  <div class="document-meta__version">ホワイトペーパー v1.0</div>
+  <div class="document-meta__row"><span class="document-meta__label">Publication 日付</span><span>2026-07-27</span></div>
+  <div class="document-meta__row"><span class="document-meta__label">Revision 日付</span><span>2026-08-26</span></div>
+  <div class="document-meta__row"><span class="document-meta__label">Author</span><span>山崎重一郎 (Shigeichiro Yamasaki)</span></div>
+</div>
+
+<div class="site-copyright">© 2026 Creator First Platform</div>

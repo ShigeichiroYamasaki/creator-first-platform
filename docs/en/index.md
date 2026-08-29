@@ -1,99 +1,104 @@
 ---
 layout: home
 title: Creator First Platform — English
-description: Creator First Platform is an open, creator-first music platform concept with a Polygon Amoy public testnet demonstration.
+description: A free public trial for creators and users to evaluate the value, usability and governance of a future creator-first music service.
 
 hero:
   name: "Creator First Platform"
-  text: "A music platform governed jointly by independent creators and users"
-  tagline: "Open specifications, verifiable testnet experiments, and a staged path toward creator-sustainable music services."
+  text: "A music platform shaped jointly by independent creators and users"
+  tagline: "Before launching a production service, we use an open experiment to evaluate its value, usability and operating model."
   actions:
-    - theme: brand
-      text: Read the whitepaper
-      link: /en/whitepaper/
-    - theme: alt
-      text: Read the protocol
-      link: /en/protocol/
-    - theme: alt
-      text: Open the testnet demo
-      link: /en/demo/
     - theme: alt
       text: 日本語
       link: /
+    - theme: brand
+      text: Open the free public trial
+      link: /en/demo/
     - theme: alt
-      text: View GitHub
-      link: https://github.com/ShigeichiroYamasaki/creator-first-platform
+      text: Read the project vision
+      link: /en/whitepaper/01-vision
+    - theme: alt
+      text: View current status
+      link: /status
 
 features:
-  - title: Creator-first purpose
-    details: The project prioritizes sustainable creator activity and user convenience over maximising corporate profit.
-    link: /en/whitepaper/01-vision
-  - title: Polygon Amoy experiment
-    details: Public demonstrations use chain ID 80002, Test POL and MockJPYC. They do not create production rights or monetary value.
-    link: /en/whitepaper/12-infrastructure-cost
-  - title: Open protocol
-    details: Draft requirements, invariants, interfaces and test conditions are published for independent review.
-    link: /en/protocol/
-  - title: Joint governance
-    details: Separate creator and user houses are designed to deliberate and approve governed protocol changes.
-    link: /en/whitepaper/07-governance
+  - title: 🧪 A safe public experiment
+    details: Experience proposed service journeys without production rights or assets of real monetary value.
+    link: /en/demo/
+  - title: 🎧 Evaluate with users
+    details: Test whether registration, music use, creator support and community participation are understandable and useful.
+    link: /demo/user-services
+  - title: 🎵 Evaluate with creators
+    details: Test whether the service can benefit independent, artist-direct music creators and support sustainable activity.
+    link: /demo/creator-services
+  - title: 🗳️ Shape rules together
+    details: Explore how creators and users can deliberate from distinct perspectives and participate in rule-making.
+    link: /demo/governance
 ---
+
+<nav class="homepage-language-switch" aria-label="Language selection">
+  <strong>Language / 言語</strong>
+  <a href="/creator-first-platform/" lang="ja">日本語</a>
+  <span aria-current="page">English</span>
+</nav>
 
 <div class="homepage-symbol">
   <img src="/creator-first-platform-symbol.png" alt="Creator First Platform symbol" />
 </div>
 
-<div class="document-meta">
-
-<div class="document-meta__version">Whitepaper v1.0 — English application edition</div>
-
-<div class="document-meta__row">
-  <span class="document-meta__label">First publication</span>
-  <span>2026-07-27</span>
-</div>
-
-<div class="document-meta__row">
-  <span class="document-meta__label">English edition</span>
-  <span>2026-08-28</span>
-</div>
-
-<div class="document-meta__row">
-  <span class="document-meta__label">Author</span>
-  <span>Shigeichiro Yamasaki</span>
-</div>
-
-</div>
-
-::: warning Development and public-testnet stage
-This website describes a design and a partially implemented testnet demonstration. It is not a production music service, payment service, DAO, securities offering, or investment solicitation. MockJPYC is not JPYC and Test POL has no intended monetary value. Legal, financial and tax statements require professional review before production use.
+::: warning Public experiment stage
+This is not a production music service, payment service, investment or securities offering. Demo assets and credentials have no intended monetary value.
 :::
 
-## What the project is
+## Why the free public trial exists
 
-Creator First Platform (CFP) is an open design for a subscription music service that places **independent, artist-direct music creators**, their rights and sustainable activity at the centre. Users receive a convenient player, transparent service rules, discovery choices and a voice in governance.
+Creator First Platform does not assume that a completed system should simply be presented to people. It is designed to let **music creators and users try the proposed experience and influence what comes next**.
 
-The operating legal entity is intended to be a Japanese corporation. It would execute contracts, copyright and neighbouring-rights processes, accounting, tax, employment and regulated activities. Protocol governance does not replace statutory corporate duties.
+The public experiment asks four questions:
 
-## Public experiment and faucet purpose
+- Does the creator-first value proposition make sense to participants?
+- Can a first-time participant complete the journey without specialist knowledge?
+- Can users and creators participate fairly in support and rule-making?
+- Can the experiment be operated safely and transparently?
 
-The public experiment uses **Polygon Amoy (chain ID 80002)**. Approved participants register in advance; registration is not an anonymous automated faucet. The testnet distributor contract binds an opaque approved participant ID to one wallet, provides only the minimum initial Test POL, and permits replenishment for approved operations up to a cumulative **0.5 Test POL per participant across all roles**. Person-level duplicate approval and transaction submission remain responsibilities of the separately secured off-chain operator. The experiment may also issue MockJPYC for payment-flow testing.
+## Its place in the project
 
-Polygon's current [test-token faucet documentation](https://docs.polygon.technology/tools/gas/matic-faucet) states that the former official Polygon Faucet is no longer available and directs developers to listed third-party faucets. Accordingly, these English materials support a third-party faucet, ecosystem-support or community review request; they must not describe a submission as an application to an operating “official Polygon Faucet” unless Polygon introduces a new official programme.
+The demo is not a miniature production service. It is evidence for deciding whether production development is justified and what must improve first.
 
-The policy is designed to support only these bounded activities:
+<div class="experiment-journey" aria-label="Project stages">
+  <div class="experiment-phase"><span>1</span><strong>Concept</strong><small>Define intended value</small></div>
+  <div class="experiment-arrow" aria-hidden="true">→</div>
+  <div class="experiment-phase experiment-phase--current"><span>2</span><strong>Public experiment</strong><small>Current stage</small></div>
+  <div class="experiment-arrow" aria-hidden="true">→</div>
+  <div class="experiment-phase"><span>3</span><strong>Evaluate</strong><small>Publish and improve</small></div>
+  <div class="experiment-arrow" aria-hidden="true">→</div>
+  <div class="experiment-phase"><span>4</span><strong>Production decision</strong><small>Separate legal and operational gate</small></div>
+</div>
 
-- connecting a wallet and registering a test account;
-- approving MockJPYC and starting a simulated subscription;
-- registering as a supporter and receiving a non-transferable test credential;
-- participating in creator and user governance demonstrations; and
-- submitting observable failures and usability feedback.
+The project will record usability findings, participant feedback and failures, revise the design, and test again. A production decision is a later and separate stage requiring evidence of creator benefit, usability, safety, legal readiness and operational sustainability.
 
-The distributor must enforce participant approval, one-person caps, replay protection, rate limits, an auditable transaction log and an emergency stop. Private keys and distributor authority must never be embedded in this static GitHub Pages site. Test assets do not represent production funds, refunds, rewards or future entitlements.
+## What participation does not establish
 
-## Evidence and implementation status
+- verified identity, copyright, master rights or distribution authority;
+- a production contract, fee, reward, investment right or future entitlement;
+- the final production governance or service design; or
+- a commercial assessment of any participant or work.
 
-The source, contracts, deployment manifests, protocol specifications and test code are public on [GitHub](https://github.com/ShigeichiroYamasaki/creator-first-platform). The [English protocol index](/en/protocol/) distinguishes draft requirements from deployed demonstrations. The [English testnet demo guide](/en/demo/) explains the experiment; interactive service screens remain primarily in Japanese.
+<div class="home-demo-cta">
+  <span aria-hidden="true">🧪</span>
+  <div><h2>Try the public experiment</h2><p>The demo guide explains preparation and participation in order.</p></div>
+  <a href="/creator-first-platform/en/demo/">Open the free public trial</a>
+</div>
 
-## Document authority
+## Learn more about the project
 
-The [Japanese edition](/whitepaper/) remains the detailed working document. This English edition preserves its architecture, governance, legal boundaries, risk statements and staged roadmap in a review-oriented form. If translations diverge, the discrepancy must be recorded and resolved before a production decision; neither language overrides applicable law, contracts or approved governance records.
+- [Whitepaper](/en/whitepaper/01-vision): purpose, rights, economics, governance and the path toward a production decision
+- [Current status](/status): what is published, under evaluation, incomplete or awaiting professional review
+- [Free public trial guide](/en/demo/): participation scope, limitations and preparation
+
+<div class="document-meta">
+  <div class="document-meta__version">Whitepaper v1.0 — English edition</div>
+  <div class="document-meta__row"><span class="document-meta__label">First publication</span><span>2026-07-27</span></div>
+  <div class="document-meta__row"><span class="document-meta__label">English edition</span><span>2026-08-28</span></div>
+  <div class="document-meta__row"><span class="document-meta__label">Author</span><span>Shigeichiro Yamasaki</span></div>
+</div>

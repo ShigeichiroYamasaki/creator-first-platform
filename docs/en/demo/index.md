@@ -1,9 +1,9 @@
 ---
-title: Testnet Demo
-description: English guide to the Creator First Platform Polygon Amoy experiment, participant funding controls, current implementation and safety boundaries.
+title: Free Public Trial
+description: English guide to the Creator First Platform free Polygon Amoy trial, participant funding controls, current implementation and safety boundaries.
 ---
 
-# Testnet Demo
+# Free Public Trial
 
 [日本語版](/demo/)
 
@@ -62,7 +62,7 @@ Automatic decisions and transaction submission still require a separately secure
 flowchart LR
     SPEC[Draft specifications]
     MOCK[Local mocks]
-    DEMO[Public testnet demo]
+    DEMO[Free public trial on a testnet]
     REVIEW[Security, rights and legal review]
     AUDIT[Independent audit]
     PROD[Separate production build]

@@ -55,7 +55,7 @@ function saveDraft(): void {
   title.value = ''
   releaseType.value = 'SINGLE'
   rightsAcknowledged.value = false
-  message.value = `${draft.title} を未公開Draftとして保存しました。`
+  message.value = `${draft.title} を未公開の作品案として保存しました。`
 }
 
 onMounted(() => {
@@ -93,63 +93,63 @@ onMounted(() => {
   <section class="workspace-demo" aria-labelledby="creator-workspace-title">
     <div class="workspace-heading">
       <div>
-        <p class="demo-kicker">Creator Workspace · Browser fixture</p>
+        <p class="demo-kicker">画面操作の体験</p>
         <h2 id="creator-workspace-title">作品と確認状態を整理する</h2>
       </div>
       <span v-if="profile" class="status-badge">{{ profile.artistName }}</span>
     </div>
 
     <div v-if="!profile" class="empty-state">
-      <h3>Creator登録が必要です</h3>
-      <p>このタブにはTest Creatorがありません。先に仮名のCreator Profileを登録してください。</p>
-      <a class="primary-link" :href="withBase('/demo/creator-registration')">Creator登録へ</a>
+      <h3>先に仮の活動情報を登録してください</h3>
+      <p>この画面には活動情報がありません。個人情報を含まない仮の活動名などを登録すると、次へ進めます。</p>
+      <a class="primary-link" :href="withBase('/demo/creator-registration')">仮の活動情報を登録する</a>
     </div>
 
     <template v-else>
-      <div class="metric-grid" aria-label="合成データによるCreator概要">
+      <div class="metric-grid" aria-label="画面見本用データによる活動概要">
         <article><span>公開作品</span><strong>0</strong><small>本番公開なし</small></article>
-        <article><span>Supporter</span><strong>12</strong><small>合成Fixture</small></article>
-        <article><span>今月の見込</span><strong>1,240 MockJPYC</strong><small>未確定・支払不可</small></article>
+        <article><span>応援している人</span><strong>12</strong><small>画面見本用の人数</small></article>
+        <article><span>今月の見込</span><strong>1,240</strong><small>画面見本用・受取不可</small></article>
       </div>
 
       <div class="workspace-grid">
         <section class="workspace-panel">
-          <h3>作品Draftを作成</h3>
+          <h3>未公開の作品案を作成</h3>
           <form class="draft-form" @submit.prevent="saveDraft">
-            <label for="release-title">作品名（Demo用）</label>
+            <label for="release-title">架空の作品名</label>
             <input id="release-title" v-model="title" type="text" minlength="2" maxlength="60" autocomplete="off" placeholder="Synthetic First Song" required>
             <p v-if="title && !titleValid" class="field-error" role="alert">作品名の形式を確認してください。</p>
-            <label for="release-type">Release種別</label>
+            <label for="release-type">作品の形式</label>
             <select id="release-type" v-model="releaseType">
-              <option value="SINGLE">Single</option>
+              <option value="SINGLE">シングル</option>
               <option value="EP">EP</option>
-              <option value="ALBUM">Album</option>
+              <option value="ALBUM">アルバム</option>
             </select>
-            <label class="check-row"><input v-model="rightsAcknowledged" type="checkbox"> この入力は権利の自己申告であり、Rights Verificationではないことを確認しました</label>
-            <button class="primary-action" type="submit" :disabled="!ready">未公開Draftを保存</button>
+            <label class="check-row"><input v-model="rightsAcknowledged" type="checkbox"> これは作品の権利確認や公開申請ではなく、画面操作を試すための入力であることを確認しました</label>
+            <button class="primary-action" type="submit" :disabled="!ready">未公開の作品案を保存</button>
           </form>
           <p class="demo-message" aria-live="polite">{{ message }}</p>
         </section>
 
         <section class="workspace-panel">
-          <h3>次の確認Task</h3>
+          <h3>本番利用までに必要となる確認</h3>
           <ul class="task-list">
-            <li><span>Profile</span><strong>Demo登録済み</strong></li>
-            <li><span>Identity / Organization</span><strong>未実施</strong></li>
-            <li><span>Rights Evidence</span><strong>未提出</strong></li>
-            <li><span>Distribution Payee</span><strong>未設定</strong></li>
+            <li><span>活動情報</span><strong>実験用の登録済み</strong></li>
+            <li><span>本人・所属の確認</span><strong>未実施</strong></li>
+            <li><span>作品の権利確認</span><strong>未提出</strong></li>
+            <li><span>報酬の受取先</span><strong>未設定</strong></li>
           </ul>
-          <p class="boundary-copy">Demoでは本人確認書類、契約、権利資料、音源、Wallet、税務・支払情報を受け付けません。</p>
+          <p class="boundary-copy">公開実験では本人確認書類、契約、権利資料、音源、財布の情報、税務・支払情報を受け付けません。</p>
         </section>
       </div>
 
       <section class="workspace-panel release-panel">
-        <div class="panel-heading"><h3>作品Draft</h3><span>{{ drafts.length }} / 8</span></div>
-        <p v-if="drafts.length === 0" class="empty-copy">まだDraftはありません。左のフォームから合成作品を登録できます。</p>
+        <div class="panel-heading"><h3>未公開の作品案</h3><span>{{ drafts.length }} / 8</span></div>
+        <p v-if="drafts.length === 0" class="empty-copy">まだ作品案はありません。左の入力欄から架空の作品を登録できます。</p>
         <ul v-else class="release-list">
           <li v-for="draft in drafts" :key="draft.draftId">
             <div><strong>{{ draft.title }}</strong><span>{{ draft.releaseType }} · {{ new Date(draft.createdAt).toLocaleString('ja-JP') }}</span></div>
-            <div class="release-states"><span>DRAFT</span><span>権利未確認</span></div>
+            <div class="release-states"><span>未公開</span><span>権利未確認</span></div>
           </li>
         </ul>
       </section>
