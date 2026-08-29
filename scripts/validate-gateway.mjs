@@ -56,7 +56,7 @@ const consistencyRequirements = [
   ['protocol/account/account-lifecycle-spec.md', 'cannot satisfy `REQ-ACCOUNT-068`–`REQ-ACCOUNT-114` acceptance as a whole', 'Account specification boundary'],
   ['protocol/streaming/player-client-spec.md', 'MUST NOT satisfy any authentication or authorization precondition', 'Player specification boundary'],
   ['decisions/mock-assumptions.yaml', 'is never an authorization input', 'Mock assumption boundary'],
-  ['docs/demo/test-user-registration.md', '画面上の仮名登録だけで、音楽の利用、財布アプリの接続、月額利用またはデジタル参加証の権利は得られません', 'Demo user-facing boundary'],
+  ['docs/demo/test-user-registration.md', '画面上の仮名登録だけで、音楽の利用、仮想通貨ワレットの接続、月額利用またはデジタル参加証の権利は得られません', 'Demo user-facing boundary'],
   ['docs/protocol/vertical-slice.md', 'エンドツーエンド最小縦断実装は未成立', 'Vertical Slice status'],
   ['docs/status.md', 'ローカル再生・アカウント結合部分実装', 'Project status'],
   ['docs/adr/ADR-0019-jpki-passkey-wallet-binding-testnet.md', 'SimpleWebAuthnによる登録・認証検証', 'ADR-0019 implementation boundary'],
