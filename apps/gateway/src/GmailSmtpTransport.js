@@ -113,11 +113,20 @@ function secure(socket, timeoutMs) {
 }
 
 export class GmailSmtpTransport {
-  constructor({ address, appPassword, timeoutMs = 15_000, networkFamily = 0 }) {
+  constructor({
+    address,
+    appPassword,
+    timeoutMs = 15_000,
+    networkFamily = 0,
+    connectHost = 'smtp.gmail.com',
+    implicitTlsPort = 465
+  }) {
     this.address = mailbox(address, 'Gmail address')
     this.appPassword = singleLine(appPassword, 'Gmail app password').replace(/\s/g, '')
     this.timeoutMs = timeoutMs
     this.networkFamily = networkFamily
+    this.connectHost = connectHost
+    this.implicitTlsPort = implicitTlsPort
   }
 
   async send(payload) {
@@ -144,7 +153,7 @@ export class GmailSmtpTransport {
 
   async sendImplicitTls(payload) {
     const socket = connect({
-      host: 'smtp.gmail.com', port: 465, servername: 'smtp.gmail.com', rejectUnauthorized: true,
+      host: this.connectHost, port: this.implicitTlsPort, servername: 'smtp.gmail.com', rejectUnauthorized: true,
       ...(this.networkFamily ? { family: this.networkFamily } : {})
     })
     socket.setTimeout(this.timeoutMs)

@@ -68,6 +68,15 @@ export function loadConfig(environment = process.env) {
   if (![0, 4, 6].includes(gmailNetworkFamily)) {
     throw new Error('GATEWAY_GMAIL_NETWORK_FAMILY must be 0, 4 or 6')
   }
+  const gmailConnectHost = environment.GATEWAY_GMAIL_CONNECT_HOST ?? 'smtp.gmail.com'
+  if (!/^[A-Za-z0-9.-]+$/.test(gmailConnectHost)) {
+    throw new Error('GATEWAY_GMAIL_CONNECT_HOST must be a hostname or IPv4 address')
+  }
+  const gmailImplicitTlsPort = positiveInteger(
+    environment.GATEWAY_GMAIL_IMPLICIT_TLS_PORT,
+    465,
+    'GATEWAY_GMAIL_IMPLICIT_TLS_PORT'
+  )
 
   if (new URL(webauthnOrigin).origin !== webauthnOrigin) {
     throw new Error('GATEWAY_WEBAUTHN_ORIGIN must be an origin without a path')
@@ -98,6 +107,8 @@ export function loadConfig(environment = process.env) {
     gmailAddress,
     gmailAppPassword,
     gmailNetworkFamily,
+    gmailConnectHost,
+    gmailImplicitTlsPort,
     trustBindingTtlMs: positiveInteger(
       environment.GATEWAY_TRUST_BINDING_TTL_MS,
       10 * 60_000,

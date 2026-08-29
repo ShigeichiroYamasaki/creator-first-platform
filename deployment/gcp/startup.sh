@@ -23,9 +23,9 @@ for source_file in /etc/apt/sources.list.d/google*.list; do
   fi
 done
 
-if ! command -v docker >/dev/null || ! command -v docker-compose >/dev/null || ! command -v ffmpeg >/dev/null; then
+if ! command -v docker >/dev/null || ! command -v docker-compose >/dev/null || ! command -v ffmpeg >/dev/null || ! command -v socat >/dev/null; then
   apt-get update
-  apt-get install -y --no-install-recommends ca-certificates curl docker.io docker-compose ffmpeg openssl
+  apt-get install -y --no-install-recommends ca-certificates curl docker.io docker-compose ffmpeg openssl socat
 fi
 systemctl enable --now docker
 
@@ -35,15 +35,16 @@ metadata_value navidrome-compose > "${APP_DIR}/compose.yml"
 
 gateway_image_url="$(metadata_value gateway-image-url || true)"
 gateway_image_sha256="$(metadata_value gateway-image-sha256 || true)"
-if [[ -z "${gateway_image_url}" || -z "${gateway_image_sha256}" ]]; then
+if [[ -n "${gateway_image_url}" && -n "${gateway_image_sha256}" ]]; then
+  curl --fail --location --proto '=https' --tlsv1.2 "${gateway_image_url}" -o "${GATEWAY_IMAGE_ARCHIVE}"
+  printf '%s  %s\n' "${gateway_image_sha256}" "${GATEWAY_IMAGE_ARCHIVE}" | sha256sum --check --status
+  gzip -dc "${GATEWAY_IMAGE_ARCHIVE}" | docker image load
+  rm -f -- "${GATEWAY_IMAGE_ARCHIVE}"
+elif ! docker image inspect creator-first-gateway:deployment >/dev/null 2>&1; then
   echo "CREATOR_FIRST_DEPLOY_STATUS=failed_missing_gateway_image"
   exit 1
 fi
-curl --fail --location --proto '=https' --tlsv1.2 "${gateway_image_url}" -o "${GATEWAY_IMAGE_ARCHIVE}"
-printf '%s  %s\n' "${gateway_image_sha256}" "${GATEWAY_IMAGE_ARCHIVE}" | sha256sum --check --status
-gzip -dc "${GATEWAY_IMAGE_ARCHIVE}" | docker image load
 docker image inspect creator-first-gateway:deployment >/dev/null
-rm -f -- "${GATEWAY_IMAGE_ARCHIVE}"
 
 gmail_app_password="$(metadata_value gateway-gmail-app-password || true)"
 if [[ -n "${gmail_app_password}" ]]; then
@@ -74,7 +75,9 @@ GATEWAY_WEBAUTHN_ORIGIN=http://127.0.0.1:8080
 GATEWAY_WEBAUTHN_RP_ID=127.0.0.1
 GATEWAY_MAIL_MODE=gmail-smtp
 GATEWAY_GMAIL_ADDRESS=11rou.yamasaki@gmail.com
-GATEWAY_GMAIL_NETWORK_FAMILY=6
+GATEWAY_GMAIL_NETWORK_FAMILY=4
+GATEWAY_GMAIL_CONNECT_HOST=172.31.0.1
+GATEWAY_GMAIL_IMPLICIT_TLS_PORT=1465
 GATEWAY_GMAIL_APP_PASSWORD_FILE=/run/secrets/gmail-app-password
 GATEWAY_ADMIN_TOKEN_FILE=/run/secrets/admin-token
 GATEWAY_DATABASE_PATH=/data/gateway.sqlite
@@ -183,6 +186,26 @@ chmod 0644 "${APP_DIR}/music/local-test-tone.wav"
 cd "${APP_DIR}"
 docker-compose -p creator-first-streaming pull navidrome-data-init navidrome docs-demo gateway-data-init bootstrap-gateway cloudflared
 docker-compose -p creator-first-streaming up -d --remove-orphans
+cat > /etc/systemd/system/creator-first-gmail-relay.service <<'UNIT'
+[Unit]
+Description=Creator First bounded Gmail IPv6 transport relay
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/bin/socat TCP4-LISTEN:1465,bind=172.31.0.1,reuseaddr,fork TCP6:smtp.gmail.com:465
+Restart=always
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl daemon-reload
+systemctl enable --now creator-first-gmail-relay.service
 # The static site directory is atomically replaced above. Recreate containers
 # that bind-mount it so they cannot keep serving the previous directory inode.
 docker-compose -p creator-first-streaming up -d --force-recreate --no-deps docs-demo bootstrap-gateway cloudflared
@@ -212,7 +235,9 @@ GATEWAY_WEBAUTHN_ORIGIN=${tunnel_url}
 GATEWAY_WEBAUTHN_RP_ID=${tunnel_host}
 GATEWAY_MAIL_MODE=gmail-smtp
 GATEWAY_GMAIL_ADDRESS=11rou.yamasaki@gmail.com
-GATEWAY_GMAIL_NETWORK_FAMILY=6
+GATEWAY_GMAIL_NETWORK_FAMILY=4
+GATEWAY_GMAIL_CONNECT_HOST=172.31.0.1
+GATEWAY_GMAIL_IMPLICIT_TLS_PORT=1465
 GATEWAY_GMAIL_APP_PASSWORD_FILE=/run/secrets/gmail-app-password
 GATEWAY_ADMIN_TOKEN_FILE=/run/secrets/admin-token
 GATEWAY_DATABASE_PATH=/data/gateway.sqlite
@@ -229,6 +254,7 @@ docker-compose -p creator-first-streaming up -d --force-recreate --no-deps parti
 for attempt in $(seq 1 60); do
   if curl -fsS http://127.0.0.1:8080/creator-first-platform/demo/ >/dev/null && \
     curl -fsS http://127.0.0.1:8080/api/v1/health >/dev/null && \
+    systemctl is-active --quiet creator-first-gmail-relay.service && \
     curl -fsS -u "creator-first-demo:$(cat "${APP_DIR}/bootstrap/password")" http://127.0.0.1:8080/ >/dev/null; then
     echo "CREATOR_FIRST_DEPLOY_STATUS=healthy"
     echo "CREATOR_FIRST_DEMO_PATH=/creator-first-platform/demo/"

@@ -9,7 +9,9 @@ export class InvitationMailer {
       ? new GmailSmtpTransport({
           address: config.gmailAddress,
           appPassword: config.gmailAppPassword,
-          networkFamily: config.gmailNetworkFamily
+          networkFamily: config.gmailNetworkFamily,
+          connectHost: config.gmailConnectHost,
+          implicitTlsPort: config.gmailImplicitTlsPort
         })
       : null)
     this.outbox = []
