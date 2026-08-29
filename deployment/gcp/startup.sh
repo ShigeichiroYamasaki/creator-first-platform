@@ -7,7 +7,7 @@ readonly APP_DIR=/opt/creator-first-streaming
 readonly METADATA_URL=http://metadata.google.internal/computeMetadata/v1/instance/attributes
 readonly METADATA_HEADER='Metadata-Flavor: Google'
 readonly SITE_ARCHIVE=/var/tmp/creator-first-demo-site.tar.gz
-readonly GATEWAY_ARCHIVE=/var/tmp/creator-first-gateway.tar.gz
+readonly GATEWAY_IMAGE_ARCHIVE=/var/tmp/creator-first-gateway-image.tar.gz
 
 metadata_value() {
   curl -fsS -H "${METADATA_HEADER}" "${METADATA_URL}/$1"
@@ -33,23 +33,17 @@ install -d -m 0750 "${APP_DIR}/bootstrap" "${APP_DIR}/music" "${APP_DIR}/secrets
 chmod 0755 "${APP_DIR}/music"
 metadata_value navidrome-compose > "${APP_DIR}/compose.yml"
 
-gateway_url="$(metadata_value gateway-source-url || true)"
-gateway_sha256="$(metadata_value gateway-source-sha256 || true)"
-if [[ -n "${gateway_url}" && -n "${gateway_sha256}" ]]; then
-  curl --fail --location --proto '=https' --tlsv1.2 "${gateway_url}" -o "${GATEWAY_ARCHIVE}"
-  printf '%s  %s\n' "${gateway_sha256}" "${GATEWAY_ARCHIVE}" | sha256sum --check --status
-  rm -rf -- "${APP_DIR}/gateway-source.next"
-  install -d -m 0755 "${APP_DIR}/gateway-source.next"
-  tar -xzf "${GATEWAY_ARCHIVE}" -C "${APP_DIR}/gateway-source.next"
-  test -s "${APP_DIR}/gateway-source.next/apps/gateway/src/index.js"
-  test -s "${APP_DIR}/gateway-source.next/deployment/gcp/gateway.Dockerfile"
-  rm -rf -- "${APP_DIR}/gateway-source"
-  mv "${APP_DIR}/gateway-source.next" "${APP_DIR}/gateway-source"
-  rm -f -- "${GATEWAY_ARCHIVE}"
-elif [[ ! -s "${APP_DIR}/gateway-source/apps/gateway/src/index.js" ]]; then
-  echo "CREATOR_FIRST_DEPLOY_STATUS=failed_missing_gateway_source"
+gateway_image_url="$(metadata_value gateway-image-url || true)"
+gateway_image_sha256="$(metadata_value gateway-image-sha256 || true)"
+if [[ -z "${gateway_image_url}" || -z "${gateway_image_sha256}" ]]; then
+  echo "CREATOR_FIRST_DEPLOY_STATUS=failed_missing_gateway_image"
   exit 1
 fi
+curl --fail --location --proto '=https' --tlsv1.2 "${gateway_image_url}" -o "${GATEWAY_IMAGE_ARCHIVE}"
+printf '%s  %s\n' "${gateway_image_sha256}" "${GATEWAY_IMAGE_ARCHIVE}" | sha256sum --check --status
+gzip -dc "${GATEWAY_IMAGE_ARCHIVE}" | docker image load
+docker image inspect creator-first-gateway:deployment >/dev/null
+rm -f -- "${GATEWAY_IMAGE_ARCHIVE}"
 
 gmail_app_password="$(metadata_value gateway-gmail-app-password || true)"
 if [[ -n "${gmail_app_password}" ]]; then
@@ -186,8 +180,7 @@ fi
 chmod 0644 "${APP_DIR}/music/local-test-tone.wav"
 
 cd "${APP_DIR}"
-docker-compose -p creator-first-streaming pull
-docker-compose -p creator-first-streaming build participant-gateway
+docker-compose -p creator-first-streaming pull navidrome-data-init navidrome docs-demo gateway-data-init bootstrap-gateway cloudflared
 docker-compose -p creator-first-streaming up -d --remove-orphans
 # The static site directory is atomically replaced above. Recreate containers
 # that bind-mount it so they cannot keep serving the previous directory inode.

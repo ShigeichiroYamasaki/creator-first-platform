@@ -95,9 +95,7 @@ services:
       - no-new-privileges:true
 
   participant-gateway:
-    build:
-      context: ./gateway-source
-      dockerfile: deployment/gcp/gateway.Dockerfile
+    image: creator-first-gateway:deployment
     restart: unless-stopped
     depends_on:
       gateway-data-init:

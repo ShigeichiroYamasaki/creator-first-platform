@@ -3,7 +3,7 @@
 The e2-micro test VM restores its stack from instance metadata because it is IPv6-only and is not expected to expose SSH publicly.
 
 - `docker/navidrome/compose.gcp.yml` defines Navidrome, the public static browser demo, the participant API gateway, the authenticated bootstrap gateway and Cloudflare Quick Tunnel.
-- `deployment/gcp/startup.sh` downloads checksum-bound static-site and gateway-source archives, preserves the Navidrome and gateway data volumes, and recreates the static-serving containers after the atomic directory replacement so they cannot retain the previous bind mount.
+- `deployment/gcp/startup.sh` downloads a checksum-bound static-site archive and a prebuilt Linux/AMD64 gateway image, preserves the Navidrome and gateway data volumes, and recreates the static-serving containers after the atomic directory replacement so they cannot retain the previous bind mount. The small VM does not run `npm ci` during boot.
 - `/creator-first-platform/` is public static documentation and browser-only test UI.
 - `/api/` is the public same-origin participant API. Participant email is sent through the configured Gmail account; administrator routes still require the separate gateway administrator token.
 - `/` remains the Basic-authenticated Navidrome administration surface.
