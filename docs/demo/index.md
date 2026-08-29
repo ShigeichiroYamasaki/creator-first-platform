@@ -8,7 +8,7 @@ description: Creator First Platformの無償版運用実験へ事前登録し、
 このデモは、将来の音楽サービスを本番公開する前に、**音楽を楽しむ人と音楽クリエーターが実際に試して改善点を見つける公開実験**です。
 
 ::: warning 参加には事前登録が必要です
-公開実験は、運営から招待を受けた実験参加者だけが利用できます。現在、誰でも申し込める常設フォームは公開していません。募集するときは、運営が申込フォームまたは連絡先を別途案内します。
+公開実験は、申請、メール確認、運営の承認を終えた実験参加者だけが利用できます。募集期間中は各体験ページから申請できます。受付サーバが停止中または募集期間外の場合は送信できず、画面にその旨を表示します。
 :::
 
 ## 参加するまでの流れ
@@ -20,19 +20,19 @@ description: Creator First Platformの無償版運用実験へ事前登録し、
   </div>
   <div class="experiment-registration-step">
     <span aria-hidden="true">📝</span>
-    <div><strong>2. 事前登録を申し込む</strong><p>案内されたフォームまたはメールで、表示名、連絡用メール、希望する体験区分を知らせます。</p></div>
+    <div><strong>2. 体験ページから申請</strong><p>表示名、連絡用メール、希望する立場を入力して送信します。</p></div>
   </div>
   <div class="experiment-registration-step">
     <span aria-hidden="true">✉️</span>
-    <div><strong>3. 招待メールを受け取る</strong><p>運営の確認後、本人だけが一度使える参加リンクが届きます。</p></div>
+    <div><strong>3. メールを確認</strong><p>届いた確認リンクを開くと、運営の審査へ進みます。</p></div>
   </div>
   <div class="experiment-registration-step">
     <span aria-hidden="true">🦊</span>
-    <div><strong>4. 財布アプリを準備</strong><p>画面の案内に従い、実験専用の財布アプリを準備します。</p></div>
+    <div><strong>4. 審査結果を受け取る</strong><p>承認された場合は、本人だけが一度使える参加リンクがメールで届きます。</p></div>
   </div>
   <div class="experiment-registration-step">
     <span aria-hidden="true">✅</span>
-    <div><strong>5. 招待リンクから登録</strong><p>招待内容を確認し、財布アプリをつないで実験参加登録を完了します。</p></div>
+    <div><strong>5. 招待リンクから登録</strong><p>財布アプリを準備し、招待内容を確認して実験参加登録を完了します。</p></div>
   </div>
   <div class="experiment-registration-step">
     <span aria-hidden="true">🎧</span>
@@ -42,7 +42,7 @@ description: Creator First Platformの無償版運用実験へ事前登録し、
 
 ## 事前登録で伝える情報
 
-募集案内に記載された方法で、次の情報だけを送ります。
+募集期間中に体験ページの申請欄から、次の情報だけを送ります。
 
 - 公開実験で使う表示名（本名でなくても構いません）
 - 招待メールを受け取るメールアドレス
@@ -52,6 +52,10 @@ description: Creator First Platformの無償版運用実験へ事前登録し、
 ::: danger 事前登録で送らないもの
 財布の番号、パスワード、秘密鍵、復旧用の単語列、本人確認書類、銀行情報、実在作品、未公開音源は送らないでください。運営から求めることもありません。
 :::
+
+## 申請後に届くメール
+
+最初にメールアドレス確認メールが届きます。リンクを開くまで審査は始まりません。確認後は運営が申請を審査し、承認された場合に招待メールが届きます。
 
 ## 招待メールが届いたら
 

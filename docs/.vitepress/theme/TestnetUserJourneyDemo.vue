@@ -499,10 +499,12 @@ onBeforeUnmount(() => {
         <div><span>本人による登録</span><strong>{{ userRegistered ? '登録済み' : '未登録' }}</strong></div>
         <div><span>練習用の手数料残高</span><strong>{{ initialFundingCompleted ? '受取済み' : '準備待ち' }}</strong></div>
       </div>
-      <p v-if="!participantRegistryReady" class="notice">実験参加登録の受付を準備しています。運営から利用開始の連絡が届くまでお待ちください。</p>
-      <p v-else-if="!userPreApproved && !userRegistered" class="notice">仮の名前を登録しただけでは公開実験を利用できません。招待登録後に運営の確認と練習用残高の準備が必要です。</p>
+      <p v-if="!participantRegistryReady" class="notice">参加資格を記録する準備を進めています。未申請の場合は、下のフォームから参加者登録を申請できます。</p>
+      <p v-else-if="!userPreApproved && !userRegistered" class="notice">運営の事前承認がまだ確認できません。未申請の場合は、下のフォームから参加者登録を申請してください。</p>
       <p v-else>本人が財布アプリで確認し、音楽リスナーとしての実験参加を記録します。実際のお金を購入する必要はありません。</p>
-      <button class="primary" type="button" :disabled="!participantSelfRegistrationReady" @click="registerUserParticipant">音楽リスナーとして登録</button>
+      <ParticipantApplicationDemo v-if="!userPreApproved && !userRegistered" :display-name="profile?.displayName ?? ''" :role="1" />
+      <button v-if="userPreApproved && !userRegistered" class="primary" type="button" :disabled="!participantSelfRegistrationReady" @click="registerUserParticipant">音楽リスナーとして登録</button>
+      <p v-else-if="userRegistered" class="badge success">音楽リスナーとしての参加登録が完了しています</p>
     </section>
 
     <section class="panel" aria-labelledby="payment-title">

@@ -219,6 +219,12 @@ PENDING → ACTIVE → RESTRICTED → ACTIVE
 - **REQ-ACCOUNT-132:** A dual-role invitation MUST reuse one invitation and Wallet proof while preserving independent User and Creator role registration and service-entry states.
 - **REQ-ACCOUNT-133:** The participant view MUST present different post-claim procedures and qualification boundaries for User and Creator roles.
 - **REQ-ACCOUNT-134:** A participant-facing operation MUST NOT state or imply that an operator-controlled on-chain step, funding step or role activation succeeded unless authoritative evidence confirms that distinct state.
+- **REQ-ACCOUNT-135:** A public-experiment application MUST be distinct from an invitation and MUST NOT itself grant any off-chain or on-chain participant role, funding, entitlement or production Account status.
+- **REQ-ACCOUNT-136:** An application MUST NOT enter operator review until control of its contact email has been verified through a single-use, time-bounded token whose retained form is a one-way digest.
+- **REQ-ACCOUNT-137:** Approval MUST create a distinct single-use invitation and push a notice to the verified contact channel; it MUST NOT require the operator to pre-collect or choose the applicant Wallet.
+- **REQ-ACCOUNT-138:** Applicant-facing status MUST distinguish email verification, operator review, approval and invitation claim, while avoiding disclosure of the full contact address or whether an unrelated address exists.
+- **REQ-ACCOUNT-139:** Application creation and verification-message resend MUST be idempotent or rate-limited by the applicable test profile, and a resend MUST invalidate the previously issued verification token.
+- **REQ-ACCOUNT-140:** Application decisions, notification delivery, invitation creation and invitation claim MUST be separately auditable; a delivery failure MUST NOT be represented as applicant approval notice or invitation claim success.
 
 ## Invariants
 
@@ -354,7 +360,7 @@ Audit access MUST be restricted and audited. Retention must balance security, ac
 | REQ-ACCOUNT-101–105 | Privacy / authorization / retention | No biometric collection, silent operator mutation, unlawful erasure, identifier reuse or on-chain secrets |
 | REQ-ACCOUNT-106–112 | Security / UX conformance | Implemented SHOULD behavior is tested or deviation is documented under conventions |
 | REQ-ACCOUNT-113–114 | Optional conformance | Password or guest profiles preserve every MUST, MUST NOT and invariant |
-| REQ-ACCOUNT-123–134 | Participant invitation / UX / integration | Wallet-agnostic single-use invitations preserve privacy, expose distinct actor-owned states and branch into independent User and Creator procedures |
+| REQ-ACCOUNT-123–140 | Participant application / invitation / UX / integration | Email-verified applications and Wallet-agnostic single-use invitations preserve privacy, expose distinct actor-owned states and branch into independent User and Creator procedures |
 
 Tests MUST include registration races, session fixation, stolen/expired session, CSRF, credential stuffing, WebAuthn origin/RP/challenge/signature failures, authenticator-removal orphaning, recovery takeover, concurrent closure, legal hold and enumeration attempts.
 

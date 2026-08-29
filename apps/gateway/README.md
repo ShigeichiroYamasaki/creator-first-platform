@@ -34,7 +34,7 @@ npm run docs:dev
 GATEWAY_ADMIN_TOKEN='ローカル試験用に生成した十分長いランダム値' npm run gateway:dev
 ```
 
-次に`http://127.0.0.1:5173/creator-first-platform/admin/participant-invitations`を開きます。管理者は参加者のEOAを知らない状態で、ユーザ／音楽クリエーター資格と期限を持つ一回限りの招待URIを発行できます。参加者は招待URIからMetaMaskを接続し、SIWE署名後に本人登録します。管理ページは公開ナビゲーションへ載せず`noindex`としていますが、URL秘匿は認証ではありません。
+参加希望者はユーザまたは音楽クリエータの体験ページでメールアドレスを入力して申請し、最初に届く確認リンクを開きます。次に`http://127.0.0.1:5173/creator-first-platform/admin/participant-invitations`を開くと、管理者はメール確認済みの申請を審査できます。承認すると、参加者のEOAを知らない状態でユーザ／音楽クリエーター資格と期限を持つ一回限りの招待URIがメール送信されます。参加者は招待URIからMetaMaskを接続し、SIWE署名後に本人登録します。管理者による個別招待は例外対応として利用できます。管理ページは公開ナビゲーションへ載せず`noindex`としていますが、URL秘匿は認証ではありません。
 
 既定の`GATEWAY_MAIL_MODE=outbox`はメールを外部送信せず、テスト用Outboxへ保存します。メール送信事業者へ接続する場合は、秘密情報をブラウザへ置かず、Gatewayから認証付きWebhookを呼びます。
 
@@ -43,6 +43,8 @@ GATEWAY_ADMIN_TOKEN='十分長いランダム値' \
 GATEWAY_MAIL_MODE=webhook \
 GATEWAY_MAIL_WEBHOOK_URL='https://mail-adapter.example/api/send' \
 GATEWAY_MAIL_WEBHOOK_TOKEN='メールアダプター専用トークン' \
+GATEWAY_APPLICATION_PUBLIC_URL='https://public.example/creator-first-platform/demo/test-user-registration' \
+GATEWAY_CREATOR_APPLICATION_PUBLIC_URL='https://public.example/creator-first-platform/demo/creator-workspace' \
 npm run gateway:dev
 ```
 
@@ -72,7 +74,7 @@ Credential、内部Media ID、OpenSubsonic URLまたは`Remote-User`をPlayerへ
 - Supporter SBT、Early判定、RelayerおよびBlockchain TransactionはMockであり、JPYCを扱わない
 - Test User登録ではAlias、同意版、Opaque IDだけを扱い、メール、電話番号、Passwordまたは法的氏名を収集しない
 - 事前登録メールは参加者管理の明示目的でだけGatewayへ保存し、公開招待API、URLおよび公開チェーンへ返さない
-- 招待状、メール配信、SIWEによる本人登録、オンチェーン役割登録およびTest POL配布を別状態として監査する
+- 申請、メール確認、運営審査、招待状、メール配信、SIWEによる本人登録、オンチェーン役割登録およびTest POL配布を別状態として監査する
 - JPKI連携は明確に表示した非暗号学的モックだけとし、実カード、電子証明書、暗証番号、氏名、住所またはマイナンバーを取得しない
 - WebAuthnはchallenge、origin、RP ID、署名、ユーザ検証、資格情報、カウンタおよびバックアップ状態をサーバ側で検証する
 - MetaMask結合はPolygon Amoy限定の短命EIP-712意思表示であり、送金、Approve、課金または権利付与を含まない

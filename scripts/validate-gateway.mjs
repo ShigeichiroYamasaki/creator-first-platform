@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 const requiredFiles = [
   'apps/gateway/src/server.js',
   'apps/gateway/src/AccountTrustService.js',
+  'apps/gateway/src/ParticipantApplicationService.js',
   'apps/gateway/src/ParticipantInvitationService.js',
   'apps/gateway/src/InvitationMailer.js',
   'apps/gateway/src/GatewayStore.js',
@@ -33,7 +34,12 @@ const requirements = [
   ['account_trust_audit_events', 'Account Trust audit record'],
   ['/v1/admin/participant-invitations', 'administrator invitation API'],
   ['participant_invitation_audit_events', 'participant invitation audit record'],
-  ['INVITATION_ALREADY_CLAIMED', 'single-use invitation enforcement']
+  ['INVITATION_ALREADY_CLAIMED', 'single-use invitation enforcement'],
+  ['/v1/participant-applications', 'participant application API'],
+  ['participant_applications', 'participant application store'],
+  ['EMAIL_VERIFICATION_REQUIRED', 'participant email verification state'],
+  ['UNDER_REVIEW', 'participant review state'],
+  ['APPROVED_INVITATION_SENT', 'participant approval notice state']
 ]
 
 const missing = requirements.filter(([needle]) => !source.includes(needle))
@@ -58,7 +64,11 @@ const consistencyRequirements = [
   ['docs/demo/participant-registration.md', '<ParticipantInvitationRegistration />', 'participant invitation claim UI'],
   ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', 'ユーザ向け参加', 'role-specific participant view'],
   ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', '音楽クリエーター向け参加', 'creator-specific participant view'],
-  ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', '運営の処理を待ってください', 'operator-owned participant state']
+  ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', '運営の処理を待ってください', 'operator-owned participant state'],
+  ['docs/.vitepress/theme/TestnetUserJourneyDemo.vue', '<ParticipantApplicationDemo', 'user application UI'],
+  ['docs/.vitepress/theme/TestnetCreatorJourneyDemo.vue', '<ParticipantApplicationDemo', 'creator application UI'],
+  ['docs/adr/ADR-0020-wallet-agnostic-participant-invitations.md', 'EMAIL_VERIFICATION_REQUIRED', 'ADR-0020 application states'],
+  ['protocol/account/account-lifecycle-spec.md', 'REQ-ACCOUNT-140', 'Account application requirements']
 ]
 
 const consistencyContents = new Map(await Promise.all(

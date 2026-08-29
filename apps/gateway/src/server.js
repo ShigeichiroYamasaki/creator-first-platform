@@ -5,6 +5,7 @@ import { catalog, publicTrack } from './catalog.js'
 import { AccountTrustError, AccountTrustService } from './AccountTrustService.js'
 import { GatewayStore } from './GatewayStore.js'
 import { InvitationMailer } from './InvitationMailer.js'
+import { ParticipantApplicationError, ParticipantApplicationService } from './ParticipantApplicationService.js'
 import { ParticipantInvitationError, ParticipantInvitationService } from './ParticipantInvitationService.js'
 
 const COOKIE_NAME = 'cfp_demo_session'
@@ -85,6 +86,12 @@ export function createGatewayServer({
   const accountTrust = new AccountTrustService({ config, store, ...accountTrustOptions })
   const invitationMailer = accountTrustOptions.invitationMailer ?? new InvitationMailer(config)
   const participantInvitations = new ParticipantInvitationService({ config, store, mailer: invitationMailer })
+  const participantApplications = new ParticipantApplicationService({
+    config,
+    store,
+    mailer: invitationMailer,
+    invitations: participantInvitations
+  })
   let closed = false
 
   function getAccount(request, response) {
@@ -543,6 +550,33 @@ export function createGatewayServer({
       if (request.method === 'POST' && path === '/v1/demo/users') {
         return await registerDemoUser(request, response, account)
       }
+      if (request.method === 'GET' && path === '/v1/participant-applications/current') {
+        return sendJson(response, 200, participantApplications.current(account))
+      }
+      if (request.method === 'POST' && path === '/v1/participant-applications') {
+        return sendJson(response, 201, await participantApplications.createAndSend(account, await readJson(request)))
+      }
+      if (request.method === 'POST' && path === '/v1/participant-applications/current/resend') {
+        return sendJson(response, 200, await participantApplications.resend(account))
+      }
+      const applicationVerificationMatch = /^\/v1\/participant-applications\/verify\/([A-Za-z0-9_-]{32,128})$/.exec(path)
+      if (request.method === 'POST' && applicationVerificationMatch) {
+        return sendJson(response, 200, participantApplications.verify(applicationVerificationMatch[1]))
+      }
+      if (request.method === 'GET' && path === '/v1/admin/participant-applications') {
+        participantInvitations.requireAdministrator(request)
+        return sendJson(response, 200, { applications: participantApplications.list() })
+      }
+      const applicationApproveMatch = /^\/v1\/admin\/participant-applications\/([A-Za-z0-9-]+)\/approve$/.exec(path)
+      if (request.method === 'POST' && applicationApproveMatch) {
+        participantInvitations.requireAdministrator(request)
+        return sendJson(response, 200, await participantApplications.approve(applicationApproveMatch[1]))
+      }
+      const applicationRejectMatch = /^\/v1\/admin\/participant-applications\/([A-Za-z0-9-]+)\/reject$/.exec(path)
+      if (request.method === 'POST' && applicationRejectMatch) {
+        participantInvitations.requireAdministrator(request)
+        return sendJson(response, 200, await participantApplications.reject(applicationRejectMatch[1], await readJson(request)))
+      }
       if (request.method === 'GET' && path === '/v1/admin/participant-invitations') {
         participantInvitations.requireAdministrator(request)
         return sendJson(response, 200, { invitations: participantInvitations.list() })
@@ -645,7 +679,7 @@ export function createGatewayServer({
       throw new GatewayHttpError(404, 'NOT_FOUND', 'Route not found')
     } catch (error) {
       if (response.headersSent) return response.destroy(error)
-      const knownError = error instanceof GatewayHttpError || error instanceof AccountTrustError || error instanceof ParticipantInvitationError
+      const knownError = error instanceof GatewayHttpError || error instanceof AccountTrustError || error instanceof ParticipantInvitationError || error instanceof ParticipantApplicationError
       const status = knownError ? error.status : 500
       const code = knownError ? error.code : 'INTERNAL_ERROR'
       const message = knownError ? error.message : 'Gateway request failed'

@@ -26,5 +26,6 @@ export default {
     app.component('UserServiceDemo', UserServiceDemo)
     app.component('ParticipantAdminDemo', defineAsyncComponent(() => import('./ParticipantAdminDemo.vue')))
     app.component('ParticipantInvitationRegistration', defineAsyncComponent(() => import('./ParticipantInvitationRegistration.vue')))
+    app.component('ParticipantApplicationDemo', defineAsyncComponent(() => import('./ParticipantApplicationDemo.vue')))
   }
 }

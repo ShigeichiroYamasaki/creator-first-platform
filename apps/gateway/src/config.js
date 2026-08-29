@@ -61,6 +61,8 @@ export function loadConfig(environment = process.env) {
     webauthnRpName: environment.GATEWAY_WEBAUTHN_RP_NAME ?? 'Creator First Platform Testnet',
     adminToken: environment.GATEWAY_ADMIN_TOKEN,
     invitationPublicUrl: environment.GATEWAY_INVITATION_PUBLIC_URL ?? `${publicUrl.origin}/creator-first-platform/demo/participant-registration`,
+    applicationPublicUrl: environment.GATEWAY_APPLICATION_PUBLIC_URL ?? `${publicUrl.origin}/creator-first-platform/demo/test-user-registration`,
+    creatorApplicationPublicUrl: environment.GATEWAY_CREATOR_APPLICATION_PUBLIC_URL ?? `${publicUrl.origin}/creator-first-platform/demo/creator-workspace`,
     mailMode,
     mailWebhookUrl: environment.GATEWAY_MAIL_WEBHOOK_URL,
     mailWebhookToken: environment.GATEWAY_MAIL_WEBHOOK_TOKEN,

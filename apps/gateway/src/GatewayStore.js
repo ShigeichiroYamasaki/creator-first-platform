@@ -110,7 +110,37 @@ export class GatewayStore {
         occurred_at TEXT NOT NULL,
         detail_json TEXT NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS participant_applications (
+        application_id TEXT PRIMARY KEY,
+        owner_id TEXT NOT NULL UNIQUE,
+        verification_token_hash TEXT NOT NULL UNIQUE,
+        email TEXT NOT NULL,
+        display_name TEXT NOT NULL,
+        role_bits INTEGER NOT NULL,
+        state TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        verification_expires_at TEXT NOT NULL,
+        verification_sent_at TEXT,
+        verified_at TEXT,
+        reviewed_at TEXT,
+        invitation_id TEXT,
+        rejection_code TEXT
+      );
+      CREATE TABLE IF NOT EXISTS participant_application_audit_events (
+        event_id TEXT PRIMARY KEY,
+        application_id TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        occurred_at TEXT NOT NULL,
+        detail_json TEXT NOT NULL
+      );
     `)
+    const applicationColumns = new Set(this.database.prepare('PRAGMA table_info(participant_applications)').all().map((column) => column.name))
+    if (!applicationColumns.has('verification_expires_at')) {
+      this.database.exec("ALTER TABLE participant_applications ADD COLUMN verification_expires_at TEXT NOT NULL DEFAULT '1970-01-01T00:00:00.000Z'")
+    }
+    if (!applicationColumns.has('verification_sent_at')) {
+      this.database.exec('ALTER TABLE participant_applications ADD COLUMN verification_sent_at TEXT')
+    }
   }
 
   recordDecision(value) {
@@ -309,6 +339,110 @@ export class GatewayStore {
       SELECT event_type, occurred_at, detail_json
       FROM participant_invitation_audit_events WHERE invitation_id = ? ORDER BY occurred_at, rowid
     `).all(invitationId)
+  }
+
+  createParticipantApplication(value) {
+    this.database.prepare(`
+      INSERT INTO participant_applications (
+        application_id, owner_id, verification_token_hash, email, display_name,
+        role_bits, state, created_at, verification_expires_at
+      ) VALUES (?, ?, ?, ?, ?, ?, 'EMAIL_VERIFICATION_REQUIRED', ?, ?)
+    `).run(
+      value.applicationId,
+      value.ownerId,
+      value.verificationTokenHash,
+      value.email,
+      value.displayName,
+      value.roleBits,
+      value.createdAt,
+      value.verificationExpiresAt
+    )
+  }
+
+  participantApplicationById(applicationId) {
+    return this.database.prepare('SELECT * FROM participant_applications WHERE application_id = ?').get(applicationId)
+  }
+
+  participantApplicationByOwnerId(ownerId) {
+    return this.database.prepare('SELECT * FROM participant_applications WHERE owner_id = ?').get(ownerId)
+  }
+
+  participantApplicationByVerificationTokenHash(tokenHash) {
+    return this.database.prepare('SELECT * FROM participant_applications WHERE verification_token_hash = ?').get(tokenHash)
+  }
+
+  participantApplications() {
+    return this.database.prepare(`
+      SELECT * FROM participant_applications ORDER BY created_at DESC
+    `).all()
+  }
+
+  rotateParticipantApplicationVerificationToken(applicationId, verificationTokenHash, verificationExpiresAt) {
+    return this.database.prepare(`
+      UPDATE participant_applications
+      SET verification_token_hash = ?, verification_expires_at = ?, verification_sent_at = NULL
+      WHERE application_id = ? AND state = 'EMAIL_VERIFICATION_REQUIRED'
+    `).run(verificationTokenHash, verificationExpiresAt, applicationId).changes
+  }
+
+  markParticipantApplicationVerificationSent(applicationId, sentAt) {
+    return this.database.prepare(`
+      UPDATE participant_applications SET verification_sent_at = ?
+      WHERE application_id = ? AND state = 'EMAIL_VERIFICATION_REQUIRED'
+    `).run(sentAt, applicationId).changes
+  }
+
+  verifyParticipantApplication(applicationId, verifiedAt) {
+    return this.database.prepare(`
+      UPDATE participant_applications
+      SET state = 'UNDER_REVIEW', verified_at = ?
+      WHERE application_id = ? AND state = 'EMAIL_VERIFICATION_REQUIRED'
+    `).run(verifiedAt, applicationId).changes
+  }
+
+  approveParticipantApplication(applicationId, invitationId, reviewedAt) {
+    return this.database.prepare(`
+      UPDATE participant_applications
+      SET state = 'APPROVED_INVITATION_SENT', invitation_id = ?, reviewed_at = ?, rejection_code = NULL
+      WHERE application_id = ? AND state IN ('UNDER_REVIEW', 'APPROVAL_DELIVERY_FAILED')
+    `).run(invitationId, reviewedAt, applicationId).changes
+  }
+
+  failParticipantApplicationApproval(applicationId, invitationId, reviewedAt) {
+    return this.database.prepare(`
+      UPDATE participant_applications
+      SET state = 'APPROVAL_DELIVERY_FAILED', invitation_id = ?, reviewed_at = ?
+      WHERE application_id = ? AND state IN ('UNDER_REVIEW', 'APPROVAL_DELIVERY_FAILED')
+    `).run(invitationId, reviewedAt, applicationId).changes
+  }
+
+  rejectParticipantApplication(applicationId, rejectionCode, reviewedAt) {
+    return this.database.prepare(`
+      UPDATE participant_applications
+      SET state = 'REJECTED', rejection_code = ?, reviewed_at = ?
+      WHERE application_id = ? AND state = 'UNDER_REVIEW'
+    `).run(rejectionCode, reviewedAt, applicationId).changes
+  }
+
+  markParticipantApplicationInvitationClaimed(invitationId, claimedAt) {
+    return this.database.prepare(`
+      UPDATE participant_applications
+      SET state = 'INVITATION_CLAIMED', reviewed_at = COALESCE(reviewed_at, ?)
+      WHERE invitation_id = ? AND state = 'APPROVED_INVITATION_SENT'
+    `).run(claimedAt, invitationId).changes
+  }
+
+  recordParticipantApplicationEvent(value) {
+    this.database.prepare(`
+      INSERT INTO participant_application_audit_events VALUES (?, ?, ?, ?, ?)
+    `).run(value.eventId, value.applicationId, value.eventType, value.occurredAt, JSON.stringify(value.detail ?? {}))
+  }
+
+  participantApplicationEvents(applicationId) {
+    return this.database.prepare(`
+      SELECT event_type, occurred_at, detail_json
+      FROM participant_application_audit_events WHERE application_id = ? ORDER BY occurred_at, rowid
+    `).all(applicationId)
   }
 
   createTrustBinding(value) {

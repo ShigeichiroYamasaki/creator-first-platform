@@ -155,6 +155,7 @@ export class ParticipantInvitationService {
       throw new ParticipantInvitationError(409, 'INVITATION_NOT_CLAIMABLE', 'Invitation is expired or unavailable')
     }
     this.store.recordParticipantInvitationEvent({ eventId: randomUUID(), invitationId: row.invitation_id, eventType: 'CLAIMED', occurredAt: claimedAt, detail: { wallet } })
+    this.store.markParticipantApplicationInvitationClaimed(row.invitation_id, claimedAt)
     return publicInvitation(this.store.participantInvitationById(row.invitation_id))
   }
 }

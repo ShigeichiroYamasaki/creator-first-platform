@@ -310,6 +310,82 @@ test('Administrator issues a wallet-agnostic invitation and the invited person c
   assert.equal(replay.body.state, 'CLAIMED')
 })
 
+test('Participant applies, verifies email, receives approval invitation and claims it with a chosen wallet', async (context) => {
+  const config = loadConfig({
+    GATEWAY_PORT: '8787',
+    GATEWAY_DATABASE_PATH: ':memory:',
+    GATEWAY_MEDIA_ROOT: new URL('../../../docker/navidrome/music', import.meta.url).pathname,
+    GATEWAY_ADMIN_TOKEN: 'test-admin-token-with-sufficient-entropy',
+    GATEWAY_INVITATION_PUBLIC_URL: 'https://example.test/demo/participant-registration',
+    GATEWAY_APPLICATION_PUBLIC_URL: 'https://example.test/demo/test-user-registration'
+  })
+  const gateway = createGatewayServer({ config, mediaAdapter: new FileMediaAdapter(config.mediaRoot) })
+  const address = await gateway.listen(0)
+  context.after(() => gateway.close())
+  const api = client(`http://127.0.0.1:${address.port}${config.basePath}`)
+  const adminHeaders = { Authorization: 'Bearer test-admin-token-with-sufficient-entropy' }
+
+  assert.deepEqual((await json(await api.request('/v1/participant-applications/current'))).body, { application: null })
+  const application = await json(await api.request('/v1/participant-applications', {
+    method: 'POST',
+    body: JSON.stringify({
+      email: 'listener@example.test',
+      displayName: 'Demo Listener',
+      roles: 1,
+      acceptedPrivacyNotice: true,
+      acknowledgedTestOnly: true
+    })
+  }))
+  assert.equal(application.response.status, 201)
+  assert.equal(application.body.state, 'EMAIL_VERIFICATION_REQUIRED')
+  assert.equal(application.body.emailHint, 'l***@example.test')
+  assert.equal('email' in application.body, false)
+  assert.equal(gateway.invitationMailer.outbox.length, 1)
+  const repeated = await json(await api.request('/v1/participant-applications', {
+    method: 'POST',
+    body: JSON.stringify({
+      email: 'listener@example.test', displayName: 'Demo Listener', roles: 1,
+      acceptedPrivacyNotice: true, acknowledgedTestOnly: true
+    })
+  }))
+  assert.equal(repeated.response.status, 201)
+  assert.equal(repeated.body.applicationId, application.body.applicationId)
+  assert.equal(gateway.invitationMailer.outbox.length, 1)
+  const verificationToken = gateway.invitationMailer.outbox[0].text.match(/#verify-application=([A-Za-z0-9_-]+)/)?.[1]
+  assert.ok(verificationToken)
+
+  const verified = await json(await api.request(`/v1/participant-applications/verify/${verificationToken}`, { method: 'POST' }))
+  assert.equal(verified.response.status, 200)
+  assert.equal(verified.body.state, 'UNDER_REVIEW')
+  const listed = await json(await api.request('/v1/admin/participant-applications', { headers: adminHeaders }))
+  assert.equal(listed.response.status, 200)
+  assert.equal(listed.body.applications[0].email, 'listener@example.test')
+
+  const approved = await json(await api.request(`/v1/admin/participant-applications/${application.body.applicationId}/approve`, {
+    method: 'POST', headers: adminHeaders
+  }))
+  assert.equal(approved.response.status, 200)
+  assert.equal(approved.body.state, 'APPROVED_INVITATION_SENT')
+  assert.equal(gateway.invitationMailer.outbox.length, 2)
+  const invitationToken = gateway.invitationMailer.outbox[1].text.match(/#invite=([A-Za-z0-9_-]+)/)?.[1]
+  assert.ok(invitationToken)
+
+  const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+  const challenge = await json(await api.request('/v1/auth/siwe/nonce', {
+    method: 'POST', body: JSON.stringify({ address: account.address, chainId: config.chainId })
+  }))
+  const signature = await account.signMessage({ message: challenge.body.message })
+  assert.equal((await api.request('/v1/auth/siwe/verify', {
+    method: 'POST', body: JSON.stringify({ challengeId: challenge.body.challengeId, message: challenge.body.message, signature })
+  })).status, 200)
+  const claimed = await json(await api.request(`/v1/participant-invitations/${invitationToken}/claim`, {
+    method: 'POST', body: JSON.stringify({ acceptedTerms: true, acknowledgedTestOnly: true })
+  }))
+  assert.equal(claimed.body.state, 'CLAIMED')
+  const current = await json(await api.request('/v1/participant-applications/current'))
+  assert.equal(current.body.application.state, 'INVITATION_CLAIMED')
+})
+
 test('Account Trust binds Mock JPKI, a server-verified passkey and an Amoy wallet in one transaction', async (context) => {
   const config = loadConfig({
     GATEWAY_PORT: '8787',
