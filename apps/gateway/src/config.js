@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
 const repositoryRoot = fileURLToPath(new URL('../../..', import.meta.url))
@@ -16,7 +17,17 @@ function basePath(value = '/api') {
   return value === '/' ? '' : value.replace(/\/$/, '')
 }
 
+function secret(environment, valueName, fileName) {
+  if (environment[valueName]) return environment[valueName]
+  const secretPath = environment[fileName]
+  return secretPath ? readFileSync(secretPath, 'utf8').trim() : undefined
+}
+
 export function loadConfig(environment = process.env) {
+  const runtimeMode = environment.GATEWAY_RUNTIME_MODE ?? 'local-demo'
+  if (!['local-demo', 'public-experiment'].includes(runtimeMode)) {
+    throw new Error('GATEWAY_RUNTIME_MODE must be local-demo or public-experiment')
+  }
   const adapter = environment.GATEWAY_MEDIA_ADAPTER ?? 'file'
   if (!['file', 'navidrome'].includes(adapter)) {
     throw new Error('GATEWAY_MEDIA_ADAPTER must be file or navidrome')
@@ -34,14 +45,19 @@ export function loadConfig(environment = process.env) {
   if (mailMode === 'webhook' && (!environment.GATEWAY_MAIL_WEBHOOK_URL || !environment.GATEWAY_MAIL_WEBHOOK_TOKEN)) {
     throw new Error('Webhook mail mode requires GATEWAY_MAIL_WEBHOOK_URL and GATEWAY_MAIL_WEBHOOK_TOKEN')
   }
-  if (environment.GATEWAY_ADMIN_TOKEN && environment.GATEWAY_ADMIN_TOKEN.length < 32) {
+  const adminToken = secret(environment, 'GATEWAY_ADMIN_TOKEN', 'GATEWAY_ADMIN_TOKEN_FILE')
+  if (adminToken && adminToken.length < 32) {
     throw new Error('GATEWAY_ADMIN_TOKEN must contain at least 32 characters')
   }
   if (mailMode === 'webhook' && new URL(environment.GATEWAY_MAIL_WEBHOOK_URL).protocol !== 'https:') {
     throw new Error('GATEWAY_MAIL_WEBHOOK_URL must use HTTPS')
   }
   const gmailAddress = environment.GATEWAY_GMAIL_ADDRESS?.trim().toLowerCase()
-  const gmailAppPassword = environment.GATEWAY_GMAIL_APP_PASSWORD?.replace(/\s/g, '')
+  const gmailAppPassword = secret(
+    environment,
+    'GATEWAY_GMAIL_APP_PASSWORD',
+    'GATEWAY_GMAIL_APP_PASSWORD_FILE'
+  )?.replace(/\s/g, '')
   if (mailMode === 'gmail-smtp' && (!gmailAddress || !gmailAppPassword)) {
     throw new Error('Gmail SMTP mode requires GATEWAY_GMAIL_ADDRESS and GATEWAY_GMAIL_APP_PASSWORD')
   }
@@ -57,6 +73,7 @@ export function loadConfig(environment = process.env) {
   }
 
   return {
+    runtimeMode,
     host: environment.GATEWAY_HOST ?? '127.0.0.1',
     port: positiveInteger(environment.GATEWAY_PORT, 8787, 'GATEWAY_PORT'),
     basePath: basePath(environment.GATEWAY_BASE_PATH),
@@ -67,7 +84,7 @@ export function loadConfig(environment = process.env) {
     webauthnOrigin,
     webauthnRpId,
     webauthnRpName: environment.GATEWAY_WEBAUTHN_RP_NAME ?? 'Creator First Platform Testnet',
-    adminToken: environment.GATEWAY_ADMIN_TOKEN,
+    adminToken,
     invitationPublicUrl: environment.GATEWAY_INVITATION_PUBLIC_URL ?? `${publicUrl.origin}/creator-first-platform/demo/participant-registration`,
     applicationPublicUrl: environment.GATEWAY_APPLICATION_PUBLIC_URL ?? `${publicUrl.origin}/creator-first-platform/demo/test-user-registration`,
     creatorApplicationPublicUrl: environment.GATEWAY_CREATOR_APPLICATION_PUBLIC_URL ?? `${publicUrl.origin}/creator-first-platform/demo/creator-workspace`,

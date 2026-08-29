@@ -82,6 +82,48 @@ services:
       media:
         ipv4_address: 172.31.0.30
 
+  gateway-data-init:
+    image: node:24-alpine
+    user: "0:0"
+    entrypoint: ["chown", "-R"]
+    command: ["1000:1000", "/data"]
+    volumes:
+      - gateway-data:/data
+    network_mode: none
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+
+  participant-gateway:
+    build:
+      context: ./gateway-source
+      dockerfile: deployment/gcp/gateway.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      gateway-data-init:
+        condition: service_completed_successfully
+    env_file:
+      - ./bootstrap/gateway.env
+    volumes:
+      - gateway-data:/data
+      - ./music:/music:ro
+      - ./secrets:/run/secrets:ro
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/api/v1/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 24
+      start_period: 15s
+    networks:
+      media:
+        ipv4_address: 172.31.0.40
+
   bootstrap-gateway:
     image: nginx:1.29-alpine
     restart: unless-stopped
@@ -89,6 +131,8 @@ services:
       navidrome:
         condition: service_healthy
       docs-demo:
+        condition: service_healthy
+      participant-gateway:
         condition: service_healthy
     ports:
       - "127.0.0.1:8080:8080"
@@ -125,6 +169,7 @@ services:
 
 volumes:
   navidrome-data:
+  gateway-data:
 
 networks:
   media:

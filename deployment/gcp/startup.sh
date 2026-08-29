@@ -7,6 +7,7 @@ readonly APP_DIR=/opt/creator-first-streaming
 readonly METADATA_URL=http://metadata.google.internal/computeMetadata/v1/instance/attributes
 readonly METADATA_HEADER='Metadata-Flavor: Google'
 readonly SITE_ARCHIVE=/var/tmp/creator-first-demo-site.tar.gz
+readonly GATEWAY_ARCHIVE=/var/tmp/creator-first-gateway.tar.gz
 
 metadata_value() {
   curl -fsS -H "${METADATA_HEADER}" "${METADATA_URL}/$1"
@@ -28,9 +29,65 @@ if ! command -v docker >/dev/null || ! command -v docker-compose >/dev/null || !
 fi
 systemctl enable --now docker
 
-install -d -m 0750 "${APP_DIR}/bootstrap" "${APP_DIR}/music"
+install -d -m 0750 "${APP_DIR}/bootstrap" "${APP_DIR}/music" "${APP_DIR}/secrets"
 chmod 0755 "${APP_DIR}/music"
 metadata_value navidrome-compose > "${APP_DIR}/compose.yml"
+
+gateway_url="$(metadata_value gateway-source-url || true)"
+gateway_sha256="$(metadata_value gateway-source-sha256 || true)"
+if [[ -n "${gateway_url}" && -n "${gateway_sha256}" ]]; then
+  curl --fail --location --proto '=https' --tlsv1.2 "${gateway_url}" -o "${GATEWAY_ARCHIVE}"
+  printf '%s  %s\n' "${gateway_sha256}" "${GATEWAY_ARCHIVE}" | sha256sum --check --status
+  rm -rf -- "${APP_DIR}/gateway-source.next"
+  install -d -m 0755 "${APP_DIR}/gateway-source.next"
+  tar -xzf "${GATEWAY_ARCHIVE}" -C "${APP_DIR}/gateway-source.next"
+  test -s "${APP_DIR}/gateway-source.next/apps/gateway/src/index.js"
+  test -s "${APP_DIR}/gateway-source.next/deployment/gcp/gateway.Dockerfile"
+  rm -rf -- "${APP_DIR}/gateway-source"
+  mv "${APP_DIR}/gateway-source.next" "${APP_DIR}/gateway-source"
+  rm -f -- "${GATEWAY_ARCHIVE}"
+elif [[ ! -s "${APP_DIR}/gateway-source/apps/gateway/src/index.js" ]]; then
+  echo "CREATOR_FIRST_DEPLOY_STATUS=failed_missing_gateway_source"
+  exit 1
+fi
+
+gmail_app_password="$(metadata_value gateway-gmail-app-password || true)"
+if [[ -n "${gmail_app_password}" ]]; then
+  umask 077
+  printf '%s' "${gmail_app_password}" > "${APP_DIR}/secrets/gmail-app-password"
+fi
+if [[ ! -s "${APP_DIR}/secrets/gmail-app-password" ]]; then
+  echo "CREATOR_FIRST_DEPLOY_STATUS=failed_missing_gmail_secret"
+  exit 1
+fi
+if [[ ! -s "${APP_DIR}/secrets/admin-token" ]]; then
+  umask 077
+  openssl rand -hex 32 > "${APP_DIR}/secrets/admin-token"
+fi
+chown 1000:1000 "${APP_DIR}/secrets"
+chown 1000:1000 "${APP_DIR}/secrets/gmail-app-password" "${APP_DIR}/secrets/admin-token"
+chmod 0400 "${APP_DIR}/secrets/gmail-app-password" "${APP_DIR}/secrets/admin-token"
+
+cat > "${APP_DIR}/bootstrap/gateway.env" <<'ENV'
+GATEWAY_HOST=0.0.0.0
+GATEWAY_PORT=8787
+GATEWAY_BASE_PATH=/api
+GATEWAY_RUNTIME_MODE=public-experiment
+GATEWAY_ALLOWED_ORIGIN=http://127.0.0.1:8080
+GATEWAY_PUBLIC_URI=http://127.0.0.1:8080
+GATEWAY_SIWE_DOMAIN=127.0.0.1:8080
+GATEWAY_WEBAUTHN_ORIGIN=http://127.0.0.1:8080
+GATEWAY_WEBAUTHN_RP_ID=127.0.0.1
+GATEWAY_MAIL_MODE=gmail-smtp
+GATEWAY_GMAIL_ADDRESS=11rou.yamasaki@gmail.com
+GATEWAY_GMAIL_APP_PASSWORD_FILE=/run/secrets/gmail-app-password
+GATEWAY_ADMIN_TOKEN_FILE=/run/secrets/admin-token
+GATEWAY_DATABASE_PATH=/data/gateway.sqlite
+GATEWAY_MEDIA_ADAPTER=file
+GATEWAY_MEDIA_ROOT=/music
+GATEWAY_CHAIN_ID=80002
+ENV
+chmod 0640 "${APP_DIR}/bootstrap/gateway.env"
 
 site_url="$(metadata_value demo-site-url || true)"
 site_sha256="$(metadata_value demo-site-sha256 || true)"
@@ -84,6 +141,17 @@ server {
     listen 8080;
     server_name _;
 
+    location ^~ /api/ {
+        auth_basic off;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_buffering off;
+        proxy_request_buffering off;
+        proxy_pass http://participant-gateway:8787;
+    }
+
     location ^~ /creator-first-platform/ {
         auth_basic off;
         proxy_http_version 1.1;
@@ -119,26 +187,57 @@ chmod 0644 "${APP_DIR}/music/local-test-tone.wav"
 
 cd "${APP_DIR}"
 docker-compose -p creator-first-streaming pull
+docker-compose -p creator-first-streaming build participant-gateway
 docker-compose -p creator-first-streaming up -d --remove-orphans
 # The static site directory is atomically replaced above. Recreate containers
 # that bind-mount it so they cannot keep serving the previous directory inode.
-docker-compose -p creator-first-streaming up -d --force-recreate docs-demo bootstrap-gateway cloudflared
+docker-compose -p creator-first-streaming up -d --force-recreate --no-deps docs-demo bootstrap-gateway cloudflared
+
+tunnel_url=""
+for tunnel_attempt in $(seq 1 30); do
+  tunnel_url="$(docker-compose -p creator-first-streaming logs --no-color cloudflared 2>&1 \
+    | grep -Eo 'https://[a-z0-9-]+\.trycloudflare\.com' \
+    | tail -n 1 || true)"
+  [[ -n "${tunnel_url}" ]] && break
+  sleep 2
+done
+if [[ -z "${tunnel_url}" ]]; then
+  echo "CREATOR_FIRST_DEPLOY_STATUS=failed_missing_tunnel_url"
+  exit 1
+fi
+tunnel_host="${tunnel_url#https://}"
+cat > "${APP_DIR}/bootstrap/gateway.env" <<ENV
+GATEWAY_HOST=0.0.0.0
+GATEWAY_PORT=8787
+GATEWAY_BASE_PATH=/api
+GATEWAY_RUNTIME_MODE=public-experiment
+GATEWAY_ALLOWED_ORIGIN=${tunnel_url}
+GATEWAY_PUBLIC_URI=${tunnel_url}
+GATEWAY_SIWE_DOMAIN=${tunnel_host}
+GATEWAY_WEBAUTHN_ORIGIN=${tunnel_url}
+GATEWAY_WEBAUTHN_RP_ID=${tunnel_host}
+GATEWAY_MAIL_MODE=gmail-smtp
+GATEWAY_GMAIL_ADDRESS=11rou.yamasaki@gmail.com
+GATEWAY_GMAIL_APP_PASSWORD_FILE=/run/secrets/gmail-app-password
+GATEWAY_ADMIN_TOKEN_FILE=/run/secrets/admin-token
+GATEWAY_DATABASE_PATH=/data/gateway.sqlite
+GATEWAY_MEDIA_ADAPTER=file
+GATEWAY_MEDIA_ROOT=/music
+GATEWAY_CHAIN_ID=80002
+GATEWAY_INVITATION_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/participant-registration
+GATEWAY_APPLICATION_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/test-user-registration
+GATEWAY_CREATOR_APPLICATION_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/creator-workspace
+ENV
+chmod 0640 "${APP_DIR}/bootstrap/gateway.env"
+docker-compose -p creator-first-streaming up -d --force-recreate --no-deps participant-gateway
 
 for attempt in $(seq 1 60); do
   if curl -fsS http://127.0.0.1:8080/creator-first-platform/demo/ >/dev/null && \
+    curl -fsS http://127.0.0.1:8080/api/v1/health >/dev/null && \
     curl -fsS -u "creator-first-demo:$(cat "${APP_DIR}/bootstrap/password")" http://127.0.0.1:8080/ >/dev/null; then
     echo "CREATOR_FIRST_DEPLOY_STATUS=healthy"
     echo "CREATOR_FIRST_DEMO_PATH=/creator-first-platform/demo/"
-    for tunnel_attempt in $(seq 1 30); do
-      tunnel_url="$(docker-compose -p creator-first-streaming logs --no-color cloudflared 2>&1 \
-        | grep -Eo 'https://[a-z0-9-]+\.trycloudflare\.com' \
-        | tail -n 1 || true)"
-      if [[ -n "${tunnel_url}" ]]; then
-        echo "CREATOR_FIRST_TUNNEL_URL=${tunnel_url}"
-        break
-      fi
-      sleep 2
-    done
+    echo "CREATOR_FIRST_TUNNEL_URL=${tunnel_url}"
     docker-compose -p creator-first-streaming ps
     exit 0
   fi

@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { createServer } from 'node:http'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import test from 'node:test'
 import { privateKeyToAccount } from 'viem/accounts'
 import { loadConfig } from '../src/config.js'
@@ -414,6 +417,26 @@ test('Gmail SMTP mode sends application mail through the configured account with
   assert.equal(calls[0].to, 'applicant@example.test')
   assert.equal(calls[0].text.includes('test-token'), true)
   assert.equal(JSON.stringify(calls).includes(config.gmailAppPassword), false)
+})
+
+test('Gateway reads administrator and Gmail credentials from mounted secret files', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'creator-first-gateway-secrets-'))
+  try {
+    const adminTokenFile = join(directory, 'admin-token')
+    const gmailPasswordFile = join(directory, 'gmail-app-password')
+    writeFileSync(adminTokenFile, `${'a'.repeat(64)}\n`, { mode: 0o600 })
+    writeFileSync(gmailPasswordFile, 'abcd efgh ijkl mnop\n', { mode: 0o600 })
+    const config = loadConfig({
+      GATEWAY_MAIL_MODE: 'gmail-smtp',
+      GATEWAY_GMAIL_ADDRESS: '11rou.yamasaki@gmail.com',
+      GATEWAY_GMAIL_APP_PASSWORD_FILE: gmailPasswordFile,
+      GATEWAY_ADMIN_TOKEN_FILE: adminTokenFile
+    })
+    assert.equal(config.gmailAppPassword, 'abcdefghijklmnop')
+    assert.equal(config.adminToken, 'a'.repeat(64))
+  } finally {
+    rmSync(directory, { recursive: true, force: true })
+  }
 })
 
 test('Account Trust binds Mock JPKI, a server-verified passkey and an Amoy wallet in one transaction', async (context) => {

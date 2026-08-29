@@ -539,7 +539,7 @@ export function createGatewayServer({
       const path = routePath(request)
       const account = getAccount(request, response)
       if (request.method === 'GET' && path === '/v1/health') {
-        return sendJson(response, 200, { status: 'ok', adapter: config.adapter, mode: 'local-demo' })
+        return sendJson(response, 200, { status: 'ok', adapter: config.adapter, mode: config.runtimeMode })
       }
       if (request.method === 'GET' && path === '/v1/catalog/home') {
         return sendJson(response, 200, { tracks: catalog.map(publicTrack) })
