@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "active": true,
-  "origin": "https://visibility-housing-burns-markets.trycloudflare.com",
+  "origin": "https://accurate-salvation-permit-vid.trycloudflare.com",
   "pathPrefix": "/creator-first-platform/demo/",
   "adminPath": "/creator-first-platform/admin/participant-invitations",
   "apiHealthPath": "/api/v1/health",
   "temporaryHostname": true,
-  "sourceCommit": "fc113683de31025c64bf971adf13e17d2897edee",
-  "verifiedAt": "2026-08-29T13:04:35Z"
+  "sourceCommit": "b86fd039bd960fc62dbff9db3979c1377063fb5e",
+  "verifiedAt": "2026-08-29T15:31:47Z"
 }
