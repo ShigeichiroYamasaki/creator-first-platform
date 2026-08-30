@@ -100,5 +100,6 @@ The project will record usability findings, participant feedback and failures, r
   <div class="document-meta__version">Whitepaper v1.0 — English edition</div>
   <div class="document-meta__row"><span class="document-meta__label">First publication</span><span>2026-07-27</span></div>
   <div class="document-meta__row"><span class="document-meta__label">English edition</span><span>2026-08-28</span></div>
+  <div class="document-meta__row"><span class="document-meta__label">Last revised</span><span>2026-08-30</span></div>
   <div class="document-meta__row"><span class="document-meta__label">Author</span><span>Shigeichiro Yamasaki</span></div>
 </div>

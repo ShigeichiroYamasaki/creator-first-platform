@@ -15,7 +15,7 @@ if (outputDirectoryArgument !== -1 && !process.argv[outputDirectoryArgument + 1]
 }
 const publicOrigin = 'https://shigeichiroyamasaki.github.io/creator-first-platform/'
 const socialImageUrl = `${publicOrigin}creator-first-platform-symbol.png`
-const searchIndexGzipBudget = 340_000
+const searchIndexGzipBudget = 350_000
 const requiredProtocolRoutes = [
   'protocol/foundation/overview',
   'protocol/foundation/conventions',

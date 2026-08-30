@@ -17,10 +17,13 @@ A monthly price may include an explicitly described service component for networ
 After recognised deductions, a governed distributable amount may be divided into:
 
 - a usage-related creator pool;
+- a bounded listener-directed fan allocation pool;
 - a growth and discovery pool; and
 - an operations and resilience pool.
 
-The usage pool can combine verified usage with a user-centred component so that part of each subscription reflects that user's listening. Explicit support may influence a separate bounded allocation. Growth support can use transparent criteria and community matching, subject to Sybil resistance and caps.
+The usage pool can combine verified usage with a user-centred component so that part of each subscription reflects that user's listening. A fan allocation is a non-transferable internal weighting over the corporation's distributable amount, not a direct remittance or separately withdrawable user balance. Growth support can use transparent criteria and community matching, subject to Sybil resistance and caps.
+
+An illustrative allocation of the creator-related distributable amount may be 60% usage-related, 25% fan-directed and 15% growth or common support. These figures are not final terms or a revenue guarantee. The published view must also show taxes, refunds, rights holds, regulated-provider costs and operating costs in relation to gross receipts.
 
 ## Creator floor and corporate sustainability
 
@@ -28,4 +31,4 @@ Governance may define a minimum creator allocation ratio, but it cannot ignore t
 
 ## Measurement and change
 
-Every formula has a version, input commitment, calculation evidence, approval record and effective period. Simulations must publish assumptions. Proposed changes pass legal, economic, security and both-house review before activation.
+Every formula has a version, input commitment, calculation evidence, approval record and effective period. Fan allocations are recorded as allocation attributes, not counted again as new income. Simulations must publish assumptions. Proposed changes pass legal, economic, security and both-house review before activation.

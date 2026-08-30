@@ -28,3 +28,11 @@ The conceptual flow is:
 6. publish auditable aggregate records without disclosing unnecessary personal data.
 
 Smart contracts can enforce approved calculations and payment conditions. They cannot replace contracts, accounting judgments, tax filings, rights investigation or dispute resolution.
+
+## Fan registration and listener-directed allocation
+
+A listener may register support for a creator and direct a bounded part of that listener's monthly distributable allocation among registered creators. Fan registration represents an ongoing community relationship; the allocation instruction represents a revocable monthly preference. A supporter SBT is a non-transferable credential, not a claim to creator revenue, redemption, dividends or investment return.
+
+The listener must not be able to send an arbitrary amount, withdraw an allocation balance or transfer it to another user. The subscription is received as consideration for the corporation's service, and the corporation pays verified creators under its creator agreements and an approved allocation rule. This intended structure does not itself settle payment-services classification; custody, control, refunds, intermediation and the actual flow require professional review.
+
+The initial production candidate excludes open tipping and user-to-user transfers. It uses allocation caps, verified creator payout destinations, monthly settlement, related-party detection, transaction monitoring, human review and documented holds. These controls reduce the risk that coordinated listener accounts could disguise criminal proceeds as creator remuneration.

@@ -180,7 +180,7 @@ Creator First Platform は、完成した仕組みを一方的に提供するの
 <div class="document-meta">
   <div class="document-meta__version">ホワイトペーパー v1.0</div>
   <div class="document-meta__row"><span class="document-meta__label">Publication 日付</span><span>2026-07-27</span></div>
-  <div class="document-meta__row"><span class="document-meta__label">Revision 日付</span><span>2026-08-26</span></div>
+  <div class="document-meta__row"><span class="document-meta__label">Revision 日付</span><span>2026-08-30</span></div>
   <div class="document-meta__row"><span class="document-meta__label">Author</span><span>山崎重一郎 (Shigeichiro Yamasaki)</span></div>
 </div>
 
