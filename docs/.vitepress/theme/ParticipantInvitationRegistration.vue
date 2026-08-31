@@ -1,8 +1,17 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { withBase } from 'vitepress'
 import { createWalletClient, custom, getAddress } from 'viem'
 import { polygonAmoy } from 'viem/chains'
 import { AMOY_CHAIN_ID, switchProviderToAmoy } from './testnet-user-demo.js'
+
+type Enrollment = {
+  state: string
+  approvalTransactionHash?: string | null
+  fundingTransactionHash?: string | null
+  initialFundingAmountAtomic?: string | null
+  errorMessage?: string | null
+}
 
 type Invitation = {
   invitationId: string
@@ -11,6 +20,7 @@ type Invitation = {
   state: 'CREATED' | 'SENT' | 'CLAIMED' | 'REVOKED'
   expiresAt: string
   expired: boolean
+  enrollment: Enrollment
 }
 
 const USER_ROLE = 1
@@ -23,11 +33,17 @@ const acknowledgedTestOnly = ref(false)
 const message = ref('')
 const error = ref('')
 const busy = ref(false)
+const interactionPhase = ref<'idle' | 'network' | 'account' | 'signature' | 'verification' | 'registration'>('idle')
+const waitingLongerThanExpected = ref(false)
+const returnedFromWallet = ref(false)
+let waitingTimer: ReturnType<typeof setTimeout> | undefined
+let enrollmentStatusTimer: ReturnType<typeof setInterval> | undefined
 
 const isClaimed = computed(() => invitation.value?.state === 'CLAIMED')
 const isUnavailable = computed(() => Boolean(invitation.value?.expired || invitation.value?.state === 'REVOKED'))
 const hasUserRole = computed(() => Boolean((invitation.value?.roles ?? 0) & USER_ROLE))
 const hasCreatorRole = computed(() => Boolean((invitation.value?.roles ?? 0) & CREATOR_ROLE))
+const enrollmentFunded = computed(() => invitation.value?.enrollment?.state === 'FUNDED')
 const roleLabel = computed(() => hasUserRole.value && hasCreatorRole.value
   ? 'ユーザ／音楽クリエーター'
   : hasCreatorRole.value ? '音楽クリエーター' : 'ユーザ')
@@ -36,14 +52,20 @@ const stateLabel = computed(() => {
   return ({ CREATED: '準備中', SENT: '受付中', CLAIMED: '本人登録済み', REVOKED: '無効' } as const)[invitation.value?.state ?? 'CREATED']
 })
 const nextActionTitle = computed(() => {
+  if (interactionPhase.value === 'network' || interactionPhase.value === 'account' || interactionPhase.value === 'signature') return 'MetaMaskの確認を待っています'
+  if (interactionPhase.value === 'verification') return '仮想通貨ワレットを確認しています'
+  if (interactionPhase.value === 'registration') return '参加登録を保存しています'
   if (!token.value) return '招待メールを開く'
   if (!invitation.value) return '招待を確認中'
   if (isUnavailable.value) return '運営に連絡する'
-  if (isClaimed.value) return '登録できました'
+  if (isClaimed.value && enrollmentFunded.value) return '実験を始める準備ができました'
+  if (isClaimed.value) return '本人登録が完了しました'
   if (!wallet.value) return '仮想通貨ワレットをつなぐ'
   return '内容を確認して登録する'
 })
 const nextActionIcon = computed(() => {
+  if (walletConfirmationPending.value) return '🦊'
+  if (interactionPhase.value === 'verification' || interactionPhase.value === 'registration') return '⏳'
   if (!token.value) return '✉️'
   if (!invitation.value) return '🔎'
   if (isUnavailable.value) return '⚠️'
@@ -52,13 +74,67 @@ const nextActionIcon = computed(() => {
   return '✍️'
 })
 const nextAction = computed(() => {
+  if (interactionPhase.value === 'network') return 'MetaMaskを開き、練習用ネットワークへの切替を確認してください。'
+  if (interactionPhase.value === 'account') return 'MetaMaskを開き、このページへの接続を確認してください。'
+  if (interactionPhase.value === 'signature') return 'MetaMaskを開き、支払いを伴わない本人確認の署名を確認してください。'
+  if (interactionPhase.value === 'verification') return '署名をサーバで確認しています。MetaMaskでの追加操作はありません。'
+  if (interactionPhase.value === 'registration') return '登録内容をサーバへ保存しています。MetaMaskでの追加操作はありません。'
   if (!token.value) return '運営から届いた招待メールのリンクを開いてください。'
   if (!invitation.value) return '招待内容を確認しています。'
   if (isUnavailable.value) return 'この招待は利用できません。運営へお問い合わせください。'
-  if (isClaimed.value) return '本人登録は完了しています。運営の処理を待ってください。'
+  if (isClaimed.value && enrollmentFunded.value) return '運営のオンチェーン承認と初回POL配布が完了しました。'
+  if (isClaimed.value) return '本人登録は完了しています。運営がオンチェーン承認と初回POL配布を行います。'
   if (!wallet.value) return 'オレンジ色のキツネが目印の仮想通貨ワレットを開きます。'
   return '2項目を確認し、本人登録を完了してください。'
 })
+
+const walletConfirmationPending = computed(() => ['network', 'account', 'signature'].includes(interactionPhase.value))
+const walletConnectionInProgress = computed(() => walletConfirmationPending.value || interactionPhase.value === 'verification')
+const walletPhaseLabel = computed(() => ({
+  network: '練習用ネットワークへの切替',
+  account: 'このページへの接続',
+  signature: '本人確認の署名'
+} as Record<string, string>)[interactionPhase.value] ?? '')
+
+function beginPhase(phase: typeof interactionPhase.value) {
+  if (waitingTimer) clearTimeout(waitingTimer)
+  interactionPhase.value = phase
+  waitingLongerThanExpected.value = false
+  returnedFromWallet.value = false
+  if (['network', 'account', 'signature', 'registration'].includes(phase)) {
+    waitingTimer = setTimeout(() => { waitingLongerThanExpected.value = true }, 8000)
+  }
+}
+
+function finishInteraction() {
+  if (waitingTimer) clearTimeout(waitingTimer)
+  waitingTimer = undefined
+  interactionPhase.value = 'idle'
+  waitingLongerThanExpected.value = false
+  returnedFromWallet.value = false
+}
+
+function walletErrorMessage(cause: unknown) {
+  const messages: string[] = []
+  let current: unknown = cause
+  let code: number | undefined
+  for (let depth = 0; current && depth < 5; depth += 1) {
+    const value = current as { code?: unknown; message?: unknown; shortMessage?: unknown; details?: unknown; cause?: unknown }
+    if (typeof value.code === 'number') code = value.code
+    for (const candidate of [value.message, value.shortMessage, value.details]) {
+      if (typeof candidate === 'string') messages.push(candidate)
+    }
+    current = value.cause
+  }
+  const detail = messages.join(' ').toLowerCase()
+  if (code === 4001 || detail.includes('user rejected') || detail.includes('user denied')) {
+    return 'MetaMaskで確認がキャンセルされました。もう一度「MetaMaskを開く」を押してやり直してください。'
+  }
+  if (code === -32002 || detail.includes('already pending') || detail.includes('request already pending')) {
+    return 'MetaMaskに未処理の確認画面があります。ブラウザ右上のMetaMaskアイコンを開き、確認またはキャンセルしてください。'
+  }
+  return cause instanceof Error ? cause.message : '仮想通貨ワレットを確認できませんでした。'
+}
 
 async function gateway(path: string, init: RequestInit = {}) {
   const response = await fetch(`/api${path}`, {
@@ -73,13 +149,14 @@ async function gateway(path: string, init: RequestInit = {}) {
   return body
 }
 
-async function inspect() {
-  error.value = ''
+async function inspect(silent = false) {
+  if (!silent) error.value = ''
   if (!token.value) return
   try {
     invitation.value = await gateway(`/v1/participant-invitations/${encodeURIComponent(token.value)}`) as Invitation
+    scheduleEnrollmentStatusRefresh()
   } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : '招待を確認できませんでした'
+    if (!silent) error.value = cause instanceof Error ? cause.message : '招待を確認できませんでした'
   }
 }
 
@@ -90,20 +167,25 @@ async function connectAndVerifyWallet() {
   try {
     const ethereum = (window as unknown as { ethereum?: { request: (value: unknown) => Promise<unknown> } }).ethereum
     if (!ethereum) throw new Error('仮想通貨ワレット（MetaMask）が見つかりません。インストールしてから、もう一度お試しください。')
+    beginPhase('network')
     await switchProviderToAmoy(ethereum)
     const chainId = await ethereum.request({ method: 'eth_chainId' })
     if (Number(chainId) !== AMOY_CHAIN_ID) throw new Error('仮想通貨ワレットを練習用ネットワーク（Polygon Amoy）へ切り替えてください。')
     const client = createWalletClient({ chain: polygonAmoy, transport: custom(ethereum) })
+    beginPhase('account')
     const [address] = await client.requestAddresses()
     wallet.value = getAddress(address)
+    beginPhase('verification')
     const challenge = await gateway('/v1/auth/siwe/nonce', {
       method: 'POST',
       body: JSON.stringify({ address: wallet.value, chainId: AMOY_CHAIN_ID })
     })
+    beginPhase('signature')
     const signature = await client.signMessage({
       account: wallet.value as `0x${string}`,
       message: String(challenge.message)
     })
+    beginPhase('verification')
     await gateway('/v1/auth/siwe/verify', {
       method: 'POST',
       body: JSON.stringify({ challengeId: challenge.challengeId, message: challenge.message, signature })
@@ -111,8 +193,9 @@ async function connectAndVerifyWallet() {
     message.value = 'ウォレットを確認しました。'
   } catch (cause) {
     wallet.value = ''
-    error.value = cause instanceof Error ? cause.message : 'ウォレットを確認できませんでした'
+    error.value = walletErrorMessage(cause)
   } finally {
+    finishInteraction()
     busy.value = false
   }
 }
@@ -122,20 +205,48 @@ async function claim() {
   message.value = ''
   busy.value = true
   try {
+    beginPhase('registration')
     invitation.value = await gateway(`/v1/participant-invitations/${encodeURIComponent(token.value)}/claim`, {
       method: 'POST',
       body: JSON.stringify({ acceptedTerms: acceptedTerms.value, acknowledgedTestOnly: acknowledgedTestOnly.value })
     }) as Invitation
+    scheduleEnrollmentStatusRefresh()
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : '本人登録を完了できませんでした'
   } finally {
+    finishInteraction()
     busy.value = false
   }
 }
 
 onMounted(() => {
   token.value = new URLSearchParams(location.hash.slice(1)).get('invite') ?? ''
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  window.addEventListener('focus', handleWindowFocus)
   inspect()
+})
+
+function scheduleEnrollmentStatusRefresh() {
+  if (enrollmentStatusTimer) clearInterval(enrollmentStatusTimer)
+  enrollmentStatusTimer = undefined
+  if (invitation.value?.state === 'CLAIMED' && invitation.value.enrollment?.state !== 'FUNDED') {
+    enrollmentStatusTimer = setInterval(() => { inspect(true) }, 10_000)
+  }
+}
+
+function handleVisibilityChange() {
+  if (document.visibilityState === 'visible' && walletConfirmationPending.value) returnedFromWallet.value = true
+}
+
+function handleWindowFocus() {
+  if (walletConfirmationPending.value) returnedFromWallet.value = true
+}
+
+onBeforeUnmount(() => {
+  if (waitingTimer) clearTimeout(waitingTimer)
+  if (enrollmentStatusTimer) clearInterval(enrollmentStatusTimer)
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
+  window.removeEventListener('focus', handleWindowFocus)
 })
 </script>
 
@@ -178,20 +289,39 @@ onMounted(() => {
         <div><h3>登録できません</h3><p>招待が期限切れまたは無効です。運営へ新しい招待を依頼してください。</p></div>
       </div>
 
-      <div v-else-if="!wallet && !isClaimed" class="action-card current-card">
+      <div v-else-if="(!wallet || walletConnectionInProgress) && !isClaimed" class="action-card current-card">
         <span class="action-icon fox-icon" aria-hidden="true">🦊</span>
         <div>
-          <h3>仮想通貨ワレットをつなぐ</h3>
-          <p>オレンジ色のキツネが目印のアプリを開きます。練習用ネットワークへの切替は自動で案内します。</p>
-          <div class="term-chips" aria-label="使用する技術">
-            <span><i aria-hidden="true">🦊</i> 仮想通貨ワレット <small>MetaMask</small></span>
-            <span><i aria-hidden="true">🧪</i> 練習用ネットワーク <small>Polygon Amoy</small></span>
-          </div>
-          <button class="primary-button" type="button" :disabled="busy" @click="connectAndVerifyWallet">
-            <span aria-hidden="true">🦊</span>
-            <span>{{ busy ? '確認しています…' : '仮想通貨ワレットを開く' }}<small v-if="!busy">MetaMask</small></span>
-          </button>
-          <p class="no-payment"><span aria-hidden="true">🛡️</span> この操作では支払いは発生しません</p>
+          <template v-if="walletConnectionInProgress">
+            <h3>{{ walletConfirmationPending ? 'MetaMaskで確認してください' : '署名を確認しています' }}</h3>
+            <div v-if="walletConfirmationPending" class="wallet-wait" role="status" aria-live="assertive">
+              <p class="wallet-wait-title"><span aria-hidden="true">🦊</span><strong>待っている操作：{{ walletPhaseLabel }}</strong></p>
+              <ol>
+                <li><strong>ブラウザ右上</strong>のMetaMask（キツネのアイコン）を開く</li>
+                <li>表示内容を確認し、MetaMaskの<strong>「確認」「接続」「署名」</strong>のいずれかを押す</li>
+                <li>このページへ戻る</li>
+              </ol>
+              <p v-if="returnedFromWallet">MetaMaskから戻りました。確認結果を待っています。</p>
+              <p v-if="waitingLongerThanExpected" class="wait-warning"><strong>まだ完了していません。</strong> MetaMaskが背後に隠れている可能性があります。右上のキツネのアイコンをもう一度開いてください。</p>
+            </div>
+            <div v-else class="server-wait" role="status" aria-live="polite">
+              <span class="spinner" aria-hidden="true"></span>
+              <p><strong>署名をサーバで確認しています。</strong><br />MetaMaskでの追加操作はありません。このページを閉じずにお待ちください。</p>
+            </div>
+          </template>
+          <template v-else>
+            <h3>仮想通貨ワレットをつなぐ</h3>
+            <p>ボタンを押すとMetaMaskの確認画面が開きます。画面が見えない場合は、ブラウザ右上のキツネのアイコンを開いてください。</p>
+            <div class="term-chips" aria-label="使用する技術">
+              <span><i aria-hidden="true">🦊</i> 仮想通貨ワレット <small>MetaMask</small></span>
+              <span><i aria-hidden="true">🧪</i> 練習用ネットワーク <small>Polygon Amoy</small></span>
+            </div>
+            <button class="primary-button" type="button" :disabled="busy" @click="connectAndVerifyWallet">
+              <span aria-hidden="true">🦊</span>
+              <span>MetaMaskを開く<small>確認画面で操作を続けます</small></span>
+            </button>
+            <p class="no-payment"><span aria-hidden="true">🛡️</span> この操作では支払いは発生しません</p>
+          </template>
         </div>
       </div>
 
@@ -202,20 +332,33 @@ onMounted(() => {
           <p class="wallet"><span aria-hidden="true">✅</span> 仮想通貨ワレットを確認しました <code>{{ wallet }}</code></p>
           <label class="check-row"><input v-model="acceptedTerms" type="checkbox" /><span aria-hidden="true">📄</span><span>公開実験の利用条件に同意します</span></label>
           <label class="check-row"><input v-model="acknowledgedTestOnly" type="checkbox" /><span aria-hidden="true">🧪</span><span>練習用で、実際のお金ではないことを確認します</span></label>
+          <p class="registration-note"><span aria-hidden="true">ℹ️</span> 次の登録操作ではMetaMaskは開きません。このページ内で登録を保存します。</p>
           <button class="primary-button" type="button" :disabled="!acceptedTerms || !acknowledgedTestOnly || busy" @click="claim">
-            <span aria-hidden="true">✓</span><span>{{ busy ? '登録しています…' : 'この内容で登録する' }}</span>
+            <span aria-hidden="true">✓</span><span>{{ busy ? '登録を保存しています…' : 'この内容で登録する' }}</span>
           </button>
+          <div v-if="interactionPhase === 'registration'" class="server-wait registration-wait" role="status" aria-live="polite">
+            <span class="spinner" aria-hidden="true"></span>
+            <p><strong>サーバへ登録しています。</strong><br />MetaMaskの操作はありません。ボタンをもう一度押さずにお待ちください。</p>
+          </div>
+          <p v-if="interactionPhase === 'registration' && waitingLongerThanExpected" class="wait-warning"><strong>通常より時間がかかっています。</strong> このページを閉じずに、通信結果が表示されるまでお待ちください。</p>
         </div>
       </div>
 
       <div v-else class="action-card success-card">
         <span class="action-icon success-icon" aria-hidden="true">✅</span>
         <div>
-          <h3>登録できました</h3>
-          <p><span aria-hidden="true">⏳</span> 現在は運営の処理待ちです。実験参加者による操作はありません。</p>
+          <h3>{{ enrollmentFunded ? '実験を始める準備ができました' : '本人登録が完了しました' }}</h3>
+          <p v-if="!enrollmentFunded"><span aria-hidden="true">⏳</span> 運営がオンチェーン承認と初回POL配布を行います。このページは自動的に状況を更新します。</p>
+          <p v-else><span aria-hidden="true">✅</span> オンチェーン承認と初回POL配布が完了しました。次の画面から実験を続けられます。</p>
+          <p v-if="invitation?.enrollment?.state === 'APPROVAL_FAILED' || invitation?.enrollment?.state === 'FUNDING_FAILED'" class="wait-warning"><strong>運営側で再処理します。</strong> 実験参加者による操作はありません。</p>
+          <div v-if="invitation?.enrollment" class="enrollment-status">
+            <span><small>オンチェーン準備</small><strong>{{ enrollmentFunded ? '完了' : '運営処理中' }}</strong></span>
+            <a v-if="invitation.enrollment.approvalTransactionHash" :href="`https://amoy.polygonscan.com/tx/${invitation.enrollment.approvalTransactionHash}`" target="_blank" rel="noopener noreferrer">承認記録を見る</a>
+            <a v-if="invitation.enrollment.fundingTransactionHash" :href="`https://amoy.polygonscan.com/tx/${invitation.enrollment.fundingTransactionHash}`" target="_blank" rel="noopener noreferrer">POL配布記録を見る</a>
+          </div>
           <ul class="roles">
-            <li v-if="hasUserRole"><b><i aria-hidden="true">🎧</i> ユーザ向け参加</b><span>運営承認後に利用できます</span></li>
-            <li v-if="hasCreatorRole"><b><i aria-hidden="true">🎵</i> 音楽クリエーター向け参加</b><span>運営承認後に利用できます</span></li>
+            <li v-if="hasUserRole"><b><i aria-hidden="true">🎧</i> ユーザ向け参加</b><a v-if="enrollmentFunded" :href="withBase('/demo/test-user-registration')">音楽リスナーの実験へ進む</a><span v-else>運営処理後に利用できます</span></li>
+            <li v-if="hasCreatorRole"><b><i aria-hidden="true">🎵</i> 音楽クリエーター向け参加</b><a v-if="enrollmentFunded" :href="withBase('/demo/creator-registration')">音楽クリエータの実験へ進む</a><span v-else>運営処理後に利用できます</span></li>
           </ul>
         </div>
       </div>
@@ -453,6 +596,63 @@ button:disabled { cursor: not-allowed; opacity: .5; }
 .primary-button small { font-size: .68rem; font-weight: 500; opacity: .85; }
 .no-payment { margin-top: .6rem !important; color: var(--vp-c-text-2); font-size: .82rem; }
 
+.wallet-wait,
+.server-wait,
+.registration-note {
+  margin-top: .8rem;
+  padding: .85rem;
+  border: 1px solid var(--vp-c-brand-1);
+  border-radius: 12px;
+  background: var(--vp-c-brand-soft);
+}
+
+.wallet-wait-title {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+}
+
+.wallet-wait ol {
+  margin: .7rem 0 0;
+  padding-left: 1.4rem;
+}
+
+.wallet-wait li + li { margin-top: .35rem; }
+
+.wait-warning {
+  margin-top: .7rem !important;
+  padding: .65rem .75rem;
+  border-left: 4px solid var(--vp-c-warning-1);
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+}
+
+.server-wait {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
+
+.server-wait p { margin: 0; }
+.registration-wait { margin-top: .75rem; }
+.registration-note { color: var(--vp-c-text-2); font-size: .86rem; }
+
+.spinner {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--vp-c-divider);
+  border-top-color: var(--vp-c-brand-1);
+  border-radius: 50%;
+  animation: participant-spin .9s linear infinite;
+}
+
+@keyframes participant-spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; border-top-color: var(--vp-c-divider); }
+}
+
 .check-row {
   display: grid;
   grid-template-columns: 1.25rem 1.5rem 1fr;
@@ -488,6 +688,11 @@ code { overflow-wrap: anywhere; }
 }
 
 .roles span { color: var(--vp-c-text-2); font-size: .9rem; }
+.roles a { font-size: .9rem; font-weight: 800; }
+.enrollment-status { display:flex;flex-wrap:wrap;align-items:center;gap:.55rem 1rem;margin-top:.8rem;padding:.7rem;border:1px solid var(--vp-c-divider);border-radius:10px;background:var(--vp-c-bg) }
+.enrollment-status span { display:grid }
+.enrollment-status small { color:var(--vp-c-text-2);font-size:.72rem }
+.enrollment-status a { font-size:.82rem;font-weight:700 }
 .safety { padding: .75rem 1rem; }
 .safety summary { cursor: pointer; font-weight: 700; }
 .safety ul { margin-bottom: 0; padding-left: 1.25rem; color: var(--vp-c-text-2); }

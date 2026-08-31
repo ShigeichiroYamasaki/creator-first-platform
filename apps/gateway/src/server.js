@@ -6,6 +6,11 @@ import { AccountTrustError, AccountTrustService } from './AccountTrustService.js
 import { GatewayStore } from './GatewayStore.js'
 import { InvitationMailer } from './InvitationMailer.js'
 import { ParticipantApplicationError, ParticipantApplicationService } from './ParticipantApplicationService.js'
+import {
+  AmoyParticipantEnrollmentChain,
+  ParticipantEnrollmentError,
+  ParticipantEnrollmentOperator
+} from './ParticipantEnrollmentOperator.js'
 import { ParticipantInvitationError, ParticipantInvitationService } from './ParticipantInvitationService.js'
 
 const COOKIE_NAME = 'cfp_demo_session'
@@ -77,7 +82,8 @@ export function createGatewayServer({
   config,
   mediaAdapter,
   store = new GatewayStore(config.databasePath),
-  accountTrustOptions = {}
+  accountTrustOptions = {},
+  participantEnrollmentOptions = {}
 }) {
   const accounts = new Map()
   const challenges = new Map()
@@ -85,7 +91,22 @@ export function createGatewayServer({
   const supportIdempotency = new Map()
   const accountTrust = new AccountTrustService({ config, store, ...accountTrustOptions })
   const invitationMailer = accountTrustOptions.invitationMailer ?? new InvitationMailer(config)
-  const participantInvitations = new ParticipantInvitationService({ config, store, mailer: invitationMailer })
+  const enrollmentChain = participantEnrollmentOptions.chain ?? (
+    config.participantRegistryAddress && config.participantOperatorPrivateKey
+      ? new AmoyParticipantEnrollmentChain({
+          rpcUrl: config.amoyRpcUrl,
+          registryAddress: config.participantRegistryAddress,
+          operatorPrivateKey: config.participantOperatorPrivateKey
+        })
+      : undefined
+  )
+  const participantEnrollment = new ParticipantEnrollmentOperator({ store, chain: enrollmentChain })
+  const participantInvitations = new ParticipantInvitationService({
+    config,
+    store,
+    mailer: invitationMailer,
+    enrollmentOperator: participantEnrollment
+  })
   const participantApplications = new ParticipantApplicationService({
     config,
     store,
@@ -539,7 +560,12 @@ export function createGatewayServer({
       const path = routePath(request)
       const account = getAccount(request, response)
       if (request.method === 'GET' && path === '/v1/health') {
-        return sendJson(response, 200, { status: 'ok', adapter: config.adapter, mode: config.runtimeMode })
+        return sendJson(response, 200, {
+          status: 'ok',
+          adapter: config.adapter,
+          mode: config.runtimeMode,
+          participantEnrollment: participantEnrollment.enabled ? 'enabled' : 'disabled'
+        })
       }
       if (request.method === 'GET' && path === '/v1/catalog/home') {
         return sendJson(response, 200, { tracks: catalog.map(publicTrack) })
@@ -589,6 +615,11 @@ export function createGatewayServer({
       if (request.method === 'POST' && invitationSendMatch) {
         participantInvitations.requireAdministrator(request)
         return sendJson(response, 200, await participantInvitations.send(invitationSendMatch[1], await readJson(request)))
+      }
+      const invitationEnrollmentMatch = /^\/v1\/admin\/participant-invitations\/([A-Za-z0-9-]+)\/enrollment$/.exec(path)
+      if (request.method === 'POST' && invitationEnrollmentMatch) {
+        participantInvitations.requireAdministrator(request)
+        return sendJson(response, 200, await participantEnrollment.process(invitationEnrollmentMatch[1]))
       }
       const invitationMatch = /^\/v1\/participant-invitations\/([A-Za-z0-9_-]{32,128})$/.exec(path)
       if (request.method === 'GET' && invitationMatch) {
@@ -679,7 +710,7 @@ export function createGatewayServer({
       throw new GatewayHttpError(404, 'NOT_FOUND', 'Route not found')
     } catch (error) {
       if (response.headersSent) return response.destroy(error)
-      const knownError = error instanceof GatewayHttpError || error instanceof AccountTrustError || error instanceof ParticipantInvitationError || error instanceof ParticipantApplicationError
+      const knownError = error instanceof GatewayHttpError || error instanceof AccountTrustError || error instanceof ParticipantInvitationError || error instanceof ParticipantApplicationError || error instanceof ParticipantEnrollmentError
       const status = knownError ? error.status : 500
       const code = knownError ? error.code : 'INTERNAL_ERROR'
       const message = knownError ? error.message : 'Gateway request failed'
@@ -692,6 +723,7 @@ export function createGatewayServer({
     server,
     store,
     invitationMailer,
+    participantEnrollment,
     async listen(port = config.port, host = config.host) {
       await new Promise((resolve, reject) => {
         server.once('error', reject)

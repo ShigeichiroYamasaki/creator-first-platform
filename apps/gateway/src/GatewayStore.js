@@ -133,6 +133,31 @@ export class GatewayStore {
         occurred_at TEXT NOT NULL,
         detail_json TEXT NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS participant_enrollments (
+        invitation_id TEXT PRIMARY KEY,
+        participant_id TEXT NOT NULL UNIQUE,
+        operation_id TEXT NOT NULL UNIQUE,
+        wallet_address TEXT NOT NULL,
+        role_bits INTEGER NOT NULL,
+        state TEXT NOT NULL,
+        approval_expires_at TEXT NOT NULL,
+        approval_tx_hash TEXT,
+        approval_confirmed_at TEXT,
+        funding_tx_hash TEXT,
+        funding_confirmed_at TEXT,
+        initial_funding_amount_atomic TEXT,
+        last_error_code TEXT,
+        last_error_message TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS participant_enrollment_audit_events (
+        event_id TEXT PRIMARY KEY,
+        invitation_id TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        occurred_at TEXT NOT NULL,
+        detail_json TEXT NOT NULL
+      );
     `)
     const applicationColumns = new Set(this.database.prepare('PRAGMA table_info(participant_applications)').all().map((column) => column.name))
     if (!applicationColumns.has('verification_expires_at')) {
@@ -338,6 +363,88 @@ export class GatewayStore {
     return this.database.prepare(`
       SELECT event_type, occurred_at, detail_json
       FROM participant_invitation_audit_events WHERE invitation_id = ? ORDER BY occurred_at, rowid
+    `).all(invitationId)
+  }
+
+  createParticipantEnrollment(value) {
+    this.database.prepare(`
+      INSERT OR IGNORE INTO participant_enrollments (
+        invitation_id, participant_id, operation_id, wallet_address, role_bits,
+        state, approval_expires_at, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, 'READY_FOR_APPROVAL', ?, ?, ?)
+    `).run(
+      value.invitationId,
+      value.participantId,
+      value.operationId,
+      value.walletAddress,
+      value.roleBits,
+      value.approvalExpiresAt,
+      value.createdAt,
+      value.createdAt
+    )
+    return this.participantEnrollment(value.invitationId)
+  }
+
+  participantEnrollment(invitationId) {
+    return this.database.prepare('SELECT * FROM participant_enrollments WHERE invitation_id = ?').get(invitationId)
+  }
+
+  markParticipantEnrollmentApprovalSubmitted(invitationId, transactionHash, updatedAt) {
+    return this.database.prepare(`
+      UPDATE participant_enrollments
+      SET state = 'APPROVAL_SUBMITTED', approval_tx_hash = ?,
+          last_error_code = NULL, last_error_message = NULL, updated_at = ?
+      WHERE invitation_id = ? AND state IN ('READY_FOR_APPROVAL', 'APPROVAL_FAILED')
+    `).run(transactionHash, updatedAt, invitationId).changes
+  }
+
+  markParticipantEnrollmentApproved(invitationId, transactionHash, confirmedAt) {
+    return this.database.prepare(`
+      UPDATE participant_enrollments
+      SET state = 'APPROVED', approval_tx_hash = COALESCE(?, approval_tx_hash),
+          approval_confirmed_at = ?, last_error_code = NULL, last_error_message = NULL, updated_at = ?
+      WHERE invitation_id = ? AND state != 'FUNDED'
+    `).run(transactionHash, confirmedAt, confirmedAt, invitationId).changes
+  }
+
+  markParticipantEnrollmentFundingSubmitted(invitationId, transactionHash, updatedAt) {
+    return this.database.prepare(`
+      UPDATE participant_enrollments
+      SET state = 'FUNDING_SUBMITTED', funding_tx_hash = ?,
+          last_error_code = NULL, last_error_message = NULL, updated_at = ?
+      WHERE invitation_id = ? AND state IN ('APPROVED', 'FUNDING_FAILED')
+    `).run(transactionHash, updatedAt, invitationId).changes
+  }
+
+  markParticipantEnrollmentFunded(invitationId, transactionHash, amountAtomic, confirmedAt) {
+    return this.database.prepare(`
+      UPDATE participant_enrollments
+      SET state = 'FUNDED', funding_tx_hash = COALESCE(?, funding_tx_hash),
+          funding_confirmed_at = ?, initial_funding_amount_atomic = ?,
+          last_error_code = NULL, last_error_message = NULL, updated_at = ?
+      WHERE invitation_id = ?
+    `).run(transactionHash, confirmedAt, amountAtomic, confirmedAt, invitationId).changes
+  }
+
+  failParticipantEnrollment(invitationId, phase, code, message, updatedAt) {
+    const state = phase === 'approval' ? 'APPROVAL_FAILED' : 'FUNDING_FAILED'
+    return this.database.prepare(`
+      UPDATE participant_enrollments
+      SET state = ?, last_error_code = ?, last_error_message = ?, updated_at = ?
+      WHERE invitation_id = ? AND state != 'FUNDED'
+    `).run(state, code, message, updatedAt, invitationId).changes
+  }
+
+  recordParticipantEnrollmentEvent(value) {
+    this.database.prepare(`
+      INSERT INTO participant_enrollment_audit_events VALUES (?, ?, ?, ?, ?)
+    `).run(value.eventId, value.invitationId, value.eventType, value.occurredAt, JSON.stringify(value.detail ?? {}))
+  }
+
+  participantEnrollmentEvents(invitationId) {
+    return this.database.prepare(`
+      SELECT event_type, occurred_at, detail_json
+      FROM participant_enrollment_audit_events WHERE invitation_id = ? ORDER BY occurred_at, rowid
     `).all(invitationId)
   }
 

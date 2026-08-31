@@ -49,6 +49,29 @@ export function loadConfig(environment = process.env) {
   if (adminToken && adminToken.length < 32) {
     throw new Error('GATEWAY_ADMIN_TOKEN must contain at least 32 characters')
   }
+  const participantRegistryAddress = environment.GATEWAY_PARTICIPANT_REGISTRY_ADDRESS?.trim()
+  const participantOperatorPrivateKey = secret(
+    environment,
+    'GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY',
+    'GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE'
+  )
+  if (participantRegistryAddress && !/^0x[0-9a-fA-F]{40}$/.test(participantRegistryAddress)) {
+    throw new Error('GATEWAY_PARTICIPANT_REGISTRY_ADDRESS must be an EVM address')
+  }
+  if (participantOperatorPrivateKey && !/^0x[0-9a-fA-F]{64}$/.test(participantOperatorPrivateKey)) {
+    throw new Error('GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY must be a 32-byte hex key')
+  }
+  if (Boolean(participantRegistryAddress) !== Boolean(participantOperatorPrivateKey)) {
+    throw new Error('Participant enrollment requires both its registry address and operator private key')
+  }
+  const chainId = positiveInteger(environment.GATEWAY_CHAIN_ID, 80002, 'GATEWAY_CHAIN_ID')
+  const amoyRpcUrl = environment.GATEWAY_AMOY_RPC_URL ?? 'https://polygon-amoy-bor-rpc.publicnode.com'
+  if (participantRegistryAddress && chainId !== 80002) {
+    throw new Error('Participant enrollment operator is restricted to Polygon Amoy chain 80002')
+  }
+  if (participantRegistryAddress && new URL(amoyRpcUrl).protocol !== 'https:') {
+    throw new Error('GATEWAY_AMOY_RPC_URL must use HTTPS when participant enrollment is enabled')
+  }
   if (mailMode === 'webhook' && new URL(environment.GATEWAY_MAIL_WEBHOOK_URL).protocol !== 'https:') {
     throw new Error('GATEWAY_MAIL_WEBHOOK_URL must use HTTPS')
   }
@@ -93,7 +116,10 @@ export function loadConfig(environment = process.env) {
     allowedOrigin: environment.GATEWAY_ALLOWED_ORIGIN ?? 'http://127.0.0.1:5173',
     publicDomain: environment.GATEWAY_SIWE_DOMAIN ?? '127.0.0.1:5173',
     publicUri,
-    chainId: positiveInteger(environment.GATEWAY_CHAIN_ID, 80002, 'GATEWAY_CHAIN_ID'),
+    chainId,
+    amoyRpcUrl,
+    participantRegistryAddress,
+    participantOperatorPrivateKey,
     webauthnOrigin,
     webauthnRpId,
     webauthnRpName: environment.GATEWAY_WEBAUTHN_RP_NAME ?? 'Creator First Platform Testnet',

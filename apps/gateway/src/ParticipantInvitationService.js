@@ -23,19 +23,20 @@ function safeTokenEqual(actual, expected) {
   return timingSafeEqual(actualHash, expectedHash)
 }
 
-function publicInvitation(row) {
+function publicInvitation(row, enrollment) {
   return {
     invitationId: row.invitation_id,
     displayName: row.display_name,
     roles: row.role_bits,
     state: row.state,
-    expiresAt: row.expires_at
+    expiresAt: row.expires_at,
+    enrollment
   }
 }
 
-function adminInvitation(row) {
+function adminInvitation(row, enrollment) {
   return {
-    ...publicInvitation(row),
+    ...publicInvitation(row, enrollment),
     email: row.email,
     claimedWallet: row.claimed_wallet ?? null,
     createdAt: row.created_at,
@@ -45,10 +46,19 @@ function adminInvitation(row) {
 }
 
 export class ParticipantInvitationService {
-  constructor({ config, store, mailer }) {
+  constructor({ config, store, mailer, enrollmentOperator }) {
     this.config = config
     this.store = store
     this.mailer = mailer
+    this.enrollmentOperator = enrollmentOperator
+  }
+
+  publicView(row) {
+    return publicInvitation(row, this.enrollmentOperator.statusForInvitation(row.invitation_id))
+  }
+
+  adminView(row) {
+    return adminInvitation(row, this.enrollmentOperator.statusForInvitation(row.invitation_id))
   }
 
   requireAdministrator(request) {
@@ -87,14 +97,14 @@ export class ParticipantInvitationService {
     this.store.createParticipantInvitation({ invitationId, tokenHash: tokenHash(token), email, displayName, roleBits: roles, createdAt, expiresAt })
     this.store.recordParticipantInvitationEvent({ eventId: randomUUID(), invitationId, eventType: 'CREATED', occurredAt: createdAt, detail: { roles, expiresAt } })
     return {
-      ...adminInvitation(this.store.participantInvitationById(invitationId)),
+      ...this.adminView(this.store.participantInvitationById(invitationId)),
       invitationUri: `${this.config.invitationPublicUrl}#invite=${token}`,
       token
     }
   }
 
   list() {
-    return this.store.participantInvitations().map(adminInvitation)
+    return this.store.participantInvitations().map((row) => this.adminView(row))
   }
 
   async send(invitationId, body = {}) {
@@ -128,7 +138,7 @@ export class ParticipantInvitationService {
     }
     const row = this.store.participantInvitationByTokenHash(tokenHash(token))
     if (!row) throw new ParticipantInvitationError(404, 'INVITATION_NOT_FOUND', 'Invitation was not found')
-    return { ...publicInvitation(row), expired: row.expires_at <= new Date().toISOString() }
+    return { ...this.publicView(row), expired: row.expires_at <= new Date().toISOString() }
   }
 
   claim(token, account, body) {
@@ -138,7 +148,7 @@ export class ParticipantInvitationService {
     const row = this.store.participantInvitationByTokenHash(tokenHash(token))
     if (!row) throw new ParticipantInvitationError(404, 'INVITATION_NOT_FOUND', 'Invitation was not found')
     if (row.state === 'CLAIMED') {
-      if (row.claimed_wallet === account.walletAddress) return publicInvitation(row)
+      if (row.claimed_wallet === account.walletAddress) return this.publicView(row)
       throw new ParticipantInvitationError(409, 'INVITATION_ALREADY_CLAIMED', 'Invitation has already been claimed')
     }
     if (body.acceptedTerms !== true || body.acknowledgedTestOnly !== true) {
@@ -156,6 +166,6 @@ export class ParticipantInvitationService {
     }
     this.store.recordParticipantInvitationEvent({ eventId: randomUUID(), invitationId: row.invitation_id, eventType: 'CLAIMED', occurredAt: claimedAt, detail: { wallet } })
     this.store.markParticipantApplicationInvitationClaimed(row.invitation_id, claimedAt)
-    return publicInvitation(this.store.participantInvitationById(row.invitation_id))
+    return this.publicView(this.store.participantInvitationById(row.invitation_id))
   }
 }

@@ -34,6 +34,13 @@ export default defineConfig({
       chainId: 80002,
       url: amoyRpcUrl,
       accounts: [configVariable("DEPLOYER_PRIVATE_KEY")],
+      // Amoy currently requires a slightly higher intrinsic limit than the
+      // 21,000 gas returned for a plain native-token transfer.
+      gasMultiplier: 1.2,
+      // Polygon Amoy rejects the low EIP-1559 priority fee that some RPC
+      // estimators return. Use a legacy gas price above Amoy's 25 gwei floor
+      // so Ignition deployments are accepted consistently.
+      gasPrice: 50_000_000_000n,
     },
   },
 });

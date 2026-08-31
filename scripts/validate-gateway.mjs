@@ -4,6 +4,7 @@ const requiredFiles = [
   'apps/gateway/src/server.js',
   'apps/gateway/src/AccountTrustService.js',
   'apps/gateway/src/ParticipantApplicationService.js',
+  'apps/gateway/src/ParticipantEnrollmentOperator.js',
   'apps/gateway/src/GmailSmtpTransport.js',
   'apps/gateway/src/ParticipantInvitationService.js',
   'apps/gateway/src/InvitationMailer.js',
@@ -42,7 +43,10 @@ const requirements = [
   ['UNDER_REVIEW', 'participant review state'],
   ['APPROVED_INVITATION_SENT', 'participant approval notice state'],
   ['gmail-smtp', 'Gmail SMTP delivery mode'],
-  ['smtp.gmail.com', 'Gmail TLS endpoint']
+  ['smtp.gmail.com', 'Gmail TLS endpoint'],
+  ['/enrollment', 'participant enrollment operator API'],
+  ['INITIAL_TEST_POL_CONFIRMED', 'initial Test POL audit state'],
+  ['AMOY_MIN_PRIORITY_FEE', 'Polygon Amoy fee floor']
 ]
 
 const missing = requirements.filter(([needle]) => !source.includes(needle))
@@ -67,7 +71,15 @@ const consistencyRequirements = [
   ['docs/demo/participant-registration.md', '<ParticipantInvitationRegistration />', 'participant invitation claim UI'],
   ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', 'ユーザ向け参加', 'role-specific participant view'],
   ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', '音楽クリエーター向け参加', 'creator-specific participant view'],
-  ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', '運営の処理を待ってください', 'operator-owned participant state'],
+  ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', '運営がオンチェーン承認と初回POL配布を行います', 'operator-owned participant state'],
+  ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', 'walletConfirmationPending', 'wallet confirmation state isolation'],
+  ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', 'MetaMaskが背後に隠れている可能性があります', 'hidden wallet prompt guidance'],
+  ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', '次の登録操作ではMetaMaskは開きません', 'wallet and server registration distinction'],
+  ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', 'code === -32002', 'pending wallet request recovery guidance'],
+  ['docs/.vitepress/theme/ParticipantAdminDemo.vue', '承認・初回POL配布', 'operator enrollment control'],
+  ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', 'enrollmentFunded', 'participant funding status'],
+  ['deployment/gcp/startup.sh', 'GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE', 'participant operator secret mount'],
+  ['deployment/gcp/README.md', 'creator-first-platform-participant-operator', 'participant operator key custody'],
   ['docs/.vitepress/theme/TestnetUserJourneyDemo.vue', '<ParticipantApplicationDemo', 'user application UI'],
   ['docs/.vitepress/theme/TestnetCreatorJourneyDemo.vue', '<ParticipantApplicationDemo', 'creator application UI'],
   ['docs/demo/participant-application-status.md', '<ParticipantApplicationDemo status-only />', 'dedicated application status UI'],

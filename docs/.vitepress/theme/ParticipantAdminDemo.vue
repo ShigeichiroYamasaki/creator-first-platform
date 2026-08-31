@@ -3,7 +3,8 @@ import { onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { resolveCloudAdminTarget } from './cloud-demo-runtime.js'
 
-type Invitation = { invitationId: string; email: string; displayName: string; roles: number; state: string; expiresAt: string; invitationUri?: string; token?: string; sentAt?: string | null; claimedWallet?: string | null }
+type Enrollment = { state: string; approvalTransactionHash?: string | null; fundingTransactionHash?: string | null; initialFundingAmountAtomic?: string | null; errorMessage?: string | null }
+type Invitation = { invitationId: string; email: string; displayName: string; roles: number; state: string; expiresAt: string; invitationUri?: string; token?: string; sentAt?: string | null; claimedWallet?: string | null; enrollment: Enrollment }
 type Application = { applicationId: string; email: string; displayName: string; roles: number; state: string; createdAt: string; invitationId?: string | null; rejectionCode?: string | null }
 
 const adminToken = ref('')
@@ -18,6 +19,8 @@ const lastInvitationUri = ref('')
 const lastMailPreview = ref('')
 const error = ref('')
 const busy = ref(false)
+const processingInvitationId = ref('')
+const operationMessage = ref('')
 const connectingToCloud = ref(false)
 
 onMounted(async () => {
@@ -73,6 +76,44 @@ function applicationStateLabel(state: string) {
     REJECTED: '今回は不承認',
     APPROVAL_DELIVERY_FAILED: '承認メール送信要確認'
   } as Record<string, string>)[state] ?? state
+}
+
+function enrollmentStateLabel(invitation: Invitation) {
+  if (invitation.state !== 'CLAIMED') return '本人のワレット登録待ち'
+  return ({
+    OPERATOR_DISABLED: '運営ワーカー未設定',
+    READY_AFTER_WALLET_CLAIM: '運営処理を開始できます',
+    READY_FOR_APPROVAL: 'オンチェーン承認待ち',
+    APPROVAL_SUBMITTED: 'オンチェーン承認確認中',
+    APPROVED: '初回POL配布待ち',
+    FUNDING_SUBMITTED: '初回POL配布確認中',
+    APPROVAL_FAILED: 'オンチェーン承認を再実行できます',
+    FUNDING_FAILED: '初回POL配布を再実行できます',
+    FUNDED: 'オンチェーン承認・初回POL配布済み'
+  } as Record<string, string>)[invitation.enrollment?.state] ?? invitation.enrollment?.state ?? '状態不明'
+}
+
+function canProcessEnrollment(invitation: Invitation) {
+  return invitation.state === 'CLAIMED' && !['OPERATOR_DISABLED', 'FUNDED'].includes(invitation.enrollment?.state)
+}
+
+async function processEnrollment(invitation: Invitation) {
+  error.value = ''
+  operationMessage.value = ''
+  busy.value = true
+  processingInvitationId.value = invitation.invitationId
+  try {
+    const enrollment = await api(`/v1/admin/participant-invitations/${invitation.invitationId}/enrollment`, { method: 'POST' }) as Enrollment
+    operationMessage.value = enrollment.state === 'FUNDED'
+      ? `${invitation.displayName}さんのオンチェーン承認と初回POL配布が完了しました。`
+      : `${invitation.displayName}さんの運営処理を受け付けました。`
+    await loadInvitations()
+  } catch (cause) {
+    error.value = cause instanceof Error ? cause.message : 'オンチェーン承認と初回POL配布を完了できませんでした'
+  } finally {
+    processingInvitationId.value = ''
+    busy.value = false
+  }
 }
 
 async function reviewApplication(applicationId: string, decision: 'approve' | 'reject') {
@@ -152,6 +193,7 @@ async function copyUri() {
       <p>完全なURIは作成時だけ返されます。メール送信後は管理画面にも再表示しません。</p>
     </div>
     <p v-if="error" class="error">{{ error }}</p>
+    <p v-if="operationMessage" class="success">{{ operationMessage }}</p>
     <div class="panel">
       <h2>実験参加申請</h2>
       <p>本人がメール確認を終えた「審査待ち」の申請だけを承認できます。承認すると、参加登録用の一回限りリンクがメールで送られます。</p>
@@ -159,11 +201,35 @@ async function copyUri() {
     </div>
     <div class="panel">
       <h2>招待状況</h2>
-      <div class="table-wrap"><table><thead><tr><th>実験参加者</th><th>資格</th><th>状態</th><th>本人選択Wallet</th><th>期限</th></tr></thead><tbody><tr v-for="item in invitations" :key="item.invitationId"><td>{{ item.displayName }}<br><small>{{ item.email }}</small></td><td>{{ roleLabel(item.roles) }}</td><td>{{ item.state }}</td><td><code>{{ item.claimedWallet ?? '未選択' }}</code></td><td>{{ new Date(item.expiresAt).toLocaleString('ja-JP') }}</td></tr></tbody></table></div>
+      <p>本人が仮想通貨ワレットを登録した後、「承認・初回POL配布」を実行します。参加者IDはランダム値で作成され、氏名やメールアドレスをブロックチェーンへ記録しません。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>実験参加者</th><th>資格</th><th>招待</th><th>本人選択Wallet</th><th>オンチェーン準備</th><th>運営操作</th><th>期限</th></tr></thead>
+          <tbody>
+            <tr v-for="item in invitations" :key="item.invitationId">
+              <td>{{ item.displayName }}<br><small>{{ item.email }}</small></td>
+              <td>{{ roleLabel(item.roles) }}</td>
+              <td>{{ item.state }}</td>
+              <td><code>{{ item.claimedWallet ?? '未選択' }}</code></td>
+              <td>
+                <strong>{{ enrollmentStateLabel(item) }}</strong>
+                <small v-if="item.enrollment?.errorMessage" class="error-detail">{{ item.enrollment.errorMessage }}</small>
+                <span class="tx-links">
+                  <a v-if="item.enrollment?.approvalTransactionHash" :href="`https://amoy.polygonscan.com/tx/${item.enrollment.approvalTransactionHash}`" target="_blank" rel="noopener noreferrer">承認記録</a>
+                  <a v-if="item.enrollment?.fundingTransactionHash" :href="`https://amoy.polygonscan.com/tx/${item.enrollment.fundingTransactionHash}`" target="_blank" rel="noopener noreferrer">POL配布記録</a>
+                </span>
+              </td>
+              <td><button type="button" :disabled="busy || !canProcessEnrollment(item)" @click="processEnrollment(item)">{{ processingInvitationId === item.invitationId ? '処理しています…' : item.enrollment?.state === 'FUNDED' ? '準備完了' : ['APPROVAL_FAILED', 'FUNDING_FAILED'].includes(item.enrollment?.state) ? '再実行' : '承認・初回POL配布' }}</button></td>
+              <td>{{ new Date(item.expiresAt).toLocaleString('ja-JP') }}</td>
+            </tr>
+            <tr v-if="invitations.length === 0"><td colspan="7">招待はありません</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-.participant-admin{display:grid;gap:1rem;margin:1.5rem 0}.panel,.warning{padding:1rem;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg-soft)}.warning{border-color:var(--vp-c-warning-1)}form,label{display:grid;gap:.4rem}form{gap:.9rem}input,select,button{min-height:44px;padding:.55rem .7rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}button{border-color:var(--vp-c-brand-1);background:var(--vp-c-brand-1);color:white;font-weight:700;cursor:pointer}button.danger{border-color:var(--vp-c-danger-1);background:transparent;color:var(--vp-c-danger-1)}button:disabled{opacity:.5}.check{grid-template-columns:auto 1fr;align-items:center}.check input{min-height:auto}.result code{display:block;overflow-wrap:anywhere;padding:.75rem}.error{color:var(--vp-c-danger-1)}.table-wrap{overflow:auto}table{min-width:760px}small{color:var(--vp-c-text-2)}.review-actions{display:grid;gap:.4rem}.review-actions button{white-space:nowrap}
+.participant-admin{display:grid;gap:1rem;margin:1.5rem 0}.panel,.warning{padding:1rem;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg-soft)}.warning{border-color:var(--vp-c-warning-1)}form,label{display:grid;gap:.4rem}form{gap:.9rem}input,select,button{min-height:44px;padding:.55rem .7rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}button{border-color:var(--vp-c-brand-1);background:var(--vp-c-brand-1);color:white;font-weight:700;cursor:pointer}button.danger{border-color:var(--vp-c-danger-1);background:transparent;color:var(--vp-c-danger-1)}button:disabled{opacity:.5}.check{grid-template-columns:auto 1fr;align-items:center}.check input{min-height:auto}.result code{display:block;overflow-wrap:anywhere;padding:.75rem}.error{color:var(--vp-c-danger-1)}.success{padding:.8rem 1rem;border:1px solid var(--vp-c-success-1);border-radius:10px;background:var(--vp-c-bg-soft);color:var(--vp-c-success-1);font-weight:700}.table-wrap{overflow:auto}table{min-width:1080px}small{color:var(--vp-c-text-2)}.review-actions{display:grid;gap:.4rem}.review-actions button{white-space:nowrap}.error-detail{display:block;max-width:260px;margin-top:.3rem;color:var(--vp-c-danger-1)}.tx-links{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.35rem;font-size:.78rem}
 </style>

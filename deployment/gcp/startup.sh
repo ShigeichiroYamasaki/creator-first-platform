@@ -71,6 +71,34 @@ chown 1000:1000 "${APP_DIR}/secrets"
 chown 1000:1000 "${APP_DIR}/secrets/gmail-app-password" "${APP_DIR}/secrets/admin-token"
 chmod 0400 "${APP_DIR}/secrets/gmail-app-password" "${APP_DIR}/secrets/admin-token"
 
+participant_operator_key="$(metadata_value gateway-participant-operator-private-key || true)"
+if [[ -n "${participant_operator_key}" ]]; then
+  if [[ ! "${participant_operator_key}" =~ ^0x[0-9a-fA-F]{64}$ ]]; then
+    echo "CREATOR_FIRST_DEPLOY_STATUS=failed_invalid_participant_operator_key"
+    exit 1
+  fi
+  umask 077
+  printf '%s' "${participant_operator_key}" > "${APP_DIR}/secrets/participant-operator-private-key"
+fi
+participant_registry_address="$(metadata_value participant-registry-address || true)"
+if [[ -n "${participant_registry_address}" ]]; then
+  if [[ ! "${participant_registry_address}" =~ ^0x[0-9a-fA-F]{40}$ ]]; then
+    echo "CREATOR_FIRST_DEPLOY_STATUS=failed_invalid_participant_registry_address"
+    exit 1
+  fi
+  printf '%s' "${participant_registry_address}" > "${APP_DIR}/bootstrap/participant-registry-address"
+fi
+if [[ -s "${APP_DIR}/secrets/participant-operator-private-key" ]]; then
+  chown 1000:1000 "${APP_DIR}/secrets/participant-operator-private-key"
+  chmod 0400 "${APP_DIR}/secrets/participant-operator-private-key"
+fi
+participant_registry_address="$(cat "${APP_DIR}/bootstrap/participant-registry-address" 2>/dev/null || true)"
+if [[ -n "${participant_registry_address}" && ! -s "${APP_DIR}/secrets/participant-operator-private-key" ]] || \
+   [[ -z "${participant_registry_address}" && -s "${APP_DIR}/secrets/participant-operator-private-key" ]]; then
+  echo "CREATOR_FIRST_DEPLOY_STATUS=failed_incomplete_participant_operator_configuration"
+  exit 1
+fi
+
 cat > "${APP_DIR}/bootstrap/gateway.env" <<'ENV'
 GATEWAY_HOST=0.0.0.0
 GATEWAY_PORT=8787
@@ -93,6 +121,13 @@ GATEWAY_MEDIA_ADAPTER=file
 GATEWAY_MEDIA_ROOT=/music
 GATEWAY_CHAIN_ID=80002
 ENV
+if [[ -n "${participant_registry_address}" ]]; then
+  cat >> "${APP_DIR}/bootstrap/gateway.env" <<ENV
+GATEWAY_AMOY_RPC_URL=https://polygon-amoy-bor-rpc.publicnode.com
+GATEWAY_PARTICIPANT_REGISTRY_ADDRESS=${participant_registry_address}
+GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key
+ENV
+fi
 chmod 0640 "${APP_DIR}/bootstrap/gateway.env"
 
 site_url="$(metadata_value demo-site-url || true)"
@@ -255,6 +290,13 @@ GATEWAY_CHAIN_ID=80002
 GATEWAY_INVITATION_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/participant-registration
 GATEWAY_APPLICATION_STATUS_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/participant-application-status
 ENV
+if [[ -n "${participant_registry_address}" ]]; then
+  cat >> "${APP_DIR}/bootstrap/gateway.env" <<ENV
+GATEWAY_AMOY_RPC_URL=https://polygon-amoy-bor-rpc.publicnode.com
+GATEWAY_PARTICIPANT_REGISTRY_ADDRESS=${participant_registry_address}
+GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key
+ENV
+fi
 chmod 0640 "${APP_DIR}/bootstrap/gateway.env"
 docker-compose -p creator-first-streaming up -d --force-recreate --no-deps participant-gateway
 

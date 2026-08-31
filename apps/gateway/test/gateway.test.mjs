@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
 import { privateKeyToAccount } from 'viem/accounts'
+import { zeroAddress, zeroHash } from 'viem'
 import { loadConfig } from '../src/config.js'
 import { InvitationMailer } from '../src/InvitationMailer.js'
 import { FileMediaAdapter } from '../src/media/FileMediaAdapter.js'
@@ -13,6 +14,43 @@ import { parseSingleRange } from '../src/media/range.js'
 import { createGatewayServer } from '../src/server.js'
 
 const TEST_PRIVATE_KEY = `0x${'0123456789abcdef'.repeat(4)}`
+
+class FakeParticipantEnrollmentChain {
+  constructor() {
+    this.calls = []
+    this.record = {
+      wallet: zeroAddress,
+      approvedRoles: 0,
+      active: false,
+      initialFundingCompleted: false,
+      registeredParticipantId: zeroHash,
+      balance: 0n
+    }
+  }
+
+  async status() {
+    return { ...this.record }
+  }
+
+  async approve(value) {
+    this.calls.push(['approve', value])
+    this.record = {
+      ...this.record,
+      wallet: value.wallet,
+      approvedRoles: value.roles,
+      active: true,
+      registeredParticipantId: value.participantId
+    }
+    return { transactionHash: `0x${'11'.repeat(32)}`, blockNumber: 101n }
+  }
+
+  async fund(value) {
+    this.calls.push(['fund', value])
+    this.record.initialFundingCompleted = true
+    this.record.balance = 20_000_000_000_000_000n
+    return { transactionHash: `0x${'22'.repeat(32)}`, blockNumber: 102n, amount: this.record.balance }
+  }
+}
 
 function client(baseUrl) {
   let cookie = ''
@@ -323,7 +361,12 @@ test('Participant applies, verifies email, receives approval invitation and clai
     GATEWAY_INVITATION_PUBLIC_URL: 'https://example.test/demo/participant-registration',
     GATEWAY_APPLICATION_STATUS_PUBLIC_URL: 'https://example.test/demo/participant-application-status'
   })
-  const gateway = createGatewayServer({ config, mediaAdapter: new FileMediaAdapter(config.mediaRoot) })
+  const enrollmentChain = new FakeParticipantEnrollmentChain()
+  const gateway = createGatewayServer({
+    config,
+    mediaAdapter: new FileMediaAdapter(config.mediaRoot),
+    participantEnrollmentOptions: { chain: enrollmentChain }
+  })
   const address = await gateway.listen(0)
   context.after(() => gateway.close())
   const api = client(`http://127.0.0.1:${address.port}${config.basePath}`)
@@ -387,8 +430,30 @@ test('Participant applies, verifies email, receives approval invitation and clai
     method: 'POST', body: JSON.stringify({ acceptedTerms: true, acknowledgedTestOnly: true })
   }))
   assert.equal(claimed.body.state, 'CLAIMED')
+  assert.equal(claimed.body.enrollment.state, 'READY_AFTER_WALLET_CLAIM')
   const current = await json(await api.request('/v1/participant-applications/current'))
   assert.equal(current.body.application.state, 'INVITATION_CLAIMED')
+
+  const invitationList = await json(await api.request('/v1/admin/participant-invitations', { headers: adminHeaders }))
+  const claimedInvitation = invitationList.body.invitations.find((item) => item.state === 'CLAIMED')
+  assert.ok(claimedInvitation)
+  const enrolled = await json(await api.request(`/v1/admin/participant-invitations/${claimedInvitation.invitationId}/enrollment`, {
+    method: 'POST', headers: adminHeaders
+  }))
+  assert.equal(enrolled.response.status, 200)
+  assert.equal(enrolled.body.state, 'FUNDED')
+  assert.equal(enrolled.body.initialFundingAmountAtomic, '20000000000000000')
+  assert.equal(enrollmentChain.calls[0][0], 'approve')
+  assert.equal(enrollmentChain.calls[1][0], 'fund')
+  assert.equal(enrollmentChain.calls[0][1].wallet, account.address)
+
+  const replayedEnrollment = await json(await api.request(`/v1/admin/participant-invitations/${claimedInvitation.invitationId}/enrollment`, {
+    method: 'POST', headers: adminHeaders
+  }))
+  assert.equal(replayedEnrollment.body.state, 'FUNDED')
+  assert.equal(enrollmentChain.calls.length, 2)
+  const finalInvitation = await json(await api.request(`/v1/participant-invitations/${invitationToken}`))
+  assert.equal(finalInvitation.body.enrollment.state, 'FUNDED')
 })
 
 test('Gmail SMTP mode sends application mail through the configured account without exposing its app password', async () => {
@@ -425,8 +490,10 @@ test('Gateway reads administrator and Gmail credentials from mounted secret file
   try {
     const adminTokenFile = join(directory, 'admin-token')
     const gmailPasswordFile = join(directory, 'gmail-app-password')
+    const participantOperatorKeyFile = join(directory, 'participant-operator-private-key')
     writeFileSync(adminTokenFile, `${'a'.repeat(64)}\n`, { mode: 0o600 })
     writeFileSync(gmailPasswordFile, 'abcd efgh ijkl mnop\n', { mode: 0o600 })
+    writeFileSync(participantOperatorKeyFile, `${TEST_PRIVATE_KEY}\n`, { mode: 0o600 })
     const config = loadConfig({
       GATEWAY_MAIL_MODE: 'gmail-smtp',
       GATEWAY_GMAIL_ADDRESS: '11rou.yamasaki@gmail.com',
@@ -434,13 +501,17 @@ test('Gateway reads administrator and Gmail credentials from mounted secret file
       GATEWAY_GMAIL_NETWORK_FAMILY: '4',
       GATEWAY_GMAIL_CONNECT_HOST: '172.31.0.1',
       GATEWAY_GMAIL_IMPLICIT_TLS_PORT: '1465',
-      GATEWAY_ADMIN_TOKEN_FILE: adminTokenFile
+      GATEWAY_ADMIN_TOKEN_FILE: adminTokenFile,
+      GATEWAY_PARTICIPANT_REGISTRY_ADDRESS: '0x1111111111111111111111111111111111111111',
+      GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE: participantOperatorKeyFile
     })
     assert.equal(config.gmailAppPassword, 'abcdefghijklmnop')
     assert.equal(config.adminToken, 'a'.repeat(64))
     assert.equal(config.gmailNetworkFamily, 4)
     assert.equal(config.gmailConnectHost, '172.31.0.1')
     assert.equal(config.gmailImplicitTlsPort, 1465)
+    assert.equal(config.participantRegistryAddress, '0x1111111111111111111111111111111111111111')
+    assert.equal(config.participantOperatorPrivateKey, TEST_PRIVATE_KEY)
   } finally {
     rmSync(directory, { recursive: true, force: true })
   }
