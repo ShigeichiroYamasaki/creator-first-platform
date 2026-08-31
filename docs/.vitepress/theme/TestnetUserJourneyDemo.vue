@@ -528,7 +528,7 @@ onBeforeUnmount(() => {
       <p v-if="!canPlaySelected" class="notice">このテスト音は、練習用の月額利用を開始すると再生できます。試聴用のテスト音はいつでも再生できます。</p>
       <p aria-live="polite">{{ playerMessage }}</p>
       <div class="supporter-action">
-        <h4>テスト用音楽クリエーターを応援する</h4>
+        <h4 id="supporter-registration-title">テスト用音楽クリエーターを応援する</h4>
         <p>応援する気持ちを、他人へ渡せないデジタル証明書として記録します。支払いまたは継続課金はありません。</p>
         <div class="status-grid">
           <div><span>応援の状態</span><strong>{{ supporterTierLabel }}</strong></div>

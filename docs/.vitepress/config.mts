@@ -341,7 +341,7 @@ export default defineConfig({
               { text: '仮想通貨ワレットの準備', link: '/demo/metamask-amoy-setup' },
               { text: '音楽リスナーとして参加', link: '/demo/user-services' },
               { text: '音楽リスナーの利用体験', link: '/demo/test-user-registration' },
-              { text: '音楽サービスの画面見本', link: '/demo/user-service' },
+              { text: '音楽リスナー向け機能', link: '/demo/user-service' },
               { text: '音楽クリエータとして参加', link: '/demo/creator-services' },
               { text: '音楽クリエータの参加登録', link: '/demo/creator-registration' },
               { text: '音楽クリエータの活動体験', link: '/demo/creator-workspace' },

@@ -21,9 +21,9 @@ const choices = computed(() => {
         icon: '👀',
         eyebrow: '操作せずに見る',
         title: '画面だけ見てみる',
-        description: '音楽一覧や応援状態の見本を、仮想通貨ワレットをつながずに確認します。',
+        description: '音楽プレーヤー、ファン登録、ユーザ院議会から、確認したい機能を選びます。',
         link: '/demo/user-service',
-        action: '音楽サービスの見本を見る'
+        action: '音楽リスナー向け機能を見る'
       }
     ]
   }
