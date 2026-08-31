@@ -23,6 +23,34 @@ outline: false
 
 管理トークンをメール、チャット、Git、ブラウザのパスワード保存機能へ登録しないでください。このページを再読み込みすると、入力したトークンは消去されます。VMには同じ値を権限制限した秘密ファイルとして保存し、VMメタデータへ渡すのは初回配置時だけとし、起動確認後にメタデータから削除します。
 
+## Gateway管理トークンの準備
+
+通常のログインでは、新しいトークンを生成しません。リポジトリのルートで次を実行し、すでにmacOSキーチェーンに保存されている値を90秒間だけクリップボードへコピーします。
+
+```bash
+deployment/gcp/copy-admin-token.sh
+```
+
+初回構築または管理トークンを失った場合だけ、次の生成スクリプトを使用します。既存のキーチェーン項目がある場合は上書きせず、トークン本体もターミナルへ表示しません。
+
+<<< ../../deployment/gcp/create-gateway-admin-token.sh{bash}
+
+新しく生成したトークンは、そのままではVMの値と一致しません。次の順番でVMへ反映します。これは管理権限を変更する復旧操作であり、通常のログイン時には実行しません。
+
+```bash
+deployment/gcp/create-gateway-admin-token.sh
+deployment/gcp/provision-gateway-admin-token.sh creator-first-navidrome-demo us-west1-b
+gcloud compute instances reset creator-first-navidrome-demo --zone us-west1-b
+# VMのhealthy表示と管理者APIの認証成功を確認した後に実行
+gcloud compute instances remove-metadata creator-first-navidrome-demo \
+  --zone us-west1-b \
+  --keys gateway-admin-token
+```
+
+VMへ一時的に渡す処理の実体は次のスクリプトです。秘密値は一時ファイルから渡し、終了時に上書きして削除します。
+
+<<< ../../deployment/gcp/provision-gateway-admin-token.sh{bash}
+
 運営ワーカーの秘密鍵は管理トークンとは別のPolygon Amoy専用鍵です。氏名、メールアドレスまたはその単純なハッシュをブロックチェーンへ記録せず、暗号学的にランダムな参加者IDだけを使用します。本人の招待取得、オンチェーン承認、初回POL配布および役割の本人登録は別々の監査状態として扱います。
 
 <ParticipantAdminDemo />
