@@ -25,4 +25,3 @@ if (existing.status === 0) {
 
 const account = privateKeyToAccount(privateKey)
 console.log(account.address)
-

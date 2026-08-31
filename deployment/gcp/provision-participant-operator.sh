@@ -40,4 +40,3 @@ gcloud compute instances add-metadata "${INSTANCE_NAME}" \
   --metadata-from-file "gateway-participant-operator-private-key=${secret_file}"
 
 echo "Participant registry address and transient operator secret were added to instance metadata. Restart the VM, verify a healthy deployment, then remove gateway-participant-operator-private-key from metadata."
-

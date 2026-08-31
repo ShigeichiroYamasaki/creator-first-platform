@@ -28,7 +28,6 @@ export class ParticipantEnrollmentError extends Error {
     this.code = code
   }
 }
-
 function bytes32() {
   return `0x${randomBytes(32).toString('hex')}`
 }
@@ -267,4 +266,3 @@ export class ParticipantEnrollmentOperator {
     })
   }
 }
-

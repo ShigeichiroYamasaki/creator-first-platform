@@ -5,8 +5,8 @@
   "chainId": 80002,
   "status": "active",
   "deployedAt": "2026-08-26",
-  "updatedAt": "2026-08-28",
-  "sourceCommit": "19987da6ca367635f18da8e753782c87318e678c",
+  "updatedAt": "2026-08-31",
+  "sourceCommit": "586458b7ec555e0d77088dd090ec646a551365b2",
   "deploymentTool": "Hardhat Ignition 3.14.0",
   "deploymentId": "amoy-creator-first-testnet",
   "compiler": {
@@ -119,6 +119,17 @@
       "lifetimeCapPerParticipantAtomic": "500000000000000000",
       "dailyGlobalBudgetAtomic": "1000000000000000000",
       "cooldownSeconds": 600
+    },
+    "participantRegistry": {
+      "address": "0x58AaF700Bc220C2446378f45a78311cD1e6f3456",
+      "transactionHash": "0x6982910f7ea9ceb2562f86d1832586a9216b78d19b1b5e49058a4b5ca65d8e50",
+      "blockNumber": 46341082,
+      "roleGrantTransactionHash": "0x63127942615d6ea0b6e7b89eff9c97634ffdd237119945bbc7be8736b726fd06",
+      "roleGrantBlockNumber": 46341088,
+      "sourceCommit": "586458b7ec555e0d77088dd090ec646a551365b2",
+      "deploymentId": "amoy-participant-enrollment-v2",
+      "participantOperator": "0x4C6235088C0c507c880DFe1a01184951e65017C2",
+      "testPolDistributor": "0x8a0B3F08EC1Bd4231be92320381a1bAc56D112BE"
     }
   },
   "subscriptionPlan": {

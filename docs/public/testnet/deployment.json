@@ -4,7 +4,7 @@
   "chainId": 80002,
   "networkName": "Polygon Amoy",
   "status": "active",
-  "sourceCommit": "19987da6ca367635f18da8e753782c87318e678c",
+  "sourceCommit": "586458b7ec555e0d77088dd090ec646a551365b2",
   "deploymentRecord": "/creator-first-platform/testnet/deployment-record.json",
   "contracts": {
     "mockJpyc": "0xC2D1fAC9517544A839D35e67008c76A1839366aA",
@@ -20,7 +20,8 @@
     "cfp0002DeploymentFactory": "0x3052B01311C4BDDa6B97f2c21029C80b848A28Cb",
     "transparentZkMockVerifier": "0x2d61d67cBe34208b524980F815358184858ba80f",
     "transparentZkRegistry": "0x4378586fE4835C4dEbe86084426f4ac98fBfcCc3",
-    "testPolDistributor": "0x8a0B3F08EC1Bd4231be92320381a1bAc56D112BE"
+    "testPolDistributor": "0x8a0B3F08EC1Bd4231be92320381a1bAc56D112BE",
+    "participantRegistry": "0x58AaF700Bc220C2446378f45a78311cD1e6f3456"
   },
   "testOnlyNotice": "TESTNET ONLY - NO VALUE, NO REDEMPTION, NOT PRODUCTION JPYC",
   "creatorTestOnlyNotice": "TESTNET ONLY - NO IDENTITY, RIGHTS, PAYEE OR RELEASE VERIFICATION"
