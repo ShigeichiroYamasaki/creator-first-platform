@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "active": true,
-  "origin": "https://accurate-salvation-permit-vid.trycloudflare.com",
+  "origin": "https://enquiry-oriented-transport-underground.trycloudflare.com",
   "pathPrefix": "/creator-first-platform/demo/",
   "adminPath": "/creator-first-platform/admin/participant-invitations",
   "apiHealthPath": "/api/v1/health",
   "temporaryHostname": true,
-  "sourceCommit": "b86fd039bd960fc62dbff9db3979c1377063fb5e",
-  "verifiedAt": "2026-08-29T15:31:47Z"
+  "sourceCommit": "53daeee21e181b576db617b46ecbb5d23f1ca31b",
+  "verifiedAt": "2026-08-31T12:43:06Z"
 }

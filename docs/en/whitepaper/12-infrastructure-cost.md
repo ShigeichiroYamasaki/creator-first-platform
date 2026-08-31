@@ -18,12 +18,12 @@ Polygon's [current faucet documentation](https://docs.polygon.technology/tools/g
 
 ### Controlled participant funding
 
-The public experiment is invitation or pre-registration based. It is not an open anonymous faucet. After approval and wallet-binding proof, an off-chain distributor provides only the minimum initial Test POL and may replenish it for approved operations up to a cumulative **0.5 Test POL per person**, counted once across user and creator roles. A person who already has enough Test POL receives no additional amount.
+The public experiment is invitation or pre-registration based. It is not an open anonymous faucet. The participant signs a SIWE message bound to the invitation identifier, approved role set, consent version and Polygon Amoy chain identifier. After server verification, an off-chain operator invokes the bounded on-chain Test POL distributor. The initial target is **0.02 Test POL**; later approved operations may top the Wallet up to a target no greater than **0.05 Test POL**, subject to a cumulative **0.5 Test POL per person** across user and creator roles. A person who already has the required target balance receives no additional amount.
 
 Required controls are:
 
 - participant approval and purpose limitation;
-- EIP-712 wallet-binding proof and nonce expiry;
+- invitation-bound SIWE Wallet proof and nonce expiry;
 - one-person and one-wallet accounting with duplicate review;
 - target-balance top-up, global budget, velocity and daily caps;
 - transaction, decision and failure logs;

@@ -130,7 +130,8 @@ export function createGatewayServer({
       demoRegistrationKey: undefined,
       demoRegistrationHash: undefined,
       passkeyAuthenticated: false,
-      authenticationChallenge: undefined
+      authenticationChallenge: undefined,
+      participantInvitationProof: undefined
     }
     accounts.set(platformSessionId, account)
     response.setHeader(
@@ -321,24 +322,51 @@ export function createGatewayServer({
     const nonce = randomBytes(12).toString('hex')
     const issuedAt = new Date()
     const expiresAt = new Date(issuedAt.getTime() + 5 * 60_000)
+    let participantInvitationProof
+    if (body.invitationToken !== undefined) {
+      if (body.acceptedTerms !== true || body.acknowledgedTestOnly !== true) {
+        throw new GatewayHttpError(400, 'INVITATION_CONSENT_REQUIRED', 'Terms and test-only acknowledgement are required before signing')
+      }
+      const invitation = participantInvitations.inspect(body.invitationToken)
+      if (invitation.expired || invitation.state === 'REVOKED') {
+        throw new GatewayHttpError(409, 'INVITATION_NOT_CLAIMABLE', 'Invitation is expired or unavailable')
+      }
+      participantInvitationProof = {
+        invitationId: invitation.invitationId,
+        roles: invitation.roles,
+        consentVersion: 'participant-experiment-v1'
+      }
+    }
     const message = [
       `${config.publicDomain} wants you to sign in with your Ethereum account:`,
       address,
       '',
-      'Creator First Gateway local demo sign-in.',
+      participantInvitationProof
+        ? 'Authorize this Creator First public-experiment invitation, role set and consent.'
+        : 'Creator First Gateway local demo sign-in.',
       '',
       `URI: ${config.publicUri}`,
       'Version: 1',
       `Chain ID: ${config.chainId}`,
       `Nonce: ${nonce}`,
       `Issued At: ${issuedAt.toISOString()}`,
-      `Expiration Time: ${expiresAt.toISOString()}`
+      `Expiration Time: ${expiresAt.toISOString()}`,
+      ...(participantInvitationProof
+        ? [
+            `Request ID: ${participantInvitationProof.invitationId}`,
+            'Resources:',
+            `- urn:cfp:participant-invitation:${participantInvitationProof.invitationId}`,
+            `- urn:cfp:participant-roles:${participantInvitationProof.roles}`,
+            `- urn:cfp:consent:${participantInvitationProof.consentVersion}`
+          ]
+        : [])
     ].join('\n')
     challenges.set(challengeId, {
       challengeId,
       ownerId: account.accountId,
       address,
       message,
+      participantInvitationProof,
       expiresAt: expiresAt.getTime(),
       used: false
     })
@@ -433,6 +461,7 @@ export function createGatewayServer({
     }
     challenge.used = true
     account.walletAddress = challenge.address
+    account.participantInvitationProof = challenge.participantInvitationProof
     sendJson(response, 200, { authenticated: true, accountLabel: `Demo ${challenge.address.slice(0, 6)}…${challenge.address.slice(-4)}` })
   }
 

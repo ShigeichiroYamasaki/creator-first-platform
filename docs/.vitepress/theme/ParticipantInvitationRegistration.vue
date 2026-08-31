@@ -178,7 +178,13 @@ async function connectAndVerifyWallet() {
     beginPhase('verification')
     const challenge = await gateway('/v1/auth/siwe/nonce', {
       method: 'POST',
-      body: JSON.stringify({ address: wallet.value, chainId: AMOY_CHAIN_ID })
+      body: JSON.stringify({
+        address: wallet.value,
+        chainId: AMOY_CHAIN_ID,
+        invitationToken: token.value,
+        acceptedTerms: acceptedTerms.value,
+        acknowledgedTestOnly: acknowledgedTestOnly.value
+      })
     })
     beginPhase('signature')
     const signature = await client.signMessage({
@@ -311,12 +317,14 @@ onBeforeUnmount(() => {
           </template>
           <template v-else>
             <h3>仮想通貨ワレットをつなぐ</h3>
-            <p>ボタンを押すとMetaMaskの確認画面が開きます。画面が見えない場合は、ブラウザ右上のキツネのアイコンを開いてください。</p>
+            <p>内容を確認してからボタンを押してください。MetaMaskの署名には、この招待、参加する立場、確認内容が含まれます。</p>
+            <label class="check-row"><input v-model="acceptedTerms" type="checkbox" /><span aria-hidden="true">📄</span><span>公開実験の利用条件に同意します</span></label>
+            <label class="check-row"><input v-model="acknowledgedTestOnly" type="checkbox" /><span aria-hidden="true">🧪</span><span>練習用で、実際のお金ではないことを確認します</span></label>
             <div class="term-chips" aria-label="使用する技術">
               <span><i aria-hidden="true">🦊</i> 仮想通貨ワレット <small>MetaMask</small></span>
               <span><i aria-hidden="true">🧪</i> 練習用ネットワーク <small>Polygon Amoy</small></span>
             </div>
-            <button class="primary-button" type="button" :disabled="busy" @click="connectAndVerifyWallet">
+            <button class="primary-button" type="button" :disabled="busy || !acceptedTerms || !acknowledgedTestOnly" @click="connectAndVerifyWallet">
               <span aria-hidden="true">🦊</span>
               <span>MetaMaskを開く<small>確認画面で操作を続けます</small></span>
             </button>
@@ -330,8 +338,7 @@ onBeforeUnmount(() => {
         <div>
           <h3>内容を確認して登録</h3>
           <p class="wallet"><span aria-hidden="true">✅</span> 仮想通貨ワレットを確認しました <code>{{ wallet }}</code></p>
-          <label class="check-row"><input v-model="acceptedTerms" type="checkbox" /><span aria-hidden="true">📄</span><span>公開実験の利用条件に同意します</span></label>
-          <label class="check-row"><input v-model="acknowledgedTestOnly" type="checkbox" /><span aria-hidden="true">🧪</span><span>練習用で、実際のお金ではないことを確認します</span></label>
+          <p><span aria-hidden="true">🔏</span> 招待内容と確認事項を含む署名をサーバで確認しました。</p>
           <p class="registration-note"><span aria-hidden="true">ℹ️</span> 次の登録操作ではMetaMaskは開きません。このページ内で登録を保存します。</p>
           <button class="primary-button" type="button" :disabled="!acceptedTerms || !acknowledgedTestOnly || busy" @click="claim">
             <span aria-hidden="true">✓</span><span>{{ busy ? '登録を保存しています…' : 'この内容で登録する' }}</span>
@@ -347,9 +354,9 @@ onBeforeUnmount(() => {
       <div v-else class="action-card success-card">
         <span class="action-icon success-icon" aria-hidden="true">✅</span>
         <div>
-          <h3>{{ enrollmentFunded ? '実験を始める準備ができました' : '本人登録が完了しました' }}</h3>
+          <h3>{{ enrollmentFunded ? '運営による準備が完了しました' : '本人登録が完了しました' }}</h3>
           <p v-if="!enrollmentFunded"><span aria-hidden="true">⏳</span> 運営がオンチェーン承認と初回POL配布を行います。このページは自動的に状況を更新します。</p>
-          <p v-else><span aria-hidden="true">✅</span> オンチェーン承認と初回POL配布が完了しました。次の画面から実験を続けられます。</p>
+          <p v-else><span aria-hidden="true">✅</span> オンチェーン承認と初回POL配布が完了しました。次の画面で、参加する立場をMetaMaskから本人登録します。</p>
           <p v-if="invitation?.enrollment?.state === 'APPROVAL_FAILED' || invitation?.enrollment?.state === 'FUNDING_FAILED'" class="wait-warning"><strong>運営側で再処理します。</strong> 実験参加者による操作はありません。</p>
           <div v-if="invitation?.enrollment" class="enrollment-status">
             <span><small>オンチェーン準備</small><strong>{{ enrollmentFunded ? '完了' : '運営処理中' }}</strong></span>

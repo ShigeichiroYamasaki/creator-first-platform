@@ -331,9 +331,32 @@ test('Administrator issues a wallet-agnostic invitation and the invited person c
   assert.equal(gateway.invitationMailer.outbox.length, 1)
 
   const account = privateKeyToAccount(TEST_PRIVATE_KEY)
-  const challenge = await json(await api.request('/v1/auth/siwe/nonce', {
+  const genericChallenge = await json(await api.request('/v1/auth/siwe/nonce', {
     method: 'POST', body: JSON.stringify({ address: account.address, chainId: config.chainId })
   }))
+  const genericSignature = await account.signMessage({ message: genericChallenge.body.message })
+  assert.equal((await api.request('/v1/auth/siwe/verify', {
+    method: 'POST', body: JSON.stringify({ challengeId: genericChallenge.body.challengeId, message: genericChallenge.body.message, signature: genericSignature })
+  })).status, 200)
+  const unsignedClaim = await json(await api.request(`/v1/participant-invitations/${created.body.token}/claim`, {
+    method: 'POST', body: JSON.stringify({ acceptedTerms: true, acknowledgedTestOnly: true })
+  }))
+  assert.equal(unsignedClaim.response.status, 401)
+  assert.equal(unsignedClaim.body.code, 'INVITATION_SIGNATURE_REQUIRED')
+
+  const challenge = await json(await api.request('/v1/auth/siwe/nonce', {
+    method: 'POST',
+    body: JSON.stringify({
+      address: account.address,
+      chainId: config.chainId,
+      invitationToken: created.body.token,
+      acceptedTerms: true,
+      acknowledgedTestOnly: true
+    })
+  }))
+  assert.match(challenge.body.message, new RegExp(`urn:cfp:participant-invitation:${created.body.invitationId}`))
+  assert.match(challenge.body.message, /urn:cfp:participant-roles:3/)
+  assert.match(challenge.body.message, /urn:cfp:consent:participant-experiment-v1/)
   const signature = await account.signMessage({ message: challenge.body.message })
   assert.equal((await api.request('/v1/auth/siwe/verify', {
     method: 'POST', body: JSON.stringify({ challengeId: challenge.body.challengeId, message: challenge.body.message, signature })
@@ -420,7 +443,14 @@ test('Participant applies, verifies email, receives approval invitation and clai
 
   const account = privateKeyToAccount(TEST_PRIVATE_KEY)
   const challenge = await json(await api.request('/v1/auth/siwe/nonce', {
-    method: 'POST', body: JSON.stringify({ address: account.address, chainId: config.chainId })
+    method: 'POST',
+    body: JSON.stringify({
+      address: account.address,
+      chainId: config.chainId,
+      invitationToken,
+      acceptedTerms: true,
+      acknowledgedTestOnly: true
+    })
   }))
   const signature = await account.signMessage({ message: challenge.body.message })
   assert.equal((await api.request('/v1/auth/siwe/verify', {

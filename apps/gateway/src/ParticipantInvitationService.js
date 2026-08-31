@@ -154,6 +154,19 @@ export class ParticipantInvitationService {
     if (body.acceptedTerms !== true || body.acknowledgedTestOnly !== true) {
       throw new ParticipantInvitationError(400, 'INVITATION_CONSENT_REQUIRED', 'Terms and test-only acknowledgement are required')
     }
+    const proof = account.participantInvitationProof
+    if (
+      !proof ||
+      proof.invitationId !== row.invitation_id ||
+      proof.roles !== row.role_bits ||
+      proof.consentVersion !== 'participant-experiment-v1'
+    ) {
+      throw new ParticipantInvitationError(
+        401,
+        'INVITATION_SIGNATURE_REQUIRED',
+        'Sign the exact invitation, role set and consent before claiming it'
+      )
+    }
     let wallet
     try {
       wallet = getAddress(account.walletAddress)
@@ -166,6 +179,7 @@ export class ParticipantInvitationService {
     }
     this.store.recordParticipantInvitationEvent({ eventId: randomUUID(), invitationId: row.invitation_id, eventType: 'CLAIMED', occurredAt: claimedAt, detail: { wallet } })
     this.store.markParticipantApplicationInvitationClaimed(row.invitation_id, claimedAt)
+    account.participantInvitationProof = undefined
     return this.publicView(this.store.participantInvitationById(row.invitation_id))
   }
 }
