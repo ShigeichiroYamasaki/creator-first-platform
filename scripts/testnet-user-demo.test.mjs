@@ -63,14 +63,15 @@ test('separates participant preparation from post-POL service experiences', asyn
 test('routes operational registration to the same-origin Google Cloud demo', async () => {
   const runtime = JSON.parse(await readFile(cloudRuntimePath, 'utf8'))
   const parsed = parseCloudDemoRuntime(runtime)
-  assert.equal(parsed.origin, 'https://abstract-tyler-freely-ballet.trycloudflare.com')
+  assert.match(runtime.origin, /^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/)
+  assert.equal(parsed.origin, runtime.origin)
   assert.equal(
     cloudDemoTarget(runtime, '/creator-first-platform/demo/test-user-registration?role=user#step=application'),
-    'https://abstract-tyler-freely-ballet.trycloudflare.com/creator-first-platform/demo/test-user-registration?role=user#step=application'
+    `${runtime.origin}/creator-first-platform/demo/test-user-registration?role=user#step=application`
   )
   assert.equal(
     cloudAdminTarget(runtime),
-    'https://abstract-tyler-freely-ballet.trycloudflare.com/creator-first-platform/admin/participant-invitations'
+    `${runtime.origin}/creator-first-platform/admin/participant-invitations`
   )
   assert.throws(() => cloudDemoTarget(runtime, '/whitepaper/'), /outside the public experiment/)
   assert.throws(() => parseCloudDemoRuntime({ ...runtime, origin: 'http://example.test' }), /HTTPS origin/)

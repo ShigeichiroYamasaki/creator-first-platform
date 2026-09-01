@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "active": true,
-  "origin": "https://abstract-tyler-freely-ballet.trycloudflare.com",
+  "origin": "https://growing-make-therefore-bigger.trycloudflare.com",
   "pathPrefix": "/creator-first-platform/demo/",
   "adminPath": "/creator-first-platform/admin/participant-invitations",
   "apiHealthPath": "/api/v1/health",
   "temporaryHostname": true,
-  "sourceCommit": "21180ec8daf1cb172f60232a1b8c185447982ce3",
-  "verifiedAt": "2026-09-01T08:38:24Z"
+  "sourceCommit": "6ca1fb63640871d64a36a3da28c3fc3cc4567efb",
+  "verifiedAt": "2026-09-01T09:55:32Z"
 }
