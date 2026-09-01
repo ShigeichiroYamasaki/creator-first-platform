@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "active": true,
-  "origin": "https://addressed-metropolitan-musician-futures.trycloudflare.com",
+  "origin": "https://managing-usd-ebony-trail.trycloudflare.com",
   "pathPrefix": "/creator-first-platform/demo/",
   "adminPath": "/creator-first-platform/admin/participant-invitations",
   "apiHealthPath": "/api/v1/health",
   "temporaryHostname": true,
-  "sourceCommit": "6ce604dc9c8d50e94500c1a5004dd57a7ca777c7",
-  "verifiedAt": "2026-09-01T14:30:18Z"
+  "sourceCommit": "5f50ecfd7120c0b554d27ede8ae0e518706e8aca",
+  "verifiedAt": "2026-09-01T14:48:02Z"
 }
