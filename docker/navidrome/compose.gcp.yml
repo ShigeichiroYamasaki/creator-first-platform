@@ -117,10 +117,13 @@ services:
       - "polygon-amoy-bor-rpc.publicnode.com:172.31.0.1"
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/api/v1/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
-      interval: 5s
-      timeout: 3s
-      retries: 24
-      start_period: 15s
+      # The public health response verifies the Amoy role and Test POL balance
+      # of both relayers. Allow for the bounded 20-second RPC failover on the
+      # e2-micro VM instead of killing that check after three seconds.
+      interval: 10s
+      timeout: 45s
+      retries: 12
+      start_period: 20s
     networks:
       media:
         ipv4_address: 172.31.0.40
