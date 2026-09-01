@@ -123,7 +123,7 @@ GATEWAY_CHAIN_ID=80002
 ENV
 if [[ -n "${participant_registry_address}" ]]; then
   cat >> "${APP_DIR}/bootstrap/gateway.env" <<ENV
-GATEWAY_AMOY_RPC_URLS=https://polygon-amoy.drpc.org,https://polygon-amoy-bor-rpc.publicnode.com
+GATEWAY_AMOY_RPC_URLS=https://polygon-amoy.drpc.org:1443,https://polygon-amoy-bor-rpc.publicnode.com:2443
 GATEWAY_PARTICIPANT_REGISTRY_ADDRESS=${participant_registry_address}
 GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key
 ENV
@@ -249,6 +249,44 @@ WantedBy=multi-user.target
 UNIT
 systemctl daemon-reload
 systemctl enable --now creator-first-gmail-relay.service
+cat > /etc/systemd/system/creator-first-amoy-drpc-relay.service <<'UNIT'
+[Unit]
+Description=Creator First Polygon Amoy dRPC IPv6 transport relay
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/bin/socat TCP4-LISTEN:1443,bind=172.31.0.1,reuseaddr,fork TCP6:polygon-amoy.drpc.org:443
+Restart=always
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+cat > /etc/systemd/system/creator-first-amoy-publicnode-relay.service <<'UNIT'
+[Unit]
+Description=Creator First Polygon Amoy PublicNode IPv6 transport relay
+After=docker.service network-online.target
+Requires=docker.service
+
+[Service]
+ExecStart=/usr/bin/socat TCP4-LISTEN:2443,bind=172.31.0.1,reuseaddr,fork TCP6:polygon-amoy-bor-rpc.publicnode.com:443
+Restart=always
+RestartSec=2
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl daemon-reload
+systemctl enable --now creator-first-amoy-drpc-relay.service creator-first-amoy-publicnode-relay.service
 # The static site directory is atomically replaced above. Recreate containers
 # that bind-mount it so they cannot keep serving the previous directory inode.
 docker-compose -p creator-first-streaming up -d --force-recreate --no-deps docs-demo bootstrap-gateway cloudflared
@@ -292,7 +330,7 @@ GATEWAY_APPLICATION_STATUS_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/
 ENV
 if [[ -n "${participant_registry_address}" ]]; then
   cat >> "${APP_DIR}/bootstrap/gateway.env" <<ENV
-GATEWAY_AMOY_RPC_URLS=https://polygon-amoy.drpc.org,https://polygon-amoy-bor-rpc.publicnode.com
+GATEWAY_AMOY_RPC_URLS=https://polygon-amoy.drpc.org:1443,https://polygon-amoy-bor-rpc.publicnode.com:2443
 GATEWAY_PARTICIPANT_REGISTRY_ADDRESS=${participant_registry_address}
 GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key
 ENV
@@ -304,6 +342,8 @@ for attempt in $(seq 1 60); do
   if curl -fsS http://127.0.0.1:8080/creator-first-platform/demo/ >/dev/null && \
     curl -fsS http://127.0.0.1:8080/api/v1/health >/dev/null && \
     systemctl is-active --quiet creator-first-gmail-relay.service && \
+    systemctl is-active --quiet creator-first-amoy-drpc-relay.service && \
+    systemctl is-active --quiet creator-first-amoy-publicnode-relay.service && \
     curl -fsS -u "creator-first-demo:$(cat "${APP_DIR}/bootstrap/password")" http://127.0.0.1:8080/ >/dev/null; then
     echo "CREATOR_FIRST_DEPLOY_STATUS=healthy"
     echo "CREATOR_FIRST_DEMO_PATH=/creator-first-platform/demo/"
