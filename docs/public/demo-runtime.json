@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "active": true,
-  "origin": "https://composite-gazette-donald-visit.trycloudflare.com",
+  "origin": "https://huge-metals-contributions-walls.trycloudflare.com",
   "pathPrefix": "/creator-first-platform/demo/",
   "adminPath": "/creator-first-platform/admin/participant-invitations",
   "apiHealthPath": "/api/v1/health",
   "temporaryHostname": true,
-  "sourceCommit": "ba8bcd69d70945b1da9eecb321e904a4022721c3",
-  "verifiedAt": "2026-08-31T15:18:14Z"
+  "sourceCommit": "afe22da5019a16e700ada2e968c8cbfb1a00c1a6",
+  "verifiedAt": "2026-09-01T05:36:45Z"
 }

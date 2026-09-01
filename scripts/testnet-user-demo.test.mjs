@@ -33,14 +33,14 @@ const cloudRuntimePath = new URL('../docs/public/demo-runtime.json', import.meta
 test('routes operational registration to the same-origin Google Cloud demo', async () => {
   const runtime = JSON.parse(await readFile(cloudRuntimePath, 'utf8'))
   const parsed = parseCloudDemoRuntime(runtime)
-  assert.equal(parsed.origin, 'https://composite-gazette-donald-visit.trycloudflare.com')
+  assert.equal(parsed.origin, 'https://huge-metals-contributions-walls.trycloudflare.com')
   assert.equal(
     cloudDemoTarget(runtime, '/creator-first-platform/demo/test-user-registration?role=user#step=application'),
-    'https://composite-gazette-donald-visit.trycloudflare.com/creator-first-platform/demo/test-user-registration?role=user#step=application'
+    'https://huge-metals-contributions-walls.trycloudflare.com/creator-first-platform/demo/test-user-registration?role=user#step=application'
   )
   assert.equal(
     cloudAdminTarget(runtime),
-    'https://composite-gazette-donald-visit.trycloudflare.com/creator-first-platform/admin/participant-invitations'
+    'https://huge-metals-contributions-walls.trycloudflare.com/creator-first-platform/admin/participant-invitations'
   )
   assert.throws(() => cloudDemoTarget(runtime, '/whitepaper/'), /outside the public experiment/)
   assert.throws(() => parseCloudDemoRuntime({ ...runtime, origin: 'http://example.test' }), /HTTPS origin/)
