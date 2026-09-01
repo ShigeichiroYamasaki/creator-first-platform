@@ -26,6 +26,8 @@ const supporterRegistrationAdapter = manifest.contracts.supporterRegistrationAda
 const legislatorRegistrationAdapter = manifest.contracts.legislatorRegistrationAdapter
   ? getAddress(manifest.contracts.legislatorRegistrationAdapter)
   : undefined
+const governanceRelayer = manifest.relayers?.governanceVote ? getAddress(manifest.relayers.governanceVote) : undefined
+const supporterRelayer = manifest.relayers?.supporterSbt ? getAddress(manifest.relayers.supporterSbt) : undefined
 const testPolDistributor = manifest.contracts.testPolDistributor
   ? getAddress(manifest.contracts.testPolDistributor)
   : undefined
@@ -35,11 +37,7 @@ assert.equal(
   testPolDistributor,
   'Test POL distributor deployment record mismatch'
 )
-assert.equal(
-  deploymentRecord.contracts.testPolDistributor.sourceCommit,
-  manifest.sourceCommit,
-  'Test POL distributor source commit mismatch'
-)
+assert.match(deploymentRecord.contracts.testPolDistributor.sourceCommit, /^[0-9a-f]{40}$/i, 'Test POL distributor source commit is invalid')
 const rpcUrl = process.env.AMOY_READ_RPC_URL ?? 'https://polygon-amoy-bor-rpc.publicnode.com'
 const client = createPublicClient({ chain: polygonAmoy, transport: http(rpcUrl) })
 
@@ -125,6 +123,37 @@ if (governor && governedPolicy) {
       true
     ])
   }
+
+  if (governanceRelayer) {
+    const relayAbi = parseAbi([
+      'function RELAYER_ROLE() view returns (bytes32)',
+      'function hasRole(bytes32 role,address account) view returns (bool)',
+      'function votingNonces(address member) view returns (uint256)'
+    ])
+    const role = await client.readContract({ address: governor, abi: relayAbi, functionName: 'RELAYER_ROLE' })
+    assert.equal(await client.readContract({
+      address: governor,
+      abi: relayAbi,
+      functionName: 'hasRole',
+      args: [role, governanceRelayer]
+    }), true, 'Governance relayer does not have RELAYER_ROLE')
+    assert.ok(await client.getBalance({ address: governanceRelayer }) > 0n, 'Governance relayer has no Test POL')
+  }
+}
+
+if (supporterRelayer) {
+  const relayAbi = parseAbi([
+    'function RELAYER_ROLE() view returns (bytes32)',
+    'function hasRole(bytes32 role,address account) view returns (bool)'
+  ])
+  const role = await client.readContract({ address: addresses.supporterSbt, abi: relayAbi, functionName: 'RELAYER_ROLE' })
+  assert.equal(await client.readContract({
+    address: addresses.supporterSbt,
+    abi: relayAbi,
+    functionName: 'hasRole',
+    args: [role, supporterRelayer]
+  }), true, 'Supporter relayer does not have RELAYER_ROLE')
+  assert.ok(await client.getBalance({ address: supporterRelayer }) > 0n, 'Supporter relayer has no Test POL')
 }
 
 const tokenAbi = parseAbi([

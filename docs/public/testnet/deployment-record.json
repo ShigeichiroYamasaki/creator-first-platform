@@ -5,8 +5,8 @@
   "chainId": 80002,
   "status": "active",
   "deployedAt": "2026-08-26",
-  "updatedAt": "2026-08-31",
-  "sourceCommit": "586458b7ec555e0d77088dd090ec646a551365b2",
+  "updatedAt": "2026-09-01",
+  "sourceCommit": "b20a98d2ade3fb5da7ec31158d734fd74c0d58c2",
   "deploymentTool": "Hardhat Ignition 3.14.0",
   "deploymentId": "amoy-creator-first-testnet",
   "compiler": {
@@ -64,35 +64,41 @@
       "blockNumber": 45852703
     },
     "governor": {
-      "address": "0xCDcb81E835CC6A4bB5779e09dED516f58CdfbB8a",
-      "transactionHash": "0x893a055c523f827109b9aa76495f7da077663ed258733cfc12c73642c35502ab",
-      "blockNumber": 45852686,
-      "sourceCommit": "16b33334e6457337054c66824620d64cbed4f473",
-      "deploymentId": "amoy-creator-first-testnet"
+      "address": "0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215",
+      "transactionHash": "0xa91fad4195322d60755715a046f0f172a9d9c54909af549ba5f72e44f6521f75",
+      "blockNumber": 46436912,
+      "sourceCommit": "b20a98d2ade3fb5da7ec31158d734fd74c0d58c2",
+      "deploymentId": "amoy-governance-relay-v3",
+      "supersedes": "0xCDcb81E835CC6A4bB5779e09dED516f58CdfbB8a"
     },
     "governedPolicy": {
-      "address": "0xbA137FDD8901A89cB0C43Ec478980bEe357962E0",
-      "transactionHash": "0x110953d269d56a52f875853d0677a01116007aa3be212b8ad3c6ca888ed83257",
-      "blockNumber": 45852704,
-      "sourceCommit": "16b33334e6457337054c66824620d64cbed4f473",
-      "deploymentId": "amoy-creator-first-testnet"
+      "address": "0x5676d34d7C41849311b99932d8272af58b63e6E9",
+      "transactionHash": "0xd1910bb2c51f1531316197fe8aa09af8854f8a21a56ea034d69bb991ae5d2af6",
+      "blockNumber": 46436922,
+      "sourceCommit": "b20a98d2ade3fb5da7ec31158d734fd74c0d58c2",
+      "deploymentId": "amoy-governance-relay-v3",
+      "supersedes": "0xbA137FDD8901A89cB0C43Ec478980bEe357962E0"
     },
     "legislatorRegistrationAdapter": {
-      "address": "0x88918A4E01A2145431a9AbB482d1904264cdE1b2",
-      "transactionHash": "0x11b7767c2620773b9e0fcdf1306e305faa0a75cbd981e3fb1d81217062a9df9e",
-      "blockNumber": 45852726,
-      "roleGrantTransactionHash": "0xdc723243e2616157014a51f0939290d75850069eddc26229291ec6a0b04044b5",
-      "roleGrantBlockNumber": 45852732,
-      "sourceCommit": "16b33334e6457337054c66824620d64cbed4f473",
-      "deploymentId": "amoy-creator-first-testnet",
-      "governor": "0xCDcb81E835CC6A4bB5779e09dED516f58CdfbB8a",
+      "address": "0x5614b86D98C3AcAA25dE9135476be8014a68e19E",
+      "transactionHash": "0x35d0ca0e6dbfd4f3a6ccf35daf8aff97a404b86cb2b75c6562da33344774797b",
+      "blockNumber": 46436923,
+      "roleGrantTransactionHash": "0x3095ba816ad2b58fb7b06f7b65a6aa216e88f6fa88928254db4dcd3cceb358bf",
+      "roleGrantBlockNumber": 46436931,
+      "sourceCommit": "b20a98d2ade3fb5da7ec31158d734fd74c0d58c2",
+      "deploymentId": "amoy-governance-relay-v3",
+      "governor": "0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215",
       "subscription": "0xFFbB494c89cBDDB7F2aeC85E14019f793416F2BD",
-      "creatorRegistry": "0x7823e12075Ab59DE11eaa1044345906C062bF63c"
+      "creatorRegistry": "0x7823e12075Ab59DE11eaa1044345906C062bF63c",
+      "supersedes": "0x88918A4E01A2145431a9AbB482d1904264cdE1b2"
     },
     "cfp0002DeploymentFactory": {
-      "address": "0x3052B01311C4BDDa6B97f2c21029C80b848A28Cb",
-      "transactionHash": "0x49d75cde68858b8778335e7d41ed9988a28e01460296a4183e5d7c5038385a6c",
-      "blockNumber": 45852701
+      "address": "0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923",
+      "transactionHash": "0xd1896fabc58bce47a1e068807ee4c1887c9e705c1e60b0704d167ccf567e0311",
+      "blockNumber": 46436921,
+      "sourceCommit": "b20a98d2ade3fb5da7ec31158d734fd74c0d58c2",
+      "deploymentId": "amoy-governance-relay-v3",
+      "supersedes": "0x3052B01311C4BDDa6B97f2c21029C80b848A28Cb"
     },
     "transparentZkMockVerifier": {
       "address": "0x2d61d67cBe34208b524980F815358184858ba80f",
@@ -156,15 +162,33 @@
     "publicDemoSession": {
       "sessionId": 1,
       "ruleHash": "0x7c7d4b67883b80f114dd64b09399c0d66c1c7daf6951f9fcb658a8bc41ff2b55",
-      "startsAt": 1788244104,
-      "endsAt": 1790836104,
+      "startsAt": 1788847200,
+      "endsAt": 1791439200,
       "voiceCreditBudget": 25,
       "creatorQuorum": 1,
       "userQuorum": 1,
-      "transactionHash": "0xa9b078967af97b699ae070989ffb95c1be167f10d2a8543896899d97a4aa624b",
-      "blockNumber": 45852701,
-      "deploymentId": "amoy-creator-first-testnet"
+      "transactionHash": "0xcbc55f69df62e993b6235fcec67869358e369eed4807518f8d522a5ff1c6396b",
+      "blockNumber": 46436919,
+      "deploymentId": "amoy-governance-relay-v3"
     }
   },
-  "operationalWarning": "All bootstrap roles, including governance registrar, reviewer and guardian, remain assigned to the deployer. Separate operational roles before broader public testing."
+  "relayers": {
+    "supporterSbt": {
+      "address": "0x93A0Fe0D657abE514253E4b09eC4c11BF07E4C9C",
+      "targetContract": "0x0406Cf42Ab5d3529ceAe869b6F05A3876379AB18",
+      "role": "RELAYER_ROLE",
+      "balanceVerifiedAt": "2026-09-01T18:50:00+09:00",
+      "balancePol": "0.05"
+    },
+    "governanceVote": {
+      "address": "0xaa93b0a3bCdb60642771c7E493696279329b235E",
+      "targetContract": "0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215",
+      "role": "RELAYER_ROLE",
+      "roleGrantTransactionHash": "0xa2336c3282a98dee966ae3a506e95998e0ed4e3ce6462a9ba4d1601e365a0693",
+      "roleGrantBlockNumber": 46436929,
+      "balanceVerifiedAt": "2026-09-01T18:50:00+09:00",
+      "balancePol": "0.05"
+    }
+  },
+  "operationalWarning": "Governance registrar, reviewer, guardian and default administrator remain assigned to the deployer. The sponsored-vote and Supporter SBT relayers use separate purpose-limited keys. Separate the remaining bootstrap roles before broader public testing."
 }

@@ -47,10 +47,10 @@ SBTはERC-5192の`locked(tokenId)`を公開し、MintとBurn以外の移転を�
 | サポータ登録アダプター | [`0x7A5b…9dd1`](https://amoy.polygonscan.com/address/0x7A5b305Bd64Be6070cfa5168C860F945f1D59dd1) |
 | CreatorFirstCreatorRegistry | [`0x7823…F63c`](https://amoy.polygonscan.com/address/0x7823e12075Ab59DE11eaa1044345906C062bF63c) |
 | 音楽クリエーター登録アダプター | [`0x9F74…8472`](https://amoy.polygonscan.com/address/0x9F745D597f9f0531044510051056981AE37C8472) |
-| CreatorFirstBicameralGovernor V2 | [`0xCDcb…bB8a`](https://amoy.polygonscan.com/address/0xCDcb81E835CC6A4bB5779e09dED516f58CdfbB8a) |
-| CreatorFirstGovernedPolicy V2 | [`0xbA13…62E0`](https://amoy.polygonscan.com/address/0xbA137FDD8901A89cB0C43Ec478980bEe357962E0) |
-| テスト議員登録アダプター | [`0x8891…E1b2`](https://amoy.polygonscan.com/address/0x88918A4E01A2145431a9AbB482d1904264cdE1b2) |
-| CFP-0002デプロイファクトリー | [`0x3052…28Cb`](https://amoy.polygonscan.com/address/0x3052B01311C4BDDa6B97f2c21029C80b848A28Cb) |
+| CreatorFirstBicameralGovernor V3（署名投票対応） | [`0x57a9…4215`](https://amoy.polygonscan.com/address/0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215) |
+| CreatorFirstGovernedPolicy V3 | [`0x5676…e6E9`](https://amoy.polygonscan.com/address/0x5676d34d7C41849311b99932d8272af58b63e6E9) |
+| テスト議員登録アダプター V3 | [`0x5614…e19E`](https://amoy.polygonscan.com/address/0x5614b86D98C3AcAA25dE9135476be8014a68e19E) |
+| CFP-0002デプロイファクトリー V3 | [`0x2D01…0923`](https://amoy.polygonscan.com/address/0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923) |
 | 透明型ZKモック検証者 | [`0x2d61…a80f`](https://amoy.polygonscan.com/address/0x2d61d67cBe34208b524980F815358184858ba80f) |
 | 透明型ZK受付台帳 | [`0x4378…cCc3`](https://amoy.polygonscan.com/address/0x4378586fE4835C4dEbe86084426f4ac98fBfcCc3) |
 | テストPOL段階補充コントラクト | [`0x8a0B…12BE`](https://amoy.polygonscan.com/address/0x8a0B3F08EC1Bd4231be92320381a1bAc56D112BE) |

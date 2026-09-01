@@ -136,7 +136,7 @@ test('ships a safe Polygon Amoy manifest and verifies reviewed addresses when ac
   assert.equal(record.contracts.testPolDistributor.address, parsed.contracts.testPolDistributor)
   assert.match(record.contracts.testPolDistributor.sourceCommit, /^[0-9a-f]{40}$/i)
   assert.equal(record.contracts.participantRegistry.address, parsed.contracts.participantRegistry)
-  assert.equal(record.contracts.participantRegistry.sourceCommit, parsed.sourceCommit)
+  assert.match(record.contracts.participantRegistry.sourceCommit, /^[0-9a-f]{40}$/i)
   assert.equal(record.contracts.participantRegistry.testPolDistributor, parsed.contracts.testPolDistributor)
   assert.match(record.contracts.participantRegistry.transactionHash, /^0x[0-9a-f]{64}$/i)
   assert.match(record.contracts.participantRegistry.roleGrantTransactionHash, /^0x[0-9a-f]{64}$/i)

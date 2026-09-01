@@ -4,7 +4,7 @@
   "chainId": 80002,
   "networkName": "Polygon Amoy",
   "status": "active",
-  "sourceCommit": "586458b7ec555e0d77088dd090ec646a551365b2",
+  "sourceCommit": "b20a98d2ade3fb5da7ec31158d734fd74c0d58c2",
   "deploymentRecord": "/creator-first-platform/testnet/deployment-record.json",
   "contracts": {
     "mockJpyc": "0xC2D1fAC9517544A839D35e67008c76A1839366aA",
@@ -14,14 +14,18 @@
     "supporterRegistrationAdapter": "0x7A5b305Bd64Be6070cfa5168C860F945f1D59dd1",
     "creatorRegistry": "0x7823e12075Ab59DE11eaa1044345906C062bF63c",
     "creatorRegistrationAdapter": "0x9F745D597f9f0531044510051056981AE37C8472",
-    "governor": "0xCDcb81E835CC6A4bB5779e09dED516f58CdfbB8a",
-    "governedPolicy": "0xbA137FDD8901A89cB0C43Ec478980bEe357962E0",
-    "legislatorRegistrationAdapter": "0x88918A4E01A2145431a9AbB482d1904264cdE1b2",
-    "cfp0002DeploymentFactory": "0x3052B01311C4BDDa6B97f2c21029C80b848A28Cb",
+    "governor": "0x57a93F06dE83617f59bF31DD8FfbDA6FeB984215",
+    "governedPolicy": "0x5676d34d7C41849311b99932d8272af58b63e6E9",
+    "legislatorRegistrationAdapter": "0x5614b86D98C3AcAA25dE9135476be8014a68e19E",
+    "cfp0002DeploymentFactory": "0x2D01B0c19Ce5572dFc2Aa90f4dE6256720E30923",
     "transparentZkMockVerifier": "0x2d61d67cBe34208b524980F815358184858ba80f",
     "transparentZkRegistry": "0x4378586fE4835C4dEbe86084426f4ac98fBfcCc3",
     "testPolDistributor": "0x8a0B3F08EC1Bd4231be92320381a1bAc56D112BE",
     "participantRegistry": "0x58AaF700Bc220C2446378f45a78311cD1e6f3456"
+  },
+  "relayers": {
+    "supporterSbt": "0x93A0Fe0D657abE514253E4b09eC4c11BF07E4C9C",
+    "governanceVote": "0xaa93b0a3bCdb60642771c7E493696279329b235E"
   },
   "testOnlyNotice": "TESTNET ONLY - NO VALUE, NO REDEMPTION, NOT PRODUCTION JPYC",
   "creatorTestOnlyNotice": "TESTNET ONLY - NO IDENTITY, RIGHTS, PAYEE OR RELEASE VERIFICATION"
