@@ -3,7 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { createPublicClient, createWalletClient, custom, type Address, type EIP1193Provider, type Hash } from 'viem'
 import { polygonAmoy } from 'viem/chains'
-import { governanceAbi, governanceStateLabels, legislatorRegistrationAbi, quadraticCost, validateGovernanceDeployment } from './testnet-governance-demo.js'
+import { governanceAbi, governanceBallotTypedData, governanceStateLabels, legislatorRegistrationAbi, quadraticCost, validateGovernanceDeployment } from './testnet-governance-demo.js'
 import { AMOY_CHAIN_ID, getAmoyTransactionFees, switchProviderToAmoy } from './testnet-user-demo.js'
 
 type DemoProvider = EIP1193Provider & {
@@ -43,6 +43,7 @@ const registrationHouse = ref(0)
 const remainingCredits = ref(0)
 const selectedIntensity = ref(1)
 const lastTransaction = ref<Hash>()
+const governanceRelayReady = ref(false)
 let provider: DemoProvider | undefined
 let listenersAttached = false
 
@@ -51,7 +52,7 @@ const ready = computed(() => Boolean(deployment.value?.governanceReady && deploy
 const voteCost = computed(() => quadraticCost(selectedIntensity.value))
 const requiredHouse = computed(() => props.focusHouse === 'creator' ? 1 : props.focusHouse === 'user' ? 2 : 0)
 const focusedHouseLabel = computed(() => props.focusHouse === 'creator' ? '音楽クリエータ院議会' : props.focusHouse === 'user' ? 'ユーザ院議会' : '二院制議会')
-const canVote = computed(() => ready.value && correctChain.value && walletAddress.value && proposal.value?.state === 2 && house.value > 0 && (requiredHouse.value === 0 || house.value === requiredHouse.value) && !busy.value)
+const canVote = computed(() => ready.value && governanceRelayReady.value && correctChain.value && walletAddress.value && proposal.value?.state === 2 && house.value > 0 && (requiredHouse.value === 0 || house.value === requiredHouse.value) && !busy.value)
 const canRegister = computed(() => requiredHouse.value > 0 && Boolean(deployment.value?.legislatorRegistrationAdapter) && correctChain.value && walletAddress.value && registrationHouse.value === 0 && !busy.value)
 const houseLabel = computed(() => ['議員資格なし', '音楽クリエータ院議会', 'ユーザ院議会'][house.value] ?? '不明')
 
@@ -190,18 +191,28 @@ async function castVote(): Promise<void> {
   lastTransaction.value = undefined
   try {
     const { publicClient, walletClient, governor } = clients()
-    const fees = await getAmoyTransactionFees(publicClient)
-    const hash = await walletClient.writeContract({
-      address: governor, abi: governanceAbi, functionName: 'castCfpApprovalVote',
-      args: [BigInt(proposalId.value), selectedIntensity.value],
-      ...fees
+    const member = walletAddress.value as Address
+    const proposalIdValue = BigInt(proposalId.value)
+    const sessionId = proposal.value?.sessionId as bigint
+    const nonce = await publicClient.readContract({ address: governor, abi: governanceAbi, functionName: 'votingNonces', args: [member] }) as bigint
+    const deadline = BigInt(Math.floor(Date.now() / 1000) + 10 * 60)
+    message.value = '投票内容を確認し、仮想通貨ワレットで署名してください。POLの支払いはありません。'
+    const typedData = governanceBallotTypedData({ chainId: AMOY_CHAIN_ID, governor, proposalId: proposalIdValue, sessionId, house: house.value, member, intensity: selectedIntensity.value, nonce, deadline })
+    const signature = await walletClient.signTypedData({ account: member, ...typedData })
+    message.value = '署名済みの投票を運営リレイヤーがPolygon Amoyへ送信しています。'
+    const response = await fetch('/api/v1/testnet/governance-votes', {
+      method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        proposalId: proposalIdValue.toString(), sessionId: sessionId.toString(), house: house.value,
+        member, intensity: selectedIntensity.value, nonce: nonce.toString(), deadline: deadline.toString(),
+        signature, idempotencyKey: crypto.randomUUID()
+      })
     })
-    lastTransaction.value = hash
-    message.value = '公開投票トランザクションを送信しました。'
-    const receipt = await publicClient.waitForTransactionReceipt({ hash })
-    if (receipt.status !== 'success') throw new Error('投票トランザクションがrevertしました。')
+    const result = await response.json() as { transactionHash?: Hash; message?: string }
+    if (!response.ok || !result.transactionHash) throw new Error(result.message ?? '運営リレイヤーが投票を送信できませんでした。')
+    lastTransaction.value = result.transactionHash
     await refresh()
-    message.value = '投票がPolygon Amoyで確定しました。票の差替え時は以前の二乗コストが返却されます。'
+    message.value = '署名した投票がPolygon Amoyで確定しました。POLは運営リレイヤーが負担しました。'
   } catch (error) { message.value = error instanceof Error ? error.message : '投票に失敗しました。' }
   finally { busy.value = false }
 }
@@ -212,7 +223,14 @@ async function loadDeployment(): Promise<void> {
     deployment.value = validateGovernanceDeployment(await response.json()) as GovernanceDeployment
   } catch (error) { deploymentError.value = error instanceof Error ? error.message : '公開マニフェストを検証できません。' }
 }
-onMounted(loadDeployment)
+async function loadRelayHealth(): Promise<void> {
+  try {
+    const response = await fetch('/api/v1/health', { cache: 'no-store', credentials: 'include' })
+    const value = await response.json() as { governanceRelay?: string }
+    governanceRelayReady.value = response.ok && value.governanceRelay === 'enabled'
+  } catch { governanceRelayReady.value = false }
+}
+onMounted(async () => { await Promise.all([loadDeployment(), loadRelayHealth()]) })
 onBeforeUnmount(() => {
   if (provider?.removeListener && listenersAttached) {
     provider.removeListener('accountsChanged', handleAccountsChanged)
@@ -259,10 +277,11 @@ onBeforeUnmount(() => {
 
     <section class="panel">
       <h3>{{ requiredHouse ? '4' : '3' }}. 二次投票</h3>
+      <p v-if="!governanceRelayReady" class="warning">運営リレイヤーが未設定のため、ガス代不要の投票は現在利用できません。</p>
       <div class="grid"><div><span>議員資格</span><strong>{{ houseLabel }}</strong></div><div><span>残り投票クレジット</span><strong>{{ remainingCredits }}</strong></div><div><span>投票強度</span><strong>{{ selectedIntensity > 0 ? '+' : '' }}{{ selectedIntensity }}</strong></div><div><span>二乗コスト</span><strong>{{ voteCost }}</strong></div></div>
       <p v-if="requiredHouse && house > 0 && house !== requiredHouse" class="error">接続中のウォレットは{{ houseLabel }}の議員です。{{ focusedHouseLabel }}の入口からは投票できません。</p>
       <label for="vote-intensity">反対 -3〜賛成 +3</label><input id="vote-intensity" v-model.number="selectedIntensity" type="range" min="-3" max="3" step="1">
-      <div class="actions"><button type="button" @click="castVote" :disabled="!canVote">この強度で公開投票</button></div>
+      <div class="actions"><button type="button" @click="castVote" :disabled="!canVote">内容に署名して投票（POL不要）</button></div>
       <p class="warning">同じ提案へ再投票すると票を差し替えます。会期内の全提案について二乗コストの合計が共通予算を超える投票はコントラクトが拒否します。</p>
       <p v-if="lastTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastTransaction}`" target="_blank" rel="noopener noreferrer">投票トランザクションを確認</a></p>
       <p aria-live="polite">{{ message }}</p>

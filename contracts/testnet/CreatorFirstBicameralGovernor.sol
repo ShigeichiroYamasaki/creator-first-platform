@@ -2,15 +2,21 @@
 pragma solidity ^0.8.28;
 
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /// @notice Testnet-only bicameral quadratic governor.
 /// @dev Membership is registered by a test registrar. Ballots are public and
 ///      intentionally omit production personhood, sortition and privacy proofs.
-contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
+contract CreatorFirstBicameralGovernor is AccessControl, EIP712, ReentrancyGuard {
     bytes32 public constant REGISTRAR_ROLE = keccak256("REGISTRAR_ROLE");
     bytes32 public constant REVIEWER_ROLE = keccak256("REVIEWER_ROLE");
     bytes32 public constant GUARDIAN_ROLE = keccak256("GUARDIAN_ROLE");
+    bytes32 public constant RELAYER_ROLE = keccak256("RELAYER_ROLE");
+    bytes32 public constant CFP_BALLOT_TYPEHASH = keccak256(
+        "CfpBallot(uint256 proposalId,uint256 sessionId,uint8 house,address member,int8 intensity,uint256 nonce,uint256 deadline)"
+    );
 
     uint8 public constant MAX_INTENSITY = 9;
 
@@ -118,6 +124,7 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
     mapping(uint256 proposalId => uint32 revision) public proposalCfpRevision;
     mapping(bytes32 cfpRevisionKey => uint256 proposalId) public cfpProposalId;
     mapping(uint256 proposalId => mapping(address member => Ballot ballot)) public ballots;
+    mapping(address member => uint256 nonce) public votingNonces;
     mapping(uint256 proposalId => bytes32 evidenceHash) public constitutionalEvidenceHash;
     mapping(uint256 proposalId => bytes32 evidenceHash) public reviewEvidenceHash;
     mapping(uint256 proposalId => PreVoteReview review) public preVoteReviews;
@@ -157,6 +164,10 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
     error ContractTestEvidenceAlreadyRecorded(uint256 proposalId);
     error CfpBindingMissing(uint256 proposalId);
     error CfpRevisionAlreadyRegistered(bytes32 cfpIdHash, uint32 revision, uint256 proposalId);
+    error SignatureExpired(uint256 deadline);
+    error InvalidVotingNonce(address member, uint256 expected, uint256 supplied);
+    error InvalidBallotContext();
+    error InvalidBallotSigner(address expected, address recovered);
 
     event SessionCreated(
         uint256 indexed sessionId,
@@ -241,7 +252,7 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
         uint64 upgradeDelay,
         uint64 constitutionalDelay,
         uint64 operationWindow
-    ) {
+    ) EIP712("Creator First Bicameral Governor", "1") {
         if (admin == address(0) || registrar == address(0) || reviewer == address(0) || guardian == address(0)) {
             revert InvalidAddress();
         }
@@ -425,16 +436,52 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
     }
 
     function castVote(uint256 proposalId, int8 intensity) external {
-        _castVote(proposalId, intensity);
+        _castVote(proposalId, intensity, msg.sender);
     }
 
     /// @notice Casts a quadratic approval vote for a proposal explicitly bound to a CFP revision.
     function castCfpApprovalVote(uint256 proposalId, int8 intensity) external {
         if (proposalCfpIdHash[proposalId] == bytes32(0)) revert CfpBindingMissing(proposalId);
-        _castVote(proposalId, intensity);
+        _castVote(proposalId, intensity, msg.sender);
     }
 
-    function _castVote(uint256 proposalId, int8 intensity) internal {
+    /// @notice Relays a member-signed CFP ballot while the relayer pays network fees.
+    /// @dev The signed House and session bind the wallet confirmation to the exact ballot context.
+    function castCfpApprovalVoteBySig(
+        uint256 proposalId,
+        uint256 sessionId,
+        House house,
+        address member,
+        int8 intensity,
+        uint256 nonce,
+        uint256 deadline,
+        bytes calldata signature
+    ) external onlyRole(RELAYER_ROLE) {
+        if (block.timestamp > deadline) revert SignatureExpired(deadline);
+        uint256 expectedNonce = votingNonces[member];
+        if (nonce != expectedNonce) revert InvalidVotingNonce(member, expectedNonce, nonce);
+        Proposal storage proposal = _proposal(proposalId);
+        if (proposal.sessionId != sessionId || memberHouse[sessionId][member] != house) {
+            revert InvalidBallotContext();
+        }
+        bytes32 digest = _hashTypedDataV4(keccak256(abi.encode(
+            CFP_BALLOT_TYPEHASH,
+            proposalId,
+            sessionId,
+            uint8(house),
+            member,
+            intensity,
+            nonce,
+            deadline
+        )));
+        address recovered = ECDSA.recover(digest, signature);
+        if (recovered != member) revert InvalidBallotSigner(member, recovered);
+        votingNonces[member] = expectedNonce + 1;
+        if (proposalCfpIdHash[proposalId] == bytes32(0)) revert CfpBindingMissing(proposalId);
+        _castVote(proposalId, intensity, member);
+    }
+
+    function _castVote(uint256 proposalId, int8 intensity, address member) internal {
         Proposal storage proposal = _proposal(proposalId);
         if (proposal.finalized || proposal.cancelled || proposal.executed) revert FinalState(proposalId);
         if (block.timestamp < proposal.votingStartsAt || block.timestamp >= proposal.votingEndsAt) {
@@ -453,13 +500,13 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
             revert InvalidIntensity(intensity);
         }
 
-        House house = memberHouse[proposal.sessionId][msg.sender];
+        House house = memberHouse[proposal.sessionId][member];
         if (house != House.CREATOR && house != House.USER) revert InvalidHouse();
 
-        Ballot storage ballot = ballots[proposalId][msg.sender];
+        Ballot storage ballot = ballots[proposalId][member];
         uint32 absolute = intensity < 0 ? uint32(uint8(-intensity)) : uint32(uint8(intensity));
         uint32 nextCost = absolute * absolute;
-        uint32 currentSpent = spentVoiceCredits[proposal.sessionId][msg.sender];
+        uint32 currentSpent = spentVoiceCredits[proposal.sessionId][member];
         uint32 nextSpent = currentSpent - ballot.cost + nextCost;
         uint32 budget = sessions[proposal.sessionId].voiceCreditBudget;
         if (nextSpent > budget) revert VoiceCreditExceeded(budget, nextSpent);
@@ -475,8 +522,8 @@ contract CreatorFirstBicameralGovernor is AccessControl, ReentrancyGuard {
         ballot.intensity = intensity;
         ballot.cost = nextCost;
         ballot.cast = true;
-        spentVoiceCredits[proposal.sessionId][msg.sender] = nextSpent;
-        emit BallotCast(proposalId, proposal.sessionId, msg.sender, house, intensity, nextCost, nextSpent);
+        spentVoiceCredits[proposal.sessionId][member] = nextSpent;
+        emit BallotCast(proposalId, proposal.sessionId, member, house, intensity, nextCost, nextSpent);
     }
 
     function recordPreVoteReview(

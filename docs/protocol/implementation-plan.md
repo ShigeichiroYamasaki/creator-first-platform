@@ -151,7 +151,7 @@ flowchart TD
 
 **対象仕様:** [SPEC-ACCOUNT-004](/protocol/specs/early-supporter-credential)、[SPEC-STREAMING-001](/protocol/specs/playback-authorization)
 
-**現在の部分実装:** 固定モックサブスクリプション／権利、短命再生セッション、Owner 結付け、単一範囲、Concurrency Lease、SQLite 配信証跡、月間Byte 予算、ファイルアダプター、明示対応付け型Navidrome アダプター、EIP-712 支援意思、モック資格証明状態およびコミュニティ Capabilityを実装済みである。別レイヤーでは、Hardhat 3による一回限りの公開テスト Faucet付きMockJPYC、サブスクリプション、資金庫、一般／初期サポーター SBT、UUPS プロキシおよび自己申告コミットメント限定の音楽クリエーター登録台帳をPolygon Amoyへデプロイした。GitHub Pagesのテストユーザ利用フローはmockJPYC サブスクリプションと合成プレーヤー、テスト音楽クリエーター利用フローはPolygon Amoy ウォレットと音楽クリエーター／リリースコミットメントを統合する。ただしリレイヤー、コントラクトインデクサー、ゲートウェイ接続、音楽クリエーターBFF、復旧、権利レビュー、Reorganization-aware 参照モデル、クライアント再生イベント、再生検証 handoff、非公開クラウドネットワークおよび障害Fixture一式は未実装であり、IMP-006の終了条件は未達である。
+**現在の部分実装:** 固定モックサブスクリプション／権利、短命再生セッション、Owner 結付け、単一範囲、Concurrency Lease、SQLite 配信証跡、月間Byte 予算、ファイルアダプター、明示対応付け型Navidrome アダプター、EIP-712 支援意思、モック資格証明状態およびコミュニティ Capabilityを実装済みである。別レイヤーでは、Hardhat 3による一回限りの公開テスト Faucet付きMockJPYC、サブスクリプション、資金庫、一般／初期サポーター SBT、UUPS プロキシおよび自己申告コミットメント限定の音楽クリエーター登録台帳をPolygon Amoyへデプロイした。GitHub Pagesのテストユーザ利用フローはmockJPYC サブスクリプションと合成プレーヤー、テスト音楽クリエーター利用フローはPolygon Amoy ウォレットと音楽クリエーター／リリースコミットメントを統合する。サポーターSBTについては、登録済み音楽リスナーの短命EIP-712意思を検証し、専用リレイヤーがテストPOLを負担する目的限定ゲートウェーAPIとUIを実装した。ただし専用リレイヤーの公開配備とE2E、MockJPYC決済等のリレイヤー／ペイマスター対応、コントラクトインデクサー、音楽クリエーターBFF、復旧、権利レビュー、Reorganization-aware 参照モデル、クライアント再生イベント、再生検証handoff、非公開クラウドネットワークおよび障害Fixture一式は未完了であり、IMP-006の終了条件は未達である。
 
 **成果物:**
 

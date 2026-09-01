@@ -99,6 +99,61 @@ if [[ -n "${participant_registry_address}" && ! -s "${APP_DIR}/secrets/participa
   exit 1
 fi
 
+supporter_relayer_key="$(metadata_value gateway-supporter-relayer-private-key || true)"
+if [[ -n "${supporter_relayer_key}" ]]; then
+  if [[ ! "${supporter_relayer_key}" =~ ^0x[0-9a-fA-F]{64}$ ]]; then
+    echo "CREATOR_FIRST_DEPLOY_STATUS=failed_invalid_supporter_relayer_key"
+    exit 1
+  fi
+  umask 077
+  printf '%s' "${supporter_relayer_key}" > "${APP_DIR}/secrets/supporter-relayer-private-key"
+fi
+supporter_sbt_address="$(metadata_value supporter-sbt-address || true)"
+supporter_creator_ids="$(metadata_value supporter-creator-ids || true)"
+if [[ -n "${supporter_sbt_address}" && ! "${supporter_sbt_address}" =~ ^0x[0-9a-fA-F]{40}$ ]]; then
+  echo "CREATOR_FIRST_DEPLOY_STATUS=failed_invalid_supporter_sbt_address"
+  exit 1
+fi
+if [[ -n "${supporter_creator_ids}" && ! "${supporter_creator_ids}" =~ ^0x[0-9a-fA-F]{64}(,0x[0-9a-fA-F]{64})*$ ]]; then
+  echo "CREATOR_FIRST_DEPLOY_STATUS=failed_invalid_supporter_creator_ids"
+  exit 1
+fi
+if [[ -s "${APP_DIR}/secrets/supporter-relayer-private-key" ]]; then
+  chown 1000:1000 "${APP_DIR}/secrets/supporter-relayer-private-key"
+  chmod 0400 "${APP_DIR}/secrets/supporter-relayer-private-key"
+fi
+if [[ -n "${supporter_sbt_address}" || -n "${supporter_creator_ids}" || -s "${APP_DIR}/secrets/supporter-relayer-private-key" ]]; then
+  if [[ -z "${supporter_sbt_address}" || -z "${supporter_creator_ids}" || -z "${participant_registry_address}" || ! -s "${APP_DIR}/secrets/supporter-relayer-private-key" ]]; then
+    echo "CREATOR_FIRST_DEPLOY_STATUS=failed_incomplete_supporter_relayer_configuration"
+    exit 1
+  fi
+fi
+
+governance_relayer_key="$(metadata_value gateway-governance-relayer-private-key || true)"
+if [[ -n "${governance_relayer_key}" ]]; then
+  if [[ ! "${governance_relayer_key}" =~ ^0x[0-9a-fA-F]{64}$ ]]; then
+    echo "CREATOR_FIRST_DEPLOY_STATUS=failed_invalid_governance_relayer_key"
+    exit 1
+  fi
+  umask 077
+  printf '%s' "${governance_relayer_key}" > "${APP_DIR}/secrets/governance-relayer-private-key"
+fi
+governor_address="$(metadata_value governor-address || true)"
+if [[ -n "${governor_address}" && ! "${governor_address}" =~ ^0x[0-9a-fA-F]{40}$ ]]; then
+  echo "CREATOR_FIRST_DEPLOY_STATUS=failed_invalid_governor_address"
+  exit 1
+fi
+if [[ -s "${APP_DIR}/secrets/governance-relayer-private-key" ]]; then
+  chown 1000:1000 "${APP_DIR}/secrets/governance-relayer-private-key"
+  chmod 0400 "${APP_DIR}/secrets/governance-relayer-private-key"
+fi
+if [[ -n "${governor_address}" || -s "${APP_DIR}/secrets/governance-relayer-private-key" ]]; then
+  if [[ -z "${governor_address}" || ! -s "${APP_DIR}/secrets/governance-relayer-private-key" ]]; then
+    echo "CREATOR_FIRST_DEPLOY_STATUS=failed_incomplete_governance_relayer_configuration"
+    exit 1
+  fi
+fi
+
 cat > "${APP_DIR}/bootstrap/gateway.env" <<'ENV'
 GATEWAY_HOST=0.0.0.0
 GATEWAY_PORT=8787
@@ -126,6 +181,19 @@ if [[ -n "${participant_registry_address}" ]]; then
 GATEWAY_AMOY_RPC_URLS=https://polygon-amoy.drpc.org:1443,https://polygon-amoy-bor-rpc.publicnode.com:2443
 GATEWAY_PARTICIPANT_REGISTRY_ADDRESS=${participant_registry_address}
 GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key
+ENV
+fi
+if [[ -n "${supporter_sbt_address}" ]]; then
+  cat >> "${APP_DIR}/bootstrap/gateway.env" <<ENV
+GATEWAY_SUPPORTER_SBT_ADDRESS=${supporter_sbt_address}
+GATEWAY_SUPPORTER_CREATOR_IDS=${supporter_creator_ids}
+GATEWAY_SUPPORTER_RELAYER_PRIVATE_KEY_FILE=/run/secrets/supporter-relayer-private-key
+ENV
+fi
+if [[ -n "${governor_address}" ]]; then
+  cat >> "${APP_DIR}/bootstrap/gateway.env" <<ENV
+GATEWAY_GOVERNOR_ADDRESS=${governor_address}
+GATEWAY_GOVERNANCE_RELAYER_PRIVATE_KEY_FILE=/run/secrets/governance-relayer-private-key
 ENV
 fi
 chmod 0640 "${APP_DIR}/bootstrap/gateway.env"
@@ -333,6 +401,19 @@ if [[ -n "${participant_registry_address}" ]]; then
 GATEWAY_AMOY_RPC_URLS=https://polygon-amoy.drpc.org:1443,https://polygon-amoy-bor-rpc.publicnode.com:2443
 GATEWAY_PARTICIPANT_REGISTRY_ADDRESS=${participant_registry_address}
 GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key
+ENV
+fi
+if [[ -n "${supporter_sbt_address}" ]]; then
+  cat >> "${APP_DIR}/bootstrap/gateway.env" <<ENV
+GATEWAY_SUPPORTER_SBT_ADDRESS=${supporter_sbt_address}
+GATEWAY_SUPPORTER_CREATOR_IDS=${supporter_creator_ids}
+GATEWAY_SUPPORTER_RELAYER_PRIVATE_KEY_FILE=/run/secrets/supporter-relayer-private-key
+ENV
+fi
+if [[ -n "${governor_address}" ]]; then
+  cat >> "${APP_DIR}/bootstrap/gateway.env" <<ENV
+GATEWAY_GOVERNOR_ADDRESS=${governor_address}
+GATEWAY_GOVERNANCE_RELAYER_PRIVATE_KEY_FILE=/run/secrets/governance-relayer-private-key
 ENV
 fi
 chmod 0640 "${APP_DIR}/bootstrap/gateway.env"

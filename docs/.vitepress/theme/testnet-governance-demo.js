@@ -21,6 +21,10 @@ export const governanceAbi = [
     outputs: [{ name: '', type: 'uint32' }]
   },
   {
+    type: 'function', name: 'votingNonces', stateMutability: 'view',
+    inputs: [{ name: 'member', type: 'address' }], outputs: [{ name: '', type: 'uint256' }]
+  },
+  {
     type: 'function', name: 'proposals', stateMutability: 'view',
     inputs: [{ name: 'proposalId', type: 'uint256' }],
     outputs: [
@@ -51,6 +55,22 @@ export const governanceAbi = [
     inputs: [{ name: 'proposalId', type: 'uint256' }, { name: 'intensity', type: 'int8' }], outputs: []
   }
 ]
+
+export function governanceBallotTypedData({ chainId, governor, proposalId, sessionId, house, member, intensity, nonce, deadline }) {
+  return {
+    domain: { name: 'Creator First Bicameral Governor', version: '1', chainId, verifyingContract: governor },
+    types: {
+      CfpBallot: [
+        { name: 'proposalId', type: 'uint256' }, { name: 'sessionId', type: 'uint256' },
+        { name: 'house', type: 'uint8' }, { name: 'member', type: 'address' },
+        { name: 'intensity', type: 'int8' }, { name: 'nonce', type: 'uint256' },
+        { name: 'deadline', type: 'uint256' }
+      ]
+    },
+    primaryType: 'CfpBallot',
+    message: { proposalId, sessionId, house, member, intensity, nonce, deadline }
+  }
+}
 
 export const governanceStateLabels = [
   '未登録', '投票開始前', '投票中', '集計待ち', '否決', '両院承認',

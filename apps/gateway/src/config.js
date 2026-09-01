@@ -64,16 +64,58 @@ export function loadConfig(environment = process.env) {
   if (Boolean(participantRegistryAddress) !== Boolean(participantOperatorPrivateKey)) {
     throw new Error('Participant enrollment requires both its registry address and operator private key')
   }
+  const supporterSbtAddress = environment.GATEWAY_SUPPORTER_SBT_ADDRESS?.trim()
+  const supporterRelayerPrivateKey = secret(
+    environment,
+    'GATEWAY_SUPPORTER_RELAYER_PRIVATE_KEY',
+    'GATEWAY_SUPPORTER_RELAYER_PRIVATE_KEY_FILE'
+  )
+  const supporterCreatorIds = (environment.GATEWAY_SUPPORTER_CREATOR_IDS ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+  if (supporterSbtAddress && !/^0x[0-9a-fA-F]{40}$/.test(supporterSbtAddress)) {
+    throw new Error('GATEWAY_SUPPORTER_SBT_ADDRESS must be an EVM address')
+  }
+  if (supporterRelayerPrivateKey && !/^0x[0-9a-fA-F]{64}$/.test(supporterRelayerPrivateKey)) {
+    throw new Error('GATEWAY_SUPPORTER_RELAYER_PRIVATE_KEY must be a 32-byte hex key')
+  }
+  if (supporterCreatorIds.some((value) => !/^0x[0-9a-fA-F]{64}$/.test(value))) {
+    throw new Error('GATEWAY_SUPPORTER_CREATOR_IDS must contain comma-separated bytes32 values')
+  }
+  const supporterRelayValues = [supporterSbtAddress, supporterRelayerPrivateKey, participantRegistryAddress]
+  const supporterRelayConfigured = Boolean(supporterSbtAddress || supporterRelayerPrivateKey || supporterCreatorIds.length > 0)
+  if (supporterRelayConfigured && (
+    supporterRelayValues.some((value) => !value) || supporterCreatorIds.length === 0
+  )) {
+    throw new Error('Supporter relay requires its SBT address, participant registry, relayer private key and creator allowlist')
+  }
+  const governorAddress = environment.GATEWAY_GOVERNOR_ADDRESS?.trim()
+  const governanceRelayerPrivateKey = secret(
+    environment,
+    'GATEWAY_GOVERNANCE_RELAYER_PRIVATE_KEY',
+    'GATEWAY_GOVERNANCE_RELAYER_PRIVATE_KEY_FILE'
+  )
+  if (governorAddress && !/^0x[0-9a-fA-F]{40}$/.test(governorAddress)) {
+    throw new Error('GATEWAY_GOVERNOR_ADDRESS must be an EVM address')
+  }
+  if (governanceRelayerPrivateKey && !/^0x[0-9a-fA-F]{64}$/.test(governanceRelayerPrivateKey)) {
+    throw new Error('GATEWAY_GOVERNANCE_RELAYER_PRIVATE_KEY must be a 32-byte hex key')
+  }
+  if (Boolean(governorAddress) !== Boolean(governanceRelayerPrivateKey)) {
+    throw new Error('Governance relay requires both its governor address and relayer private key')
+  }
+  const governanceRelayConfigured = Boolean(governorAddress)
   const chainId = positiveInteger(environment.GATEWAY_CHAIN_ID, 80002, 'GATEWAY_CHAIN_ID')
   const amoyRpcUrls = (
     environment.GATEWAY_AMOY_RPC_URLS
     ?? environment.GATEWAY_AMOY_RPC_URL
     ?? 'https://polygon-amoy.drpc.org,https://polygon-amoy-bor-rpc.publicnode.com'
   ).split(',').map((value) => value.trim()).filter(Boolean)
-  if (participantRegistryAddress && chainId !== 80002) {
-    throw new Error('Participant enrollment operator is restricted to Polygon Amoy chain 80002')
+  if ((participantRegistryAddress || supporterRelayConfigured || governanceRelayConfigured) && chainId !== 80002) {
+    throw new Error('Participant enrollment and relayers are restricted to Polygon Amoy chain 80002')
   }
-  if (participantRegistryAddress && (amoyRpcUrls.length === 0 || amoyRpcUrls.some((value) => {
+  if ((participantRegistryAddress || supporterRelayConfigured || governanceRelayConfigured) && (amoyRpcUrls.length === 0 || amoyRpcUrls.some((value) => {
     const url = new URL(value)
     return url.protocol !== 'https:' || url.username || url.password
   }))) {
@@ -127,6 +169,11 @@ export function loadConfig(environment = process.env) {
     amoyRpcUrls,
     participantRegistryAddress,
     participantOperatorPrivateKey,
+    supporterSbtAddress,
+    supporterRelayerPrivateKey,
+    supporterCreatorIds,
+    governorAddress,
+    governanceRelayerPrivateKey,
     webauthnOrigin,
     webauthnRpId,
     webauthnRpName: environment.GATEWAY_WEBAUTHN_RP_NAME ?? 'Creator First Platform Testnet',

@@ -12,7 +12,6 @@ import {
   hasActiveParticipantRegistry,
   mockJpycAbi,
   AMOY_CHAIN_ID,
-  supporterRegistrationAdapterAbi,
   supporterSbtAbi,
   subscriptionAbi,
   participantRegistryAbi,
@@ -77,6 +76,7 @@ const supporterTokenId = ref(0n)
 const supporterTier = ref(0)
 const supporterTokenUri = ref('')
 const supporterMetadata = ref<SupporterMetadata>()
+const supporterRelayAvailable = ref(false)
 const supporterMessage = ref('好きな音楽クリエーターを応援した証明書を、この画面から受け取れます。')
 const selectedTrack = ref(tracks[0])
 const toneUrls = new Map<string, string>()
@@ -92,9 +92,9 @@ const userPreApproved = computed(() => participantActive.value && (approvedParti
 const userRegistered = computed(() => participantActive.value && (registeredParticipantRoles.value & TESTNET_USER_ROLE) !== 0)
 const participantSelfRegistrationReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && participantRegistryReady.value && userPreApproved.value && initialFundingCompleted.value && !userRegistered.value && !busyAction.value))
 const chainActionsReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && contractsReady.value && (!participantRegistryReady.value || userRegistered.value) && !busyAction.value))
-const supporterRegistrationReady = computed(() => hasActiveSupporterRegistration(deployment.value))
+const supporterRegistrationReady = computed(() => hasActiveSupporterRegistration(deployment.value) && supporterRelayAvailable.value)
 const supporterActionReady = computed(() => Boolean(
-  profile.value && walletAddress.value && correctChain.value && supporterRegistrationReady.value &&
+  profile.value && walletAddress.value && correctChain.value && userRegistered.value && supporterRegistrationReady.value &&
   supporterTokenId.value === 0n && !busyAction.value
 ))
 const allowanceEnough = computed(() => planPrice.value > 0n && allowance.value >= planPrice.value)
@@ -339,13 +339,12 @@ async function subscribe(): Promise<void> {
   })
 }
 async function registerAsSupporter(): Promise<void> {
-  if (!provider || !walletAddress.value || !deployment.value?.contracts.supporterSbt || !deployment.value.contracts.supporterRegistrationAdapter) return
+  if (!provider || !walletAddress.value || !deployment.value?.contracts.supporterSbt || !supporterRelayAvailable.value) return
   busyAction.value = 'Supporter SBT'
   lastSbtTransaction.value = undefined
   try {
     const { publicClient, walletClient } = clients()
     const supporterSbt = deployment.value.contracts.supporterSbt
-    const adapter = deployment.value.contracts.supporterRegistrationAdapter
     const [nonce, block] = await Promise.all([
       publicClient.readContract({ address: supporterSbt, abi: supporterSbtAbi, functionName: 'nonces', args: [walletAddress.value] }),
       publicClient.getBlock()
@@ -359,19 +358,25 @@ async function registerAsSupporter(): Promise<void> {
     })
     supporterMessage.value = '仮想通貨ワレットで、応援の証明書を受け取ることを確認してください。'
     const signature = await walletClient.signTypedData({ account: walletAddress.value, ...typedData })
-    const fees = await getAmoyTransactionFees(publicClient)
-    const hash = await walletClient.writeContract({
-      account: walletAddress.value,
-      address: adapter,
-      abi: supporterRegistrationAdapterAbi,
-      functionName: 'registerSelf',
-      args: [DEMO_SUPPORTER_CREATOR_ID, nonce as bigint, deadline, typedData.message.consentVersion, signature],
-      ...fees
+    supporterMessage.value = '運営が操作手数料を負担して、応援の証明書を発行しています。'
+    const response = await fetch('/api/v1/testnet/supporter-registrations', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        holder: walletAddress.value,
+        creatorId: DEMO_SUPPORTER_CREATOR_ID,
+        nonce: (nonce as bigint).toString(),
+        deadline: deadline.toString(),
+        consentVersion: typedData.message.consentVersion,
+        signature,
+        idempotencyKey: typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : newTestUserId()
+      })
     })
-    lastSbtTransaction.value = hash
-    supporterMessage.value = '応援の証明書を受け取る操作を送信しました。完了を待っています。'
-    const receipt = await publicClient.waitForTransactionReceipt({ hash })
-    if (receipt.status !== 'success') throw new Error('応援の証明書を受け取る操作が完了しませんでした。')
+    const result = await response.json() as { status?: string; transactionHash?: Hash | null; message?: string }
+    if (!response.ok) throw new Error(result.message ?? `応援の証明書を発行できません（HTTP ${response.status}）`)
+    if (result.status !== 'SBT_ACTIVE') throw new Error('応援の証明書の発行完了を確認できません。')
+    lastSbtTransaction.value = result.transactionHash ?? undefined
     await refreshOnchainState(true)
     if (supporterTokenId.value === 0n) throw new Error('操作は完了しましたが、有効な応援の証明書を確認できません。')
     supporterMessage.value = `${supporterTierLabel.value}の応援証明書 #${supporterTokenId.value} を受け取りました。`
@@ -405,6 +410,16 @@ async function loadDeployment(): Promise<void> {
     deployment.value = validateDeploymentManifest(await response.json()) as Deployment
   } catch (error) { manifestError.value = error instanceof Error ? error.message : '実験の公開情報を確認できません。' }
 }
+async function loadSupporterRelayStatus(): Promise<void> {
+  try {
+    const response = await fetch('/api/v1/health', { cache: 'no-store', credentials: 'include' })
+    if (!response.ok) return
+    const status = await response.json() as { supporterRelay?: string }
+    supporterRelayAvailable.value = status.supporterRelay === 'enabled'
+  } catch {
+    supporterRelayAvailable.value = false
+  }
+}
 function restoreProfile(): void {
   try {
     const stored = sessionStorage.getItem(storageKey)
@@ -419,6 +434,7 @@ onMounted(async () => {
   for (const track of tracks) toneUrls.set(track.id, URL.createObjectURL(new Blob([createTestToneWav(track.frequency)], { type: 'audio/wav' })))
   await selectTrack(tracks[0])
   await loadDeployment()
+  await loadSupporterRelayStatus()
 })
 onBeforeUnmount(() => {
   for (const url of toneUrls.values()) URL.revokeObjectURL(url)
@@ -493,12 +509,12 @@ onBeforeUnmount(() => {
       <p aria-live="polite">{{ playerMessage }}</p>
       <div class="supporter-action">
         <h4 id="supporter-registration-title">テスト用音楽クリエーターを応援する</h4>
-        <p>応援する気持ちを、他人へ渡せないデジタル証明書として記録します。支払いまたは継続課金はありません。</p>
+        <p>応援する気持ちを、他人へ渡せないデジタル証明書として記録します。支払いまたは継続課金はなく、発行に必要な操作手数料は運営が負担します。</p>
         <div class="status-grid">
           <div><span>応援の状態</span><strong>{{ supporterTierLabel }}</strong></div>
           <div><span>証明書番号</span><strong>{{ supporterTokenId || '未発行' }}</strong></div>
         </div>
-        <p v-if="!supporterRegistrationReady" class="notice">応援の証明書を用意しているため、現在この操作は利用できません。</p>
+        <p v-if="!supporterRegistrationReady" class="notice">応援の証明書を発行する運営サービスを準備しているため、現在この操作は利用できません。</p>
         <div class="actions">
           <button class="primary" type="button" :disabled="!supporterActionReady" @click="registerAsSupporter">
             {{ supporterTokenId > 0n ? '応援の証明書を取得済み' : busyAction === 'Supporter SBT' ? '確認・発行中…' : '応援して証明書を受け取る' }}

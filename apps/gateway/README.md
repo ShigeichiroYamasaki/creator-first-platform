@@ -67,6 +67,23 @@ GATEWAY_GMAIL_APP_PASSWORD_FILE=/run/secrets/gmail-app-password \
 npm run gateway:dev
 ```
 
+Polygon AmoyのサポーターSBT発行では、ブラウザは短命EIP-712意思へ署名するだけとし、専用リレイヤーがテストPOLを負担します。リレイヤーは、オンチェーン登録済み音楽リスナー、現在Nonce、署名者、15分以内のDeadline、固定SBTおよび音楽クリエーター許可一覧を検証します。参加者登録運営鍵を流用せず、SBTの`RELAYER_ROLE`だけを持つ別鍵を読み取り専用秘密ファイルから設定します。
+
+```sh
+GATEWAY_CHAIN_ID=80002 \
+GATEWAY_AMOY_RPC_URLS='https://polygon-amoy.drpc.org,https://polygon-amoy-bor-rpc.publicnode.com' \
+GATEWAY_PARTICIPANT_REGISTRY_ADDRESS='0x...' \
+GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key \
+GATEWAY_SUPPORTER_SBT_ADDRESS='0x...' \
+GATEWAY_SUPPORTER_CREATOR_IDS='0x...' \
+GATEWAY_SUPPORTER_RELAYER_PRIVATE_KEY_FILE=/run/secrets/supporter-relayer-private-key \
+GATEWAY_GOVERNOR_ADDRESS='0x...' \
+GATEWAY_GOVERNANCE_RELAYER_PRIVATE_KEY_FILE=/run/secrets/governance-relayer-private-key \
+npm run gateway:dev
+```
+
+ガバナンス投票も同じガス代代理方式を使います。議員は、提案ID、会期、所属院、投票強度、Nonce、10分の期限を含むEIP-712投票内容へ署名します。ゲートウェーは署名者とオンチェーン議員資格を照合し、`RELAYER_ROLE`だけを持つ専用鍵で送信します。投票者のアドレス、院別集計、二乗コスト、票の差替え規則はガバナーが署名者を基準に処理するため、リレイヤー自身の票にはなりません。
+
 Gmail送信は暗黙TLS（465）を優先し、接続できない場合だけSTARTTLS（587）へ切り替えます。公開実験の確認メールと審査結果に限定し、宣伝メールや不特定多数への配信には使用しません。送信量、迷惑メール判定、アカウント停止、アプリパスワード失効の影響を受けるため、本番系では独自ドメインのトランザクションメールサービスへ移行します。
 
 IPv6専用ホスト上のIPv4専用Dockerブリッジでは、ホストの`172.31.0.1:1465`から`smtp.gmail.com:465`のIPv6接続だけへ転送する限定TCP中継を使用します。ゲートウェーには`GATEWAY_GMAIL_CONNECT_HOST=172.31.0.1`、`GATEWAY_GMAIL_IMPLICIT_TLS_PORT=1465`、`GATEWAY_GMAIL_NETWORK_FAMILY=4`を設定します。TLSの検証対象名は中継先でも`smtp.gmail.com`のままで、アプリパスワードを中継プロセスへ渡しません。通常のデュアルスタック環境ではこれらを未設定（自動選択）のままとします。
@@ -94,7 +111,7 @@ Credential、内部Media ID、OpenSubsonic URLまたは`Remote-User`をPlayerへ
 
 - 固定のMock SubscriptionとMock RightsをActiveとして扱うローカル試験専用実装
 - Wallet署名はSIWE messageとEIP-712 Support Intentに対して復元検証する
-- Supporter SBT、Early判定、RelayerおよびBlockchain TransactionはMockであり、JPYCを扱わない
+- ローカル既定値のSupporter資格はMockだが、明示的にAmoyリレイヤーを設定した`/v1/testnet/supporter-registrations`だけは実チェーンへ送信する。テスト参加者と許可済み音楽クリエーターに限定し、JPYC支払権限を含めない
 - Test User登録ではAlias、同意版、Opaque IDだけを扱い、メール、電話番号、Passwordまたは法的氏名を収集しない
 - 事前登録メールは参加者管理の明示目的でだけGatewayへ保存し、公開招待API、URLおよび公開チェーンへ返さない
 - Gmailの通常パスワードは使用せず、専用アプリパスワードをGit、ログ、公開JavaScriptまたはメール監査記録へ保存しない

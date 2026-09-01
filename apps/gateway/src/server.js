@@ -12,6 +12,16 @@ import {
   ParticipantEnrollmentOperator
 } from './ParticipantEnrollmentOperator.js'
 import { ParticipantInvitationError, ParticipantInvitationService } from './ParticipantInvitationService.js'
+import {
+  AmoySupporterSbtChain,
+  SupporterSbtRelayError,
+  SupporterSbtRelayer
+} from './SupporterSbtRelayer.js'
+import {
+  AmoyGovernanceVoteChain,
+  GovernanceVoteRelayError,
+  GovernanceVoteRelayer
+} from './GovernanceVoteRelayer.js'
 
 const COOKIE_NAME = 'cfp_demo_session'
 const POLICY_VERSION = 'gateway-demo-policy-v1'
@@ -83,7 +93,9 @@ export function createGatewayServer({
   mediaAdapter,
   store = new GatewayStore(config.databasePath),
   accountTrustOptions = {},
-  participantEnrollmentOptions = {}
+  participantEnrollmentOptions = {},
+  supporterRelayOptions = {},
+  governanceRelayOptions = {}
 }) {
   const accounts = new Map()
   const challenges = new Map()
@@ -101,6 +113,42 @@ export function createGatewayServer({
       : undefined
   )
   const participantEnrollment = new ParticipantEnrollmentOperator({ store, chain: enrollmentChain })
+  const supporterChain = supporterRelayOptions.chain ?? (
+    config.supporterSbtAddress && config.supporterRelayerPrivateKey && config.participantRegistryAddress
+      ? new AmoySupporterSbtChain({
+          rpcUrls: config.amoyRpcUrls,
+          supporterSbtAddress: config.supporterSbtAddress,
+          participantRegistryAddress: config.participantRegistryAddress,
+          relayerPrivateKey: config.supporterRelayerPrivateKey
+        })
+      : undefined
+  )
+  const supporterRelayer = supporterChain
+    ? new SupporterSbtRelayer({
+        chain: supporterChain,
+        chainId: config.chainId,
+        supporterSbtAddress: config.supporterSbtAddress ?? supporterRelayOptions.supporterSbtAddress,
+        allowedCreatorIds: config.supporterCreatorIds?.length
+          ? config.supporterCreatorIds
+          : supporterRelayOptions.allowedCreatorIds
+      })
+    : undefined
+  const governanceChain = governanceRelayOptions.chain ?? (
+    config.governorAddress && config.governanceRelayerPrivateKey
+      ? new AmoyGovernanceVoteChain({
+          rpcUrls: config.amoyRpcUrls,
+          governorAddress: config.governorAddress,
+          relayerPrivateKey: config.governanceRelayerPrivateKey
+        })
+      : undefined
+  )
+  const governanceRelayer = governanceChain
+    ? new GovernanceVoteRelayer({
+        chain: governanceChain,
+        chainId: config.chainId,
+        governorAddress: config.governorAddress ?? governanceRelayOptions.governorAddress
+      })
+    : undefined
   const participantInvitations = new ParticipantInvitationService({
     config,
     store,
@@ -593,7 +641,9 @@ export function createGatewayServer({
           status: 'ok',
           adapter: config.adapter,
           mode: config.runtimeMode,
-          participantEnrollment: participantEnrollment.enabled ? 'enabled' : 'disabled'
+          participantEnrollment: participantEnrollment.enabled ? 'enabled' : 'disabled',
+          supporterRelay: supporterRelayer && await supporterRelayer.available() ? 'enabled' : 'disabled',
+          governanceRelay: governanceRelayer && await governanceRelayer.available() ? 'enabled' : 'disabled'
         })
       }
       if (request.method === 'GET' && path === '/v1/catalog/home') {
@@ -717,6 +767,18 @@ export function createGatewayServer({
       if (request.method === 'POST' && supportSubmitMatch) {
         return await submitSupport(request, response, account, supportSubmitMatch[1])
       }
+      if (request.method === 'POST' && path === '/v1/testnet/supporter-registrations') {
+        if (!supporterRelayer) {
+          throw new SupporterSbtRelayError(503, 'SUPPORTER_RELAY_DISABLED', 'Sponsored Supporter SBT registration is not configured')
+        }
+        return sendJson(response, 200, await supporterRelayer.relay(await readJson(request)))
+      }
+      if (request.method === 'POST' && path === '/v1/testnet/governance-votes') {
+        if (!governanceRelayer) {
+          throw new GovernanceVoteRelayError(503, 'GOVERNANCE_RELAY_DISABLED', 'Sponsored governance voting is not configured')
+        }
+        return sendJson(response, 200, await governanceRelayer.relay(await readJson(request)))
+      }
       const registrationMatch = /^\/v1\/support-registrations\/([A-Za-z0-9-]+)$/.exec(path)
       if (request.method === 'GET' && registrationMatch) {
         return supportRegistration(response, account, registrationMatch[1])
@@ -739,7 +801,7 @@ export function createGatewayServer({
       throw new GatewayHttpError(404, 'NOT_FOUND', 'Route not found')
     } catch (error) {
       if (response.headersSent) return response.destroy(error)
-      const knownError = error instanceof GatewayHttpError || error instanceof AccountTrustError || error instanceof ParticipantInvitationError || error instanceof ParticipantApplicationError || error instanceof ParticipantEnrollmentError
+      const knownError = error instanceof GatewayHttpError || error instanceof AccountTrustError || error instanceof ParticipantInvitationError || error instanceof ParticipantApplicationError || error instanceof ParticipantEnrollmentError || error instanceof SupporterSbtRelayError || error instanceof GovernanceVoteRelayError
       const status = knownError ? error.status : 500
       const code = knownError ? error.code : 'INTERNAL_ERROR'
       const message = knownError ? error.message : 'Gateway request failed'
@@ -753,6 +815,8 @@ export function createGatewayServer({
     store,
     invitationMailer,
     participantEnrollment,
+    supporterRelayer,
+    governanceRelayer,
     async listen(port = config.port, host = config.host) {
       await new Promise((resolve, reject) => {
         server.once('error', reject)

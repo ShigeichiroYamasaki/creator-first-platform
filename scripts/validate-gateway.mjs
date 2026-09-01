@@ -5,6 +5,7 @@ const requiredFiles = [
   'apps/gateway/src/AccountTrustService.js',
   'apps/gateway/src/ParticipantApplicationService.js',
   'apps/gateway/src/ParticipantEnrollmentOperator.js',
+  'apps/gateway/src/SupporterSbtRelayer.js',
   'apps/gateway/src/GmailSmtpTransport.js',
   'apps/gateway/src/ParticipantInvitationService.js',
   'apps/gateway/src/InvitationMailer.js',
@@ -46,7 +47,10 @@ const requirements = [
   ['smtp.gmail.com', 'Gmail TLS endpoint'],
   ['/enrollment', 'participant enrollment operator API'],
   ['INITIAL_TEST_POL_CONFIRMED', 'initial Test POL audit state'],
-  ['AMOY_MIN_PRIORITY_FEE', 'Polygon Amoy fee floor']
+  ['AMOY_MIN_PRIORITY_FEE', 'Polygon Amoy fee floor'],
+  ['/v1/testnet/supporter-registrations', 'sponsored Supporter SBT API'],
+  ['PARTICIPANT_REGISTRATION_REQUIRED', 'Supporter relay participant gate'],
+  ['CREATOR_NOT_SPONSORED', 'Supporter relay creator allowlist']
 ]
 
 const missing = requirements.filter(([needle]) => !source.includes(needle))
@@ -83,6 +87,8 @@ const consistencyRequirements = [
   ['docs/.vitepress/theme/ParticipantInvitationRegistration.vue', 'enrollmentFunded', 'participant funding status'],
   ['deployment/gcp/startup.sh', 'GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE', 'participant operator secret mount'],
   ['deployment/gcp/README.md', 'creator-first-platform-participant-operator', 'participant operator key custody'],
+  ['deployment/gcp/startup.sh', 'GATEWAY_SUPPORTER_RELAYER_PRIVATE_KEY_FILE', 'Supporter relayer secret mount'],
+  ['deployment/gcp/README.md', 'creator-first-platform-supporter-relayer', 'Supporter relayer key custody'],
   ['docs/demo/listener-participation.md', '<ParticipantApplicationDemo :role="1" />', 'user application UI'],
   ['docs/demo/creator-participation.md', '<ParticipantApplicationDemo :role="2" />', 'creator application UI'],
   ['docs/demo/participant-application-status.md', '<ParticipantApplicationDemo status-only />', 'dedicated application status UI'],

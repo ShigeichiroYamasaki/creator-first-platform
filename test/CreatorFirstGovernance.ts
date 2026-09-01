@@ -125,6 +125,106 @@ describe("Creator-first testnet bicameral governance", async () => {
     await assert.rejects(governor.write.recordReview([1n, hash("review:1")]));
   });
 
+  it("records a member-signed CFP ballot while the relayer pays gas and rejects replay", async () => {
+    const { governor, votingStartsAt } = await deployFixture();
+    await networkHelpers.time.increaseTo(votingStartsAt);
+    const chainId = await publicClient.getChainId();
+    const deadline = BigInt((await networkHelpers.time.latest()) + 600);
+    const ballot = {
+      proposalId: 1n,
+      sessionId: 1n,
+      house: 1,
+      member: creatorA.account.address,
+      intensity: 3,
+      nonce: 0n,
+      deadline,
+    } as const;
+    const signature = await creatorA.signTypedData({
+      account: creatorA.account,
+      domain: {
+        name: "Creator First Bicameral Governor",
+        version: "1",
+        chainId,
+        verifyingContract: governor.address,
+      },
+      types: {
+        CfpBallot: [
+          { name: "proposalId", type: "uint256" },
+          { name: "sessionId", type: "uint256" },
+          { name: "house", type: "uint8" },
+          { name: "member", type: "address" },
+          { name: "intensity", type: "int8" },
+          { name: "nonce", type: "uint256" },
+          { name: "deadline", type: "uint256" },
+        ],
+      },
+      primaryType: "CfpBallot",
+      message: ballot,
+    });
+
+    const memberBalanceBefore = await publicClient.getBalance({ address: creatorA.account.address });
+    await assert.rejects(governor.write.castCfpApprovalVoteBySig([
+      ballot.proposalId,
+      ballot.sessionId,
+      ballot.house,
+      ballot.member,
+      ballot.intensity,
+      ballot.nonce,
+      ballot.deadline,
+      signature,
+    ], { account: userA.account }));
+    const relayerRole = await governor.read.RELAYER_ROLE();
+    await governor.write.grantRole([relayerRole, outsider.account.address], { account: admin.account });
+    await governor.write.castCfpApprovalVoteBySig([
+      ballot.proposalId,
+      ballot.sessionId,
+      ballot.house,
+      ballot.member,
+      ballot.intensity,
+      ballot.nonce,
+      ballot.deadline,
+      signature,
+    ], { account: outsider.account });
+
+    const recorded = await governor.read.ballots([1n, creatorA.account.address]);
+    assert.equal(recorded[0], 3);
+    assert.equal(recorded[1], 9);
+    assert.equal(await governor.read.votingNonces([creatorA.account.address]), 1n);
+    assert.equal(await publicClient.getBalance({ address: creatorA.account.address }), memberBalanceBefore);
+    await assert.rejects(governor.write.castCfpApprovalVoteBySig([
+      ballot.proposalId,
+      ballot.sessionId,
+      ballot.house,
+      ballot.member,
+      ballot.intensity,
+      ballot.nonce,
+      ballot.deadline,
+      signature,
+    ], { account: outsider.account }));
+
+    const expiredDeadline = BigInt((await networkHelpers.time.latest()) + 5);
+    const expiredBallot = { ...ballot, nonce: 1n, deadline: expiredDeadline };
+    const expiredSignature = await creatorA.signTypedData({
+      account: creatorA.account,
+      domain: { name: "Creator First Bicameral Governor", version: "1", chainId, verifyingContract: governor.address },
+      types: {
+        CfpBallot: [
+          { name: "proposalId", type: "uint256" }, { name: "sessionId", type: "uint256" },
+          { name: "house", type: "uint8" }, { name: "member", type: "address" },
+          { name: "intensity", type: "int8" }, { name: "nonce", type: "uint256" },
+          { name: "deadline", type: "uint256" },
+        ],
+      },
+      primaryType: "CfpBallot",
+      message: expiredBallot,
+    });
+    await networkHelpers.time.increaseTo(expiredDeadline + 1n);
+    await assert.rejects(governor.write.castCfpApprovalVoteBySig([
+      expiredBallot.proposalId, expiredBallot.sessionId, expiredBallot.house, expiredBallot.member,
+      expiredBallot.intensity, expiredBallot.nonce, expiredBallot.deadline, expiredSignature,
+    ], { account: outsider.account }));
+  });
+
   it("binds a CFP revision and exposes independent House approval results", async () => {
     const { governor, votingStartsAt, votingEndsAt } = await deployFixture();
     assert.equal(await governor.read.proposalCfpIdHash([1n]), hash("CFP-TEST-0001"));

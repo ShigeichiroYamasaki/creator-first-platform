@@ -15,6 +15,8 @@
     "contracts:deploy:amoy": "hardhat ignition deploy ignition/modules/CreatorFirstTestnet.ts --network amoy --deployment-id amoy-creator-first-testnet",
     "contracts:deploy:participant-enrollment:amoy": "hardhat ignition deploy ignition/modules/CreatorFirstParticipantEnrollmentAmoy.ts --network amoy --deployment-id amoy-participant-enrollment-v2 --parameters .local/participant-enrollment-parameters.json",
     "contracts:fund:participant-operator:amoy": "hardhat run scripts/fund-participant-operator-amoy.ts --network amoy",
+    "contracts:configure:supporter-relayer:amoy": "hardhat run scripts/configure-supporter-relayer-amoy.ts --network amoy",
+    "contracts:configure:governance-relayer:amoy": "hardhat run scripts/configure-governance-relayer-amoy.ts --network amoy",
     "contracts:verify:amoy": "node scripts/verify-amoy-contracts.mjs",
     "testnet-demo:test": "node --test scripts/testnet-user-demo.test.mjs",
     "governance:test": "node --test scripts/testnet-governance-demo.test.mjs",

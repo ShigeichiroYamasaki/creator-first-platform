@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
 import { privateKeyToAccount } from 'viem/accounts'
-import { zeroAddress, zeroHash } from 'viem'
+import { keccak256, stringToHex, zeroAddress, zeroHash } from 'viem'
 import { loadConfig } from '../src/config.js'
 import { InvitationMailer } from '../src/InvitationMailer.js'
 import { FileMediaAdapter } from '../src/media/FileMediaAdapter.js'
@@ -14,6 +14,9 @@ import { parseSingleRange } from '../src/media/range.js'
 import { createGatewayServer } from '../src/server.js'
 
 const TEST_PRIVATE_KEY = `0x${'0123456789abcdef'.repeat(4)}`
+const TEST_SUPPORTER_SBT = '0x4444444444444444444444444444444444444444'
+const TEST_SUPPORTER_CREATOR_ID = keccak256(stringToHex('creator:synthetic-demo-artist'))
+const TEST_SUPPORTER_CONSENT_VERSION = keccak256(stringToHex('supporter-demo-consent-v1'))
 
 class FakeParticipantEnrollmentChain {
   constructor() {
@@ -49,6 +52,31 @@ class FakeParticipantEnrollmentChain {
     this.record.initialFundingCompleted = true
     this.record.balance = 20_000_000_000_000_000n
     return { transactionHash: `0x${'22'.repeat(32)}`, blockNumber: 102n, amount: this.record.balance }
+  }
+}
+
+class FakeSupporterSbtChain {
+  constructor() {
+    this.calls = []
+    this.record = { registered: true, nonce: 0n, tokenId: 0n, tier: 0 }
+  }
+
+  async status() {
+    return { ...this.record }
+  }
+
+  async ready() {
+    return true
+  }
+
+  async relay(value) {
+    this.calls.push(value)
+    this.record = { ...this.record, nonce: value.nonce + 1n, tokenId: 17n, tier: 1 }
+    return {
+      ...this.record,
+      transactionHash: `0x${'33'.repeat(32)}`,
+      blockNumber: 103n
+    }
   }
 }
 
@@ -210,6 +238,80 @@ test('Gateway verifies SIWE and EIP-712 before activating demo Supporter capabil
   }))
   assert.equal(otherArtist.response.status, 403)
   assert.equal(otherArtist.body.code, 'EARLY_SUPPORTER_REQUIRED')
+})
+
+test('Gateway relays a participant-bound Supporter SBT without spending the holder wallet gas', async (context) => {
+  const config = loadConfig({
+    GATEWAY_PORT: '8787',
+    GATEWAY_DATABASE_PATH: ':memory:',
+    GATEWAY_MEDIA_ROOT: new URL('../../../docker/navidrome/music', import.meta.url).pathname
+  })
+  const chain = new FakeSupporterSbtChain()
+  const gateway = createGatewayServer({
+    config,
+    mediaAdapter: new FileMediaAdapter(config.mediaRoot),
+    supporterRelayOptions: {
+      chain,
+      supporterSbtAddress: TEST_SUPPORTER_SBT,
+      allowedCreatorIds: [TEST_SUPPORTER_CREATOR_ID]
+    }
+  })
+  const address = await gateway.listen(0)
+  context.after(() => gateway.close())
+  const api = client(`http://127.0.0.1:${address.port}${config.basePath}`)
+  const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+  const deadline = BigInt(Math.floor(Date.now() / 1000) + 600)
+  const typedData = {
+    domain: {
+      name: 'Creator First Supporter SBT',
+      version: '1',
+      chainId: 80002,
+      verifyingContract: TEST_SUPPORTER_SBT
+    },
+    types: {
+      SupportIntent: [
+        { name: 'creatorId', type: 'bytes32' },
+        { name: 'holder', type: 'address' },
+        { name: 'nonce', type: 'uint256' },
+        { name: 'deadline', type: 'uint256' },
+        { name: 'consentVersion', type: 'bytes32' }
+      ]
+    },
+    primaryType: 'SupportIntent',
+    message: {
+      creatorId: TEST_SUPPORTER_CREATOR_ID,
+      holder: account.address,
+      nonce: 0n,
+      deadline,
+      consentVersion: TEST_SUPPORTER_CONSENT_VERSION
+    }
+  }
+  const signature = await account.signTypedData(typedData)
+  const body = {
+    holder: account.address,
+    creatorId: TEST_SUPPORTER_CREATOR_ID,
+    nonce: '0',
+    deadline: deadline.toString(),
+    consentVersion: TEST_SUPPORTER_CONSENT_VERSION,
+    signature,
+    idempotencyKey: 'relay-support-1'
+  }
+  const relayed = await json(await api.request('/v1/testnet/supporter-registrations', {
+    method: 'POST', body: JSON.stringify(body)
+  }))
+  assert.equal(relayed.response.status, 200)
+  assert.equal(relayed.body.status, 'SBT_ACTIVE')
+  assert.equal(relayed.body.holder, account.address)
+  assert.equal(relayed.body.tokenId, '17')
+  assert.equal(relayed.body.transactionHash, `0x${'33'.repeat(32)}`)
+  assert.equal(chain.calls.length, 1)
+
+  const replayed = await json(await api.request('/v1/testnet/supporter-registrations', {
+    method: 'POST', body: JSON.stringify(body)
+  }))
+  assert.equal(replayed.response.status, 200)
+  assert.deepEqual(replayed.body, relayed.body)
+  assert.equal(chain.calls.length, 1)
 })
 
 test('Test User registration is private, idempotent and bound to one demo session', async (context) => {
@@ -521,9 +623,11 @@ test('Gateway reads administrator and Gmail credentials from mounted secret file
     const adminTokenFile = join(directory, 'admin-token')
     const gmailPasswordFile = join(directory, 'gmail-app-password')
     const participantOperatorKeyFile = join(directory, 'participant-operator-private-key')
+    const supporterRelayerKeyFile = join(directory, 'supporter-relayer-private-key')
     writeFileSync(adminTokenFile, `${'a'.repeat(64)}\n`, { mode: 0o600 })
     writeFileSync(gmailPasswordFile, 'abcd efgh ijkl mnop\n', { mode: 0o600 })
     writeFileSync(participantOperatorKeyFile, `${TEST_PRIVATE_KEY}\n`, { mode: 0o600 })
+    writeFileSync(supporterRelayerKeyFile, `${TEST_PRIVATE_KEY}\n`, { mode: 0o600 })
     const config = loadConfig({
       GATEWAY_MAIL_MODE: 'gmail-smtp',
       GATEWAY_GMAIL_ADDRESS: '11rou.yamasaki@gmail.com',
@@ -533,7 +637,10 @@ test('Gateway reads administrator and Gmail credentials from mounted secret file
       GATEWAY_GMAIL_IMPLICIT_TLS_PORT: '1465',
       GATEWAY_ADMIN_TOKEN_FILE: adminTokenFile,
       GATEWAY_PARTICIPANT_REGISTRY_ADDRESS: '0x1111111111111111111111111111111111111111',
-      GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE: participantOperatorKeyFile
+      GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE: participantOperatorKeyFile,
+      GATEWAY_SUPPORTER_SBT_ADDRESS: TEST_SUPPORTER_SBT,
+      GATEWAY_SUPPORTER_RELAYER_PRIVATE_KEY_FILE: supporterRelayerKeyFile,
+      GATEWAY_SUPPORTER_CREATOR_IDS: TEST_SUPPORTER_CREATOR_ID
     })
     assert.equal(config.gmailAppPassword, 'abcdefghijklmnop')
     assert.equal(config.adminToken, 'a'.repeat(64))
@@ -542,6 +649,9 @@ test('Gateway reads administrator and Gmail credentials from mounted secret file
     assert.equal(config.gmailImplicitTlsPort, 1465)
     assert.equal(config.participantRegistryAddress, '0x1111111111111111111111111111111111111111')
     assert.equal(config.participantOperatorPrivateKey, TEST_PRIVATE_KEY)
+    assert.equal(config.supporterSbtAddress, TEST_SUPPORTER_SBT)
+    assert.equal(config.supporterRelayerPrivateKey, TEST_PRIVATE_KEY)
+    assert.deepEqual(config.supporterCreatorIds, [TEST_SUPPORTER_CREATOR_ID])
     assert.deepEqual(config.amoyRpcUrls, [
       'https://polygon-amoy.drpc.org',
       'https://polygon-amoy-bor-rpc.publicnode.com'
@@ -563,6 +673,9 @@ test('Gateway accepts ordered credential-free Amoy RPC fallbacks', () => {
     GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY: TEST_PRIVATE_KEY,
     GATEWAY_AMOY_RPC_URLS: 'https://user:secret@example.test'
   }), /credential-free HTTPS URLs/)
+  assert.throws(() => loadConfig({
+    GATEWAY_SUPPORTER_SBT_ADDRESS: TEST_SUPPORTER_SBT
+  }), /Supporter relay requires/)
 })
 
 test('Account Trust binds Mock JPKI, a server-verified passkey and an Amoy wallet in one transaction', async (context) => {

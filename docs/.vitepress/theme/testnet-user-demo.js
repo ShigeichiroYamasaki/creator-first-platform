@@ -346,8 +346,7 @@ export function hasActiveParticipantRegistry(manifest) {
 export function hasActiveSupporterRegistration(manifest) {
   return Boolean(
     manifest?.active &&
-    hasValidAddress(manifest?.contracts?.supporterSbt) &&
-    hasValidAddress(manifest?.contracts?.supporterRegistrationAdapter)
+    hasValidAddress(manifest?.contracts?.supporterSbt)
   )
 }
 
