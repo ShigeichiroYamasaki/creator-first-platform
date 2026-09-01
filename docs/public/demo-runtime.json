@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "active": true,
-  "origin": "https://weekends-doctor-belt-annotation.trycloudflare.com",
+  "origin": "https://preservation-compete-track-assurance.trycloudflare.com",
   "pathPrefix": "/creator-first-platform/demo/",
   "adminPath": "/creator-first-platform/admin/participant-invitations",
   "apiHealthPath": "/api/v1/health",
   "temporaryHostname": true,
-  "sourceCommit": "ae6d7ec38740a1dbab2c08bd57c79bcee0007d62",
-  "verifiedAt": "2026-09-01T13:57:34Z"
+  "sourceCommit": "e3ed58c7f1cfeece3b002c57fd2ff0876ba1b2e4",
+  "verifiedAt": "2026-09-01T14:09:35Z"
 }
