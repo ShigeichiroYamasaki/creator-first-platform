@@ -2,6 +2,7 @@ import { randomBytes, randomUUID } from 'node:crypto'
 import {
   createPublicClient,
   createWalletClient,
+  fallback,
   getAddress,
   http,
   parseAbi,
@@ -65,11 +66,12 @@ function safeChainMessage(error) {
 }
 
 export class AmoyParticipantEnrollmentChain {
-  constructor({ rpcUrl, registryAddress, operatorPrivateKey }) {
+  constructor({ rpcUrls, registryAddress, operatorPrivateKey }) {
     this.registryAddress = getAddress(registryAddress)
     this.account = privateKeyToAccount(operatorPrivateKey)
-    this.publicClient = createPublicClient({ chain: polygonAmoy, transport: http(rpcUrl, { timeout: 20_000 }) })
-    this.walletClient = createWalletClient({ account: this.account, chain: polygonAmoy, transport: http(rpcUrl, { timeout: 20_000 }) })
+    const transport = () => fallback(rpcUrls.map((rpcUrl) => http(rpcUrl, { timeout: 20_000 })))
+    this.publicClient = createPublicClient({ chain: polygonAmoy, transport: transport() })
+    this.walletClient = createWalletClient({ account: this.account, chain: polygonAmoy, transport: transport() })
   }
 
   get operatorAddress() {

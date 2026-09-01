@@ -123,7 +123,7 @@ GATEWAY_CHAIN_ID=80002
 ENV
 if [[ -n "${participant_registry_address}" ]]; then
   cat >> "${APP_DIR}/bootstrap/gateway.env" <<ENV
-GATEWAY_AMOY_RPC_URL=https://polygon-amoy-bor-rpc.publicnode.com
+GATEWAY_AMOY_RPC_URLS=https://polygon-amoy.drpc.org,https://polygon-amoy-bor-rpc.publicnode.com
 GATEWAY_PARTICIPANT_REGISTRY_ADDRESS=${participant_registry_address}
 GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key
 ENV
@@ -292,7 +292,7 @@ GATEWAY_APPLICATION_STATUS_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/
 ENV
 if [[ -n "${participant_registry_address}" ]]; then
   cat >> "${APP_DIR}/bootstrap/gateway.env" <<ENV
-GATEWAY_AMOY_RPC_URL=https://polygon-amoy-bor-rpc.publicnode.com
+GATEWAY_AMOY_RPC_URLS=https://polygon-amoy.drpc.org,https://polygon-amoy-bor-rpc.publicnode.com
 GATEWAY_PARTICIPANT_REGISTRY_ADDRESS=${participant_registry_address}
 GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key
 ENV

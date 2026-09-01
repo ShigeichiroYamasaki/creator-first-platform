@@ -94,7 +94,7 @@ export function createGatewayServer({
   const enrollmentChain = participantEnrollmentOptions.chain ?? (
     config.participantRegistryAddress && config.participantOperatorPrivateKey
       ? new AmoyParticipantEnrollmentChain({
-          rpcUrl: config.amoyRpcUrl,
+          rpcUrls: config.amoyRpcUrls,
           registryAddress: config.participantRegistryAddress,
           operatorPrivateKey: config.participantOperatorPrivateKey
         })

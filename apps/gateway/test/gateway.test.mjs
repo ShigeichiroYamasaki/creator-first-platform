@@ -542,9 +542,27 @@ test('Gateway reads administrator and Gmail credentials from mounted secret file
     assert.equal(config.gmailImplicitTlsPort, 1465)
     assert.equal(config.participantRegistryAddress, '0x1111111111111111111111111111111111111111')
     assert.equal(config.participantOperatorPrivateKey, TEST_PRIVATE_KEY)
+    assert.deepEqual(config.amoyRpcUrls, [
+      'https://polygon-amoy.drpc.org',
+      'https://polygon-amoy-bor-rpc.publicnode.com'
+    ])
   } finally {
     rmSync(directory, { recursive: true, force: true })
   }
+})
+
+test('Gateway accepts ordered credential-free Amoy RPC fallbacks', () => {
+  const config = loadConfig({
+    GATEWAY_PARTICIPANT_REGISTRY_ADDRESS: '0x1111111111111111111111111111111111111111',
+    GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY: TEST_PRIVATE_KEY,
+    GATEWAY_AMOY_RPC_URLS: 'https://first.example.test, https://second.example.test'
+  })
+  assert.deepEqual(config.amoyRpcUrls, ['https://first.example.test', 'https://second.example.test'])
+  assert.throws(() => loadConfig({
+    GATEWAY_PARTICIPANT_REGISTRY_ADDRESS: '0x1111111111111111111111111111111111111111',
+    GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY: TEST_PRIVATE_KEY,
+    GATEWAY_AMOY_RPC_URLS: 'https://user:secret@example.test'
+  }), /credential-free HTTPS URLs/)
 })
 
 test('Account Trust binds Mock JPKI, a server-verified passkey and an Amoy wallet in one transaction', async (context) => {

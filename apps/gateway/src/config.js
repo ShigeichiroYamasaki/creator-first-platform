@@ -65,12 +65,19 @@ export function loadConfig(environment = process.env) {
     throw new Error('Participant enrollment requires both its registry address and operator private key')
   }
   const chainId = positiveInteger(environment.GATEWAY_CHAIN_ID, 80002, 'GATEWAY_CHAIN_ID')
-  const amoyRpcUrl = environment.GATEWAY_AMOY_RPC_URL ?? 'https://polygon-amoy-bor-rpc.publicnode.com'
+  const amoyRpcUrls = (
+    environment.GATEWAY_AMOY_RPC_URLS
+    ?? environment.GATEWAY_AMOY_RPC_URL
+    ?? 'https://polygon-amoy.drpc.org,https://polygon-amoy-bor-rpc.publicnode.com'
+  ).split(',').map((value) => value.trim()).filter(Boolean)
   if (participantRegistryAddress && chainId !== 80002) {
     throw new Error('Participant enrollment operator is restricted to Polygon Amoy chain 80002')
   }
-  if (participantRegistryAddress && new URL(amoyRpcUrl).protocol !== 'https:') {
-    throw new Error('GATEWAY_AMOY_RPC_URL must use HTTPS when participant enrollment is enabled')
+  if (participantRegistryAddress && (amoyRpcUrls.length === 0 || amoyRpcUrls.some((value) => {
+    const url = new URL(value)
+    return url.protocol !== 'https:' || url.username || url.password
+  }))) {
+    throw new Error('GATEWAY_AMOY_RPC_URLS must contain only credential-free HTTPS URLs when participant enrollment is enabled')
   }
   if (mailMode === 'webhook' && new URL(environment.GATEWAY_MAIL_WEBHOOK_URL).protocol !== 'https:') {
     throw new Error('GATEWAY_MAIL_WEBHOOK_URL must use HTTPS')
@@ -117,7 +124,7 @@ export function loadConfig(environment = process.env) {
     publicDomain: environment.GATEWAY_SIWE_DOMAIN ?? '127.0.0.1:5173',
     publicUri,
     chainId,
-    amoyRpcUrl,
+    amoyRpcUrls,
     participantRegistryAddress,
     participantOperatorPrivateKey,
     webauthnOrigin,
