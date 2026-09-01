@@ -36,3 +36,11 @@ test('renders pending enrollment as an actionable button without a global busy l
   assert.doesNotMatch(component, /:disabled="busy \|\| participantEnrollmentAction\(item\)\.disabled"/)
   assert.match(component, /<span v-if="participantEnrollmentAction\(item\)\.disabled" class="completion-badge">/)
 })
+
+test('keeps the enrollment table inside the document column without an aside overlay', async () => {
+  const component = await readFile(new URL('../docs/.vitepress/theme/ParticipantAdminDemo.vue', import.meta.url), 'utf8')
+  const page = await readFile(new URL('../docs/admin/participant-invitations.md', import.meta.url), 'utf8')
+  assert.match(page, /^aside: false$/m)
+  assert.match(component, /\.participant-admin\{display:grid;min-width:0;max-width:100%/)
+  assert.match(component, /\.table-wrap\{min-width:0;max-width:100%;overflow-x:auto/)
+})

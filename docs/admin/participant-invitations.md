@@ -4,6 +4,7 @@ description: 管理者がユーザおよび音楽クリエーターの参加申�
 robots: noindex, nofollow
 search: false
 outline: false
+aside: false
 ---
 
 # 公開実験 参加申請・招待管理
