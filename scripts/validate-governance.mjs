@@ -20,6 +20,7 @@ const requirements = [
   ['ignition/modules/CreatorFirstTestnet.ts', 'CreatorFirstTestnetLegislatorRegistrationAdapter', 'test legislator adapter deployment'],
   ['ignition/modules/CreatorFirstTestnet.ts', 'GrantLegislatorRegistrationAdapterRegistrarRole', 'test legislator adapter role grant'],
   ['ignition/modules/CreatorFirstTestnet.ts', 'CreatePublicDemoSessionOne', 'public demo governance session'],
+  ['ignition/modules/CreatorFirstGovernanceRelayAmoy.ts', 'GrantGovernanceRelayerRole', 'dedicated sponsored-vote relayer role'],
   ['scripts/verify-amoy-contracts.mjs', 'Governance manifest must publish governor and policy together', 'Polygon Amoy governance verification'],
   ['test/CreatorFirstGovernance.ts', 'user House rejection cannot be offset', 'separate House negative test'],
   ['docs/demo/governance.md', 'テストネットで簡略化している事項', 'public testnet boundary'],
