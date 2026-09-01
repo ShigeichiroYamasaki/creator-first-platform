@@ -12,6 +12,7 @@ import { FileMediaAdapter } from '../src/media/FileMediaAdapter.js'
 import { NavidromeMediaAdapter } from '../src/media/NavidromeMediaAdapter.js'
 import { parseSingleRange } from '../src/media/range.js'
 import { createGatewayServer } from '../src/server.js'
+import { SupporterSbtRelayer } from '../src/SupporterSbtRelayer.js'
 
 const TEST_PRIVATE_KEY = `0x${'0123456789abcdef'.repeat(4)}`
 const TEST_SUPPORTER_SBT = '0x4444444444444444444444444444444444444444'
@@ -311,6 +312,64 @@ test('Gateway relays a participant-bound Supporter SBT without spending the hold
   }))
   assert.equal(replayed.response.status, 200)
   assert.deepEqual(replayed.body, relayed.body)
+  assert.equal(chain.calls.length, 1)
+})
+
+test('Supporter relay returns a transaction hash before waiting for Amoy confirmations', async () => {
+  const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+  const deadline = BigInt(Math.floor(Date.now() / 1000) + 600)
+  const typedData = {
+    domain: {
+      name: 'Creator First Supporter SBT',
+      version: '1',
+      chainId: 80002,
+      verifyingContract: TEST_SUPPORTER_SBT
+    },
+    types: {
+      SupportIntent: [
+        { name: 'creatorId', type: 'bytes32' },
+        { name: 'holder', type: 'address' },
+        { name: 'nonce', type: 'uint256' },
+        { name: 'deadline', type: 'uint256' },
+        { name: 'consentVersion', type: 'bytes32' }
+      ]
+    },
+    primaryType: 'SupportIntent',
+    message: {
+      creatorId: TEST_SUPPORTER_CREATOR_ID,
+      holder: account.address,
+      nonce: 0n,
+      deadline,
+      consentVersion: TEST_SUPPORTER_CONSENT_VERSION
+    }
+  }
+  const signature = await account.signTypedData(typedData)
+  const chain = new FakeSupporterSbtChain()
+  chain.relay = async (value) => {
+    chain.calls.push(value)
+    return { submitted: true, transactionHash: `0x${'44'.repeat(32)}` }
+  }
+  const relayer = new SupporterSbtRelayer({
+    chain,
+    supporterSbtAddress: TEST_SUPPORTER_SBT,
+    allowedCreatorIds: [TEST_SUPPORTER_CREATOR_ID]
+  })
+
+  const result = await relayer.relay({
+    holder: account.address,
+    creatorId: TEST_SUPPORTER_CREATOR_ID,
+    nonce: '0',
+    deadline: deadline.toString(),
+    consentVersion: TEST_SUPPORTER_CONSENT_VERSION,
+    signature,
+    idempotencyKey: 'submit-without-confirmation-wait'
+  })
+
+  assert.deepEqual(result, {
+    status: 'SBT_SUBMITTED',
+    holder: account.address,
+    transactionHash: `0x${'44'.repeat(32)}`
+  })
   assert.equal(chain.calls.length, 1)
 })
 

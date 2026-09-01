@@ -79,7 +79,7 @@ const supporterTokenUri = ref('')
 const supporterMetadata = ref<SupporterMetadata>()
 const supporterRelayAvailable = ref(false)
 const supporterMessage = ref('好きな音楽クリエーターを応援した記録を、サポータートークン（SBT）として受け取れます。')
-const supporterStage = ref<'IDLE' | 'AWAITING_WALLET' | 'RELAYING' | 'CHECKING' | 'COMPLETE' | 'ERROR'>('IDLE')
+const supporterStage = ref<'IDLE' | 'AWAITING_WALLET' | 'RELAYING' | 'SUBMITTED' | 'CHECKING' | 'COMPLETE' | 'ERROR'>('IDLE')
 const connectingToCloud = ref(false)
 const selectedTrack = ref(tracks[0])
 const toneUrls = new Map<string, string>()
@@ -98,7 +98,7 @@ const chainActionsReady = computed(() => Boolean(profile.value && walletAddress.
 const supporterRegistrationReady = computed(() => hasActiveSupporterRegistration(deployment.value) && supporterRelayAvailable.value)
 const supporterActionReady = computed(() => Boolean(
   profile.value && walletAddress.value && correctChain.value && userRegistered.value && supporterRegistrationReady.value &&
-  supporterTokenId.value === 0n && !busyAction.value
+  supporterTokenId.value === 0n && !lastSbtTransaction.value && !busyAction.value
 ))
 const allowanceEnough = computed(() => planPrice.value > 0n && allowance.value >= planPrice.value)
 const balanceLabel = computed(() => `${formatUnits(balance.value, 18)} tJPYC`)
@@ -264,6 +264,10 @@ async function refreshOnchainState(force = false): Promise<void> {
     ])
     supporterTokenId.value = nextTokenId as bigint
     supporterTier.value = Number(nextTier)
+    if (supporterTokenId.value > 0n) {
+      supporterStage.value = 'COMPLETE'
+      supporterMessage.value = `${supporterTierLabel.value}トークン #${supporterTokenId.value} を受け取りました。`
+    }
     supporterTokenUri.value = supporterTokenId.value > 0n
       ? await publicClient.readContract({
           address: supporterSbt,
@@ -391,6 +395,29 @@ async function registerAsSupporter(): Promise<void> {
         SUPPORTER_RELAY_FAILED: 'Polygon Amoyでトークン発行を完了できませんでした。運営が発行サービスを確認します。'
       }
       throw new Error((result.code && relayMessages[result.code]) || result.message || `サポータートークンを発行できません（HTTP ${response.status}）`)
+    }
+    if (result.status === 'SBT_SUBMITTED') {
+      if (!result.transactionHash) throw new Error('Polygon Amoyへの送信記録を確認できません。')
+      lastSbtTransaction.value = result.transactionHash
+      supporterStage.value = 'CHECKING'
+      supporterMessage.value = 'Polygon Amoyへトークン発行を送信しました。完了を確認しています。この画面を閉じずにお待ちください。'
+      try {
+        const receipt = await publicClient.waitForTransactionReceipt({
+          hash: result.transactionHash,
+          confirmations: 1,
+          timeout: 120_000
+        })
+        if (receipt.status !== 'success') throw new Error('Polygon Amoy上でトークン発行が取り消されました。')
+        await refreshOnchainState(true)
+        if (supporterTokenId.value === 0n) throw new Error('発行処理は完了しましたが、トークン情報の反映を確認できません。')
+        return
+      } catch (error) {
+        supporterStage.value = 'SUBMITTED'
+        supporterMessage.value = error instanceof Error && error.message.includes('取り消されました')
+          ? error.message
+          : 'トークン発行はPolygon Amoyへ送信済みです。処理中の可能性があるため、再発行せず、しばらくして「トークンの状態を更新」を押してください。'
+        return
+      }
     }
     if (result.status !== 'SBT_ACTIVE' || !result.tokenId || !/^\d+$/.test(result.tokenId)) throw new Error('サポータートークンの発行完了を確認できません。')
     lastSbtTransaction.value = result.transactionHash ?? undefined
@@ -561,11 +588,11 @@ onBeforeUnmount(() => {
         </div>
         <p v-if="!supporterRegistrationReady" class="notice">サポータートークンを発行する運営サービスを準備しているため、現在この操作は利用できません。</p>
         <p v-if="supporterStage === 'AWAITING_WALLET'" class="wallet-confirmation" role="status"><strong>仮想通貨ワレットを開いてください</strong><span>「署名」を確認すると発行へ進みます。送金や支払いは行いません。</span></p>
-        <p v-else-if="supporterStage === 'RELAYING' || supporterStage === 'CHECKING'" class="notice" role="status">{{ supporterMessage }}</p>
+        <p v-else-if="supporterStage === 'RELAYING' || supporterStage === 'SUBMITTED' || supporterStage === 'CHECKING'" class="notice" role="status">{{ supporterMessage }}</p>
         <p v-else-if="supporterStage === 'ERROR'" class="error" role="alert">{{ supporterMessage }}</p>
         <div class="actions">
           <button class="primary" type="button" :disabled="!supporterActionReady" @click="registerAsSupporter">
-            {{ supporterTokenId > 0n ? 'サポータートークン取得済み' : busyAction === 'Supporter SBT' ? '確認・発行中…' : '応援してトークンを受け取る' }}
+            {{ supporterTokenId > 0n ? 'サポータートークン取得済み' : lastSbtTransaction ? 'トークン発行を送信済み' : busyAction === 'Supporter SBT' ? '確認・発行中…' : '応援してトークンを受け取る' }}
           </button>
           <button class="secondary" type="button" :disabled="!walletAddress || !correctChain || !contractsReady || Boolean(busyAction)" @click="refreshOnchainState(true)">トークンの状態を更新</button>
         </div>
@@ -575,7 +602,7 @@ onBeforeUnmount(() => {
         </figure>
         <p v-if="supporterTokenUri"><a :href="supporterTokenUri" target="_blank" rel="noopener noreferrer">トークンの公開情報を確認</a></p>
         <p v-if="lastSbtTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastSbtTransaction}`" target="_blank" rel="noopener noreferrer">トークンを受け取った記録を確認</a></p>
-        <p v-if="!['AWAITING_WALLET', 'RELAYING', 'CHECKING', 'ERROR'].includes(supporterStage)" aria-live="polite">{{ supporterMessage }}</p>
+        <p v-if="!['AWAITING_WALLET', 'RELAYING', 'SUBMITTED', 'CHECKING', 'ERROR'].includes(supporterStage)" aria-live="polite">{{ supporterMessage }}</p>
       </div>
     </section>
   </section>

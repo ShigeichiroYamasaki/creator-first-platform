@@ -170,14 +170,10 @@ export class AmoySupporterSbtChain {
       ...fees
     })
     const transactionHash = await this.walletClient.writeContract(request)
-    const receipt = await this.publicClient.waitForTransactionReceipt({
-      hash: transactionHash,
-      confirmations: 2,
-      timeout: 120_000
-    })
-    if (receipt.status !== 'success') throw new Error('Polygon Amoy Supporter SBT registration reverted')
-    const status = await this.status(value.holder, value.creatorId)
-    return { transactionHash, blockNumber: receipt.blockNumber, ...status }
+    // Return as soon as Amoy accepts the transaction. Waiting for multiple
+    // confirmations here can outlive the public HTTPS proxy and incorrectly
+    // surface a 502 even though the transaction is still progressing.
+    return { transactionHash, submitted: true }
   }
 }
 
@@ -288,6 +284,13 @@ export class SupporterSbtRelayer {
 
     try {
       const result = await this.chain.relay(value)
+      if (result.submitted) {
+        return {
+          status: 'SBT_SUBMITTED',
+          holder: value.holder,
+          transactionHash: result.transactionHash
+        }
+      }
       if (result.tokenId === 0n) throw new Error('Supporter SBT was not active after confirmation')
       return this.#result(value.holder, result.transactionHash, result, false)
     } catch (error) {
