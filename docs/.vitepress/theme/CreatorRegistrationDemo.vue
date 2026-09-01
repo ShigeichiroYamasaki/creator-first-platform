@@ -13,6 +13,7 @@ type CreatorProfile = {
 }
 
 const storageKey = 'creator-first-browser-creator-v1'
+const emit = defineEmits<{ registered: [profile: CreatorProfile] }>()
 const artistName = ref('')
 const entityType = ref<CreatorProfile['entityType']>('INDIVIDUAL')
 const genre = ref('')
@@ -54,6 +55,7 @@ function saveProfile(): void {
   sessionStorage.setItem(storageKey, JSON.stringify(value))
   profile.value = value
   message.value = `${value.artistName} をこのタブ内の実験用音楽クリエータとして登録しました。`
+  emit('registered', value)
 }
 
 function resetProfile(): void {

@@ -31,21 +31,30 @@ const earlySupporterMetadataPath = new URL('../docs/public/sbt/early-supporter.j
 const cloudRuntimePath = new URL('../docs/public/demo-runtime.json', import.meta.url)
 
 test('separates participant preparation from post-POL service experiences', async () => {
-  const [listenerPreparation, creatorPreparation, listenerExperience, listenerJourney, creatorJourney] = await Promise.all([
+  const [listenerPreparation, creatorPreparation, listenerExperience, listenerJourney, creatorJourney, choices, invitation] = await Promise.all([
     readFile(new URL('../docs/demo/listener-participation.md', import.meta.url), 'utf8'),
     readFile(new URL('../docs/demo/creator-participation.md', import.meta.url), 'utf8'),
     readFile(new URL('../docs/demo/test-user-registration.md', import.meta.url), 'utf8'),
     readFile(new URL('../docs/.vitepress/theme/TestnetUserJourneyDemo.vue', import.meta.url), 'utf8'),
-    readFile(new URL('../docs/.vitepress/theme/TestnetCreatorJourneyDemo.vue', import.meta.url), 'utf8')
+    readFile(new URL('../docs/.vitepress/theme/TestnetCreatorJourneyDemo.vue', import.meta.url), 'utf8'),
+    readFile(new URL('../docs/.vitepress/theme/DemoServiceChoices.vue', import.meta.url), 'utf8'),
+    readFile(new URL('../docs/.vitepress/theme/ParticipantInvitationRegistration.vue', import.meta.url), 'utf8')
   ])
 
   assert.match(listenerPreparation, /<ParticipantApplicationDemo :role="1" \/>/)
   assert.match(creatorPreparation, /<ParticipantApplicationDemo :role="2" \/>/)
+  assert.match(creatorPreparation, /\[音楽クリエータの活動体験\]\(\/demo\/creator-workspace\)/)
+  assert.doesNotMatch(creatorPreparation, /\[音楽クリエータの活動体験\]\(\/demo\/creator-registration\)/)
   assert.match(listenerExperience, /申請と審査はこのページでは行いません/)
   assert.doesNotMatch(listenerJourney, /<ParticipantApplicationDemo/)
   assert.doesNotMatch(creatorJourney, /<ParticipantApplicationDemo/)
   assert.match(listenerJourney, /initialFundingCompleted\.value && !userRegistered/)
   assert.match(creatorJourney, /initialFundingCompleted\.value && !creatorParticipantRegistered/)
+  assert.match(choices, /creator-participation/)
+  assert.match(choices, /cloud-entry\?path=\/creator-first-platform\/demo\/creator-workspace/)
+  assert.doesNotMatch(choices, /cloud-entry\?path=\/creator-first-platform\/demo\/creator-registration/)
+  assert.match(invitation, /withBase\('\/demo\/creator-workspace'\)/)
+  assert.match(creatorJourney, /<CreatorRegistrationDemo v-if="!profile"/)
 })
 
 test('routes operational registration to the same-origin Google Cloud demo', async () => {

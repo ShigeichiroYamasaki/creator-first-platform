@@ -365,7 +365,7 @@ onBeforeUnmount(() => {
           </div>
           <ul class="roles">
             <li v-if="hasUserRole"><b><i aria-hidden="true">🎧</i> 音楽リスナー向け</b><a v-if="enrollmentFunded" :href="withBase('/demo/test-user-registration')">音楽サービス体験へ進む</a><span v-else>運営処理後に利用できます</span></li>
-            <li v-if="hasCreatorRole"><b><i aria-hidden="true">🎵</i> 音楽クリエータ向け</b><a v-if="enrollmentFunded" :href="withBase('/demo/creator-registration')">音楽クリエータ活動体験へ進む</a><span v-else>運営処理後に利用できます</span></li>
+            <li v-if="hasCreatorRole"><b><i aria-hidden="true">🎵</i> 音楽クリエータ向け</b><a v-if="enrollmentFunded" :href="withBase('/demo/creator-workspace')">音楽クリエータ活動体験へ進む</a><span v-else>運営処理後に利用できます</span></li>
           </ul>
         </div>
       </div>

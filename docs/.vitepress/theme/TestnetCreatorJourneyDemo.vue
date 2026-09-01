@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
+import CreatorRegistrationDemo from './CreatorRegistrationDemo.vue'
 import { createPublicClient, createWalletClient, custom, keccak256, parseEventLogs, toHex, zeroHash, type Address, type EIP1193Provider, type Hash } from 'viem'
 import { polygonAmoy } from 'viem/chains'
 import { AMOY_CHAIN_ID, creatorRegistryAbi, getAmoyTransactionFees, hasActiveCreatorRegistry, hasActiveParticipantRegistry, participantRegistryAbi, switchProviderToAmoy, TESTNET_CREATOR_ENROLLMENT_CONSENT_VERSION, TESTNET_CREATOR_ROLE, validateDeploymentManifest } from './testnet-user-demo.js'
@@ -56,6 +57,10 @@ function providerFromWindow(): DemoProvider | undefined { return (window as Wind
 function shortAddress(value?: string | null): string { return value ? `${value.slice(0, 8)}…${value.slice(-6)}` : '未公開' }
 function entityLabel(value: string): string {
   return ({ INDIVIDUAL: '個人・ソロ', GROUP: 'グループ', COLLECTIVE: '共同制作チーム' } as Record<string, string>)[value] ?? value
+}
+function handleProfileRegistered(value: CreatorProfile): void {
+  profile.value = value
+  message.value = '仮の活動情報を登録しました。次に仮想通貨ワレットをつないでください。'
 }
 function profileCommitment(): Hash {
   if (!profile.value) throw new Error('仮の活動情報がありません。')
@@ -214,7 +219,7 @@ onBeforeUnmount(() => {
     <header><p class="kicker">実在作品を使わない公開実験</p><h2 id="creator-journey-title">音楽クリエータの活動体験</h2><p>仮の活動情報、仮想通貨ワレット、実験参加の確認、テスト作品の自己申告を順番に試します。</p><p class="safety"><strong>重要:</strong> 本人、作品の権利、配信許可、報酬の受取資格を確認するものではありません。実在情報を入力しないでください。</p></header>
     <ol class="steps"><li :class="{ done: profile }">1. 活動情報</li><li :class="{ done: walletAddress && correctChain }">2. 仮想通貨ワレット</li><li :class="{ done: creatorParticipantRegistered }">3. 参加確認</li><li :class="{ done: registeredOnchain }">4. 活動登録</li><li :class="{ done: creatorReleaseCount > 0n }">5. テスト作品</li></ol>
 
-    <section v-if="!profile" class="panel"><h3>1. 仮の活動情報</h3><p>このタブに活動情報がありません。先に個人情報を含まない仮の活動情報を作成してください。</p><a class="primary link" :href="withBase('/demo/creator-registration')">仮の活動情報を登録</a></section>
+    <CreatorRegistrationDemo v-if="!profile" @registered="handleProfileRegistered" />
     <section v-else class="panel"><h3>1. 仮の活動情報</h3><div class="status-grid"><div><span>活動名</span><strong>{{ profile.artistName }}</strong></div><div><span>活動形態</span><strong>{{ entityLabel(profile.entityType) }}</strong></div><div><span>音楽の分野</span><strong>{{ profile.genre }}</strong></div><div><span>保存場所</span><strong>現在のタブのみ</strong></div></div></section>
 
     <section class="panel"><h3>2. 仮想通貨ワレットをつなぐ</h3><div class="status-grid"><div><span>実験の準備</span><strong>{{ manifestError ? '利用停止中' : registryReady ? '利用できます' : '準備中' }}</strong></div><div><span>練習用ネットワーク</span><strong>{{ walletChainId ? (correctChain ? '接続済み' : '切替が必要') : '未接続' }}</strong></div><div><span>仮想通貨ワレット</span><strong>{{ shortAddress(walletAddress) }}</strong></div><div><span>記録先</span><strong>{{ deployment?.contracts.creatorRegistry ? '確認済み' : '準備中' }}</strong></div></div><p v-if="manifestError" class="error">{{ manifestError }}</p><div class="actions"><button class="primary" type="button" :disabled="!profile || busyAction === 'wallet'" @click="connectWallet">仮想通貨ワレットをつなぐ</button><button class="secondary" type="button" :disabled="!walletAddress || correctChain || busyAction === 'network'" @click="switchToAmoy">練習用ネットワークへ切り替える</button><button class="secondary" type="button" :disabled="!chainReady" @click="refreshOnchainState">表示を更新</button></div></section>

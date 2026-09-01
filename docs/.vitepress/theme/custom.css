@@ -402,6 +402,17 @@ html[lang="en-US"] .VPNavBarTranslations .button::after {
   text-transform: uppercase;
 }
 
+.demo-service-eyebrow.is-status {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--vp-c-brand-1) 42%, transparent);
+  border-radius: 10px;
+  background: var(--vp-c-brand-soft);
+  font-size: clamp(1rem, 2.2vw, 1.18rem);
+  line-height: 1.45;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 .demo-service-button {
   display: inline-flex;
   min-height: 44px;
