@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { resolveCloudAdminTarget } from './cloud-demo-runtime.js'
+import { participantEnrollmentAction } from './participantEnrollmentUi.js'
 
 type Enrollment = { state: string; approvalTransactionHash?: string | null; fundingTransactionHash?: string | null; initialFundingAmountAtomic?: string | null; errorMessage?: string | null }
 type Invitation = { invitationId: string; email: string; displayName: string; roles: number; state: string; expiresAt: string; invitationUri?: string; token?: string; sentAt?: string | null; claimedWallet?: string | null; enrollment: Enrollment }
@@ -93,13 +94,21 @@ function enrollmentStateLabel(invitation: Invitation) {
   } as Record<string, string>)[invitation.enrollment?.state] ?? invitation.enrollment?.state ?? '状態不明'
 }
 
-function canProcessEnrollment(invitation: Invitation) {
-  return invitation.state === 'CLAIMED' && !['OPERATOR_DISABLED', 'FUNDED'].includes(invitation.enrollment?.state)
-}
-
 async function processEnrollment(invitation: Invitation) {
   error.value = ''
   operationMessage.value = ''
+  if (invitation.state !== 'CLAIMED') {
+    error.value = '実験参加者はまだ招待リンクから仮想通貨ワレットを登録していません。本人登録完了後に一覧を再取得してください。'
+    return
+  }
+  if (!invitation.claimedWallet) {
+    error.value = '本人登録に対応する仮想通貨ワレット情報が取得できません。一覧を再取得し、改善しない場合はゲートウェーの状態を確認してください。'
+    return
+  }
+  if (invitation.enrollment?.state === 'OPERATOR_DISABLED') {
+    error.value = '公開サーバの参加者登録運営ワーカーが無効です。サーバの設定を有効にしてから再実行してください。'
+    return
+  }
   busy.value = true
   processingInvitationId.value = invitation.invitationId
   try {
@@ -219,7 +228,10 @@ async function copyUri() {
                   <a v-if="item.enrollment?.fundingTransactionHash" :href="`https://amoy.polygonscan.com/tx/${item.enrollment.fundingTransactionHash}`" target="_blank" rel="noopener noreferrer">POL配布記録</a>
                 </span>
               </td>
-              <td><button type="button" :disabled="busy || !canProcessEnrollment(item)" @click="processEnrollment(item)">{{ processingInvitationId === item.invitationId ? '処理しています…' : item.enrollment?.state === 'FUNDED' ? '準備完了' : ['APPROVAL_FAILED', 'FUNDING_FAILED'].includes(item.enrollment?.state) ? '再実行' : '承認・初回POL配布' }}</button></td>
+              <td class="operation-cell">
+                <button type="button" :disabled="busy || participantEnrollmentAction(item).disabled" @click="processEnrollment(item)">{{ processingInvitationId === item.invitationId ? '処理しています…' : participantEnrollmentAction(item).label }}</button>
+                <small>{{ participantEnrollmentAction(item).hint }}</small>
+              </td>
               <td>{{ new Date(item.expiresAt).toLocaleString('ja-JP') }}</td>
             </tr>
             <tr v-if="invitations.length === 0"><td colspan="7">招待はありません</td></tr>
@@ -231,5 +243,5 @@ async function copyUri() {
 </template>
 
 <style scoped>
-.participant-admin{display:grid;gap:1rem;margin:1.5rem 0}.panel,.warning{padding:1rem;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg-soft)}.warning{border-color:var(--vp-c-warning-1)}form,label{display:grid;gap:.4rem}form{gap:.9rem}input,select,button{min-height:44px;padding:.55rem .7rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}button{border-color:var(--vp-c-brand-1);background:var(--vp-c-brand-1);color:white;font-weight:700;cursor:pointer}button.danger{border-color:var(--vp-c-danger-1);background:transparent;color:var(--vp-c-danger-1)}button:disabled{opacity:.5}.check{grid-template-columns:auto 1fr;align-items:center}.check input{min-height:auto}.result code{display:block;overflow-wrap:anywhere;padding:.75rem}.error{color:var(--vp-c-danger-1)}.success{padding:.8rem 1rem;border:1px solid var(--vp-c-success-1);border-radius:10px;background:var(--vp-c-bg-soft);color:var(--vp-c-success-1);font-weight:700}.table-wrap{overflow:auto}table{min-width:1080px}small{color:var(--vp-c-text-2)}.review-actions{display:grid;gap:.4rem}.review-actions button{white-space:nowrap}.error-detail{display:block;max-width:260px;margin-top:.3rem;color:var(--vp-c-danger-1)}.tx-links{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.35rem;font-size:.78rem}
+.participant-admin{display:grid;gap:1rem;margin:1.5rem 0}.panel,.warning{padding:1rem;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg-soft)}.warning{border-color:var(--vp-c-warning-1)}form,label{display:grid;gap:.4rem}form{gap:.9rem}input,select,button{min-height:44px;padding:.55rem .7rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}button{border-color:var(--vp-c-brand-1);background:var(--vp-c-brand-1);color:white;font-weight:700;cursor:pointer}button.danger{border-color:var(--vp-c-danger-1);background:transparent;color:var(--vp-c-danger-1)}button:disabled{opacity:.5}.check{grid-template-columns:auto 1fr;align-items:center}.check input{min-height:auto}.result code{display:block;overflow-wrap:anywhere;padding:.75rem}.error{color:var(--vp-c-danger-1)}.success{padding:.8rem 1rem;border:1px solid var(--vp-c-success-1);border-radius:10px;background:var(--vp-c-bg-soft);color:var(--vp-c-success-1);font-weight:700}.table-wrap{overflow:auto}table{min-width:1080px}small{color:var(--vp-c-text-2)}.review-actions,.operation-cell{display:grid;gap:.4rem}.review-actions button,.operation-cell button{white-space:nowrap}.operation-cell small{display:block;max-width:260px;line-height:1.45}.error-detail{display:block;max-width:260px;margin-top:.3rem;color:var(--vp-c-danger-1)}.tx-links{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.35rem;font-size:.78rem}
 </style>
