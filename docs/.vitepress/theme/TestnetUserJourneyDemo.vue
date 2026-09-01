@@ -51,10 +51,6 @@ const tracks: Track[] = [
   { id: 'preview', title: 'First Light — Preview', artist: 'Synthetic Demo Artist', frequency: 261.63, subscriberOnly: false },
   { id: 'subscriber', title: 'Creator Signal — Subscriber Track', artist: 'Synthetic Demo Artist', frequency: 329.63, subscriberOnly: true }
 ]
-const alias = ref('')
-const acceptedTerms = ref(false)
-const acceptedPrivacy = ref(false)
-const acknowledgedTestOnly = ref(false)
 const profile = ref<DemoProfile>()
 const deployment = ref<Deployment>()
 const manifestError = ref('')
@@ -89,15 +85,12 @@ const playerMessage = ref('合成試聴音源を選んで再生できます。')
 let provider: DemoProvider | undefined
 let listenersAttached = false
 
-const normalizedAlias = computed(() => alias.value.trim().normalize('NFKC'))
-const aliasValid = computed(() => /^[\p{L}\p{N}_ -]{2,24}$/u.test(normalizedAlias.value))
-const ready = computed(() => aliasValid.value && acceptedTerms.value && acceptedPrivacy.value && acknowledgedTestOnly.value)
 const correctChain = computed(() => walletChainId.value === AMOY_CHAIN_ID)
 const contractsReady = computed(() => Boolean(deployment.value?.active && deployment.value.contracts.mockJpyc && deployment.value.contracts.subscription))
 const participantRegistryReady = computed(() => hasActiveParticipantRegistry(deployment.value))
 const userPreApproved = computed(() => participantActive.value && (approvedParticipantRoles.value & TESTNET_USER_ROLE) !== 0 && participantApprovalExpiresAt.value >= BigInt(Math.floor(Date.now() / 1000)))
 const userRegistered = computed(() => participantActive.value && (registeredParticipantRoles.value & TESTNET_USER_ROLE) !== 0)
-const participantSelfRegistrationReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && participantRegistryReady.value && userPreApproved.value && !userRegistered.value && !busyAction.value))
+const participantSelfRegistrationReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && participantRegistryReady.value && userPreApproved.value && initialFundingCompleted.value && !userRegistered.value && !busyAction.value))
 const chainActionsReady = computed(() => Boolean(profile.value && walletAddress.value && correctChain.value && contractsReady.value && (!participantRegistryReady.value || userRegistered.value) && !busyAction.value))
 const supporterRegistrationReady = computed(() => hasActiveSupporterRegistration(deployment.value))
 const supporterActionReady = computed(() => Boolean(
@@ -114,21 +107,11 @@ function newTestUserId(): string {
   if (typeof crypto.randomUUID === 'function') return crypto.randomUUID()
   return [...crypto.getRandomValues(new Uint8Array(16))].map((value) => value.toString(16).padStart(2, '0')).join('')
 }
-function saveProfile(): void {
-  if (!ready.value) return
-  const value: DemoProfile = { registered: true, testUserId: newTestUserId(), displayName: normalizedAlias.value, state: 'TESTNET_DEMO_PROFILE', createdAt: new Date().toISOString() }
+function ensureSessionProfile(): void {
+  if (profile.value) return
+  const value: DemoProfile = { registered: true, testUserId: newTestUserId(), displayName: '実験参加者', state: 'TESTNET_DEMO_PROFILE', createdAt: new Date().toISOString() }
   sessionStorage.setItem(storageKey, JSON.stringify(value))
   profile.value = value
-  walletMessage.value = `${value.displayName} を実験用の仮名として登録しました。次に仮想通貨ワレットをつなげます。`
-}
-function resetProfile(): void {
-  sessionStorage.removeItem(storageKey)
-  profile.value = undefined
-  alias.value = ''
-  acceptedTerms.value = false
-  acceptedPrivacy.value = false
-  acknowledgedTestOnly.value = false
-  walletMessage.value = 'このタブの仮名だけを削除しました。仮想通貨ワレットの接続や公開された操作記録は削除されません。'
 }
 function providerFromWindow(): DemoProvider | undefined {
   return (window as Window & { ethereum?: DemoProvider }).ethereum
@@ -432,6 +415,7 @@ function restoreProfile(): void {
 }
 onMounted(async () => {
   restoreProfile()
+  ensureSessionProfile()
   for (const track of tracks) toneUrls.set(track.id, URL.createObjectURL(new Blob([createTestToneWav(track.frequency)], { type: 'audio/wav' })))
   await selectTrack(tracks[0])
   await loadDeployment()
@@ -450,36 +434,15 @@ onBeforeUnmount(() => {
     <header class="journey-heading">
       <p class="kicker">実際のお金を使わない公開実験</p>
       <h2 id="testnet-journey-title">音楽を楽しむ体験</h2>
-      <p>仮の名前、仮想通貨ワレット、練習用の月額利用、音楽プレーヤー、応援の証明書を順番に試します。</p>
+      <p>初回POLを受け取った仮想通貨ワレットで、練習用の月額利用、音楽プレーヤー、応援の証明書を順番に試します。</p>
       <p class="safety"><strong>重要:</strong> 表示される残高は換金できない練習用です。実際のお金、秘密鍵、復旧用の単語列は使いません。</p>
     </header>
     <ol class="steps" aria-label="音楽リスナーとして参加する手順">
-      <li :class="{ done: profile }">1. 仮の名前</li><li :class="{ done: walletAddress && correctChain }">2. 仮想通貨ワレット</li><li :class="{ done: userRegistered }">3. 参加確認</li><li :class="{ done: subscriptionActive }">4. 月額利用</li><li>5. 音楽</li><li :class="{ done: supporterTokenId > 0n }">6. 応援証明</li>
+      <li :class="{ done: walletAddress && correctChain }">1. 仮想通貨ワレット</li><li :class="{ done: userRegistered }">2. 利用資格</li><li :class="{ done: subscriptionActive }">3. 月額利用</li><li>4. 音楽</li><li :class="{ done: supporterTokenId > 0n }">5. 応援証明</li>
     </ol>
 
-    <section class="panel" aria-labelledby="profile-title">
-      <h3 id="profile-title">1. 仮の名前を登録</h3>
-      <div v-if="profile" class="profile-summary">
-        <span class="badge success">登録済み</span><strong>{{ profile.displayName }}</strong><code>{{ profile.testUserId }}</code>
-        <p>仮の名前と実験用番号はこのタブだけに保存され、本番アカウントや本人確認には使われません。</p>
-        <button class="secondary" type="button" @click="resetProfile">仮の名前を削除</button>
-      </div>
-      <form v-else class="registration" @submit.prevent="saveProfile">
-        <label for="demo-alias">画面に表示する仮の名前</label>
-        <input id="demo-alias" v-model="alias" type="text" minlength="2" maxlength="24" autocomplete="off" placeholder="Demo Listener 01" required>
-        <small>実名、メール、電話番号、パスワード、仮想通貨ワレットのアドレスは入力しないでください。</small>
-        <p v-if="alias && !aliasValid" class="error" role="alert">2〜24文字の文字・数字・空白・_・-を使ってください。</p>
-        <fieldset><legend>実験の利用条件と情報の取扱い</legend>
-          <label><input v-model="acceptedTerms" type="checkbox"> 実際のお金や本番利用の権利がない実験であることに同意します</label>
-          <label><input v-model="acceptedPrivacy" type="checkbox"> 仮の名前はこのタブだけに保存され、仮想通貨ワレットのアドレスと操作記録は公開されることを確認しました</label>
-          <label><input v-model="acknowledgedTestOnly" type="checkbox"> 表示されるお金と手数料残高は練習用であることを理解しました</label>
-        </fieldset>
-        <button class="primary" type="submit" :disabled="!ready">仮の名前を登録</button>
-      </form>
-    </section>
-
     <section class="panel" aria-labelledby="wallet-title">
-      <h3 id="wallet-title">2. 仮想通貨ワレットをつなぐ</h3>
+      <h3 id="wallet-title">1. 仮想通貨ワレットをつなぐ</h3>
       <div class="status-grid">
         <div><span>実験の準備</span><strong>{{ manifestError ? '利用停止中' : deployment?.active ? '利用できます' : '準備中' }}</strong></div>
         <div><span>練習用ネットワーク</span><strong>{{ walletChainId ? (correctChain ? '接続済み' : '切替が必要') : '未接続' }}</strong></div>
@@ -492,23 +455,24 @@ onBeforeUnmount(() => {
     </section>
 
     <section class="panel" aria-labelledby="enrollment-title">
-      <h3 id="enrollment-title">3. 実験参加登録を確認</h3>
+      <h3 id="enrollment-title">2. 音楽リスナーの利用資格を登録</h3>
       <div class="status-grid">
         <div><span>実験参加の受付</span><strong>{{ participantRegistryReady ? '利用できます' : '準備中' }}</strong></div>
         <div><span>運営の確認</span><strong>{{ userPreApproved ? '確認済み' : participantId !== zeroHash ? '期限切れ／停止' : '確認待ち' }}</strong></div>
         <div><span>本人による登録</span><strong>{{ userRegistered ? '登録済み' : '未登録' }}</strong></div>
         <div><span>練習用の手数料残高</span><strong>{{ initialFundingCompleted ? '受取済み' : '準備待ち' }}</strong></div>
       </div>
-      <p v-if="!participantRegistryReady" class="notice">参加資格を記録する準備を進めています。未申請の場合は、下のフォームから参加者登録を申請できます。</p>
-      <p v-else-if="!userPreApproved && !userRegistered" class="notice">運営の事前承認がまだ確認できません。未申請の場合は、下のフォームから参加者登録を申請してください。</p>
+      <p v-if="!participantRegistryReady" class="notice">参加資格を記録する準備を進めています。時間をおいて表示を更新してください。</p>
+      <p v-else-if="!userPreApproved && !userRegistered" class="notice">この仮想通貨ワレットでは、運営の承認と初回POL受領を確認できません。招待登録に使ったものと同じ仮想通貨ワレットか確認してください。</p>
+      <p v-else-if="userPreApproved && !initialFundingCompleted" class="notice">運営の承認は確認できましたが、初回POLの準備が完了していません。招待ページの表示が更新されるまでお待ちください。</p>
       <p v-else>本人が仮想通貨ワレットで確認し、音楽リスナーとしての実験参加を記録します。実際のお金を購入する必要はありません。</p>
-      <ParticipantApplicationDemo v-if="!userPreApproved && !userRegistered" :display-name="profile?.displayName ?? ''" :role="1" />
+      <a v-if="!userPreApproved && !userRegistered" class="secondary link" :href="withBase('/demo/listener-participation')">実験参加の準備へ戻る</a>
       <button v-if="userPreApproved && !userRegistered" class="primary" type="button" :disabled="!participantSelfRegistrationReady" @click="registerUserParticipant">音楽リスナーとして登録</button>
       <p v-else-if="userRegistered" class="badge success">音楽リスナーとしての参加登録が完了しています</p>
     </section>
 
     <section class="panel" aria-labelledby="payment-title">
-      <h3 id="payment-title">4. 練習用のお金で月額利用を試す</h3>
+      <h3 id="payment-title">3. 練習用のお金で月額利用を試す</h3>
       <div class="status-grid">
         <div><span>練習用の残高</span><strong>{{ balanceLabel }}</strong></div><div><span>月額利用の練習価格</span><strong>{{ priceLabel }}</strong></div><div><span>利用の確認</span><strong>{{ allowanceEnough ? '確認済み' : '未確認' }}</strong></div><div><span>月額利用</span><strong>{{ subscriptionActive ? `利用中 / ${formatDate(activeUntil)}` : '未開始' }}</strong></div>
       </div>
@@ -519,7 +483,7 @@ onBeforeUnmount(() => {
     </section>
 
     <section class="panel" aria-labelledby="player-title">
-      <h3 id="player-title">5. 音楽プレーヤー操作</h3>
+      <h3 id="player-title">4. 音楽プレーヤー操作</h3>
       <p>このページで作った短いテスト音だけを使います。実在する楽曲の配信ではありません。</p>
       <div class="track-list"><button v-for="track in tracks" :key="track.id" type="button" :class="{ selected: selectedTrack.id === track.id }" @click="selectTrack(track)"><strong>{{ track.title }}</strong><span>{{ track.artist }}</span><small>{{ track.subscriberOnly ? '月額利用中だけ再生可能' : 'いつでも試聴可能' }}</small></button></div>
       <div class="now-playing"><span class="art" aria-hidden="true">♪</span><div><strong>{{ selectedTrack.title }}</strong><span>{{ selectedTrack.artist }}</span></div></div>
@@ -555,4 +519,5 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .testnet-journey{display:grid;gap:1.25rem;margin:1.75rem 0}.journey-heading,.panel{padding:clamp(1rem,3vw,1.6rem);border:1px solid var(--vp-c-divider);border-radius:16px;background:var(--vp-c-bg-soft)}.journey-heading h2,.panel h3{margin-top:.25rem;border:0}.kicker{margin:0;color:var(--vp-c-brand-1);font-size:.82rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.safety,.notice{padding:.8rem 1rem;border-left:4px solid var(--vp-c-warning-1);border-radius:6px;background:var(--vp-c-warning-soft)}.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem;padding:0;list-style:none}.steps li{padding:.65rem .4rem;border:1px solid var(--vp-c-divider);border-radius:999px;text-align:center;font-size:.85rem;font-weight:700}.steps li.done{border-color:var(--vp-c-brand-1);color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.registration,.profile-summary{display:grid;gap:.8rem}.registration>label,legend{font-weight:700}.registration input[type=text]{min-height:44px;padding:.65rem .8rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}fieldset{display:grid;gap:.65rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:10px}fieldset label{display:grid;grid-template-columns:1.2rem 1fr;gap:.6rem;align-items:start}input[type=checkbox]{width:1rem;height:1rem;margin-top:.25rem}.actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}button{min-height:44px;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;font:inherit;font-weight:700;cursor:pointer}button.primary{color:var(--vp-c-white);background:var(--vp-c-brand-1)}button.secondary{color:var(--vp-c-brand-1);background:transparent}button:disabled{cursor:not-allowed;opacity:.45}.badge{width:fit-content;padding:.25rem .55rem;border-radius:999px;font-size:.8rem;font-weight:700}.badge.success{color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.status-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}.status-grid>div{display:grid;gap:.2rem;padding:.75rem;border:1px solid var(--vp-c-divider);border-radius:10px;background:var(--vp-c-bg)}.status-grid span,.track-list span,.now-playing span{color:var(--vp-c-text-2);font-size:.85rem}.error{color:var(--vp-c-danger-1)}.track-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.track-list button{display:grid;gap:.2rem;text-align:left;color:var(--vp-c-text-1);background:var(--vp-c-bg);border-color:var(--vp-c-divider)}.track-list button.selected{border-color:var(--vp-c-brand-1);box-shadow:0 0 0 2px var(--vp-c-brand-soft)}.track-list small{color:var(--vp-c-brand-1)}.now-playing{display:flex;gap:.8rem;align-items:center;margin:1rem 0 .6rem}.now-playing>div{display:grid}.art{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;color:var(--vp-c-white);background:linear-gradient(135deg,var(--vp-c-brand-1),#7c3aed);font-size:1.4rem}.supporter-action{margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--vp-c-divider)}.supporter-action h4{margin:.25rem 0;border:0}.credential-card{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:1rem;align-items:center;margin:1rem 0;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:14px;background:var(--vp-c-bg)}.credential-card img{width:100%;height:auto;border-radius:12px}.credential-card figcaption{display:grid;gap:.5rem}.credential-card figcaption span{color:var(--vp-c-text-2);font-size:.9rem}audio{width:100%}code{overflow-wrap:anywhere}@media(max-width:720px){.steps{grid-template-columns:repeat(3,1fr)}}@media(max-width:640px){.steps,.status-grid,.track-list,.credential-card{grid-template-columns:1fr}.actions button{width:100%}}
+.steps{grid-template-columns:repeat(5,1fr)}
 </style>

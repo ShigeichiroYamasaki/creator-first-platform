@@ -30,6 +30,7 @@ const props = withDefaults(defineProps<{ displayName?: string; role?: number; st
 })
 
 const email = ref('')
+const enteredDisplayName = ref('')
 const acceptedPrivacyNotice = ref(false)
 const acknowledgedTestOnly = ref(false)
 const application = ref<Application | null>(null)
@@ -38,8 +39,10 @@ const error = ref('')
 const busy = ref(false)
 const serviceAvailable = ref(true)
 
+const effectiveDisplayName = computed(() => props.displayName.trim() || enteredDisplayName.value.trim().normalize('NFKC'))
+const displayNameValid = computed(() => /^[\p{L}\p{N}_ -]{2,80}$/u.test(effectiveDisplayName.value))
 const canSubmit = computed(() => (
-  props.displayName.trim().length >= 2 &&
+  displayNameValid.value &&
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()) &&
   acceptedPrivacyNotice.value &&
   acknowledgedTestOnly.value &&
@@ -109,7 +112,7 @@ async function submitApplication() {
       method: 'POST',
       body: JSON.stringify({
         email: email.value.trim(),
-        displayName: props.displayName,
+        displayName: effectiveDisplayName.value,
         roles: props.role,
         acceptedPrivacyNotice: acceptedPrivacyNotice.value,
         acknowledgedTestOnly: acknowledgedTestOnly.value
@@ -198,6 +201,11 @@ onMounted(async () => {
         <span aria-hidden="true">📨</span>
         <div><h4>実験参加者として申請する</h4><p>メール確認と運営の承認後に、参加登録用のメールが届きます。仮想通貨ワレットのアドレスを申請フォームへ入力する必要はありません。</p></div>
       </div>
+      <label v-if="!props.displayName.trim()">
+        {{ props.role === 2 ? '実験で使う仮の活動名' : '実験で使う仮の名前' }}
+        <input v-model="enteredDisplayName" type="text" minlength="2" maxlength="80" autocomplete="off" :placeholder="props.role === 2 ? 'Demo Artist 01' : 'Demo Listener 01'" required>
+        <small>本名や連絡先を含めず、2〜80文字の文字・数字・空白・_・-を使ってください。</small>
+      </label>
       <label>確認メールを受け取るメールアドレス<input v-model="email" type="email" autocomplete="email" required placeholder="name@example.com"></label>
       <label class="check"><input v-model="acceptedPrivacyNotice" type="checkbox"><span>メールアドレスを申請確認、審査結果、参加案内のために利用することを確認しました</span></label>
       <label class="check"><input v-model="acknowledgedTestOnly" type="checkbox"><span>実際のお金や本番サービスの権利を得る申請ではないことを確認しました</span></label>
@@ -212,5 +220,5 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.participant-application{display:grid;gap:.8rem;margin-top:1rem}.application-form,.application-state{display:grid;gap:.85rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:14px;background:var(--vp-c-bg)}.application-intro,.application-state{grid-template-columns:auto minmax(0,1fr);align-items:start}.application-intro{display:grid;gap:.8rem}.application-intro>span,.state-icon{font-size:1.8rem}.application-intro h4,.application-state h4{margin:0 0 .25rem;border:0}.application-intro p,.application-state p{margin:0;color:var(--vp-c-text-2)}label{display:grid;gap:.4rem;font-weight:700}input[type=email]{min-height:44px;padding:.65rem .75rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg-soft);color:var(--vp-c-text-1);font:inherit}.check{grid-template-columns:1.2rem minmax(0,1fr);align-items:start;font-weight:400}.check input{width:1rem;height:1rem;margin-top:.25rem}button{min-height:44px;width:fit-content;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;background:var(--vp-c-brand-1);color:white;font:inherit;font-weight:700;cursor:pointer}button.secondary{background:transparent;color:var(--vp-c-brand-1)}button:disabled{cursor:not-allowed;opacity:.5}.application-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}.privacy-note{margin:0;color:var(--vp-c-text-2);font-size:.88rem}.application-error{display:grid;gap:.6rem;padding:.75rem;border-left:4px solid var(--vp-c-danger-1);background:var(--vp-c-danger-soft);color:var(--vp-c-danger-1)}.application-error p{margin:0}.application-message{color:var(--vp-c-brand-1);font-weight:700}@media(max-width:560px){.application-actions{display:grid}.application-actions button,.application-form>button{width:100%}}
+.participant-application{display:grid;gap:.8rem;margin-top:1rem}.application-form,.application-state{display:grid;gap:.85rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:14px;background:var(--vp-c-bg)}.application-intro,.application-state{grid-template-columns:auto minmax(0,1fr);align-items:start}.application-intro{display:grid;gap:.8rem}.application-intro>span,.state-icon{font-size:1.8rem}.application-intro h4,.application-state h4{margin:0 0 .25rem;border:0}.application-intro p,.application-state p{margin:0;color:var(--vp-c-text-2)}label{display:grid;gap:.4rem;font-weight:700}label small{color:var(--vp-c-text-2);font-weight:400}input[type=email],input[type=text]{min-height:44px;padding:.65rem .75rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg-soft);color:var(--vp-c-text-1);font:inherit}.check{grid-template-columns:1.2rem minmax(0,1fr);align-items:start;font-weight:400}.check input{width:1rem;height:1rem;margin-top:.25rem}button{min-height:44px;width:fit-content;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;background:var(--vp-c-brand-1);color:white;font:inherit;font-weight:700;cursor:pointer}button.secondary{background:transparent;color:var(--vp-c-brand-1)}button:disabled{cursor:not-allowed;opacity:.5}.application-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}.privacy-note{margin:0;color:var(--vp-c-text-2);font-size:.88rem}.application-error{display:grid;gap:.6rem;padding:.75rem;border-left:4px solid var(--vp-c-danger-1);background:var(--vp-c-danger-soft);color:var(--vp-c-danger-1)}.application-error p{margin:0}.application-message{color:var(--vp-c-brand-1);font-weight:700}@media(max-width:560px){.application-actions{display:grid}.application-actions button,.application-form>button{width:100%}}
 </style>

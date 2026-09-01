@@ -11,7 +11,9 @@ description: Creator First Platformの無償版運用実験へ事前登録し、
 公開実験は、申請、メール確認、運営の承認を終えた実験参加者だけが利用できます。募集期間中は各体験ページから申請できます。受付サーバが停止中または募集期間外の場合は送信できず、画面にその旨を表示します。
 :::
 
-## 参加するまでの流れ
+## A. 実験参加の準備
+
+まず、審査申請から操作用POLの受領までを完了します。この段階では、月額利用や音楽サービスの操作は行いません。
 
 <div class="experiment-registration-flow">
   <div class="experiment-registration-step">
@@ -36,9 +38,20 @@ description: Creator First Platformの無償版運用実験へ事前登録し、
   </div>
   <div class="experiment-registration-step">
     <span aria-hidden="true">🎧</span>
-    <div><strong>6. デモを体験</strong><p>運営から利用開始の連絡を受けた後、希望した体験へ進みます。</p></div>
+    <div><strong>6. 初回POLの準備完了</strong><p>運営が参加資格を登録し、操作手数料用の少量のPOLを配布します。招待ページで完了を確認します。</p></div>
   </div>
 </div>
+
+## B. POL受領後のサービス・活動体験
+
+初回POLの受領完了が表示された後は、別の画面で以下を試します。
+
+- 音楽リスナー：利用資格の本人登録、mockJPYCの受領、月額利用、音楽再生、応援証明
+- 音楽クリエータ：利用資格の本人登録、仮の活動情報、テスト作品の自己申告
+
+::: info POLとmockJPYCの役割
+POLはブロックチェーンへ操作を記録するための手数料用です。mockJPYC（tJPYC）は、月額利用の練習に使う換金できない実験用のお金です。
+:::
 
 ## 事前登録で伝える情報
 
@@ -79,6 +92,8 @@ description: Creator First Platformの無償版運用実験へ事前登録し、
 ## 実験参加者の立場を選ぶ
 
 <DemoServiceChoices kind="entry" />
+
+各立場のページで、「実験参加の準備」と「POL受領後の体験」のどちらに進むかを選びます。
 
 どちらを選んでも、実名、実在作品、未公開音源、本番用の仮想通貨ワレットは使用しません。画面内で「練習用」「テスト用」と表示されたものだけを使います。
 

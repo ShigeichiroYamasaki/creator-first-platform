@@ -10,12 +10,20 @@ const choices = computed(() => {
   if (props.kind === 'user') {
     return [
       {
+        icon: '📨',
+        eyebrow: '実験参加前',
+        title: '実験参加の準備',
+        description: '申請、メール確認、運営審査、招待登録、初回POL受領までを行います。',
+        link: '/demo/cloud-entry?path=/creator-first-platform/demo/listener-participation',
+        action: '参加準備を始める'
+      },
+      {
         icon: '🎧',
-        eyebrow: '順番に操作する',
-        title: 'はじめから体験する',
-        description: '仮の名前を登録し、練習用のお金、月額利用、音楽プレーヤー、応援の証明書を順番に試します。',
+        eyebrow: 'POL受領後',
+        title: '音楽サービスを体験',
+        description: '初回POLを受け取った仮想通貨ワレットで、練習用のお金、月額利用、再生、応援証明を試します。',
         link: '/demo/cloud-entry?path=/creator-first-platform/demo/test-user-registration',
-        action: '音楽リスナーとして参加する'
+        action: 'サービス体験へ進む'
       },
       {
         icon: '👀',
@@ -31,12 +39,20 @@ const choices = computed(() => {
   if (props.kind === 'creator') {
     return [
       {
+        icon: '📨',
+        eyebrow: '実験参加前',
+        title: '実験参加の準備',
+        description: '申請、メール確認、運営審査、招待登録、初回POL受領までを行います。',
+        link: '/demo/cloud-entry?path=/creator-first-platform/demo/creator-participation',
+        action: '参加準備を始める'
+      },
+      {
         icon: '🎵',
-        eyebrow: '順番に操作する',
-        title: 'はじめから体験する',
-        description: '仮の活動名を登録し、仮想通貨ワレットとテスト作品の登録を順番に試します。',
+        eyebrow: 'POL受領後',
+        title: '音楽クリエータ活動を体験',
+        description: '初回POLを受け取った仮想通貨ワレットで、仮の活動情報とテスト作品の登録を試します。',
         link: '/demo/cloud-entry?path=/creator-first-platform/demo/creator-registration',
-        action: '音楽クリエータとして参加登録する'
+        action: '活動体験へ進む'
       },
       {
         icon: '👀',
