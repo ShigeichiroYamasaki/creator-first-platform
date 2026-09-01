@@ -214,43 +214,44 @@ async function copyUri() {
     <div class="panel">
       <h2>実験参加申請</h2>
       <p>本人がメール確認を終えた「審査待ち」の申請だけを承認できます。承認すると、参加登録用の一回限りリンクがメールで送られます。</p>
-      <div class="table-wrap"><table><thead><tr><th>実験参加者</th><th>立場</th><th>状態</th><th>申請日時</th><th>審査</th></tr></thead><tbody><tr v-for="item in applications" :key="item.applicationId"><td>{{ item.displayName }}<br><small>{{ item.email }}</small></td><td>{{ roleLabel(item.roles) }}</td><td>{{ applicationStateLabel(item.state) }}</td><td>{{ new Date(item.createdAt).toLocaleString('ja-JP') }}</td><td><div class="review-actions"><button type="button" :disabled="busy || !['UNDER_REVIEW', 'APPROVAL_DELIVERY_FAILED'].includes(item.state)" @click="reviewApplication(item.applicationId, 'approve')">承認してメール送信</button><button type="button" class="danger" :disabled="busy || item.state !== 'UNDER_REVIEW'" @click="reviewApplication(item.applicationId, 'reject')">今回は不承認</button></div></td></tr><tr v-if="applications.length === 0"><td colspan="5">申請はありません</td></tr></tbody></table></div>
+      <div v-if="applications.length" class="record-list">
+        <article v-for="item in applications" :key="item.applicationId" class="record-card">
+          <header class="record-header"><div><h3>{{ item.displayName }}</h3><small>{{ item.email }}</small></div><span class="role-badge">{{ roleLabel(item.roles) }}</span></header>
+          <dl class="record-details"><div><dt>申請状態</dt><dd>{{ applicationStateLabel(item.state) }}</dd></div><div><dt>申請日時</dt><dd>{{ new Date(item.createdAt).toLocaleString('ja-JP') }}</dd></div></dl>
+          <div class="review-actions"><button type="button" :disabled="busy || !['UNDER_REVIEW', 'APPROVAL_DELIVERY_FAILED'].includes(item.state)" @click="reviewApplication(item.applicationId, 'approve')">承認してメール送信</button><button type="button" class="danger" :disabled="busy || item.state !== 'UNDER_REVIEW'" @click="reviewApplication(item.applicationId, 'reject')">今回は不承認</button></div>
+        </article>
+      </div>
+      <p v-else class="empty-state">申請はありません</p>
     </div>
     <div class="panel">
       <h2>招待状況</h2>
       <p>本人が仮想通貨ワレットを登録した後、「承認・初回POL配布」を実行します。参加者IDはランダム値で作成され、氏名やメールアドレスをブロックチェーンへ記録しません。</p>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>実験参加者</th><th>資格</th><th>招待</th><th>本人選択Wallet</th><th>オンチェーン準備</th><th>運営操作</th><th>期限</th></tr></thead>
-          <tbody>
-            <tr v-for="item in invitations" :key="item.invitationId">
-              <td>{{ item.displayName }}<br><small>{{ item.email }}</small></td>
-              <td>{{ roleLabel(item.roles) }}</td>
-              <td>{{ item.state }}</td>
-              <td><code>{{ item.claimedWallet ?? '未選択' }}</code></td>
-              <td>
-                <strong>{{ enrollmentStateLabel(item) }}</strong>
-                <small v-if="item.enrollment?.errorMessage" class="error-detail">{{ item.enrollment.errorMessage }}</small>
-                <span class="tx-links">
-                  <a v-if="item.enrollment?.approvalTransactionHash" :href="`https://amoy.polygonscan.com/tx/${item.enrollment.approvalTransactionHash}`" target="_blank" rel="noopener noreferrer">承認記録</a>
-                  <a v-if="item.enrollment?.fundingTransactionHash" :href="`https://amoy.polygonscan.com/tx/${item.enrollment.fundingTransactionHash}`" target="_blank" rel="noopener noreferrer">POL配布記録</a>
-                </span>
-              </td>
-              <td class="operation-cell">
-                <span v-if="participantEnrollmentAction(item).disabled" class="completion-badge">{{ participantEnrollmentAction(item).label }}</span>
-                <button v-else type="button" :aria-busy="processingInvitationId === item.invitationId" @click="processEnrollment(item)">{{ processingInvitationId === item.invitationId ? '処理しています…' : participantEnrollmentAction(item).label }}</button>
-                <small>{{ participantEnrollmentAction(item).hint }}</small>
-              </td>
-              <td>{{ new Date(item.expiresAt).toLocaleString('ja-JP') }}</td>
-            </tr>
-            <tr v-if="invitations.length === 0"><td colspan="7">招待はありません</td></tr>
-          </tbody>
-        </table>
+      <div v-if="invitations.length" class="record-list invitation-list">
+        <article v-for="item in invitations" :key="item.invitationId" class="record-card invitation-card">
+          <header class="record-header"><div><h3>{{ item.displayName }}</h3><small>{{ item.email }}</small></div><span class="role-badge">{{ roleLabel(item.roles) }}</span></header>
+          <dl class="record-details">
+            <div><dt>招待状態</dt><dd>{{ item.state }}</dd></div>
+            <div><dt>登録した仮想通貨ワレット</dt><dd><code>{{ item.claimedWallet ?? '未選択' }}</code></dd></div>
+            <div><dt>オンチェーン準備</dt><dd><strong>{{ enrollmentStateLabel(item) }}</strong></dd></div>
+            <div><dt>招待期限</dt><dd>{{ new Date(item.expiresAt).toLocaleString('ja-JP') }}</dd></div>
+          </dl>
+          <small v-if="item.enrollment?.errorMessage" class="error-detail">{{ item.enrollment.errorMessage }}</small>
+          <span class="tx-links">
+            <a v-if="item.enrollment?.approvalTransactionHash" :href="`https://amoy.polygonscan.com/tx/${item.enrollment.approvalTransactionHash}`" target="_blank" rel="noopener noreferrer">承認記録</a>
+            <a v-if="item.enrollment?.fundingTransactionHash" :href="`https://amoy.polygonscan.com/tx/${item.enrollment.fundingTransactionHash}`" target="_blank" rel="noopener noreferrer">POL配布記録</a>
+          </span>
+          <div class="operation-cell">
+            <span v-if="participantEnrollmentAction(item).disabled" class="completion-badge">{{ participantEnrollmentAction(item).label }}</span>
+            <button v-else type="button" :aria-busy="processingInvitationId === item.invitationId" @click="processEnrollment(item)">{{ processingInvitationId === item.invitationId ? '処理しています…' : participantEnrollmentAction(item).label }}</button>
+            <small>{{ participantEnrollmentAction(item).hint }}</small>
+          </div>
+        </article>
       </div>
+      <p v-else class="empty-state">招待はありません</p>
     </div>
   </section>
 </template>
 
 <style scoped>
-.participant-admin{display:grid;min-width:0;max-width:100%;gap:1rem;margin:1.5rem 0}.panel,.warning{min-width:0;max-width:100%;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg-soft)}.warning{border-color:var(--vp-c-warning-1)}form,label{display:grid;gap:.4rem}form{gap:.9rem}input,select,button{min-height:44px;padding:.55rem .7rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}button{border-color:var(--vp-c-brand-1);background:var(--vp-c-brand-1);color:white;font-weight:700;cursor:pointer}button.danger{border-color:var(--vp-c-danger-1);background:transparent;color:var(--vp-c-danger-1)}button:disabled{opacity:.5}.check{grid-template-columns:auto 1fr;align-items:center}.check input{min-height:auto}.result code{display:block;overflow-wrap:anywhere;padding:.75rem}.error{color:var(--vp-c-danger-1)}.success{padding:.8rem 1rem;border:1px solid var(--vp-c-success-1);border-radius:10px;background:var(--vp-c-bg-soft);color:var(--vp-c-success-1);font-weight:700}.table-wrap{min-width:0;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain}table{min-width:1080px}small{color:var(--vp-c-text-2)}.review-actions,.operation-cell{display:grid;gap:.4rem}.review-actions button,.operation-cell button{white-space:nowrap}.operation-cell small{display:block;max-width:260px;line-height:1.45}.completion-badge{display:inline-flex;min-height:44px;align-items:center;justify-content:center;padding:.55rem .7rem;border:1px solid var(--vp-c-success-1);border-radius:8px;color:var(--vp-c-success-1);font-weight:700;white-space:nowrap}.error-detail{display:block;max-width:260px;margin-top:.3rem;color:var(--vp-c-danger-1)}.tx-links{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.35rem;font-size:.78rem}
+.participant-admin{display:grid;min-width:0;max-width:100%;gap:1rem;margin:1.5rem 0}.panel,.warning{min-width:0;max-width:100%;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg-soft)}.warning{border-color:var(--vp-c-warning-1)}form,label{display:grid;gap:.4rem}form{gap:.9rem}input,select,button{min-height:44px;padding:.55rem .7rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}button{border-color:var(--vp-c-brand-1);background:var(--vp-c-brand-1);color:white;font-weight:700;cursor:pointer}button.danger{border-color:var(--vp-c-danger-1);background:transparent;color:var(--vp-c-danger-1)}button:disabled{opacity:.5}.check{grid-template-columns:auto 1fr;align-items:center}.check input{min-height:auto}.result code{display:block;overflow-wrap:anywhere;padding:.75rem}.error{color:var(--vp-c-danger-1)}.success{padding:.8rem 1rem;border:1px solid var(--vp-c-success-1);border-radius:10px;background:var(--vp-c-bg-soft);color:var(--vp-c-success-1);font-weight:700}.record-list{display:grid;gap:1rem}.record-card{display:grid;min-width:0;gap:.9rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:10px;background:var(--vp-c-bg)}.record-header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}.record-header h3{margin:0 0 .2rem;font-size:1.05rem}.role-badge{flex:none;padding:.25rem .55rem;border-radius:999px;background:var(--vp-c-brand-soft);color:var(--vp-c-brand-1);font-size:.78rem;font-weight:700}.record-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;margin:0}.record-details div{min-width:0;padding:.65rem;border-radius:8px;background:var(--vp-c-bg-soft)}.record-details dt{margin-bottom:.2rem;color:var(--vp-c-text-2);font-size:.75rem;font-weight:700}.record-details dd{min-width:0;margin:0;overflow-wrap:anywhere}.record-details code{font-size:.78rem;white-space:normal}.empty-state{padding:1rem;text-align:center;color:var(--vp-c-text-2)}small{color:var(--vp-c-text-2)}.review-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem}.operation-cell{display:grid;gap:.45rem;padding-top:.85rem;border-top:1px solid var(--vp-c-divider)}.operation-cell button,.completion-badge{width:100%}.operation-cell small{display:block;line-height:1.45}.completion-badge{display:inline-flex;box-sizing:border-box;min-height:44px;align-items:center;justify-content:center;padding:.55rem .7rem;border:1px solid var(--vp-c-success-1);border-radius:8px;color:var(--vp-c-success-1);font-weight:700}.error-detail{display:block;color:var(--vp-c-danger-1)}.tx-links{display:flex;flex-wrap:wrap;gap:.65rem;font-size:.85rem}@media (max-width:640px){.record-header{display:grid}.record-details,.review-actions{grid-template-columns:1fr}.role-badge{justify-self:start}}
 </style>
