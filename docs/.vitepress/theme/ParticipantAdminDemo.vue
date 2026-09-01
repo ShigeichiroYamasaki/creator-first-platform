@@ -97,6 +97,14 @@ function enrollmentStateLabel(invitation: Invitation) {
 async function processEnrollment(invitation: Invitation) {
   error.value = ''
   operationMessage.value = ''
+  if (processingInvitationId.value === invitation.invitationId) {
+    operationMessage.value = 'この実験参加者の運営処理はすでに進行中です。完了するまでそのままお待ちください。'
+    return
+  }
+  if (invitation.enrollment?.state === 'FUNDED') {
+    operationMessage.value = `${invitation.displayName}さんは、すでにオンチェーン承認と初回POL配布が完了しています。`
+    return
+  }
   if (invitation.state !== 'CLAIMED') {
     error.value = '実験参加者はまだ招待リンクから仮想通貨ワレットを登録していません。本人登録完了後に一覧を再取得してください。'
     return
@@ -229,7 +237,8 @@ async function copyUri() {
                 </span>
               </td>
               <td class="operation-cell">
-                <button type="button" :disabled="busy || participantEnrollmentAction(item).disabled" @click="processEnrollment(item)">{{ processingInvitationId === item.invitationId ? '処理しています…' : participantEnrollmentAction(item).label }}</button>
+                <span v-if="participantEnrollmentAction(item).disabled" class="completion-badge">{{ participantEnrollmentAction(item).label }}</span>
+                <button v-else type="button" :aria-busy="processingInvitationId === item.invitationId" @click="processEnrollment(item)">{{ processingInvitationId === item.invitationId ? '処理しています…' : participantEnrollmentAction(item).label }}</button>
                 <small>{{ participantEnrollmentAction(item).hint }}</small>
               </td>
               <td>{{ new Date(item.expiresAt).toLocaleString('ja-JP') }}</td>
@@ -243,5 +252,5 @@ async function copyUri() {
 </template>
 
 <style scoped>
-.participant-admin{display:grid;gap:1rem;margin:1.5rem 0}.panel,.warning{padding:1rem;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg-soft)}.warning{border-color:var(--vp-c-warning-1)}form,label{display:grid;gap:.4rem}form{gap:.9rem}input,select,button{min-height:44px;padding:.55rem .7rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}button{border-color:var(--vp-c-brand-1);background:var(--vp-c-brand-1);color:white;font-weight:700;cursor:pointer}button.danger{border-color:var(--vp-c-danger-1);background:transparent;color:var(--vp-c-danger-1)}button:disabled{opacity:.5}.check{grid-template-columns:auto 1fr;align-items:center}.check input{min-height:auto}.result code{display:block;overflow-wrap:anywhere;padding:.75rem}.error{color:var(--vp-c-danger-1)}.success{padding:.8rem 1rem;border:1px solid var(--vp-c-success-1);border-radius:10px;background:var(--vp-c-bg-soft);color:var(--vp-c-success-1);font-weight:700}.table-wrap{overflow:auto}table{min-width:1080px}small{color:var(--vp-c-text-2)}.review-actions,.operation-cell{display:grid;gap:.4rem}.review-actions button,.operation-cell button{white-space:nowrap}.operation-cell small{display:block;max-width:260px;line-height:1.45}.error-detail{display:block;max-width:260px;margin-top:.3rem;color:var(--vp-c-danger-1)}.tx-links{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.35rem;font-size:.78rem}
+.participant-admin{display:grid;gap:1rem;margin:1.5rem 0}.panel,.warning{padding:1rem;border:1px solid var(--vp-c-divider);border-radius:12px;background:var(--vp-c-bg-soft)}.warning{border-color:var(--vp-c-warning-1)}form,label{display:grid;gap:.4rem}form{gap:.9rem}input,select,button{min-height:44px;padding:.55rem .7rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}button{border-color:var(--vp-c-brand-1);background:var(--vp-c-brand-1);color:white;font-weight:700;cursor:pointer}button.danger{border-color:var(--vp-c-danger-1);background:transparent;color:var(--vp-c-danger-1)}button:disabled{opacity:.5}.check{grid-template-columns:auto 1fr;align-items:center}.check input{min-height:auto}.result code{display:block;overflow-wrap:anywhere;padding:.75rem}.error{color:var(--vp-c-danger-1)}.success{padding:.8rem 1rem;border:1px solid var(--vp-c-success-1);border-radius:10px;background:var(--vp-c-bg-soft);color:var(--vp-c-success-1);font-weight:700}.table-wrap{overflow:auto}table{min-width:1080px}small{color:var(--vp-c-text-2)}.review-actions,.operation-cell{display:grid;gap:.4rem}.review-actions button,.operation-cell button{white-space:nowrap}.operation-cell small{display:block;max-width:260px;line-height:1.45}.completion-badge{display:inline-flex;min-height:44px;align-items:center;justify-content:center;padding:.55rem .7rem;border:1px solid var(--vp-c-success-1);border-radius:8px;color:var(--vp-c-success-1);font-weight:700;white-space:nowrap}.error-detail{display:block;max-width:260px;margin-top:.3rem;color:var(--vp-c-danger-1)}.tx-links{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.35rem;font-size:.78rem}
 </style>

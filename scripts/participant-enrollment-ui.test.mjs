@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 
 import { participantEnrollmentAction } from '../docs/.vitepress/theme/participantEnrollmentUi.js'
@@ -27,4 +28,11 @@ test('disables only completed enrollment', () => {
   const action = participantEnrollmentAction({ state: 'CLAIMED', claimedWallet: '0x1234', enrollment: { state: 'FUNDED' } })
   assert.equal(action.disabled, true)
   assert.equal(action.label, '準備完了')
+})
+
+test('renders pending enrollment as an actionable button without a global busy lock', async () => {
+  const component = await readFile(new URL('../docs/.vitepress/theme/ParticipantAdminDemo.vue', import.meta.url), 'utf8')
+  assert.match(component, /<button v-else type="button" :aria-busy="processingInvitationId === item\.invitationId" @click="processEnrollment\(item\)">/)
+  assert.doesNotMatch(component, /:disabled="busy \|\| participantEnrollmentAction\(item\)\.disabled"/)
+  assert.match(component, /<span v-if="participantEnrollmentAction\(item\)\.disabled" class="completion-badge">/)
 })
