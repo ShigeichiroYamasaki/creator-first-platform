@@ -11,7 +11,7 @@ source_specifications:
     version: 0.1.0
     path: protocol/account/wallet-linking-spec.md
   - id: SPEC-ACCOUNT-003
-    version: 0.1.1
+    version: 0.1.0
     path: protocol/account/account-lifecycle-spec.md
   - id: SPEC-ACCOUNT-004
     version: 0.1.0

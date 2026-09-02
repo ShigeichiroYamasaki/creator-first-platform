@@ -34,7 +34,7 @@ npm run docs:dev
 GATEWAY_ADMIN_TOKEN='ローカル試験用に生成した十分長いランダム値' npm run gateway:dev
 ```
 
-参加希望者はユーザまたは音楽クリエータの体験ページでメールアドレスを入力して申請し、最初に届く確認リンクを開きます。確認リンクは仮名・仮想通貨ワレット・音楽機能を含まない専用の`/creator-first-platform/demo/participant-application-status`へ遷移し、メール確認と審査待ち状態だけを表示します。次に`http://127.0.0.1:5173/creator-first-platform/admin/participant-invitations`を開くと、管理者はメール確認済みの申請を審査できます。承認すると、参加者のEOAを知らない状態でユーザ／音楽クリエーター資格と期限を持つ一回限りの招待URIがメール送信されます。参加者は招待URIからMetaMaskを接続し、SIWE署名後に本人登録します。管理者による個別招待は例外対応として利用できます。管理ページは公開ナビゲーションへ載せず`noindex`としていますが、URL秘匿は認証ではありません。
+参加希望者はユーザまたは音楽クリエータの体験ページでメールアドレスを入力し、一つの確認欄を確認して申請します。新しいV2経路は申請を直接審査待ちにし、申請直後の確認メールを送りません。管理者が`http://127.0.0.1:5173/creator-first-platform/admin/participant-invitations`で承認すると、参加者のEOAを知らない状態でユーザ／音楽クリエータ資格と期限を持つ一回限りの統合参加メールが1通送信されます。参加者は招待URIからMetaMaskを接続し、招待、役割、同意版を含むSIWE署名後に本人登録します。旧V1の確認リンクは既存申請の有効期限内だけ互換経路として処理します。管理者による個別招待は例外対応として利用できます。管理ページは公開ナビゲーションへ載せず`noindex`としていますが、URL秘匿は認証ではありません。
 
 既定の`GATEWAY_MAIL_MODE=outbox`はメールを外部送信せず、テスト用Outboxへ保存します。メール送信事業者へ接続する場合は、秘密情報をブラウザへ置かず、Gatewayから認証付きWebhookを呼びます。
 
@@ -43,7 +43,7 @@ GATEWAY_ADMIN_TOKEN='十分長いランダム値' \
 GATEWAY_MAIL_MODE=webhook \
 GATEWAY_MAIL_WEBHOOK_URL='https://mail-adapter.example/api/send' \
 GATEWAY_MAIL_WEBHOOK_TOKEN='メールアダプター専用トークン' \
-GATEWAY_APPLICATION_STATUS_PUBLIC_URL='https://public.example/creator-first-platform/demo/participant-application-status' \
+GATEWAY_INVITATION_PUBLIC_URL='https://public.example/creator-first-platform/demo/participant-registration' \
 npm run gateway:dev
 ```
 
@@ -84,7 +84,7 @@ npm run gateway:dev
 
 ガバナンス投票も同じガス代代理方式を使います。議員は、提案ID、会期、所属院、投票強度、Nonce、10分の期限を含むEIP-712投票内容へ署名します。ゲートウェーは署名者とオンチェーン議員資格を照合し、`RELAYER_ROLE`だけを持つ専用鍵で送信します。投票者のアドレス、院別集計、二乗コスト、票の差替え規則はガバナーが署名者を基準に処理するため、リレイヤー自身の票にはなりません。
 
-Gmail送信は暗黙TLS（465）を優先し、接続できない場合だけSTARTTLS（587）へ切り替えます。公開実験の確認メールと審査結果に限定し、宣伝メールや不特定多数への配信には使用しません。送信量、迷惑メール判定、アカウント停止、アプリパスワード失効の影響を受けるため、本番系では独自ドメインのトランザクションメールサービスへ移行します。
+Gmail送信は暗黙TLS（465）を優先し、接続できない場合だけSTARTTLS（587）へ切り替えます。公開実験の参加メール、必要時の再送、却下通知および旧V1確認メールに限定し、宣伝メールや不特定多数への配信には使用しません。送信量、迷惑メール判定、アカウント停止、アプリパスワード失効の影響を受けるため、本番系では独自ドメインのトランザクションメールサービスへ移行します。
 
 IPv6専用ホスト上のIPv4専用Dockerブリッジでは、ホストの`172.31.0.1:1465`から`smtp.gmail.com:465`のIPv6接続だけへ転送する限定TCP中継を使用します。ゲートウェーには`GATEWAY_GMAIL_CONNECT_HOST=172.31.0.1`、`GATEWAY_GMAIL_IMPLICIT_TLS_PORT=1465`、`GATEWAY_GMAIL_NETWORK_FAMILY=4`を設定します。TLSの検証対象名は中継先でも`smtp.gmail.com`のままで、アプリパスワードを中継プロセスへ渡しません。通常のデュアルスタック環境ではこれらを未設定（自動選択）のままとします。
 

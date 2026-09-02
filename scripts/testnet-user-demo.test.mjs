@@ -73,6 +73,8 @@ test('separates participant preparation from post-POL service experiences', asyn
 
 test('routes operational registration to the same-origin Google Cloud demo', async () => {
   const runtime = JSON.parse(await readFile(cloudRuntimePath, 'utf8'))
+  const redirectComponent = await readFile(new URL('../docs/.vitepress/theme/CloudDemoRedirect.vue', import.meta.url), 'utf8')
+  const gcpStartup = await readFile(new URL('../deployment/gcp/startup.sh', import.meta.url), 'utf8')
   const parsed = parseCloudDemoRuntime(runtime)
   assert.match(runtime.origin, /^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/)
   assert.equal(parsed.origin, runtime.origin)
@@ -80,6 +82,8 @@ test('routes operational registration to the same-origin Google Cloud demo', asy
     cloudDemoTarget(runtime, '/creator-first-platform/demo/test-user-registration?role=user#step=application'),
     `${runtime.origin}/creator-first-platform/demo/test-user-registration?role=user#step=application`
   )
+  assert.match(redirectComponent, /const requestedPath = `\$\{configuredPath\}\$\{location\.hash\}`/)
+  assert.match(gcpStartup, /GATEWAY_INVITATION_PUBLIC_URL=https:\/\/shigeichiroyamasaki\.github\.io\/creator-first-platform\/demo\/cloud-entry\?path=\/creator-first-platform\/demo\/participant-registration/)
   assert.equal(
     cloudAdminTarget(runtime),
     `${runtime.origin}/creator-first-platform/admin/participant-invitations`

@@ -21,6 +21,8 @@ type Invitation = {
   expiresAt: string
   expired: boolean
   enrollment: Enrollment
+  flowVersion: string
+  consentVersion: string
 }
 
 const USER_ROLE = 1
@@ -28,8 +30,7 @@ const CREATOR_ROLE = 2
 const token = ref('')
 const invitation = ref<Invitation | null>(null)
 const wallet = ref('')
-const acceptedTerms = ref(false)
-const acknowledgedTestOnly = ref(false)
+const acceptedParticipation = ref(false)
 const message = ref('')
 const error = ref('')
 const busy = ref(false)
@@ -45,8 +46,8 @@ const hasUserRole = computed(() => Boolean((invitation.value?.roles ?? 0) & USER
 const hasCreatorRole = computed(() => Boolean((invitation.value?.roles ?? 0) & CREATOR_ROLE))
 const enrollmentFunded = computed(() => invitation.value?.enrollment?.state === 'FUNDED')
 const roleLabel = computed(() => hasUserRole.value && hasCreatorRole.value
-  ? 'ユーザ／音楽クリエーター'
-  : hasCreatorRole.value ? '音楽クリエーター' : 'ユーザ')
+  ? 'ユーザ／音楽クリエータ'
+  : hasCreatorRole.value ? '音楽クリエータ' : 'ユーザ')
 const stateLabel = computed(() => {
   if (invitation.value?.expired) return '期限切れ'
   return ({ CREATED: '準備中', SENT: '受付中', CLAIMED: '本人登録済み', REVOKED: '無効' } as const)[invitation.value?.state ?? 'CREATED']
@@ -85,7 +86,7 @@ const nextAction = computed(() => {
   if (isClaimed.value && enrollmentFunded.value) return '運営のオンチェーン承認と初回POL配布が完了しました。'
   if (isClaimed.value) return '本人登録は完了しています。運営がオンチェーン承認と初回POL配布を行います。'
   if (!wallet.value) return 'オレンジ色のキツネが目印の仮想通貨ワレットを開きます。'
-  return '2項目を確認し、本人登録を完了してください。'
+  return '確認事項を読み、本人登録を完了してください。'
 })
 
 const walletConfirmationPending = computed(() => ['network', 'account', 'signature'].includes(interactionPhase.value))
@@ -182,8 +183,9 @@ async function connectAndVerifyWallet() {
         address: wallet.value,
         chainId: AMOY_CHAIN_ID,
         invitationToken: token.value,
-        acceptedTerms: acceptedTerms.value,
-        acknowledgedTestOnly: acknowledgedTestOnly.value
+        acceptedParticipation: acceptedParticipation.value,
+        acceptedTerms: acceptedParticipation.value,
+        acknowledgedTestOnly: acceptedParticipation.value
       })
     })
     beginPhase('signature')
@@ -214,7 +216,11 @@ async function claim() {
     beginPhase('registration')
     invitation.value = await gateway(`/v1/participant-invitations/${encodeURIComponent(token.value)}/claim`, {
       method: 'POST',
-      body: JSON.stringify({ acceptedTerms: acceptedTerms.value, acknowledgedTestOnly: acknowledgedTestOnly.value })
+      body: JSON.stringify({
+        acceptedParticipation: acceptedParticipation.value,
+        acceptedTerms: acceptedParticipation.value,
+        acknowledgedTestOnly: acceptedParticipation.value
+      })
     }) as Invitation
     scheduleEnrollmentStatusRefresh()
   } catch (cause) {
@@ -284,11 +290,10 @@ onBeforeUnmount(() => {
         <span><i aria-hidden="true">📅</i>{{ new Date(invitation.expiresAt).toLocaleDateString('ja-JP') }}まで</span>
       </div>
 
-      <ol class="progress" aria-label="登録の進捗">
-        <li class="done"><b aria-hidden="true">✉</b><span><em>1</em> 招待</span></li>
-        <li :class="{ done: Boolean(wallet) || isClaimed, current: !wallet && !isClaimed && !isUnavailable }"><b aria-hidden="true">🦊</b><span><em>2</em> 仮想通貨ワレット</span></li>
-        <li :class="{ done: isClaimed, current: Boolean(wallet) && !isClaimed && !isUnavailable }"><b aria-hidden="true">✓</b><span><em>3</em> 登録</span></li>
-      </ol>
+      <details v-if="wallet || isClaimed" class="completed-steps">
+        <summary>完了した操作</summary>
+        <ul><li>招待メールを開きました</li><li v-if="wallet || isClaimed">仮想通貨ワレットを確認しました</li><li v-if="isClaimed">本人登録を保存しました</li></ul>
+      </details>
 
       <div v-if="isUnavailable" class="action-card error-card">
         <span class="action-icon" aria-hidden="true">⚠️</span>
@@ -318,13 +323,12 @@ onBeforeUnmount(() => {
           <template v-else>
             <h3>仮想通貨ワレットをつなぐ</h3>
             <p>内容を確認してからボタンを押してください。MetaMaskの署名には、この招待、参加する立場、確認内容が含まれます。</p>
-            <label class="check-row"><input v-model="acceptedTerms" type="checkbox" /><span aria-hidden="true">📄</span><span>公開実験の利用条件に同意します</span></label>
-            <label class="check-row"><input v-model="acknowledgedTestOnly" type="checkbox" /><span aria-hidden="true">🧪</span><span>練習用で、実際のお金ではないことを確認します</span></label>
+            <label class="check-row"><input v-model="acceptedParticipation" type="checkbox" /><span aria-hidden="true">📄</span><span>これは無償の運用実験であり、利用条件と個人情報の取扱いを確認しました</span></label>
             <div class="term-chips" aria-label="使用する技術">
               <span><i aria-hidden="true">🦊</i> 仮想通貨ワレット <small>MetaMask</small></span>
               <span><i aria-hidden="true">🧪</i> 練習用ネットワーク <small>Polygon Amoy</small></span>
             </div>
-            <button class="primary-button" type="button" :disabled="busy || !acceptedTerms || !acknowledgedTestOnly" @click="connectAndVerifyWallet">
+            <button class="primary-button" type="button" :disabled="busy || !acceptedParticipation" @click="connectAndVerifyWallet">
               <span aria-hidden="true">🦊</span>
               <span>MetaMaskを開く<small>確認画面で操作を続けます</small></span>
             </button>
@@ -340,7 +344,7 @@ onBeforeUnmount(() => {
           <p class="wallet"><span aria-hidden="true">✅</span> 仮想通貨ワレットを確認しました <code>{{ wallet }}</code></p>
           <p><span aria-hidden="true">🔏</span> 招待内容と確認事項を含む署名をサーバで確認しました。</p>
           <p class="registration-note"><span aria-hidden="true">ℹ️</span> 次の登録操作ではMetaMaskは開きません。このページ内で登録を保存します。</p>
-          <button class="primary-button" type="button" :disabled="!acceptedTerms || !acknowledgedTestOnly || busy" @click="claim">
+          <button class="primary-button" type="button" :disabled="!acceptedParticipation || busy" @click="claim">
             <span aria-hidden="true">✓</span><span>{{ busy ? '登録を保存しています…' : 'この内容で登録する' }}</span>
           </button>
           <div v-if="interactionPhase === 'registration'" class="server-wait registration-wait" role="status" aria-live="polite">

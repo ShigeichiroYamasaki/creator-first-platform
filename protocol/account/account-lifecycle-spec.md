@@ -1,7 +1,7 @@
 # Account Lifecycle, Authentication and Recovery
 
 **Status:** Draft  
-**Version:** 0.1.1
+**Version:** 0.1.0
 **Protocol Domain:** account / identity  
 **Specification ID:** SPEC-ACCOUNT-003  
 **Last Updated:** 2026-09-02

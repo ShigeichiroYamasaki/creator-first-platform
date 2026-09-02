@@ -101,7 +101,12 @@ export class GatewayStore {
         expires_at TEXT NOT NULL,
         sent_at TEXT,
         claimed_at TEXT,
-        claimed_wallet TEXT
+        claimed_wallet TEXT,
+        flow_version TEXT NOT NULL DEFAULT 'PARTICIPANT_ENROLLMENT_V1',
+        consent_version TEXT NOT NULL DEFAULT 'participant-experiment-v1',
+        resend_count INTEGER NOT NULL DEFAULT 0,
+        resend_window_started_at TEXT,
+        last_resend_at TEXT
       );
       CREATE TABLE IF NOT EXISTS participant_invitation_audit_events (
         event_id TEXT PRIMARY KEY,
@@ -109,6 +114,13 @@ export class GatewayStore {
         event_type TEXT NOT NULL,
         occurred_at TEXT NOT NULL,
         detail_json TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS participant_invitation_resend_requests (
+        invitation_id TEXT NOT NULL,
+        idempotency_key TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        response_json TEXT NOT NULL,
+        PRIMARY KEY (invitation_id, idempotency_key)
       );
       CREATE TABLE IF NOT EXISTS participant_applications (
         application_id TEXT PRIMARY KEY,
@@ -124,7 +136,9 @@ export class GatewayStore {
         verified_at TEXT,
         reviewed_at TEXT,
         invitation_id TEXT,
-        rejection_code TEXT
+        rejection_code TEXT,
+        flow_version TEXT NOT NULL DEFAULT 'PARTICIPANT_ENROLLMENT_V1',
+        consent_version TEXT NOT NULL DEFAULT 'participant-experiment-v1'
       );
       CREATE TABLE IF NOT EXISTS participant_application_audit_events (
         event_id TEXT PRIMARY KEY,
@@ -165,6 +179,28 @@ export class GatewayStore {
     }
     if (!applicationColumns.has('verification_sent_at')) {
       this.database.exec('ALTER TABLE participant_applications ADD COLUMN verification_sent_at TEXT')
+    }
+    if (!applicationColumns.has('flow_version')) {
+      this.database.exec("ALTER TABLE participant_applications ADD COLUMN flow_version TEXT NOT NULL DEFAULT 'PARTICIPANT_ENROLLMENT_V1'")
+    }
+    if (!applicationColumns.has('consent_version')) {
+      this.database.exec("ALTER TABLE participant_applications ADD COLUMN consent_version TEXT NOT NULL DEFAULT 'participant-experiment-v1'")
+    }
+    const invitationColumns = new Set(this.database.prepare('PRAGMA table_info(participant_invitations)').all().map((column) => column.name))
+    if (!invitationColumns.has('flow_version')) {
+      this.database.exec("ALTER TABLE participant_invitations ADD COLUMN flow_version TEXT NOT NULL DEFAULT 'PARTICIPANT_ENROLLMENT_V1'")
+    }
+    if (!invitationColumns.has('consent_version')) {
+      this.database.exec("ALTER TABLE participant_invitations ADD COLUMN consent_version TEXT NOT NULL DEFAULT 'participant-experiment-v1'")
+    }
+    if (!invitationColumns.has('resend_count')) {
+      this.database.exec('ALTER TABLE participant_invitations ADD COLUMN resend_count INTEGER NOT NULL DEFAULT 0')
+    }
+    if (!invitationColumns.has('resend_window_started_at')) {
+      this.database.exec('ALTER TABLE participant_invitations ADD COLUMN resend_window_started_at TEXT')
+    }
+    if (!invitationColumns.has('last_resend_at')) {
+      this.database.exec('ALTER TABLE participant_invitations ADD COLUMN last_resend_at TEXT')
     }
   }
 
@@ -309,8 +345,9 @@ export class GatewayStore {
   createParticipantInvitation(value) {
     this.database.prepare(`
       INSERT INTO participant_invitations (
-        invitation_id, token_hash, email, display_name, role_bits, state, created_at, expires_at
-      ) VALUES (?, ?, ?, ?, ?, 'CREATED', ?, ?)
+        invitation_id, token_hash, email, display_name, role_bits, state, created_at, expires_at,
+        flow_version, consent_version
+      ) VALUES (?, ?, ?, ?, ?, 'CREATED', ?, ?, ?, ?)
     `).run(
       value.invitationId,
       value.tokenHash,
@@ -318,7 +355,9 @@ export class GatewayStore {
       value.displayName,
       value.roleBits,
       value.createdAt,
-      value.expiresAt
+      value.expiresAt,
+      value.flowVersion,
+      value.consentVersion
     )
   }
 
@@ -331,11 +370,7 @@ export class GatewayStore {
   }
 
   participantInvitations() {
-    return this.database.prepare(`
-      SELECT invitation_id, email, display_name, role_bits, state, created_at, expires_at,
-             sent_at, claimed_at, claimed_wallet
-      FROM participant_invitations ORDER BY created_at DESC
-    `).all()
+    return this.database.prepare('SELECT * FROM participant_invitations ORDER BY created_at DESC').all()
   }
 
   markParticipantInvitationSent(invitationId, sentAt) {
@@ -343,6 +378,22 @@ export class GatewayStore {
       UPDATE participant_invitations SET state = 'SENT', sent_at = ?
       WHERE invitation_id = ? AND state IN ('CREATED', 'SENT')
     `).run(sentAt, invitationId).changes
+  }
+
+  rotateParticipantInvitationToken(invitationId, tokenDigest, expiresAt) {
+    return this.database.prepare(`
+      UPDATE participant_invitations
+      SET token_hash = ?, expires_at = ?
+      WHERE invitation_id = ? AND state = 'SENT'
+    `).run(tokenDigest, expiresAt, invitationId).changes
+  }
+
+  markParticipantInvitationResent(invitationId, sentAt, windowStartedAt, resendCount) {
+    return this.database.prepare(`
+      UPDATE participant_invitations
+      SET sent_at = ?, last_resend_at = ?, resend_window_started_at = ?, resend_count = ?
+      WHERE invitation_id = ? AND state = 'SENT'
+    `).run(sentAt, sentAt, windowStartedAt, resendCount, invitationId).changes
   }
 
   claimParticipantInvitation(invitationId, walletAddress, claimedAt) {
@@ -364,6 +415,20 @@ export class GatewayStore {
       SELECT event_type, occurred_at, detail_json
       FROM participant_invitation_audit_events WHERE invitation_id = ? ORDER BY occurred_at, rowid
     `).all(invitationId)
+  }
+
+  participantInvitationResendRequest(invitationId, idempotencyKey) {
+    const row = this.database.prepare(`
+      SELECT response_json FROM participant_invitation_resend_requests
+      WHERE invitation_id = ? AND idempotency_key = ?
+    `).get(invitationId, idempotencyKey)
+    return row ? JSON.parse(row.response_json) : null
+  }
+
+  recordParticipantInvitationResendRequest(invitationId, idempotencyKey, createdAt, response) {
+    this.database.prepare(`
+      INSERT INTO participant_invitation_resend_requests VALUES (?, ?, ?, ?)
+    `).run(invitationId, idempotencyKey, createdAt, JSON.stringify(response))
   }
 
   createParticipantEnrollment(value) {
@@ -452,8 +517,8 @@ export class GatewayStore {
     this.database.prepare(`
       INSERT INTO participant_applications (
         application_id, owner_id, verification_token_hash, email, display_name,
-        role_bits, state, created_at, verification_expires_at
-      ) VALUES (?, ?, ?, ?, ?, ?, 'EMAIL_VERIFICATION_REQUIRED', ?, ?)
+        role_bits, state, created_at, verification_expires_at, flow_version, consent_version
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       value.applicationId,
       value.ownerId,
@@ -461,8 +526,11 @@ export class GatewayStore {
       value.email,
       value.displayName,
       value.roleBits,
+      value.state,
       value.createdAt,
-      value.verificationExpiresAt
+      value.verificationExpiresAt,
+      value.flowVersion,
+      value.consentVersion
     )
   }
 
@@ -534,9 +602,9 @@ export class GatewayStore {
   markParticipantApplicationInvitationClaimed(invitationId, claimedAt) {
     return this.database.prepare(`
       UPDATE participant_applications
-      SET state = 'INVITATION_CLAIMED', reviewed_at = COALESCE(reviewed_at, ?)
+      SET state = 'INVITATION_CLAIMED', verified_at = COALESCE(verified_at, ?), reviewed_at = COALESCE(reviewed_at, ?)
       WHERE invitation_id = ? AND state = 'APPROVED_INVITATION_SENT'
-    `).run(claimedAt, invitationId).changes
+    `).run(claimedAt, claimedAt, invitationId).changes
   }
 
   recordParticipantApplicationEvent(value) {

@@ -536,7 +536,7 @@ test('Administrator issues a wallet-agnostic invitation and the invited person c
   assert.equal(replay.body.state, 'CLAIMED')
 })
 
-test('Participant applies, verifies email, receives approval invitation and claims it with a chosen wallet', async (context) => {
+test('Participant applies, receives one approval invitation and claims it with a chosen wallet', async (context) => {
   const config = loadConfig({
     GATEWAY_PORT: '8787',
     GATEWAY_DATABASE_PATH: ':memory:',
@@ -557,38 +557,37 @@ test('Participant applies, verifies email, receives approval invitation and clai
   const adminHeaders = { Authorization: 'Bearer test-admin-token-with-sufficient-entropy' }
 
   assert.deepEqual((await json(await api.request('/v1/participant-applications/current'))).body, { application: null })
+  const missingConsent = await json(await api.request('/v1/participant-applications', {
+    method: 'POST',
+    body: JSON.stringify({ email: 'listener@example.test', displayName: 'Demo Listener', roles: 1 })
+  }))
+  assert.equal(missingConsent.response.status, 400)
+  assert.equal(missingConsent.body.code, 'APPLICATION_CONSENT_REQUIRED')
   const application = await json(await api.request('/v1/participant-applications', {
     method: 'POST',
     body: JSON.stringify({
       email: 'listener@example.test',
       displayName: 'Demo Listener',
       roles: 1,
-      acceptedPrivacyNotice: true,
-      acknowledgedTestOnly: true
+      acceptedParticipation: true
     })
   }))
   assert.equal(application.response.status, 201)
-  assert.equal(application.body.state, 'EMAIL_VERIFICATION_REQUIRED')
+  assert.equal(application.body.state, 'UNDER_REVIEW')
   assert.equal(application.body.emailHint, 'l***@example.test')
   assert.equal('email' in application.body, false)
-  assert.equal(gateway.invitationMailer.outbox.length, 1)
-  assert.match(gateway.invitationMailer.outbox[0].text, /https:\/\/example\.test\/demo\/participant-application-status#verify-application=/)
+  assert.equal(application.body.consentVersion, 'participant-experiment-v2')
+  assert.equal(gateway.invitationMailer.outbox.length, 0)
   const repeated = await json(await api.request('/v1/participant-applications', {
     method: 'POST',
     body: JSON.stringify({
       email: 'listener@example.test', displayName: 'Demo Listener', roles: 1,
-      acceptedPrivacyNotice: true, acknowledgedTestOnly: true
+      acceptedParticipation: true
     })
   }))
   assert.equal(repeated.response.status, 201)
   assert.equal(repeated.body.applicationId, application.body.applicationId)
-  assert.equal(gateway.invitationMailer.outbox.length, 1)
-  const verificationToken = gateway.invitationMailer.outbox[0].text.match(/#verify-application=([A-Za-z0-9_-]+)/)?.[1]
-  assert.ok(verificationToken)
-
-  const verified = await json(await api.request(`/v1/participant-applications/verify/${verificationToken}`, { method: 'POST' }))
-  assert.equal(verified.response.status, 200)
-  assert.equal(verified.body.state, 'UNDER_REVIEW')
+  assert.equal(gateway.invitationMailer.outbox.length, 0)
   const listed = await json(await api.request('/v1/admin/participant-applications', { headers: adminHeaders }))
   assert.equal(listed.response.status, 200)
   assert.equal(listed.body.applications[0].email, 'listener@example.test')
@@ -598,9 +597,33 @@ test('Participant applies, verifies email, receives approval invitation and clai
   }))
   assert.equal(approved.response.status, 200)
   assert.equal(approved.body.state, 'APPROVED_INVITATION_SENT')
+  assert.equal(gateway.invitationMailer.outbox.length, 1)
+  const firstInvitationToken = gateway.invitationMailer.outbox[0].text.match(/#invite=([A-Za-z0-9_-]+)/)?.[1]
+  assert.ok(firstInvitationToken)
+  assert.equal((await api.request(`/v1/participant-invitations/${firstInvitationToken}`)).status, 200)
+  assert.equal((await api.request(`/v1/participant-invitations/${firstInvitationToken}`)).status, 200)
+
+  gateway.store.database.prepare(`UPDATE participant_invitations SET sent_at = ? WHERE invitation_id = ?`).run(
+    new Date(Date.now() - 6 * 60_000).toISOString(), approved.body.invitationId
+  )
+  const resendReady = await json(await api.request('/v1/participant-applications/current'))
+  assert.equal(resendReady.body.application.participantView.phase, 'CHECK_EMAIL')
+  assert.equal(resendReady.body.application.participantView.recoveryAction, 'RESEND_INVITATION')
+  const resend = await json(await api.request('/v1/participant-applications/current/resend', {
+    method: 'POST', headers: { 'Idempotency-Key': 'resend-application-0001' }
+  }))
+  assert.equal(resend.response.status, 200)
+  assert.equal(gateway.invitationMailer.outbox.length, 2)
+  const resendReplay = await json(await api.request('/v1/participant-applications/current/resend', {
+    method: 'POST', headers: { 'Idempotency-Key': 'resend-application-0001' }
+  }))
+  assert.equal(resendReplay.response.status, 200)
+  assert.equal(resendReplay.body.participantView.recoveryAction, null)
   assert.equal(gateway.invitationMailer.outbox.length, 2)
   const invitationToken = gateway.invitationMailer.outbox[1].text.match(/#invite=([A-Za-z0-9_-]+)/)?.[1]
   assert.ok(invitationToken)
+  assert.notEqual(invitationToken, firstInvitationToken)
+  assert.equal((await api.request(`/v1/participant-invitations/${firstInvitationToken}`)).status, 404)
 
   const account = privateKeyToAccount(TEST_PRIVATE_KEY)
   const challenge = await json(await api.request('/v1/auth/siwe/nonce', {
@@ -609,8 +632,7 @@ test('Participant applies, verifies email, receives approval invitation and clai
       address: account.address,
       chainId: config.chainId,
       invitationToken,
-      acceptedTerms: true,
-      acknowledgedTestOnly: true
+      acceptedParticipation: true
     })
   }))
   const signature = await account.signMessage({ message: challenge.body.message })
@@ -618,7 +640,7 @@ test('Participant applies, verifies email, receives approval invitation and clai
     method: 'POST', body: JSON.stringify({ challengeId: challenge.body.challengeId, message: challenge.body.message, signature })
   })).status, 200)
   const claimed = await json(await api.request(`/v1/participant-invitations/${invitationToken}/claim`, {
-    method: 'POST', body: JSON.stringify({ acceptedTerms: true, acknowledgedTestOnly: true })
+    method: 'POST', body: JSON.stringify({ acceptedParticipation: true })
   }))
   assert.equal(claimed.body.state, 'CLAIMED')
   assert.equal(claimed.body.enrollment.state, 'READY_AFTER_WALLET_CLAIM')

@@ -4,10 +4,10 @@ import test from 'node:test'
 
 import { participantEnrollmentAction } from '../docs/.vitepress/theme/participantEnrollmentUi.js'
 
-test('keeps an incomplete invitation actionable so the operator sees the missing step', () => {
+test('keeps an incomplete invitation visible but non-actionable until wallet claim', () => {
   const action = participantEnrollmentAction({ state: 'SENT', claimedWallet: null, enrollment: { state: 'READY_AFTER_WALLET_CLAIM' } })
-  assert.equal(action.disabled, false)
-  assert.equal(action.label, '承認・初回POL配布')
+  assert.equal(action.disabled, true)
+  assert.equal(action.label, '本人登録待ち')
   assert.match(action.hint, /仮想通貨ワレット/)
 })
 

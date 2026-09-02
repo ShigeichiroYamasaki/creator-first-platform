@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { withBase } from 'vitepress'
 import { resolveCloudDemoTarget } from './cloud-demo-runtime.js'
 
@@ -21,6 +21,15 @@ type Application = {
   verifiedAt?: string | null
   reviewedAt?: string | null
   rejectionCode?: string | null
+  participantView?: {
+    status: string
+    title?: string
+    guidance?: string
+    primaryAction: string | null
+    recoveryAction: string | null
+    recoveryAvailableAt?: string | null
+    resendAttemptsRemaining?: number
+  } | null
 }
 
 const props = withDefaults(defineProps<{ displayName?: string; role?: number; statusOnly?: boolean }>(), {
@@ -31,8 +40,7 @@ const props = withDefaults(defineProps<{ displayName?: string; role?: number; st
 
 const email = ref('')
 const enteredDisplayName = ref('')
-const acceptedPrivacyNotice = ref(false)
-const acknowledgedTestOnly = ref(false)
+const acceptedParticipation = ref(false)
 const application = ref<Application | null>(null)
 const message = ref('')
 const error = ref('')
@@ -44,8 +52,7 @@ const displayNameValid = computed(() => /^[\p{L}\p{N}_ -]{2,80}$/u.test(effectiv
 const canSubmit = computed(() => (
   displayNameValid.value &&
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()) &&
-  acceptedPrivacyNotice.value &&
-  acknowledgedTestOnly.value &&
+  acceptedParticipation.value &&
   serviceAvailable.value &&
   !busy.value
 ))
@@ -114,11 +121,12 @@ async function submitApplication() {
         email: email.value.trim(),
         displayName: effectiveDisplayName.value,
         roles: props.role,
-        acceptedPrivacyNotice: acceptedPrivacyNotice.value,
-        acknowledgedTestOnly: acknowledgedTestOnly.value
+        acceptedParticipation: acceptedParticipation.value,
+        acceptedPrivacyNotice: acceptedParticipation.value,
+        acknowledgedTestOnly: acceptedParticipation.value
       })
     }) as Application
-    message.value = '申請を受け付け、確認メールを送りました。'
+    message.value = '申請を受け付けました。運営の確認が終わるまでお待ちください。'
   } catch (cause) {
     error.value = cause instanceof Error ? cause.message : '申請を送信できませんでした'
   } finally {
@@ -130,10 +138,12 @@ async function resendVerification() {
   busy.value = true
   error.value = ''
   try {
-    application.value = await api('/v1/participant-applications/current/resend', { method: 'POST' }) as Application
-    message.value = '確認メールを再送しました。'
+    application.value = await api('/v1/participant-applications/current/resend', {
+      method: 'POST', headers: { 'Idempotency-Key': crypto.randomUUID() }
+    }) as Application
+    message.value = '参加登録用のメールを再送しました。'
   } catch (cause) {
-    error.value = cause instanceof Error ? cause.message : '確認メールを再送できませんでした'
+    error.value = cause instanceof Error ? cause.message : '参加登録用のメールを再送できませんでした'
   } finally {
     busy.value = false
   }
@@ -174,7 +184,10 @@ onMounted(async () => {
   const verificationToken = new URLSearchParams(location.hash.slice(1)).get('verify-application')
   if (verificationToken) await verifyFromEmail(verificationToken)
   else await loadCurrent()
+  pollTimer = window.setInterval(() => loadCurrent(true), 15_000)
 })
+let pollTimer: number | undefined
+onUnmounted(() => { if (pollTimer) window.clearInterval(pollTimer) })
 </script>
 
 <template>
@@ -182,12 +195,13 @@ onMounted(async () => {
     <div v-if="application" class="application-state" :data-state="application.state">
       <span class="state-icon" aria-hidden="true">{{ stateView.icon }}</span>
       <div>
-        <h4>{{ stateView.title }}</h4>
-        <p>{{ stateView.text }}</p>
-        <div class="application-actions">
-          <button v-if="application.state === 'EMAIL_VERIFICATION_REQUIRED'" type="button" :disabled="busy" @click="resendVerification">確認メールを再送する</button>
-          <button type="button" class="secondary" :disabled="busy" @click="loadCurrent()">現在の状態を確認する</button>
-        </div>
+        <h4>{{ application.participantView?.title ?? stateView.title }}</h4>
+        <p>{{ application.participantView?.guidance ?? stateView.text }}</p>
+        <details v-if="application.participantView?.status === 'INVITATION_SENT'" class="recovery">
+          <summary>メールが届かない場合</summary>
+          <button v-if="application.participantView.recoveryAction === 'RESEND_INVITATION'" type="button" :disabled="busy" @click="resendVerification">参加登録用メールを再送する</button>
+          <p v-else>迷惑メールフォルダも確認してください。再送できる時刻になると、この画面に再送ボタンが表示されます。</p>
+        </details>
       </div>
     </div>
 
@@ -199,16 +213,15 @@ onMounted(async () => {
     <form v-else class="application-form" @submit.prevent="submitApplication">
       <div class="application-intro">
         <span aria-hidden="true">📨</span>
-        <div><h4>実験参加者として申請する</h4><p>メール確認と運営の承認後に、参加登録用のメールが届きます。仮想通貨ワレットのアドレスを申請フォームへ入力する必要はありません。</p></div>
+        <div><h4>実験参加者として申請する</h4><p>申請後に運営が内容を確認します。承認された方へ参加登録用メールを1通送ります。仮想通貨ワレットのアドレスを申請フォームへ入力する必要はありません。</p></div>
       </div>
       <label v-if="!props.displayName.trim()">
         {{ props.role === 2 ? '実験で使う仮の活動名' : '実験で使う仮の名前' }}
         <input v-model="enteredDisplayName" type="text" minlength="2" maxlength="80" autocomplete="off" :placeholder="props.role === 2 ? 'Demo Artist 01' : 'Demo Listener 01'" required>
         <small>本名や連絡先を含めず、2〜80文字の文字・数字・空白・_・-を使ってください。</small>
       </label>
-      <label>確認メールを受け取るメールアドレス<input v-model="email" type="email" autocomplete="email" required placeholder="name@example.com"></label>
-      <label class="check"><input v-model="acceptedPrivacyNotice" type="checkbox"><span>メールアドレスを申請確認、審査結果、参加案内のために利用することを確認しました</span></label>
-      <label class="check"><input v-model="acknowledgedTestOnly" type="checkbox"><span>実際のお金や本番サービスの権利を得る申請ではないことを確認しました</span></label>
+      <label>参加登録用メールを受け取るメールアドレス<input v-model="email" type="email" autocomplete="email" required placeholder="name@example.com"></label>
+      <label class="check"><input v-model="acceptedParticipation" type="checkbox"><span>これは無償の運用実験であり、入力したメールアドレスを申請確認・審査結果・参加案内に利用することを確認しました</span></label>
       <button type="submit" :disabled="!canSubmit">{{ busy ? '申請しています…' : '参加者登録を申請する' }}</button>
       <p class="privacy-note">パスワード、秘密鍵、復旧用の単語列、本人確認書類、銀行情報は入力しないでください。</p>
     </form>

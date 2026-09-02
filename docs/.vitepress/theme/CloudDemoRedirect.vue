@@ -9,7 +9,8 @@ const target = ref('')
 async function connect() {
   message.value = 'Google クラウド上の無償版運用実験へ接続しています。'
   try {
-    const requestedPath = new URLSearchParams(location.search).get('path') ?? '/creator-first-platform/demo/'
+    const configuredPath = new URLSearchParams(location.search).get('path') ?? '/creator-first-platform/demo/'
+    const requestedPath = `${configuredPath}${location.hash}`
     target.value = await resolveCloudDemoTarget(
       new URL(withBase('/demo-runtime.json'), location.origin).href,
       requestedPath

@@ -396,8 +396,8 @@ GATEWAY_DATABASE_PATH=/data/gateway.sqlite
 GATEWAY_MEDIA_ADAPTER=file
 GATEWAY_MEDIA_ROOT=/music
 GATEWAY_CHAIN_ID=80002
-GATEWAY_INVITATION_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/participant-registration
-GATEWAY_APPLICATION_STATUS_PUBLIC_URL=${tunnel_url}/creator-first-platform/demo/participant-application-status
+GATEWAY_INVITATION_PUBLIC_URL=https://shigeichiroyamasaki.github.io/creator-first-platform/demo/cloud-entry?path=/creator-first-platform/demo/participant-registration
+GATEWAY_APPLICATION_STATUS_PUBLIC_URL=https://shigeichiroyamasaki.github.io/creator-first-platform/demo/cloud-entry?path=/creator-first-platform/demo/participant-application-status
 ENV
 if [[ -n "${participant_registry_address}" ]]; then
   cat >> "${APP_DIR}/bootstrap/gateway.env" <<ENV

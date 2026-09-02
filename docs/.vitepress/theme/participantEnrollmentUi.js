@@ -8,15 +8,15 @@ export function participantEnrollmentAction(invitation) {
   }
   if (invitation.state !== 'CLAIMED') {
     return {
-      disabled: false,
-      label: '承認・初回POL配布',
+      disabled: true,
+      label: '本人登録待ち',
       hint: '実験参加者が招待リンクから仮想通貨ワレットを登録すると実行できます。'
     }
   }
   if (!invitation.claimedWallet) {
     return {
-      disabled: false,
-      label: '承認・初回POL配布',
+      disabled: true,
+      label: '情報確認中',
       hint: '本人登録状態に対する仮想通貨ワレット情報がありません。一覧を再取得してください。'
     }
   }

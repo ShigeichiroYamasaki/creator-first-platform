@@ -1,7 +1,10 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import {
   PARTICIPANT_ALL_ROLES,
+  PARTICIPANT_CONSENT_V2,
   PARTICIPANT_CREATOR_ROLE,
+  PARTICIPANT_FLOW_V1,
+  PARTICIPANT_FLOW_V2,
   PARTICIPANT_USER_ROLE
 } from './ParticipantInvitationService.js'
 
@@ -22,7 +25,7 @@ function emailHint(email) {
   return `${local.slice(0, 1)}***@${domain}`
 }
 
-function publicApplication(row) {
+function publicApplication(row, participantView = null) {
   return {
     applicationId: row.application_id,
     displayName: row.display_name,
@@ -32,7 +35,10 @@ function publicApplication(row) {
     createdAt: row.created_at,
     verifiedAt: row.verified_at ?? null,
     reviewedAt: row.reviewed_at ?? null,
-    rejectionCode: row.rejection_code ?? null
+    rejectionCode: row.rejection_code ?? null,
+    flowVersion: row.flow_version,
+    consentVersion: row.consent_version,
+    participantView
   }
 }
 
@@ -60,8 +66,8 @@ function validateApplication(body) {
   if (![PARTICIPANT_USER_ROLE, PARTICIPANT_CREATOR_ROLE, PARTICIPANT_ALL_ROLES].includes(roles)) {
     throw new ParticipantApplicationError(400, 'INVALID_APPLICATION_ROLES', 'Listener, creator or both roles are required')
   }
-  if (body.acceptedPrivacyNotice !== true || body.acknowledgedTestOnly !== true) {
-    throw new ParticipantApplicationError(400, 'APPLICATION_CONSENT_REQUIRED', 'Privacy notice and test-only acknowledgement are required')
+  if (body.acceptedParticipation !== true) {
+    throw new ParticipantApplicationError(400, 'APPLICATION_CONSENT_REQUIRED', 'The participation acknowledgement is required')
   }
   return { email, displayName, roles }
 }
@@ -74,12 +80,59 @@ export class ParticipantApplicationService {
     this.invitations = invitations
   }
 
+  participantView(row) {
+    if (!row) return null
+    if (row.state === 'UNDER_REVIEW') return {
+      status: 'UNDER_REVIEW', phase: 'REVIEW', title: '運営が申請を確認しています',
+      guidance: '承認された場合は参加登録用メールが1通届きます。', primaryAction: null,
+      actionOwner: 'NONE', completedSummary: ['参加申請'], recoveryAction: null, refreshAfterSeconds: 15
+    }
+    if (row.state === 'APPROVED_INVITATION_SENT') {
+      const invitation = row.invitation_id ? this.store.participantInvitationById(row.invitation_id) : null
+      if (invitation?.state === 'CLAIMED') return { status: 'REGISTRATION_CONFIRMED', primaryAction: null, recoveryAction: null }
+      const resend = invitation ? this.invitations.resendStatus(invitation.invitation_id) : null
+      return {
+        status: 'INVITATION_SENT', phase: 'CHECK_EMAIL', title: '参加登録用メールを確認してください',
+        guidance: 'メールのリンクから本人登録を始めてください。', primaryAction: null,
+        actionOwner: 'PARTICIPANT', completedSummary: ['参加申請', '運営審査'],
+        recoveryAction: resend?.available ? 'RESEND_INVITATION' : null,
+        recoveryAvailableAt: resend?.availableAt ?? null,
+        resendAttemptsRemaining: resend?.attemptsRemaining ?? 0, refreshAfterSeconds: 15
+      }
+    }
+    if (row.state === 'INVITATION_CLAIMED') return {
+      status: 'REGISTRATION_CONFIRMED', phase: 'PREPARING', title: '本人登録が完了しました',
+      guidance: '運営が参加資格と初回POLを準備しています。', primaryAction: null, actionOwner: 'OPERATOR',
+      completedSummary: ['参加申請', '運営審査', '本人登録'], recoveryAction: null, refreshAfterSeconds: 15
+    }
+    if (row.state === 'APPROVAL_DELIVERY_FAILED') return {
+      status: 'DELIVERY_FAILED', phase: 'RECOVERY', title: 'メール送信を確認しています',
+      guidance: '運営が再処理します。参加者の操作はありません。', primaryAction: null, actionOwner: 'OPERATOR',
+      completedSummary: ['参加申請', '運営審査'], recoveryAction: null, refreshAfterSeconds: 15
+    }
+    if (row.state === 'REJECTED') return {
+      status: 'REJECTED', phase: 'RECOVERY', title: '今回の参加登録は完了していません',
+      guidance: '次回募集がある場合は募集案内から申し込めます。', primaryAction: null, actionOwner: 'NONE',
+      completedSummary: ['参加申請', '運営審査'], recoveryAction: null, refreshAfterSeconds: 0
+    }
+    return {
+      status: row.state, phase: 'CHECK_EMAIL', title: '旧確認メールを確認してください',
+      guidance: '既存申請の確認リンクを開いてください。', primaryAction: null, actionOwner: 'PARTICIPANT',
+      completedSummary: ['参加申請'], recoveryAction: row.flow_version === PARTICIPANT_FLOW_V1 ? 'RESEND_VERIFICATION' : null,
+      refreshAfterSeconds: 15
+    }
+  }
+
+  publicView(row) {
+    return publicApplication(row, this.participantView(row))
+  }
+
   create(account, body) {
     const value = validateApplication(body)
     const existing = this.store.participantApplicationByOwnerId(account.accountId)
     if (existing) {
       if (existing.email === value.email && existing.display_name === value.displayName && existing.role_bits === value.roles) {
-        return { application: publicApplication(existing) }
+        return { application: this.publicView(existing) }
       }
       throw new ParticipantApplicationError(409, 'APPLICATION_ALREADY_EXISTS', 'This browser session already has an application')
     }
@@ -95,41 +148,49 @@ export class ParticipantApplicationService {
       displayName: value.displayName,
       roleBits: value.roles,
       createdAt,
-      verificationExpiresAt
+      verificationExpiresAt,
+      state: 'UNDER_REVIEW',
+      flowVersion: PARTICIPANT_FLOW_V2,
+      consentVersion: PARTICIPANT_CONSENT_V2
     })
     this.store.recordParticipantApplicationEvent({
       eventId: randomUUID(), applicationId, eventType: 'APPLICATION_CREATED', occurredAt: createdAt,
       detail: { roles: value.roles }
     })
-    return { application: publicApplication(this.store.participantApplicationById(applicationId)), verificationToken }
+    return { application: this.publicView(this.store.participantApplicationById(applicationId)) }
   }
 
   current(account) {
     const row = this.store.participantApplicationByOwnerId(account.accountId)
-    return { application: row ? publicApplication(row) : null }
+    return { application: row ? this.publicView(row) : null }
   }
 
   async createAndSend(account, body) {
     const created = this.create(account, body)
-    if (!created.verificationToken) return created.application
-    await this.sendVerification(created.application.applicationId, created.verificationToken)
     return created.application
   }
 
-  async resend(account) {
+  async resend(account, idempotencyKey) {
     const row = this.store.participantApplicationByOwnerId(account.accountId)
     if (!row) throw new ParticipantApplicationError(404, 'APPLICATION_NOT_FOUND', 'Application was not found')
+    if (row.flow_version === PARTICIPANT_FLOW_V2) {
+      if (row.state !== 'APPROVED_INVITATION_SENT' || !row.invitation_id) {
+        throw new ParticipantApplicationError(409, 'INVITATION_RESEND_NOT_AVAILABLE', 'Invitation resend is not available')
+      }
+      await this.invitations.resend(row.invitation_id, idempotencyKey)
+      return this.publicView(this.store.participantApplicationById(row.application_id))
+    }
     if (row.state !== 'EMAIL_VERIFICATION_REQUIRED') {
       throw new ParticipantApplicationError(409, 'APPLICATION_EMAIL_ALREADY_VERIFIED', 'Email verification is no longer pending')
     }
     if (row.verification_sent_at && Date.now() - Date.parse(row.verification_sent_at) < VERIFICATION_RESEND_COOLDOWN_MS) {
-      return publicApplication(row)
+      return this.publicView(row)
     }
     const verificationToken = randomBytes(32).toString('base64url')
     const verificationExpiresAt = new Date(Date.now() + VERIFICATION_TTL_MS).toISOString()
     this.store.rotateParticipantApplicationVerificationToken(row.application_id, tokenHash(verificationToken), verificationExpiresAt)
     await this.sendVerification(row.application_id, verificationToken)
-    return publicApplication(this.store.participantApplicationById(row.application_id))
+    return this.publicView(this.store.participantApplicationById(row.application_id))
   }
 
   async sendVerification(applicationId, verificationToken) {
@@ -156,7 +217,10 @@ export class ParticipantApplicationService {
     }
     const row = this.store.participantApplicationByVerificationTokenHash(tokenHash(token))
     if (!row) throw new ParticipantApplicationError(404, 'APPLICATION_VERIFICATION_NOT_FOUND', 'Verification request was not found')
-    if (row.state === 'UNDER_REVIEW') return publicApplication(row)
+    if (row.flow_version !== PARTICIPANT_FLOW_V1) {
+      throw new ParticipantApplicationError(409, 'APPLICATION_NOT_VERIFIABLE', 'This application does not use email pre-verification')
+    }
+    if (row.state === 'UNDER_REVIEW') return this.publicView(row)
     if (row.state !== 'EMAIL_VERIFICATION_REQUIRED') {
       throw new ParticipantApplicationError(409, 'APPLICATION_NOT_VERIFIABLE', 'Application cannot be verified in its current state')
     }
@@ -168,7 +232,7 @@ export class ParticipantApplicationService {
     this.store.recordParticipantApplicationEvent({
       eventId: randomUUID(), applicationId: row.application_id, eventType: 'EMAIL_VERIFIED', occurredAt: verifiedAt
     })
-    return publicApplication(this.store.participantApplicationById(row.application_id))
+    return this.publicView(this.store.participantApplicationById(row.application_id))
   }
 
   list() {
@@ -185,7 +249,8 @@ export class ParticipantApplicationService {
       email: row.email,
       displayName: row.display_name,
       roles: row.role_bits,
-      expiresInHours: 72
+      expiresInHours: 72,
+      flowVersion: PARTICIPANT_FLOW_V2
     })
     const reviewedAt = new Date().toISOString()
     try {

@@ -11,7 +11,11 @@ import {
   ParticipantEnrollmentError,
   ParticipantEnrollmentOperator
 } from './ParticipantEnrollmentOperator.js'
-import { ParticipantInvitationError, ParticipantInvitationService } from './ParticipantInvitationService.js'
+import {
+  PARTICIPANT_FLOW_V2,
+  ParticipantInvitationError,
+  ParticipantInvitationService
+} from './ParticipantInvitationService.js'
 import {
   AmoySupporterSbtChain,
   SupporterSbtRelayError,
@@ -372,17 +376,20 @@ export function createGatewayServer({
     const expiresAt = new Date(issuedAt.getTime() + 5 * 60_000)
     let participantInvitationProof
     if (body.invitationToken !== undefined) {
-      if (body.acceptedTerms !== true || body.acknowledgedTestOnly !== true) {
-        throw new GatewayHttpError(400, 'INVITATION_CONSENT_REQUIRED', 'Terms and test-only acknowledgement are required before signing')
-      }
       const invitation = participantInvitations.inspect(body.invitationToken)
       if (invitation.expired || invitation.state === 'REVOKED') {
         throw new GatewayHttpError(409, 'INVITATION_NOT_CLAIMABLE', 'Invitation is expired or unavailable')
       }
+      const accepted = invitation.flowVersion === PARTICIPANT_FLOW_V2
+        ? body.acceptedParticipation === true
+        : body.acceptedParticipation === true || (body.acceptedTerms === true && body.acknowledgedTestOnly === true)
+      if (!accepted) {
+        throw new GatewayHttpError(400, 'INVITATION_CONSENT_REQUIRED', 'The current participation acknowledgement is required before signing')
+      }
       participantInvitationProof = {
         invitationId: invitation.invitationId,
         roles: invitation.roles,
-        consentVersion: 'participant-experiment-v1'
+        consentVersion: invitation.consentVersion
       }
     }
     const message = [
@@ -662,7 +669,7 @@ export function createGatewayServer({
         return sendJson(response, 201, await participantApplications.createAndSend(account, await readJson(request)))
       }
       if (request.method === 'POST' && path === '/v1/participant-applications/current/resend') {
-        return sendJson(response, 200, await participantApplications.resend(account))
+        return sendJson(response, 200, await participantApplications.resend(account, request.headers['idempotency-key']))
       }
       const applicationVerificationMatch = /^\/v1\/participant-applications\/verify\/([A-Za-z0-9_-]{32,128})$/.exec(path)
       if (request.method === 'POST' && applicationVerificationMatch) {

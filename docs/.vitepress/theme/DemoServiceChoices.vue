@@ -14,7 +14,7 @@ const choices = computed(() => {
         eyebrow: '実験参加未登録',
         status: true,
         title: '実験参加の準備',
-        description: '申請、メール確認、運営審査、招待登録、初回POL受領までを行います。',
+        description: '申請、運営審査、参加メールからの本人登録、初回POL受領までを行います。',
         link: '/demo/cloud-entry?path=/creator-first-platform/demo/listener-participation',
         action: '参加準備を始める'
       },
@@ -46,7 +46,7 @@ const choices = computed(() => {
         eyebrow: '実験参加未登録',
         status: true,
         title: '実験参加の準備',
-        description: '申請、メール確認、運営審査、招待登録、初回POL受領までを行います。',
+        description: '申請、運営審査、参加メールからの本人登録、初回POL受領までを行います。',
         link: '/demo/cloud-entry?path=/creator-first-platform/demo/creator-participation',
         action: '参加準備を始める'
       },

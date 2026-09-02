@@ -213,12 +213,12 @@ async function copyUri() {
     <p v-if="operationMessage" class="success">{{ operationMessage }}</p>
     <div class="panel">
       <h2>実験参加申請</h2>
-      <p>本人がメール確認を終えた「審査待ち」の申請だけを承認できます。承認すると、参加登録用の一回限りリンクがメールで送られます。</p>
+      <p>「審査待ち」の申請を確認します。承認すると、本人登録用の一回限りリンクを含む参加メールが1通送られます。</p>
       <div v-if="applications.length" class="record-list">
         <article v-for="item in applications" :key="item.applicationId" class="record-card">
           <header class="record-header"><div><h3>{{ item.displayName }}</h3><small>{{ item.email }}</small></div><span class="role-badge">{{ roleLabel(item.roles) }}</span></header>
           <dl class="record-details"><div><dt>申請状態</dt><dd>{{ applicationStateLabel(item.state) }}</dd></div><div><dt>申請日時</dt><dd>{{ new Date(item.createdAt).toLocaleString('ja-JP') }}</dd></div></dl>
-          <div class="review-actions"><button type="button" :disabled="busy || !['UNDER_REVIEW', 'APPROVAL_DELIVERY_FAILED'].includes(item.state)" @click="reviewApplication(item.applicationId, 'approve')">承認してメール送信</button><button type="button" class="danger" :disabled="busy || item.state !== 'UNDER_REVIEW'" @click="reviewApplication(item.applicationId, 'reject')">今回は不承認</button></div>
+          <div v-if="['UNDER_REVIEW', 'APPROVAL_DELIVERY_FAILED'].includes(item.state)" class="review-actions"><button type="button" :disabled="busy" @click="reviewApplication(item.applicationId, 'approve')">{{ item.state === 'APPROVAL_DELIVERY_FAILED' ? 'メール送信を再試行' : '承認して参加メールを送信' }}</button><button v-if="item.state === 'UNDER_REVIEW'" type="button" class="danger" :disabled="busy" @click="reviewApplication(item.applicationId, 'reject')">今回は不承認</button></div>
         </article>
       </div>
       <p v-else class="empty-state">申請はありません</p>
