@@ -656,6 +656,15 @@ export default defineConfig({
                 )
               }
 
+              // ADR-0020は背景とV2の決定手順を検索可能に保ち、状態表、API投影、
+              // 移行・受入基準の詳細は本文だけに掲載する。
+              if (environment.relativePath === 'adr/ADR-0020-wallet-agnostic-participant-invitations.md') {
+                return searchableAdr.replace(
+                  /<h3[^>]*id="監査状態と参加者向け表示を分離する"[^>]*>[\s\S]*$/,
+                  ''
+                )
+              }
+
               return searchableAdr
             }
 

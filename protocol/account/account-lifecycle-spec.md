@@ -1,10 +1,10 @@
 # Account Lifecycle, Authentication and Recovery
 
 **Status:** Draft  
-**Version:** 0.1.0  
+**Version:** 0.1.1
 **Protocol Domain:** account / identity  
 **Specification ID:** SPEC-ACCOUNT-003  
-**Last Updated:** 2026-08-31
+**Last Updated:** 2026-09-02
 
 ## Related Documents
 
@@ -36,7 +36,9 @@ Define a durable Platform Account lifecycle with secure authenticator binding, s
 
 The local `POST /v1/demo/users` implementation alone is not an implementation of Account registration defined by this specification. It attaches an ephemeral Alias profile and notice-version record to an automatically generated synthetic Demo Principal, and its registration state MUST NOT be used as Account, Subscription, Wallet Link, Credential or legal-identity authorization input.
 
-The ADR-0020 participant-invitation pilot implements a separate pre-registration boundary. An authorized operator creates a time-bounded role invitation without knowing a Wallet address; only a token digest is retained, while the one-time token is delivered in a URL fragment. The invited person later selects a Polygon Amoy Wallet and proves control with a server-verified SIWE signature bound to the invitation identifier, approved role set, consent version and chain identifier before the invitation can be claimed. A generic sign-in signature cannot claim an invitation. After the claim, the operator separately records the on-chain approval and supplies the bounded initial Test POL; the bound Wallet separately activates each approved User or Creator role from its role-specific service page. This claim and these testnet roles are test-participant evidence only: they are not a production Platform Account, legal identity, Creator verification, Rights verification, payee verification or production eligibility.
+The current ADR-0020 participant-invitation pilot implements a separate pre-registration boundary. An authorized operator creates a time-bounded role invitation without knowing a Wallet address; only a token digest is retained, while the one-time token is delivered in a URL fragment. The invited person later selects a Polygon Amoy Wallet and proves control with a server-verified SIWE signature bound to the invitation identifier, approved role set, consent version and chain identifier before the invitation can be claimed. A generic sign-in signature cannot claim an invitation. After the claim, the operator separately records the on-chain approval and supplies the bounded initial Test POL; the bound Wallet separately activates each approved User or Creator role from its role-specific service page. This claim and these testnet roles are test-participant evidence only: they are not a production Platform Account, legal identity, Creator verification, Rights verification, payee verification or production eligibility.
+
+ADR-0020 now defines a target simplification that is not yet implemented: an application may enter human review before its contact email is verified; approval produces the normal accepted path's only email; and the single-use invitation token plus an invitation-bound SIWE proof jointly confirm email reachability, the selected Wallet and the versioned participation acknowledgement. The authoritative service continues to retain distinct audit states, while the participant view renders only the current primary action and reveals resend or retry controls only when server-side policy says they are applicable. Until migration and tests are complete, the deployed two-email flow MUST continue to be reported as the current implementation.
 
 The ADR-0019 Account Trust pilot adds a bounded `CREATED → JPKI_ASSERTED → PASSKEY_REGISTERED → WALLET_BOUND → ACTIVE` binding transaction. It verifies WebAuthn registration and authentication server-side, stores only public-key credential metadata, verifies an operation-bound Polygon Amoy EIP-712 wallet signature and records state transitions. Its JPKI result is explicitly non-cryptographic Mock data, `ACTIVE` is a pilot binding state rather than the production Platform Account state, and it supplies no recovery, restriction, closure, rate-limit, notification or production retention implementation. It therefore gives local test evidence for parts of `REQ-ACCOUNT-068`, `REQ-ACCOUNT-069`, `REQ-ACCOUNT-078`, `REQ-ACCOUNT-099`, `REQ-ACCOUNT-101` and `REQ-ACCOUNT-105`, but cannot satisfy `REQ-ACCOUNT-068`–`REQ-ACCOUNT-114` acceptance as a whole. It remains a bounded fixture under `MOCK-ASSUMPTION-001` while the production Open Questions remain open.
 
@@ -215,16 +217,21 @@ PENDING → ACTIVE → RESTRICTED → ACTIVE
 - **REQ-ACCOUNT-128:** Administrator invitation operations MUST require server-side authentication; knowledge of an unlisted administrator-page URL MUST NOT grant authority.
 - **REQ-ACCOUNT-129:** Email delivery acceptance, Wallet proof, off-chain invitation claim, on-chain role registration and Test POL funding MUST be separately observable states and MUST NOT be represented as one atomic success.
 - **REQ-ACCOUNT-130:** A participant invitation or Wallet signature MUST NOT by itself grant production Account, Creator, Rights Holder, payee, legal-identity or governance eligibility.
-- **REQ-ACCOUNT-131:** The participant view MUST distinguish invitation creation, email delivery, Wallet proof, invitation claim, operator on-chain approval, initial Test POL funding and role self-registration, and MUST identify the actor responsible for the next incomplete step.
+- **REQ-ACCOUNT-131:** Invitation creation, email delivery, Wallet proof, invitation claim, operator on-chain approval, initial Test POL funding and role self-registration MUST remain distinct authoritative states, while the participant view MUST present only the current primary action and identify whether the participant or operator owns that action.
 - **REQ-ACCOUNT-132:** A dual-role invitation MUST reuse one invitation and Wallet proof while preserving independent User and Creator role registration and service-entry states.
 - **REQ-ACCOUNT-133:** The participant view MUST present different post-claim procedures and qualification boundaries for User and Creator roles.
 - **REQ-ACCOUNT-134:** A participant-facing operation MUST NOT state or imply that an operator-controlled on-chain step, funding step or role activation succeeded unless authoritative evidence confirms that distinct state.
 - **REQ-ACCOUNT-135:** A public-experiment application MUST be distinct from an invitation and MUST NOT itself grant any off-chain or on-chain participant role, funding, entitlement or production Account status.
-- **REQ-ACCOUNT-136:** An application MUST NOT enter operator review until control of its contact email has been verified through a single-use, time-bounded token whose retained form is a one-way digest.
-- **REQ-ACCOUNT-137:** Approval MUST create a distinct single-use invitation and push a notice to the verified contact channel; it MUST NOT require the operator to pre-collect or choose the applicant Wallet.
-- **REQ-ACCOUNT-138:** Applicant-facing status MUST distinguish email verification, operator review, approval and invitation claim, while avoiding disclosure of the full contact address or whether an unrelated address exists; a verification link MUST open a dedicated status surface and MUST NOT require repetition of Alias, Wallet or service-use steps.
-- **REQ-ACCOUNT-139:** Application creation and verification-message resend MUST be idempotent or rate-limited by the applicable test profile, and a resend MUST invalidate the previously issued verification token.
-- **REQ-ACCOUNT-140:** Application decisions, notification delivery, invitation creation and invitation claim MUST be separately auditable; a delivery failure MUST NOT be represented as applicant approval notice or invitation claim success.
+- **REQ-ACCOUNT-136:** The controlled public-experiment profile MAY place an application under human review before contact-email verification, but it MUST label the contact and applicant attributes unverified and MUST NOT grant an invitation, role, funding or production status from the application alone.
+- **REQ-ACCOUNT-137:** Approval MUST create a distinct cryptographically random, single-use, time-bounded invitation without requiring the operator to pre-collect or choose the applicant Wallet, and the normal accepted path MUST send one combined participation email rather than separate verification and invitation emails.
+- **REQ-ACCOUNT-138:** The combined invitation claim MUST require both possession of the email-delivered token and server-verified control of the selected Wallet, and MUST bind the invitation, role set, acknowledgement bundle version and Polygon Amoy chain identifier.
+- **REQ-ACCOUNT-139:** Loading, previewing or security-scanning an invitation URL MUST NOT consume the token or mark the email verified; consumption MUST require an explicit participant action and successful operation-bound Wallet proof.
+- **REQ-ACCOUNT-140:** Application review, invitation creation, notification delivery, email reachability confirmation, Wallet proof, invitation claim and every on-chain preparation state MUST be separately auditable; delivery acceptance or URL loading MUST NOT be represented as claim success.
+- **REQ-ACCOUNT-141:** A participant-facing page MUST hide completed input forms and unavailable future controls by default, MUST render no more than one primary action for its authoritative current state, and MAY expose completed steps only as a read-only collapsed summary.
+- **REQ-ACCOUNT-142:** A resend or retry control MUST be absent until the authoritative service determines that the corresponding recovery action is applicable; disabled presentation alone MUST NOT be the policy enforcement mechanism.
+- **REQ-ACCOUNT-143:** Invitation resend MUST enforce server-side state, expiry, cooldown, attempt limit, idempotency and abuse controls, MUST invalidate the prior token when a new token is issued, and MUST return a safe next-eligible time without disclosing unrelated account existence.
+- **REQ-ACCOUNT-144:** The required public-experiment acknowledgement SHOULD be presented as one versioned bundle covering the displayed test-only conditions, applicable terms and privacy notice; optional marketing or unrelated processing choices MUST remain separate and MUST NOT be preselected or required for participation.
+- **REQ-ACCOUNT-145:** An emailed participation link MUST use a stable HTTPS entry point. Any runtime indirection used before a fixed application hostname is available MUST preserve the URL fragment, validate the destination against published runtime policy and fail closed without exposing the invitation token to logs or an unapproved origin.
 
 ## Invariants
 
@@ -360,7 +367,7 @@ Audit access MUST be restricted and audited. Retention must balance security, ac
 | REQ-ACCOUNT-101–105 | Privacy / authorization / retention | No biometric collection, silent operator mutation, unlawful erasure, identifier reuse or on-chain secrets |
 | REQ-ACCOUNT-106–112 | Security / UX conformance | Implemented SHOULD behavior is tested or deviation is documented under conventions |
 | REQ-ACCOUNT-113–114 | Optional conformance | Password or guest profiles preserve every MUST, MUST NOT and invariant |
-| REQ-ACCOUNT-123–140 | Participant application / invitation / UX / integration | Email-verified applications and Wallet-agnostic single-use invitations preserve privacy, expose distinct actor-owned states and branch into independent User and Creator procedures |
+| REQ-ACCOUNT-123–145 | Participant application / invitation / UX / integration | One-message Wallet-agnostic invitations preserve distinct audit states, bind email reachability and Wallet proof, expose only the current action, gate recovery controls and branch into independent User and Creator procedures |
 
 Tests MUST include registration races, session fixation, stolen/expired session, CSRF, credential stuffing, WebAuthn origin/RP/challenge/signature failures, authenticator-removal orphaning, recovery takeover, concurrent closure, legal hold and enumeration attempts.
 
