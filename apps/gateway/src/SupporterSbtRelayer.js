@@ -12,6 +12,7 @@ import { polygonAmoy } from 'viem/chains'
 import { privateKeyToAccount } from 'viem/accounts'
 
 const AMOY_MIN_PRIORITY_FEE = 25_000_000_000n
+const SUPPORTER_REGISTRATION_GAS_LIMIT = 500_000n
 const MAX_INTENT_LIFETIME_SECONDS = 15n * 60n
 const TESTNET_USER_ROLE = 1
 
@@ -161,15 +162,15 @@ export class AmoySupporterSbtChain {
 
   async relay(value) {
     const fees = await this.transactionFees()
-    const { request } = await this.publicClient.simulateContract({
+    const transactionHash = await this.walletClient.writeContract({
       account: this.account,
       address: this.supporterSbtAddress,
       abi: supporterSbtAbi,
       functionName: 'registerSupporterWithSignature',
       args: [value.creatorId, value.holder, value.nonce, value.deadline, value.consentVersion, value.signature],
+      gas: SUPPORTER_REGISTRATION_GAS_LIMIT,
       ...fees
     })
-    const transactionHash = await this.walletClient.writeContract(request)
     // Return as soon as Amoy accepts the transaction. Waiting for multiple
     // confirmations here can outlive the public HTTPS proxy and incorrectly
     // surface a 502 even though the transaction is still progressing.

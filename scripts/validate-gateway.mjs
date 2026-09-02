@@ -50,7 +50,8 @@ const requirements = [
   ['AMOY_MIN_PRIORITY_FEE', 'Polygon Amoy fee floor'],
   ['/v1/testnet/supporter-registrations', 'sponsored Supporter SBT API'],
   ['PARTICIPANT_REGISTRATION_REQUIRED', 'Supporter relay participant gate'],
-  ['CREATOR_NOT_SPONSORED', 'Supporter relay creator allowlist']
+  ['CREATOR_NOT_SPONSORED', 'Supporter relay creator allowlist'],
+  ['SUPPORTER_REGISTRATION_GAS_LIMIT', 'bounded Supporter relay gas limit']
 ]
 
 const missing = requirements.filter(([needle]) => !source.includes(needle))
