@@ -14,6 +14,46 @@ The rights registry is therefore an evidence and workflow layer. It records clai
 
 An artist may use TuneCore or another distributor or rights-management service. CFP must determine the scope, territory, term and exclusivity of each mandate and avoid double licensing or double payment. Artist-direct status concerns decision control; it does not mean that the artist performs every operational task personally.
 
+### JASRAC and NexTone clearance and reporting
+
+For commercial streaming in Japan, the operating corporation acts as the service operator and remains responsible for confirming the applicable repertoire, obtaining licences, reporting usage and paying the resulting invoices. The initial operational routes are J-TAKT/J-NOTES for JASRAC-managed works and PlayN for NexTone-managed works.
+
+```mermaid
+flowchart TB
+    CREATOR[Music creator]
+    CORP[Operating corporation]
+    REG[Works and rights registry]
+    GATEWAY[Playback gateway]
+    STREAM[Streaming server]
+    USAGE[Usage ledger]
+    REPORT[Society-specific report generator]
+    JASRAC[JASRAC<br/>J-TAKT / J-NOTES]
+    NEXTONE[NexTone<br/>PlayN]
+    SELF[Self-managed rights holder]
+    ANCHOR[Rights and report<br/>commitment contracts]
+
+    CREATOR -->|claims and master licence| CORP
+    CORP -->|review and contract| REG
+    REG -->|cleared rights state| GATEWAY
+    GATEWAY --> STREAM
+    GATEWAY -->|playback events| USAGE
+    USAGE --> REPORT
+    REG --> REPORT
+    REPORT -->|prescribed filing| JASRAC
+    REPORT -->|prescribed filing| NEXTONE
+    REPORT -->|direct settlement| SELF
+    CORP -->|evidence commitment| ANCHOR
+    REPORT -->|report commitment| ANCHOR
+```
+
+The registry versions ISRC, ISWC, society work codes, rights type, share, territory, use, effective period and evidence. A work may contain multiple rights slices and administrators; a provider name alone never classifies the entire work. Composition and lyric clearances remain distinct from master-recording, performer, artwork and other neighbouring or contractual rights.
+
+The gateway records tamper-evident playback events bound to the exact rights-state version. Report adapters generate J-NOTES, PlayN and self-managed-rights outputs from the common usage ledger. Initially, authorized corporate staff review and upload those files through the official systems; CFP does not standardize screen scraping or shared-password automation.
+
+Public contracts anchor hashes of approved rights snapshots, submitted reports, receipts and payment evidence. They do not create copyright, prove legal ownership, replace the official filing, or receive private contracts and personal or confidential revenue data. Copyright royalties, master and performer payments, external distribution revenue, CFP creator remuneration and listener-directed allocations remain separate legal and accounting flows.
+
+Governance may propose transparency standards and CFP remuneration policy, but it cannot suspend or override the corporation's licensing, reporting, payment, takedown or other legal duties. The implementation decision is recorded in [ADR-0022](/adr/ADR-0022-collective-rights-integration). The procedures were checked against the official [JASRAC commercial streaming process](https://www.jasrac.or.jp/users/internet/procedure-business/) and [NexTone internet-use process](https://www.nex-tone.co.jp/copyright/users/int.html) on 2 September 2026 and must be revalidated before production use.
+
 ## Payment and allocation
 
 Subscription revenue is received and accounted for by the operating corporation or an appropriately regulated provider. Approved settlement assets must be listed in a versioned registry only after product, issuer, contract, network, redemption and regulatory checks. MockJPYC on Amoy is a test token and is not approved production JPYC.

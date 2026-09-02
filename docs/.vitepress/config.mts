@@ -470,7 +470,11 @@ export default defineConfig({
               { text: '0015 公開テストネットの音楽クリエーター体験経路', link: '/adr/ADR-0015-public-testnet-creator-journey' },
               { text: '0016 二院制ガバナンス', link: '/adr/ADR-0016-bicameral-quadratic-governance' },
               { text: '0017 透明型ZKのテストネット／本番境界', link: '/adr/ADR-0017-transparent-zk-testnet-mainnet-boundary' },
-              { text: '0018 本番サービス全体アーキテクチャ', link: '/adr/ADR-0018-production-service-architecture' }
+              { text: '0018 本番サービス全体アーキテクチャ', link: '/adr/ADR-0018-production-service-architecture' },
+              { text: '0019 JPKI・パスキー・ウォレット結合', link: '/adr/ADR-0019-jpki-passkey-wallet-binding-testnet' },
+              { text: '0020 ウォレット未確定型の事前登録', link: '/adr/ADR-0020-wallet-agnostic-participant-invitations' },
+              { text: '0021 リレイヤーによるガス代負担', link: '/adr/ADR-0021-relayer-gas-sponsorship' },
+              { text: '0022 JASRAC・NexTone権利処理連携', link: '/adr/ADR-0022-collective-rights-integration' }
             ]
           }
         ],
@@ -625,7 +629,7 @@ export default defineConfig({
             }
 
             if (environment.relativePath?.startsWith('adr/ADR-')) {
-              return searchableDocument
+              const searchableAdr = searchableDocument
                 .replace(
                   /<h2[^>]*id="cfp文書・議事録管理"[^>]*>[\s\S]*?(?=<h2|$)/,
                   ''
@@ -642,6 +646,17 @@ export default defineConfig({
                   /<h2[^>]*id="[^"]*(?:related-documents|関連文書)[^"]*"[^>]*>[\s\S]*?(?=<h2|$)/,
                   ''
                 )
+
+              // ADR-0022はタイトルと背景を検索可能に保ち、決定、データ構造、
+              // API、コントラクト例等の詳細は本文だけに掲載する。
+              if (environment.relativePath === 'adr/ADR-0022-collective-rights-integration.md') {
+                return searchableAdr.replace(
+                  /<h2[^>]*id="_2-[^"]*"[^>]*>[\s\S]*$/,
+                  ''
+                )
+              }
+
+              return searchableAdr
             }
 
             return searchableDocument

@@ -32,7 +32,7 @@ flowchart LR
 | :--------------------------------------------------------- | :----------------------------------- | :------- | :--------- | :----------- |
 | [ADR-0001](./ADR-0001-governance-model.md)                 | ガバナンスモデル                     | 提案 | 2026-07-27 | 2026-08-24   |
 | [ADR-0002](./ADR-0002-verifiable-sortition.md)             | 検証可能抽選                 | 提案 | 2026-07-29 | 2026-08-25   |
-| [ADR-0003](./ADR-0003-rights-registry.md)                  | 権利登録台帳                      | 提案 | 2026-07-29 | 2026-08-24   |
+| [ADR-0003](./ADR-0003-rights-registry.md)                  | 権利登録台帳                      | 提案 | 2026-07-29 | 2026-09-02   |
 | [ADR-0004](./ADR-0004-creator-distribution-model.md)       | 音楽クリエーター分配モデル           | 提案 | 2026-07-29 | 2026-08-20   |
 | [ADR-0005](./ADR-0005-usage-oracle.md)                     | 利用実績オラクル                         | 提案 | 2026-07-29 | 2026-08-24   |
 | [ADR-0006](./ADR-0006-zero-knowledge-proof-strategy.md)    | ゼロ知識証明戦略        | 提案 | 2026-07-29 | 2026-08-24   |
@@ -50,5 +50,6 @@ flowchart LR
 | [ADR-0019](./ADR-0019-jpki-passkey-wallet-binding-testnet.md) | JPKI・パスキー・ウォレット結合テストネット | 提案 | 2026-08-26 | 2026-08-26 |
 | [ADR-0020](./ADR-0020-wallet-agnostic-participant-invitations.md) | ウォレット未確定型の事前登録と本人登録 | 提案 | 2026-08-28 | 2026-08-31 |
 | [ADR-0021](./ADR-0021-relayer-gas-sponsorship.md) | リレイヤーによるユーザ・音楽クリエーターのガス代負担 | 提案 | 2026-09-01 | 2026-09-01 |
+| [ADR-0022](./ADR-0022-collective-rights-integration.md) | JASRAC・NexTone権利処理連携 | 提案 | 2026-09-02 | 2026-09-02 |
 
 各ADRは初回作成日の`Date`と、内容またはメタデータを最後に変更した`Last Updated`を分けて記録します。
