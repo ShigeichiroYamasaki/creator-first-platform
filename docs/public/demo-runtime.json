@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "active": true,
-  "origin": "https://thrown-theology-manufacturers-bigger.trycloudflare.com",
+  "origin": "https://notes-worth-reproductive-earth.trycloudflare.com",
   "pathPrefix": "/creator-first-platform/demo/",
   "adminPath": "/creator-first-platform/admin/participant-invitations",
   "apiHealthPath": "/api/v1/health",
   "temporaryHostname": true,
-  "sourceCommit": "25f72e72bc1e2fe08191becbf2c60d11af044aca",
-  "verifiedAt": "2026-09-03T03:54:38Z"
+  "sourceCommit": "c2b7a351ffc0a82644a9b3c8d1b7224ac0d80779",
+  "verifiedAt": "2026-09-03T05:57:03Z"
 }
