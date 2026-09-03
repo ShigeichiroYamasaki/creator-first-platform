@@ -20,8 +20,8 @@ test('keeps operator-disabled enrollment actionable for diagnosis', () => {
 test('offers enrollment for a claimed wallet and retry after a failed transaction', () => {
   const ready = participantEnrollmentAction({ state: 'CLAIMED', claimedWallet: '0x1234', enrollment: { state: 'READY_AFTER_WALLET_CLAIM' } })
   const retry = participantEnrollmentAction({ state: 'CLAIMED', claimedWallet: '0x1234', enrollment: { state: 'FUNDING_FAILED' } })
-  assert.deepEqual([ready.disabled, ready.label], [false, '承認・初回POL配布'])
-  assert.deepEqual([retry.disabled, retry.label], [false, '再実行'])
+  assert.deepEqual([ready.disabled, ready.label], [false, '運営処理を再開'])
+  assert.deepEqual([retry.disabled, retry.label], [false, '運営処理を再実行'])
 })
 
 test('disables only completed enrollment', () => {

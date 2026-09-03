@@ -29,9 +29,9 @@ export function participantEnrollmentAction(invitation) {
   }
   return {
     disabled: false,
-    label: RETRYABLE_STATES.has(enrollmentState) ? '再実行' : '承認・初回POL配布',
+    label: RETRYABLE_STATES.has(enrollmentState) ? '運営処理を再実行' : '運営処理を再開',
     hint: RETRYABLE_STATES.has(enrollmentState)
       ? '前回の処理の続きから安全に再実行します。'
-      : '押すと運営ワーカーが参加承認と初回POL配布を順番に実行します。'
+      : '通常は本人登録後に自動実行されます。進まない場合だけ押してください。'
   }
 }

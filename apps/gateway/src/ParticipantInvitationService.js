@@ -91,11 +91,12 @@ function resendAvailability(row, now = Date.now()) {
 }
 
 export class ParticipantInvitationService {
-  constructor({ config, store, mailer, enrollmentOperator }) {
+  constructor({ config, store, mailer, enrollmentOperator, autoProcessEnrollment = false }) {
     this.config = config
     this.store = store
     this.mailer = mailer
     this.enrollmentOperator = enrollmentOperator
+    this.autoProcessEnrollment = autoProcessEnrollment
   }
 
   publicView(row) {
@@ -238,7 +239,10 @@ export class ParticipantInvitationService {
     const row = this.store.participantInvitationByTokenHash(tokenHash(token))
     if (!row) throw new ParticipantInvitationError(404, 'INVITATION_NOT_FOUND', 'Invitation was not found')
     if (row.state === 'CLAIMED') {
-      if (row.claimed_wallet === account.walletAddress) return this.publicView(row)
+      if (row.claimed_wallet === account.walletAddress) {
+        this.#startEnrollment(row.invitation_id)
+        return this.publicView(row)
+      }
       throw new ParticipantInvitationError(409, 'INVITATION_ALREADY_CLAIMED', 'Invitation has already been claimed')
     }
     if (!consentAccepted(row, body)) {
@@ -270,6 +274,14 @@ export class ParticipantInvitationService {
     this.store.recordParticipantInvitationEvent({ eventId: randomUUID(), invitationId: row.invitation_id, eventType: 'CLAIMED', occurredAt: claimedAt, detail: { wallet } })
     this.store.markParticipantApplicationInvitationClaimed(row.invitation_id, claimedAt)
     account.participantInvitationProof = undefined
+    this.#startEnrollment(row.invitation_id)
     return this.publicView(this.store.participantInvitationById(row.invitation_id))
+  }
+
+  #startEnrollment(invitationId) {
+    if (!this.autoProcessEnrollment || !this.enrollmentOperator.enabled) return
+    // The participant response remains fast while the idempotent operator records
+    // progress and any failure for participant polling and administrator recovery.
+    void this.enrollmentOperator.process(invitationId).catch(() => {})
   }
 }

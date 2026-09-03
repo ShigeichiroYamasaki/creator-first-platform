@@ -181,6 +181,7 @@ if [[ -n "${participant_registry_address}" ]]; then
 GATEWAY_AMOY_RPC_URLS=https://polygon-amoy.drpc.org:1443,https://polygon-amoy-bor-rpc.publicnode.com:2443
 GATEWAY_PARTICIPANT_REGISTRY_ADDRESS=${participant_registry_address}
 GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key
+GATEWAY_PARTICIPANT_ENROLLMENT_AUTO_PROCESS=true
 ENV
 fi
 if [[ -n "${supporter_sbt_address}" ]]; then
@@ -404,6 +405,7 @@ if [[ -n "${participant_registry_address}" ]]; then
 GATEWAY_AMOY_RPC_URLS=https://polygon-amoy.drpc.org:1443,https://polygon-amoy-bor-rpc.publicnode.com:2443
 GATEWAY_PARTICIPANT_REGISTRY_ADDRESS=${participant_registry_address}
 GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key
+GATEWAY_PARTICIPANT_ENROLLMENT_AUTO_PROCESS=true
 ENV
 fi
 if [[ -n "${supporter_sbt_address}" ]]; then

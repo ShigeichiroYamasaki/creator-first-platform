@@ -10,6 +10,13 @@ function positiveInteger(value, fallback, name) {
   return parsed
 }
 
+function booleanFlag(value, fallback, name) {
+  const normalized = String(value ?? fallback).trim().toLowerCase()
+  if (normalized === 'true') return true
+  if (normalized === 'false') return false
+  throw new Error(`${name} must be true or false`)
+}
+
 function basePath(value = '/api') {
   if (!value.startsWith('/') || value.startsWith('//') || /[?#]/.test(value)) {
     throw new Error('GATEWAY_BASE_PATH must be a path')
@@ -169,6 +176,11 @@ export function loadConfig(environment = process.env) {
     amoyRpcUrls,
     participantRegistryAddress,
     participantOperatorPrivateKey,
+    participantEnrollmentAutoProcess: booleanFlag(
+      environment.GATEWAY_PARTICIPANT_ENROLLMENT_AUTO_PROCESS,
+      false,
+      'GATEWAY_PARTICIPANT_ENROLLMENT_AUTO_PROCESS'
+    ),
     supporterSbtAddress,
     supporterRelayerPrivateKey,
     supporterCreatorIds,

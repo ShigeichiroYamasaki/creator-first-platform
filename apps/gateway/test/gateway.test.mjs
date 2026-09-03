@@ -536,14 +536,15 @@ test('Administrator issues a wallet-agnostic invitation and the invited person c
   assert.equal(replay.body.state, 'CLAIMED')
 })
 
-test('Participant applies, receives one approval invitation and claims it with a chosen wallet', async (context) => {
+test('Participant applies, receives one approval invitation, signs and is enrolled automatically', async (context) => {
   const config = loadConfig({
     GATEWAY_PORT: '8787',
     GATEWAY_DATABASE_PATH: ':memory:',
     GATEWAY_MEDIA_ROOT: new URL('../../../docker/navidrome/music', import.meta.url).pathname,
     GATEWAY_ADMIN_TOKEN: 'test-admin-token-with-sufficient-entropy',
     GATEWAY_INVITATION_PUBLIC_URL: 'https://example.test/demo/participant-registration',
-    GATEWAY_APPLICATION_STATUS_PUBLIC_URL: 'https://example.test/demo/participant-application-status'
+    GATEWAY_APPLICATION_STATUS_PUBLIC_URL: 'https://example.test/demo/participant-application-status',
+    GATEWAY_PARTICIPANT_ENROLLMENT_AUTO_PROCESS: 'true'
   })
   const enrollmentChain = new FakeParticipantEnrollmentChain()
   const gateway = createGatewayServer({
@@ -643,9 +644,20 @@ test('Participant applies, receives one approval invitation and claims it with a
     method: 'POST', body: JSON.stringify({ acceptedParticipation: true })
   }))
   assert.equal(claimed.body.state, 'CLAIMED')
-  assert.equal(claimed.body.enrollment.state, 'READY_AFTER_WALLET_CLAIM')
   const current = await json(await api.request('/v1/participant-applications/current'))
   assert.equal(current.body.application.state, 'INVITATION_CLAIMED')
+
+  let automaticallyEnrolled
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    automaticallyEnrolled = await json(await api.request(`/v1/participant-invitations/${invitationToken}`))
+    if (automaticallyEnrolled.body.enrollment.state === 'FUNDED') break
+    await new Promise((resolve) => setTimeout(resolve, 5))
+  }
+  assert.equal(automaticallyEnrolled.body.enrollment.state, 'FUNDED')
+  assert.equal(automaticallyEnrolled.body.enrollment.initialFundingAmountAtomic, '20000000000000000')
+  assert.equal(enrollmentChain.calls[0][0], 'approve')
+  assert.equal(enrollmentChain.calls[1][0], 'fund')
+  assert.equal(enrollmentChain.calls[0][1].wallet, account.address)
 
   const invitationList = await json(await api.request('/v1/admin/participant-invitations', { headers: adminHeaders }))
   const claimedInvitation = invitationList.body.invitations.find((item) => item.state === 'CLAIMED')
@@ -656,9 +668,6 @@ test('Participant applies, receives one approval invitation and claims it with a
   assert.equal(enrolled.response.status, 200)
   assert.equal(enrolled.body.state, 'FUNDED')
   assert.equal(enrolled.body.initialFundingAmountAtomic, '20000000000000000')
-  assert.equal(enrollmentChain.calls[0][0], 'approve')
-  assert.equal(enrollmentChain.calls[1][0], 'fund')
-  assert.equal(enrollmentChain.calls[0][1].wallet, account.address)
 
   const replayedEnrollment = await json(await api.request(`/v1/admin/participant-invitations/${claimedInvitation.invitationId}/enrollment`, {
     method: 'POST', headers: adminHeaders

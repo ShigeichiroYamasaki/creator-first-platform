@@ -84,7 +84,7 @@ const nextAction = computed(() => {
   if (!invitation.value) return '招待内容を確認しています。'
   if (isUnavailable.value) return 'この招待は利用できません。運営へお問い合わせください。'
   if (isClaimed.value && enrollmentFunded.value) return '運営のオンチェーン承認と初回POL配布が完了しました。'
-  if (isClaimed.value) return '本人登録は完了しています。運営がオンチェーン承認と初回POL配布を行います。'
+  if (isClaimed.value) return '本人登録は完了しています。運営ワーカーがオンチェーン承認と初回POL配布を自動的に行います。'
   if (!wallet.value) return 'オレンジ色のキツネが目印の仮想通貨ワレットを開きます。'
   return '確認事項を読み、本人登録を完了してください。'
 })
@@ -359,7 +359,7 @@ onBeforeUnmount(() => {
         <span class="action-icon success-icon" aria-hidden="true">✅</span>
         <div>
           <h3>{{ enrollmentFunded ? '運営による準備が完了しました' : '本人登録が完了しました' }}</h3>
-          <p v-if="!enrollmentFunded"><span aria-hidden="true">⏳</span> 運営がオンチェーン承認と初回POL配布を行います。このページは自動的に状況を更新します。</p>
+          <p v-if="!enrollmentFunded"><span aria-hidden="true">⏳</span> 運営ワーカーがオンチェーン承認と初回POL配布を自動的に行います。このページは自動的に状況を更新します。</p>
           <p v-else><span aria-hidden="true">✅</span> オンチェーン承認と初回POL配布が完了しました。次の画面で、参加する立場をMetaMaskから本人登録します。</p>
           <p v-if="invitation?.enrollment?.state === 'APPROVAL_FAILED' || invitation?.enrollment?.state === 'FUNDING_FAILED'" class="wait-warning"><strong>運営側で再処理します。</strong> 実験参加者による操作はありません。</p>
           <div v-if="invitation?.enrollment" class="enrollment-status">

@@ -157,7 +157,8 @@ export function createGatewayServer({
     config,
     store,
     mailer: invitationMailer,
-    enrollmentOperator: participantEnrollment
+    enrollmentOperator: participantEnrollment,
+    autoProcessEnrollment: config.participantEnrollmentAutoProcess
   })
   const participantApplications = new ParticipantApplicationService({
     config,
@@ -649,6 +650,7 @@ export function createGatewayServer({
           adapter: config.adapter,
           mode: config.runtimeMode,
           participantEnrollment: participantEnrollment.enabled ? 'enabled' : 'disabled',
+          participantEnrollmentAutomation: participantEnrollment.enabled && config.participantEnrollmentAutoProcess ? 'enabled' : 'disabled',
           supporterRelay: supporterRelayer && await supporterRelayer.available() ? 'enabled' : 'disabled',
           governanceRelay: governanceRelayer && await governanceRelayer.available() ? 'enabled' : 'disabled'
         })

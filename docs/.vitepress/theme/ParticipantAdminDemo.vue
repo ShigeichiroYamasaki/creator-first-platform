@@ -225,7 +225,7 @@ async function copyUri() {
     </div>
     <div class="panel">
       <h2>招待状況</h2>
-      <p>本人が仮想通貨ワレットを登録した後、「承認・初回POL配布」を実行します。参加者IDはランダム値で作成され、氏名やメールアドレスをブロックチェーンへ記録しません。</p>
+      <p>本人が仮想通貨ワレットを登録すると、運営ワーカーがオンチェーン承認と初回POL配布を自動実行します。失敗または中断した場合だけ、この画面から同じ参加者IDと操作IDで安全に再実行します。氏名やメールアドレスはブロックチェーンへ記録しません。</p>
       <div v-if="invitations.length" class="record-list invitation-list">
         <article v-for="item in invitations" :key="item.invitationId" class="record-card invitation-card">
           <header class="record-header"><div><h3>{{ item.displayName }}</h3><small>{{ item.email }}</small></div><span class="role-badge">{{ roleLabel(item.roles) }}</span></header>

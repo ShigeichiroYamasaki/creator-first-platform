@@ -74,6 +74,7 @@ GATEWAY_CHAIN_ID=80002 \
 GATEWAY_AMOY_RPC_URLS='https://polygon-amoy.drpc.org,https://polygon-amoy-bor-rpc.publicnode.com' \
 GATEWAY_PARTICIPANT_REGISTRY_ADDRESS='0x...' \
 GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key \
+GATEWAY_PARTICIPANT_ENROLLMENT_AUTO_PROCESS=true \
 GATEWAY_SUPPORTER_SBT_ADDRESS='0x...' \
 GATEWAY_SUPPORTER_CREATOR_IDS='0x...' \
 GATEWAY_SUPPORTER_RELAYER_PRIVATE_KEY_FILE=/run/secrets/supporter-relayer-private-key \
@@ -81,6 +82,8 @@ GATEWAY_GOVERNOR_ADDRESS='0x...' \
 GATEWAY_GOVERNANCE_RELAYER_PRIVATE_KEY_FILE=/run/secrets/governance-relayer-private-key \
 npm run gateway:dev
 ```
+
+`GATEWAY_PARTICIPANT_ENROLLMENT_AUTO_PROCESS=true`では、招待に結び付いたSIWE署名と本人登録が確定した直後に、参加者登録運営ワーカーを自動起動します。参加者はPOLを持たずにオンチェーン承認と初回POL配布を受けられます。処理は参加者IDと操作IDで冪等化され、失敗状態は管理画面から再開できます。ローカル開発の既定値は`false`です。
 
 ガバナンス投票も同じガス代代理方式を使います。議員は、提案ID、会期、所属院、投票強度、Nonce、10分の期限を含むEIP-712投票内容へ署名します。ゲートウェーは署名者とオンチェーン議員資格を照合し、`RELAYER_ROLE`だけを持つ専用鍵で送信します。投票者のアドレス、院別集計、二乗コスト、票の差替え規則はガバナーが署名者を基準に処理するため、リレイヤー自身の票にはなりません。
 
