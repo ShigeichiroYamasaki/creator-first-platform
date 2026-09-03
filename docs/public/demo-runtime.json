@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "active": true,
-  "origin": "https://conference-mug-paperbacks-career.trycloudflare.com",
+  "origin": "https://thrown-theology-manufacturers-bigger.trycloudflare.com",
   "pathPrefix": "/creator-first-platform/demo/",
   "adminPath": "/creator-first-platform/admin/participant-invitations",
   "apiHealthPath": "/api/v1/health",
   "temporaryHostname": true,
-  "sourceCommit": "123f16036f259465a239480730f99fc867f7691a",
-  "verifiedAt": "2026-09-02T01:15:36Z"
+  "sourceCommit": "25f72e72bc1e2fe08191becbf2c60d11af044aca",
+  "verifiedAt": "2026-09-03T03:54:38Z"
 }
