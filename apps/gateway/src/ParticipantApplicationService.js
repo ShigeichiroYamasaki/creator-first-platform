@@ -84,7 +84,7 @@ export class ParticipantApplicationService {
     if (!row) return null
     if (row.state === 'UNDER_REVIEW') return {
       status: 'UNDER_REVIEW', phase: 'REVIEW', title: '運営が申請を確認しています',
-      guidance: '承認された場合は参加登録用メールが1通届きます。', primaryAction: null,
+      guidance: '申請直後のメール送信はありません。承認された場合だけ、参加登録用メールが1通届きます。', primaryAction: null,
       actionOwner: 'NONE', completedSummary: ['参加申請'], recoveryAction: null, refreshAfterSeconds: 15
     }
     if (row.state === 'APPROVED_INVITATION_SENT') {

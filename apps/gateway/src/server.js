@@ -169,9 +169,7 @@ export function createGatewayServer({
   })
   let closed = false
 
-  function getAccount(request, response) {
-    const supplied = cookies(request)[COOKIE_NAME]
-    if (supplied && accounts.has(supplied)) return accounts.get(supplied)
+  function createAccount(response) {
     const platformSessionId = randomBytes(32).toString('base64url')
     const account = {
       platformSessionId,
@@ -193,6 +191,18 @@ export function createGatewayServer({
       `${COOKIE_NAME}=${platformSessionId}; Path=/; HttpOnly; SameSite=Strict; Max-Age=3600${config.webauthnOrigin.startsWith('https://') ? '; Secure' : ''}`
     )
     return account
+  }
+
+  function getAccount(request, response) {
+    const supplied = cookies(request)[COOKIE_NAME]
+    if (supplied && accounts.has(supplied)) return accounts.get(supplied)
+    return createAccount(response)
+  }
+
+  function replaceAccount(request, response) {
+    const supplied = cookies(request)[COOKIE_NAME]
+    if (supplied) accounts.delete(supplied)
+    return createAccount(response)
   }
 
   function routePath(request) {
@@ -667,6 +677,10 @@ export function createGatewayServer({
       }
       if (request.method === 'GET' && path === '/v1/participant-applications/current') {
         return sendJson(response, 200, participantApplications.current(account))
+      }
+      if (request.method === 'POST' && path === '/v1/participant-applications/new-session') {
+        replaceAccount(request, response)
+        return sendJson(response, 200, { application: null })
       }
       if (request.method === 'POST' && path === '/v1/participant-applications') {
         return sendJson(response, 201, await participantApplications.createAndSend(account, await readJson(request)))

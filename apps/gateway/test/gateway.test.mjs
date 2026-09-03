@@ -583,6 +583,7 @@ test('Participant applies, receives one approval invitation, signs and is enroll
   assert.equal(application.body.emailHint, 'l***@example.test')
   assert.equal('email' in application.body, false)
   assert.equal(application.body.consentVersion, 'participant-experiment-v2')
+  assert.match(application.body.participantView.guidance, /申請直後のメール送信はありません/)
   assert.equal(gateway.invitationMailer.outbox.length, 0)
   const repeated = await json(await api.request('/v1/participant-applications', {
     method: 'POST',
@@ -675,6 +676,52 @@ test('Participant applies, receives one approval invitation, signs and is enroll
   assert.equal(enrollmentChain.calls.length, 3)
   const finalInvitation = await json(await api.request(`/v1/participant-invitations/${invitationToken}`))
   assert.equal(finalInvitation.body.enrollment.state, 'FUNDED')
+})
+
+test('A shared browser can start the next participant application without deleting the prior one', async (context) => {
+  const config = loadConfig({
+    GATEWAY_PORT: '8787',
+    GATEWAY_DATABASE_PATH: ':memory:',
+    GATEWAY_MEDIA_ROOT: new URL('../../../docker/navidrome/music', import.meta.url).pathname,
+    GATEWAY_ADMIN_TOKEN: 'test-admin-token-with-sufficient-entropy'
+  })
+  const gateway = createGatewayServer({ config, mediaAdapter: new FileMediaAdapter(config.mediaRoot) })
+  const address = await gateway.listen(0)
+  context.after(() => gateway.close())
+  const api = client(`http://127.0.0.1:${address.port}${config.basePath}`)
+  const adminHeaders = { Authorization: 'Bearer test-admin-token-with-sufficient-entropy' }
+
+  const first = await json(await api.request('/v1/participant-applications', {
+    method: 'POST',
+    body: JSON.stringify({
+      email: 'first@example.test', displayName: 'First Listener', roles: 1,
+      acceptedParticipation: true
+    })
+  }))
+  assert.equal(first.response.status, 201)
+  const firstCookie = api.cookie()
+
+  const switched = await json(await api.request('/v1/participant-applications/new-session', {
+    method: 'POST', body: '{}'
+  }))
+  assert.equal(switched.response.status, 200)
+  assert.deepEqual(switched.body, { application: null })
+  assert.notEqual(api.cookie(), firstCookie)
+  assert.deepEqual((await json(await api.request('/v1/participant-applications/current'))).body, { application: null })
+
+  const second = await json(await api.request('/v1/participant-applications', {
+    method: 'POST',
+    body: JSON.stringify({
+      email: 'second@example.test', displayName: 'Second Creator', roles: 2,
+      acceptedParticipation: true
+    })
+  }))
+  assert.equal(second.response.status, 201)
+  assert.notEqual(second.body.applicationId, first.body.applicationId)
+
+  const listed = await json(await api.request('/v1/admin/participant-applications', { headers: adminHeaders }))
+  assert.equal(listed.body.applications.length, 2)
+  assert.deepEqual(new Set(listed.body.applications.map((item) => item.email)), new Set(['first@example.test', 'second@example.test']))
 })
 
 test('Gmail SMTP mode sends application mail through the configured account without exposing its app password', async () => {

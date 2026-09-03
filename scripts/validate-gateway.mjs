@@ -39,6 +39,7 @@ const requirements = [
   ['participant_invitation_audit_events', 'participant invitation audit record'],
   ['INVITATION_ALREADY_CLAIMED', 'single-use invitation enforcement'],
   ['/v1/participant-applications', 'participant application API'],
+  ['/v1/participant-applications/new-session', 'shared-device participant session rotation API'],
   ['participant_applications', 'participant application store'],
   ['EMAIL_VERIFICATION_REQUIRED', 'participant email verification state'],
   ['UNDER_REVIEW', 'participant review state'],

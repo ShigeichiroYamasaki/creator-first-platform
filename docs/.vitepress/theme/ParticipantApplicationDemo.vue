@@ -134,6 +134,25 @@ async function submitApplication() {
   }
 }
 
+async function startAnotherApplication() {
+  if (!window.confirm('現在表示している申請は保存したまま、この端末を次の実験参加者の申請画面へ切り替えます。よろしいですか？')) return
+  busy.value = true
+  error.value = ''
+  message.value = ''
+  try {
+    await api('/v1/participant-applications/new-session', { method: 'POST', body: '{}' })
+    application.value = null
+    email.value = ''
+    enteredDisplayName.value = ''
+    acceptedParticipation.value = false
+    message.value = '次の実験参加者の申請画面へ切り替えました。前の方の申請は運営側に保存されています。'
+  } catch (cause) {
+    error.value = cause instanceof Error ? cause.message : '次の申請画面へ切り替えられませんでした'
+  } finally {
+    busy.value = false
+  }
+}
+
 async function resendVerification() {
   busy.value = true
   error.value = ''
@@ -202,6 +221,10 @@ onUnmounted(() => { if (pollTimer) window.clearInterval(pollTimer) })
           <button v-if="application.participantView.recoveryAction === 'RESEND_INVITATION'" type="button" :disabled="busy" @click="resendVerification">参加登録用メールを再送する</button>
           <p v-else>迷惑メールフォルダも確認してください。再送できる時刻になると、この画面に再送ボタンが表示されます。</p>
         </details>
+        <div v-if="!statusOnly" class="next-participant">
+          <p>同じ端末で別の方が続けて申し込む場合</p>
+          <button type="button" class="secondary" :disabled="busy" @click="startAnotherApplication">次の実験参加者の申請を始める</button>
+        </div>
       </div>
     </div>
 
@@ -233,5 +256,5 @@ onUnmounted(() => { if (pollTimer) window.clearInterval(pollTimer) })
 </template>
 
 <style scoped>
-.participant-application{display:grid;gap:.8rem;margin-top:1rem}.application-form,.application-state{display:grid;gap:.85rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:14px;background:var(--vp-c-bg)}.application-intro,.application-state{grid-template-columns:auto minmax(0,1fr);align-items:start}.application-intro{display:grid;gap:.8rem}.application-intro>span,.state-icon{font-size:1.8rem}.application-intro h4,.application-state h4{margin:0 0 .25rem;border:0}.application-intro p,.application-state p{margin:0;color:var(--vp-c-text-2)}label{display:grid;gap:.4rem;font-weight:700}label small{color:var(--vp-c-text-2);font-weight:400}input[type=email],input[type=text]{min-height:44px;padding:.65rem .75rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg-soft);color:var(--vp-c-text-1);font:inherit}.check{grid-template-columns:1.2rem minmax(0,1fr);align-items:start;font-weight:400}.check input{width:1rem;height:1rem;margin-top:.25rem}button{min-height:44px;width:fit-content;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;background:var(--vp-c-brand-1);color:white;font:inherit;font-weight:700;cursor:pointer}button.secondary{background:transparent;color:var(--vp-c-brand-1)}button:disabled{cursor:not-allowed;opacity:.5}.application-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}.privacy-note{margin:0;color:var(--vp-c-text-2);font-size:.88rem}.application-error{display:grid;gap:.6rem;padding:.75rem;border-left:4px solid var(--vp-c-danger-1);background:var(--vp-c-danger-soft);color:var(--vp-c-danger-1)}.application-error p{margin:0}.application-message{color:var(--vp-c-brand-1);font-weight:700}@media(max-width:560px){.application-actions{display:grid}.application-actions button,.application-form>button{width:100%}}
+.participant-application{display:grid;gap:.8rem;margin-top:1rem}.application-form,.application-state{display:grid;gap:.85rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:14px;background:var(--vp-c-bg)}.application-intro,.application-state{grid-template-columns:auto minmax(0,1fr);align-items:start}.application-intro{display:grid;gap:.8rem}.application-intro>span,.state-icon{font-size:1.8rem}.application-intro h4,.application-state h4{margin:0 0 .25rem;border:0}.application-intro p,.application-state p{margin:0;color:var(--vp-c-text-2)}label{display:grid;gap:.4rem;font-weight:700}label small{color:var(--vp-c-text-2);font-weight:400}input[type=email],input[type=text]{min-height:44px;padding:.65rem .75rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg-soft);color:var(--vp-c-text-1);font:inherit}.check{grid-template-columns:1.2rem minmax(0,1fr);align-items:start;font-weight:400}.check input{width:1rem;height:1rem;margin-top:.25rem}button{min-height:44px;width:fit-content;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;background:var(--vp-c-brand-1);color:white;font:inherit;font-weight:700;cursor:pointer}button.secondary{background:transparent;color:var(--vp-c-brand-1)}button:disabled{cursor:not-allowed;opacity:.5}.application-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.8rem}.next-participant{display:grid;gap:.45rem;margin-top:1rem;padding-top:.8rem;border-top:1px solid var(--vp-c-divider)}.next-participant p{font-size:.9rem}.privacy-note{margin:0;color:var(--vp-c-text-2);font-size:.88rem}.application-error{display:grid;gap:.6rem;padding:.75rem;border-left:4px solid var(--vp-c-danger-1);background:var(--vp-c-danger-soft);color:var(--vp-c-danger-1)}.application-error p{margin:0}.application-message{color:var(--vp-c-brand-1);font-weight:700}@media(max-width:560px){.application-actions{display:grid}.application-actions button,.application-form>button,.next-participant button{width:100%}}
 </style>
