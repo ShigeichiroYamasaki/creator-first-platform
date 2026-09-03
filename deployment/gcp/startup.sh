@@ -13,6 +13,13 @@ metadata_value() {
   curl -fsS -H "${METADATA_HEADER}" "${METADATA_URL}/$1"
 }
 
+public_hostname="$(metadata_value public-hostname || true)"
+if [[ ! "${public_hostname}" =~ ^[a-z0-9]([a-z0-9.-]*[a-z0-9])?\.nip\.io$ ]]; then
+  echo "CREATOR_FIRST_DEPLOY_STATUS=failed_invalid_public_hostname"
+  exit 1
+fi
+public_url="https://${public_hostname}"
+
 echo "CREATOR_FIRST_DEPLOY_STATUS=starting"
 
 export DEBIAN_FRONTEND=noninteractive
@@ -289,6 +296,14 @@ server {
 }
 NGINX
 
+cat > "${APP_DIR}/bootstrap/Caddyfile" <<CADDY
+${public_hostname} {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:8080
+}
+CADDY
+chmod 0644 "${APP_DIR}/bootstrap/Caddyfile"
+
 if [[ ! -s "${APP_DIR}/music/local-test-tone.wav" ]]; then
   ffmpeg -hide_banner -loglevel error -f lavfi -i 'sine=frequency=440:duration=12' \
     -metadata title='Creator First Test Tone' \
@@ -299,7 +314,7 @@ fi
 chmod 0644 "${APP_DIR}/music/local-test-tone.wav"
 
 cd "${APP_DIR}"
-docker-compose -p creator-first-streaming pull navidrome-data-init navidrome docs-demo gateway-data-init bootstrap-gateway cloudflared
+docker-compose -p creator-first-streaming pull navidrome-data-init navidrome docs-demo gateway-data-init bootstrap-gateway public-gateway
 docker-compose -p creator-first-streaming up -d --remove-orphans
 cat > /etc/systemd/system/creator-first-gmail-relay.service <<'UNIT'
 [Unit]
@@ -361,31 +376,17 @@ systemctl daemon-reload
 systemctl enable --now creator-first-amoy-drpc-relay.service creator-first-amoy-publicnode-relay.service
 # The static site directory is atomically replaced above. Recreate containers
 # that bind-mount it so they cannot keep serving the previous directory inode.
-docker-compose -p creator-first-streaming up -d --force-recreate --no-deps docs-demo bootstrap-gateway cloudflared
-
-tunnel_url=""
-for tunnel_attempt in $(seq 1 30); do
-  tunnel_url="$(docker-compose -p creator-first-streaming logs --no-color cloudflared 2>&1 \
-    | grep -Eo 'https://[a-z0-9-]+\.trycloudflare\.com' \
-    | tail -n 1 || true)"
-  [[ -n "${tunnel_url}" ]] && break
-  sleep 2
-done
-if [[ -z "${tunnel_url}" ]]; then
-  echo "CREATOR_FIRST_DEPLOY_STATUS=failed_missing_tunnel_url"
-  exit 1
-fi
-tunnel_host="${tunnel_url#https://}"
+docker-compose -p creator-first-streaming up -d --force-recreate --no-deps docs-demo bootstrap-gateway public-gateway
 cat > "${APP_DIR}/bootstrap/gateway.env" <<ENV
 GATEWAY_HOST=0.0.0.0
 GATEWAY_PORT=8787
 GATEWAY_BASE_PATH=/api
 GATEWAY_RUNTIME_MODE=public-experiment
-GATEWAY_ALLOWED_ORIGIN=${tunnel_url}
-GATEWAY_PUBLIC_URI=${tunnel_url}
-GATEWAY_SIWE_DOMAIN=${tunnel_host}
-GATEWAY_WEBAUTHN_ORIGIN=${tunnel_url}
-GATEWAY_WEBAUTHN_RP_ID=${tunnel_host}
+GATEWAY_ALLOWED_ORIGIN=${public_url}
+GATEWAY_PUBLIC_URI=${public_url}
+GATEWAY_SIWE_DOMAIN=${public_hostname}
+GATEWAY_WEBAUTHN_ORIGIN=${public_url}
+GATEWAY_WEBAUTHN_RP_ID=${public_hostname}
 GATEWAY_MAIL_MODE=gmail-smtp
 GATEWAY_GMAIL_ADDRESS=11rou.yamasaki@gmail.com
 GATEWAY_GMAIL_NETWORK_FAMILY=4
@@ -433,7 +434,7 @@ for attempt in $(seq 1 60); do
     curl -fsS -u "creator-first-demo:$(cat "${APP_DIR}/bootstrap/password")" http://127.0.0.1:8080/ >/dev/null; then
     echo "CREATOR_FIRST_DEPLOY_STATUS=healthy"
     echo "CREATOR_FIRST_DEMO_PATH=/creator-first-platform/demo/"
-    echo "CREATOR_FIRST_TUNNEL_URL=${tunnel_url}"
+    echo "CREATOR_FIRST_PUBLIC_URL=${public_url}"
     docker-compose -p creator-first-streaming ps
     exit 0
   fi

@@ -156,24 +156,29 @@ services:
       media:
         ipv4_address: 172.31.0.10
 
-  cloudflared:
-    image: cloudflare/cloudflared:latest
+  public-gateway:
+    image: caddy:2.10.2-alpine
     restart: unless-stopped
     depends_on:
       bootstrap-gateway:
         condition: service_started
     network_mode: host
-    command:
-      - tunnel
-      - --no-autoupdate
-      - --url
-      - http://127.0.0.1:8080
+    volumes:
+      - ./bootstrap/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
     security_opt:
       - no-new-privileges:true
 
 volumes:
   navidrome-data:
   gateway-data:
+  caddy-data:
+  caddy-config:
 
 networks:
   media:

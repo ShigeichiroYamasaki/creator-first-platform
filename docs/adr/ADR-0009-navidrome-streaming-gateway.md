@@ -6,11 +6,13 @@ description: Navidromeを交換可能なメディアサーバーとして利用�
 
 **状態:** 提案
 **日付:** 2026-08-19
-**最終更新日:** 2026-08-29
+**最終更新日:** 2026-09-03
 
 > **実装 note (2026-08-23):** `apps/gateway`にローカルモック最小縦断実装を実装した。固定モックサブスクリプション／権利、5分の単一再生セッション、単一範囲、SQLite 配信証跡、SIWE／EIP-712検証、合成音源ファイルアダプターおよび明示対応付け方式のNavidrome アダプターを含む。現在実装しているアプリケーション APIはカタログ Home、Test-only プロフィール、再生セッション／ストリーム、SIWE、支援意思／モック資格証明状態およびコミュニティ Capabilityの限定Surfaceである。テストネットコントラクトはPolygon Amoyへデプロイしたが、ゲートウェイはまだそのイベントを参照しない。`auth/refresh`、`auth/logout`、クライアント再生イベント、検索・アーティスト・Album詳細、コントラクトインデクサーおよび本番参照モデルは未実装である。これは`MOCK-ASSUMPTION-001`の範囲内であり、提案決定、未解決事項、本番構成または法的権利を確定しない。
 
 > **実装 note (2026-08-29):** Google クラウドの単一VM上で静的な実験画面、同一オリジン`/api`、参加申請ゲートウェー、SQLite、Gmail確認メールおよびNavidromeを起動した。GitHub Pagesは説明・入口でありAPIを提供しない。操作開始リンクは公開ランタイム情報を介してクラウド版へ遷移し、GitHub Pages上で申請APIを直接呼ばない。現在のQuick Tunnel URLは一時的であり、固定ドメインまたは名前付きトンネルの成立を意味しない。
+
+> **実装 note (2026-09-03):** 再起動で変化するQuick Tunnelを廃止し、VMへ割り当て済みの外部IPv6 `/96`を静的アドレスへ昇格した。無償実験では`nip.io`による固定DNS名とCaddyの自動TLSを使用し、同じHTTPSオリジンをSIWE domain、WebAuthn RP ID、公開APIおよび画面へ一貫して適用する。`nip.io`は外部無償DNSへの依存であり、本番用の管理ドメインを代替しない。
 
 ## 1. 背景
 
@@ -285,9 +287,10 @@ Navidrome アダプターを有効化する前の独立したローカル管理�
 - Google クラウド無料枠対象地域のコンピュートエンジン `e2-micro`を1台だけ使用する
 - Persistent Diskは`pd-standard`とし、Boot、音源、データベースおよびキャッシュの合計を30 GB-month以下にする
 - 課金対象となる外部IPv4、負荷分散器、クラウド NAT、クラウド DNSおよび自動スナップショットを使用しない
-- VMには外部IPv6だけを割り当て、Inbound Portをインターネットへ開放しない
-- 公開 HTTPS入口はCloudflare Quick Tunnelを使用し、`cloudflared`からIPv6のOutbound接続を確立する
-- Quick TunnelのURLが再起動時に変わり得ること、SLAがないことおよび開発・テスト用途限定であることを表示する
+- VMには外部IPv6だけを割り当て、その`/96`を静的アドレスとして予約する
+- InboundはCaddyが使用するTCP 80/443だけを許可し、アプリケーションの8080番PortはHost Loopbackに限定する
+- 公開HTTPS入口は固定IPv6を表す`nip.io`ホスト名とCaddyの自動TLSを使用する
+- 無償DNSにSLAがないことおよび開発・テスト用途限定であることを表示する
 - GitHub Pagesには受付APIを置かず、`demo-runtime.json`で検証済みのクラウド実験オリジンを一元公開し、実際の申請操作を同一オリジンのクラウド画面へ遷移させる
 - ランタイム情報から生成する遷移先はHTTPSかつ`/creator-first-platform/demo/`配下に限定し、ホワイトペーパー、管理画面または任意の外部URLへ転送しない
 - Google クラウド予算警告を設定する。ただし警告はHard Capではないため、ゲートウェイ自身が配信Byte数を制限する
@@ -299,7 +302,7 @@ Navidrome アダプターを有効化する前の独立したローカル管理�
 e2-micro上の実行時は原則として次だけで構成する。
 
 ```text
-cloudflared
+Caddy / 固定HTTPSホスト名
     -> ストリーミング認可ゲートウェイ
         -> Navidrome
         -> SQLite 参照モデル / 再生証跡
@@ -311,7 +314,7 @@ cloudflared
 - リレイヤーはゲートウェイ内の限定Moduleとし、別の常駐アプリケーションサーバーを追加しない
 - 参照モデル、Nonce、セッション、Allowlist、再生証跡および月間配信Byte数はSQLiteへ保存できる
 - PostgreSQL、Redis、イベント一覧、ローカルブロックチェーン Nodeおよび検索Clusterをテスト環境へ配置しない
-- Cloudflare側で公開 TLSを終端するため、Quick Tunnel構成ではCaddyを必須としない
+- Caddyで公開TLSを終端し、証明書状態は永続領域へ保存する
 - 音源は96 kbpsまたは128 kbpsへ事前変換し、直接 Playを基本とする
 - Navidromeの同時Transcodeは最大1本とし、クライアント切断時のTranscode Cancellationを有効にする
 - プレゼン成立条件は同時直接 Play 1〜3本を目標とし、実測値を記録する
@@ -447,7 +450,7 @@ RPC latency、率制限、チェーン障害を再生重大 Pathへ入れるた�
 10. NavidromeおよびゲートウェイのOSS License、セキュリティ、プライバシーレビュー
 11. 12.2のテスト環境受入基準を再現した検証証拠
 12. 外部IPv4、負荷分散器、クラウド NATおよび追加Diskが作成されていないことのBilling Inventory
-13. Quick Tunnel以外からゲートウェイおよびNavidromeへ到達できないこと
+13. 公開TCP 80/443がCaddyだけへ到達し、ゲートウェイ、Navidromeおよび8080番Portへ直接到達できないこと
 14. Polygon AmoyチェーンID`80002`、コントラクトアドレス、ABIおよびソースコミットの一致
 15. テスト環境に本番資金、実在権利、未公開音源、個人情報または本番資格証明が存在しないこと
 
@@ -491,8 +494,8 @@ RPC latency、率制限、チェーン障害を再生重大 Pathへ入れるた�
 - [Navidrome セキュリティ上の考慮事項](https://www.navidrome.org/docs/usage/admin/security/)
 - [Google クラウド無料枠](https://docs.cloud.google.com/free/docs/free-cloud-features)
 - [Google クラウド外部 IP 料金](https://cloud.google.com/vpc/network-pricing)
-- [Cloudflare Quick Tunnels](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/)
-- [Cloudflare Tunnel Run パラメータ](https://developers.cloudflare.com/tunnel/advanced/run-parameters/)
+- [Google クラウド: 静的外部IPアドレスの予約](https://docs.cloud.google.com/vpc/docs/reserve-static-external-ip-address)
+- [Caddy HTTPS証明書自動管理](https://caddyserver.com/docs/automatic-https)
 - [Polygon PoS RPC endpoints](https://docs.polygon.technology/pos/reference/rpc-endpoints)
 - [Polygon Faucet](https://faucet.polygon.technology/)
 

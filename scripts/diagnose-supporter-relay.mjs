@@ -67,8 +67,8 @@ async function confirmed(publicClient, hash, label) {
 }
 
 const [origin, executeFlag] = process.argv.slice(2)
-if (!origin || executeFlag !== '--execute' || !/^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/.test(origin)) {
-  throw new Error('Usage: node scripts/diagnose-supporter-relay.mjs https://<current-tunnel>.trycloudflare.com --execute')
+if (!origin || executeFlag !== '--execute' || !/^https:\/\/[a-z0-9.-]+\.nip\.io$/.test(origin)) {
+  throw new Error('Usage: node scripts/diagnose-supporter-relay.mjs https://<fixed-host>.nip.io --execute')
 }
 
 const transport = () => fallback([

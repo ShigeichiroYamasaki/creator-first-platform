@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "active": true,
-  "origin": "https://notes-worth-reproductive-earth.trycloudflare.com",
+  "origin": "https://creator-first-demo.2600-1900-4041-69b-0-1--0.nip.io",
   "pathPrefix": "/creator-first-platform/demo/",
   "adminPath": "/creator-first-platform/admin/participant-invitations",
   "apiHealthPath": "/api/v1/health",
-  "temporaryHostname": true,
-  "sourceCommit": "c2b7a351ffc0a82644a9b3c8d1b7224ac0d80779",
-  "verifiedAt": "2026-09-03T05:57:03Z"
+  "temporaryHostname": false,
+  "sourceCommit": "bbd1f6f9bc077acf526cc25cacb908c51534788a",
+  "verifiedAt": "2026-09-03T07:25:26Z"
 }

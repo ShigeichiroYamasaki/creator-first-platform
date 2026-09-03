@@ -168,7 +168,7 @@ Navidrome、FeishinおよびSupersonicはいずれもGPL-3.0の適用範囲を�
 ADR-0009のe2-micro テスト環境では、追加のプレーヤーサーバーまたはFeishin Containerを常駐させず、PWA ビルド成果物をゲートウェイまたは同一オリジンの軽量HTTP入口から配信する。
 
 ```text
-Cloudflare Quick Tunnel
+Caddy / 固定HTTPSホスト名
     -> same-origin プレーヤー static assets・/v1 ゲートウェイ API
         -> private Navidrome
         -> SQLite

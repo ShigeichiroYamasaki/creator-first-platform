@@ -96,7 +96,12 @@ test('routes operational registration to the same-origin Google Cloud demo', asy
   const redirectComponent = await readFile(new URL('../docs/.vitepress/theme/CloudDemoRedirect.vue', import.meta.url), 'utf8')
   const gcpStartup = await readFile(new URL('../deployment/gcp/startup.sh', import.meta.url), 'utf8')
   const parsed = parseCloudDemoRuntime(runtime)
-  assert.match(runtime.origin, /^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/)
+  assert.equal(runtime.origin, 'https://creator-first-demo.2600-1900-4041-69b-0-1--0.nip.io')
+  assert.equal(runtime.temporaryHostname, false)
+  assert.match(gcpStartup, /metadata_value public-hostname/)
+  assert.match(gcpStartup, /GATEWAY_ALLOWED_ORIGIN=\$\{public_url\}/)
+  assert.match(gcpStartup, /public-gateway/)
+  assert.doesNotMatch(gcpStartup, /trycloudflare\.com|cloudflared/)
   assert.equal(parsed.origin, runtime.origin)
   assert.equal(
     cloudDemoTarget(runtime, '/creator-first-platform/demo/test-user-registration?role=user#step=application'),
