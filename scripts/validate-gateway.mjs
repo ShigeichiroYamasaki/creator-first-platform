@@ -50,6 +50,7 @@ const requirements = [
   ['AMOY_MIN_PRIORITY_FEE', 'Polygon Amoy fee floor'],
   ['PARTICIPANT_APPROVAL_GAS_LIMIT', 'bounded participant approval gas limit'],
   ['PARTICIPANT_FUNDING_GAS_LIMIT', 'bounded participant funding gas limit'],
+  ['transactionQueue', 'serialized participant operator transactions'],
   ['/v1/testnet/supporter-registrations', 'sponsored Supporter SBT API'],
   ['PARTICIPANT_REGISTRATION_REQUIRED', 'Supporter relay participant gate'],
   ['CREATOR_NOT_SPONSORED', 'Supporter relay creator allowlist'],

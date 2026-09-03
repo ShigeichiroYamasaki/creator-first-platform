@@ -157,6 +157,7 @@ export class ParticipantEnrollmentOperator {
     this.store = store
     this.chain = chain
     this.running = new Map()
+    this.transactionQueue = Promise.resolve()
   }
 
   get enabled() {
@@ -172,9 +173,11 @@ export class ParticipantEnrollmentOperator {
       throw new ParticipantEnrollmentError(503, 'PARTICIPANT_ENROLLMENT_OPERATOR_DISABLED', 'On-chain participant enrollment is not configured')
     }
     if (this.running.has(invitationId)) return this.running.get(invitationId)
-    const operation = this.#process(invitationId).finally(() => this.running.delete(invitationId))
-    this.running.set(invitationId, operation)
-    return operation
+    const operation = this.transactionQueue.then(() => this.#process(invitationId))
+    this.transactionQueue = operation.catch(() => undefined)
+    const trackedOperation = operation.finally(() => this.running.delete(invitationId))
+    this.running.set(invitationId, trackedOperation)
+    return trackedOperation
   }
 
   async #process(invitationId) {
