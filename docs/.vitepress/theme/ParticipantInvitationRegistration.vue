@@ -368,8 +368,16 @@ onBeforeUnmount(() => {
             <a v-if="invitation.enrollment.fundingTransactionHash" :href="`https://amoy.polygonscan.com/tx/${invitation.enrollment.fundingTransactionHash}`" target="_blank" rel="noopener noreferrer">POL配布記録を見る</a>
           </div>
           <ul class="roles">
-            <li v-if="hasUserRole"><b><i aria-hidden="true">🎧</i> 音楽リスナー向け</b><a v-if="enrollmentFunded" :href="withBase('/demo/test-user-registration')">音楽サービス体験へ進む</a><span v-else>運営処理後に利用できます</span></li>
-            <li v-if="hasCreatorRole"><b><i aria-hidden="true">🎵</i> 音楽クリエータ向け</b><a v-if="enrollmentFunded" :href="withBase('/demo/creator-workspace')">音楽クリエータ活動体験へ進む</a><span v-else>運営処理後に利用できます</span></li>
+            <li v-if="hasUserRole">
+              <b><i aria-hidden="true">🎧</i> 音楽リスナー向け</b>
+              <a class="journey-button" :href="withBase('/demo/test-user-registration')">音楽サービスを体験する</a>
+              <small v-if="!enrollmentFunded">初回POLの準備状況も次のページで確認できます。</small>
+            </li>
+            <li v-if="hasCreatorRole">
+              <b><i aria-hidden="true">🎵</i> 音楽クリエータ向け</b>
+              <a class="journey-button" :href="withBase('/demo/creator-workspace')">音楽クリエータの活動を体験する</a>
+              <small v-if="!enrollmentFunded">初回POLの準備状況も次のページで確認できます。</small>
+            </li>
           </ul>
         </div>
       </div>
@@ -698,8 +706,21 @@ code { overflow-wrap: anywhere; }
   background: var(--vp-c-bg);
 }
 
-.roles span { color: var(--vp-c-text-2); font-size: .9rem; }
-.roles a { font-size: .9rem; font-weight: 800; }
+.roles small { flex-basis: 100%; color: var(--vp-c-text-2); font-size: .78rem; }
+.roles .journey-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: .5rem .85rem;
+  border-radius: 10px;
+  background: var(--vp-c-brand-1);
+  color: white;
+  font-size: .9rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+.roles .journey-button:hover { background: var(--vp-c-brand-2); }
 .enrollment-status { display:flex;flex-wrap:wrap;align-items:center;gap:.55rem 1rem;margin-top:.8rem;padding:.7rem;border:1px solid var(--vp-c-divider);border-radius:10px;background:var(--vp-c-bg) }
 .enrollment-status span { display:grid }
 .enrollment-status small { color:var(--vp-c-text-2);font-size:.72rem }

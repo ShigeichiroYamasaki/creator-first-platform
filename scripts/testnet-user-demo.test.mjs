@@ -31,12 +31,13 @@ const earlySupporterMetadataPath = new URL('../docs/public/sbt/early-supporter.j
 const cloudRuntimePath = new URL('../docs/public/demo-runtime.json', import.meta.url)
 
 test('separates participant preparation from post-POL service experiences', async () => {
-  const [listenerPreparation, creatorPreparation, listenerExperience, listenerJourney, creatorJourney, choices, invitation] = await Promise.all([
+  const [listenerPreparation, creatorPreparation, listenerExperience, listenerJourney, creatorJourney, creatorRegistration, choices, invitation] = await Promise.all([
     readFile(new URL('../docs/demo/listener-participation.md', import.meta.url), 'utf8'),
     readFile(new URL('../docs/demo/creator-participation.md', import.meta.url), 'utf8'),
     readFile(new URL('../docs/demo/test-user-registration.md', import.meta.url), 'utf8'),
     readFile(new URL('../docs/.vitepress/theme/TestnetUserJourneyDemo.vue', import.meta.url), 'utf8'),
     readFile(new URL('../docs/.vitepress/theme/TestnetCreatorJourneyDemo.vue', import.meta.url), 'utf8'),
+    readFile(new URL('../docs/.vitepress/theme/CreatorRegistrationDemo.vue', import.meta.url), 'utf8'),
     readFile(new URL('../docs/.vitepress/theme/DemoServiceChoices.vue', import.meta.url), 'utf8'),
     readFile(new URL('../docs/.vitepress/theme/ParticipantInvitationRegistration.vue', import.meta.url), 'utf8')
   ])
@@ -45,10 +46,18 @@ test('separates participant preparation from post-POL service experiences', asyn
   assert.match(creatorPreparation, /<ParticipantApplicationDemo :role="2" \/>/)
   assert.match(creatorPreparation, /\[音楽クリエータの活動体験\]\(\/demo\/creator-workspace\)/)
   assert.doesNotMatch(creatorPreparation, /\[音楽クリエータの活動体験\]\(\/demo\/creator-registration\)/)
-  assert.match(listenerExperience, /申請と審査はこのページでは行いません/)
+  assert.match(listenerExperience, /画面に表示される操作を上から一つずつ進めます/)
+  assert.match(listenerExperience, /details 発展的な本人確認の実験/)
+  assert.match(listenerExperience, /<AccountTrustDemo/)
   assert.doesNotMatch(listenerJourney, /<ParticipantApplicationDemo/)
   assert.doesNotMatch(creatorJourney, /<ParticipantApplicationDemo/)
   assert.match(listenerJourney, /initialFundingCompleted\.value && !userRegistered/)
+  assert.doesNotMatch(listenerJourney, /仮想通貨ワレットをつなぎ直す/)
+  assert.match(listenerJourney, /v-if="!walletAddress \|\| !correctChain" class="panel current-step"/)
+  assert.match(listenerJourney, /v-if="walletAddress && correctChain && !userRegistered"/)
+  assert.match(listenerJourney, /v-if="userRegistered && !subscriptionActive"/)
+  assert.match(listenerJourney, /v-if="balance < planPrice"/)
+  assert.match(listenerJourney, /v-else-if="!allowanceEnough"/)
   assert.match(listenerJourney, /\/api\/v1\/testnet\/supporter-registrations/)
   assert.match(listenerJourney, /signTypedData/)
   assert.match(listenerJourney, /resolveCloudDemoTarget/)
@@ -64,9 +73,20 @@ test('separates participant preparation from post-POL service experiences', asyn
   assert.doesNotMatch(listenerExperience, /デジタル証明書|応援の証明書|証明書を受け取る/)
   assert.doesNotMatch(listenerJourney, /functionName: 'registerSelf',[\s\S]{0,240}DEMO_SUPPORTER_CREATOR_ID/)
   assert.match(creatorJourney, /initialFundingCompleted\.value && !creatorParticipantRegistered/)
+  assert.doesNotMatch(creatorJourney, /仮想通貨ワレットをつなぎ直す/)
+  assert.match(creatorJourney, /v-if="profile && \(!walletAddress \|\| !correctChain\)" class="panel current-step"/)
+  assert.match(creatorJourney, /v-if="walletAddress && correctChain && !creatorParticipantRegistered"/)
+  assert.match(creatorJourney, /v-if="creatorParticipantRegistered && !registeredOnchain"/)
+  assert.match(creatorJourney, /<summary>音楽クリエータ活動の全体像を見る<\/summary>/)
+  assert.equal((creatorRegistration.match(/type="checkbox"/g) ?? []).length, 1)
   assert.match(choices, /creator-participation/)
   assert.match(choices, /cloud-entry\?path=\/creator-first-platform\/demo\/creator-workspace/)
   assert.doesNotMatch(choices, /cloud-entry\?path=\/creator-first-platform\/demo\/creator-registration/)
+  assert.match(invitation, /音楽サービスを体験する/)
+  assert.match(invitation, /音楽クリエータの活動を体験する/)
+  assert.match(invitation, /class="journey-button" :href="withBase\('\/demo\/test-user-registration'\)"/)
+  assert.match(invitation, /class="journey-button" :href="withBase\('\/demo\/creator-workspace'\)"/)
+  assert.doesNotMatch(invitation, /<a v-if="enrollmentFunded"[^>]+(?:test-user-registration|creator-workspace)/)
   assert.match(invitation, /withBase\('\/demo\/creator-workspace'\)/)
   assert.match(creatorJourney, /<CreatorRegistrationDemo v-if="!profile"/)
 })

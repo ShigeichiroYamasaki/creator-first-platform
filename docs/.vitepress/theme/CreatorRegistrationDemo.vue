@@ -17,9 +17,7 @@ const emit = defineEmits<{ registered: [profile: CreatorProfile] }>()
 const artistName = ref('')
 const entityType = ref<CreatorProfile['entityType']>('INDIVIDUAL')
 const genre = ref('')
-const acceptedTerms = ref(false)
-const acceptedPrivacy = ref(false)
-const acknowledgedRightsBoundary = ref(false)
+const acceptedExperimentBoundary = ref(false)
 const profile = ref<CreatorProfile>()
 const message = ref('')
 
@@ -30,9 +28,7 @@ const genreValid = computed(() => /^[\p{L}\p{N}_ /&-]{2,30}$/u.test(normalizedGe
 const ready = computed(() => (
   nameValid.value &&
   genreValid.value &&
-  acceptedTerms.value &&
-  acceptedPrivacy.value &&
-  acknowledgedRightsBoundary.value
+  acceptedExperimentBoundary.value
 ))
 
 function newCreatorId(): string {
@@ -65,9 +61,7 @@ function resetProfile(): void {
   artistName.value = ''
   entityType.value = 'INDIVIDUAL'
   genre.value = ''
-  acceptedTerms.value = false
-  acceptedPrivacy.value = false
-  acknowledgedRightsBoundary.value = false
+  acceptedExperimentBoundary.value = false
   message.value = 'このタブの活動情報とテスト作品を削除しました。'
 }
 
@@ -140,10 +134,8 @@ onMounted(() => {
       <p v-if="genre && !genreValid" class="field-error" role="alert">音楽の分野の文字を確認してください。</p>
 
       <fieldset>
-        <legend>実験の利用条件と情報の取扱い</legend>
-        <label><input v-model="acceptedTerms" type="checkbox"> 実際のお金や本番利用の権利がない実験であることに同意します</label>
-        <label><input v-model="acceptedPrivacy" type="checkbox"> 入力内容がこのタブだけに保存されることを確認しました</label>
-        <label><input v-model="acknowledgedRightsBoundary" type="checkbox"> 登録だけでは本人・権利・契約・報酬受取資格を証明しないことを理解しました</label>
+        <legend>確認</legend>
+        <label><input v-model="acceptedExperimentBoundary" type="checkbox"> 実際のお金や実在情報を使わない練習であり、登録だけでは本人・権利・契約・報酬受取資格を証明しないことを確認しました</label>
       </fieldset>
 
       <button class="primary-action" type="submit" :disabled="!ready">仮の活動情報を登録</button>
