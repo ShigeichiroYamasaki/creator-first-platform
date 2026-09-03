@@ -158,7 +158,8 @@ export function createGatewayServer({
     store,
     mailer: invitationMailer,
     enrollmentOperator: participantEnrollment,
-    autoProcessEnrollment: config.participantEnrollmentAutoProcess
+    autoProcessEnrollment: config.participantEnrollmentAutoProcess,
+    autoProcessIntervalMs: participantEnrollmentOptions.autoProcessIntervalMs
   })
   const participantApplications = new ParticipantApplicationService({
     config,
@@ -704,11 +705,6 @@ export function createGatewayServer({
         participantInvitations.requireAdministrator(request)
         return sendJson(response, 200, await participantInvitations.send(invitationSendMatch[1], await readJson(request)))
       }
-      const invitationEnrollmentMatch = /^\/v1\/admin\/participant-invitations\/([A-Za-z0-9-]+)\/enrollment$/.exec(path)
-      if (request.method === 'POST' && invitationEnrollmentMatch) {
-        participantInvitations.requireAdministrator(request)
-        return sendJson(response, 200, await participantEnrollment.process(invitationEnrollmentMatch[1]))
-      }
       const invitationMatch = /^\/v1\/participant-invitations\/([A-Za-z0-9_-]{32,128})$/.exec(path)
       if (request.method === 'GET' && invitationMatch) {
         return sendJson(response, 200, participantInvitations.inspect(invitationMatch[1]))
@@ -831,11 +827,13 @@ export function createGatewayServer({
         server.once('error', reject)
         server.listen(port, host, resolve)
       })
+      participantInvitations.startAutoProcessing()
       return server.address()
     },
     async close() {
       if (closed) return
       closed = true
+      participantInvitations.stopAutoProcessing()
       if (server.listening) await new Promise((resolve) => server.close(resolve))
       store.close()
     }

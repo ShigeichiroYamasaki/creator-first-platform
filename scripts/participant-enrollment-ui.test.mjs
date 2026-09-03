@@ -2,47 +2,25 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 
-import { participantEnrollmentAction } from '../docs/.vitepress/theme/participantEnrollmentUi.js'
+const componentPath = new URL('../docs/.vitepress/theme/ParticipantAdminDemo.vue', import.meta.url)
 
-test('keeps an incomplete invitation visible but non-actionable until wallet claim', () => {
-  const action = participantEnrollmentAction({ state: 'SENT', claimedWallet: null, enrollment: { state: 'READY_AFTER_WALLET_CLAIM' } })
-  assert.equal(action.disabled, true)
-  assert.equal(action.label, '本人登録待ち')
-  assert.match(action.hint, /仮想通貨ワレット/)
+test('keeps invitation enrollment status read-only and automatic', async () => {
+  const component = await readFile(componentPath, 'utf8')
+
+  assert.match(component, /承認する/)
+  assert.match(component, /参加承認と初回POL配布は自動で進みます/)
+  assert.match(component, /追加操作は必要ありません/)
+  assert.match(component, /自動再試行中/)
+  assert.doesNotMatch(component, /processEnrollment|participantEnrollmentAction/)
+  assert.doesNotMatch(component, /運営処理を再実行|運営処理を再開/)
+  assert.doesNotMatch(component, /participant-invitations\/\$\{invitation\.invitationId\}\/enrollment/)
 })
 
-test('keeps operator-disabled enrollment actionable for diagnosis', () => {
-  const action = participantEnrollmentAction({ state: 'CLAIMED', claimedWallet: '0x1234', enrollment: { state: 'OPERATOR_DISABLED' } })
-  assert.equal(action.disabled, false)
-  assert.equal(action.label, '設定状態を確認')
-})
+test('uses responsive cards instead of a wide invitation table', async () => {
+  const component = await readFile(componentPath, 'utf8')
 
-test('offers enrollment for a claimed wallet and retry after a failed transaction', () => {
-  const ready = participantEnrollmentAction({ state: 'CLAIMED', claimedWallet: '0x1234', enrollment: { state: 'READY_AFTER_WALLET_CLAIM' } })
-  const retry = participantEnrollmentAction({ state: 'CLAIMED', claimedWallet: '0x1234', enrollment: { state: 'FUNDING_FAILED' } })
-  assert.deepEqual([ready.disabled, ready.label], [false, '運営処理を再開'])
-  assert.deepEqual([retry.disabled, retry.label], [false, '運営処理を再実行'])
-})
-
-test('disables only completed enrollment', () => {
-  const action = participantEnrollmentAction({ state: 'CLAIMED', claimedWallet: '0x1234', enrollment: { state: 'FUNDED' } })
-  assert.equal(action.disabled, true)
-  assert.equal(action.label, '準備完了')
-})
-
-test('renders pending enrollment as an actionable button without a global busy lock', async () => {
-  const component = await readFile(new URL('../docs/.vitepress/theme/ParticipantAdminDemo.vue', import.meta.url), 'utf8')
-  assert.match(component, /<button v-else type="button" :aria-busy="processingInvitationId === item\.invitationId" @click="processEnrollment\(item\)">/)
-  assert.doesNotMatch(component, /:disabled="busy \|\| participantEnrollmentAction\(item\)\.disabled"/)
-  assert.match(component, /<span v-if="participantEnrollmentAction\(item\)\.disabled" class="completion-badge">/)
-})
-
-test('renders enrollment actions as responsive cards without an aside overlay', async () => {
-  const component = await readFile(new URL('../docs/.vitepress/theme/ParticipantAdminDemo.vue', import.meta.url), 'utf8')
-  const page = await readFile(new URL('../docs/admin/participant-invitations.md', import.meta.url), 'utf8')
-  assert.match(page, /^aside: false$/m)
-  assert.match(component, /\.participant-admin\{display:grid;min-width:0;max-width:100%/)
+  assert.match(component, /<article v-for="item in invitations"/)
   assert.match(component, /class="record-list invitation-list"/)
-  assert.doesNotMatch(component, /<table>/)
-  assert.match(component, /\.operation-cell button,\.completion-badge\{width:100%\}/)
+  assert.match(component, /\.participant-admin\{display:grid/)
+  assert.doesNotMatch(component, /<table/)
 })

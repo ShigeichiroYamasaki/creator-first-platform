@@ -14,6 +14,8 @@ import { privateKeyToAccount } from 'viem/accounts'
 
 const APPROVAL_TTL_MS = 72 * 60 * 60_000
 const AMOY_MIN_PRIORITY_FEE = 25_000_000_000n
+const PARTICIPANT_APPROVAL_GAS_LIMIT = 250_000n
+const PARTICIPANT_FUNDING_GAS_LIMIT = 250_000n
 
 const participantRegistryAbi = parseAbi([
   'function approveClaimedInvitation(bytes32 participantId,address wallet,uint8 approvedRoles,uint64 approvalExpiresAt)',
@@ -120,6 +122,7 @@ export class AmoyParticipantEnrollmentChain {
       abi: participantRegistryAbi,
       functionName: 'approveClaimedInvitation',
       args: [participantId, wallet, roles, BigInt(Math.floor(Date.parse(approvalExpiresAt) / 1000))],
+      gas: PARTICIPANT_APPROVAL_GAS_LIMIT,
       ...(await this.transactionFees())
     })
     const receipt = await this.publicClient.waitForTransactionReceipt({ hash: transactionHash, confirmations: 2, timeout: 120_000 })
@@ -135,6 +138,7 @@ export class AmoyParticipantEnrollmentChain {
       abi: participantRegistryAbi,
       functionName: 'fundInitial',
       args: [participantId, operationId],
+      gas: PARTICIPANT_FUNDING_GAS_LIMIT,
       ...(await this.transactionFees())
     })
     const receipt = await this.publicClient.waitForTransactionReceipt({ hash: transactionHash, confirmations: 2, timeout: 120_000 })

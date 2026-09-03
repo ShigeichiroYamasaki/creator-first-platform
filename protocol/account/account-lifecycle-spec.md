@@ -4,7 +4,7 @@
 **Version:** 0.1.0
 **Protocol Domain:** account / identity  
 **Specification ID:** SPEC-ACCOUNT-003  
-**Last Updated:** 2026-09-02
+**Last Updated:** 2026-09-03
 
 ## Related Documents
 
@@ -38,7 +38,7 @@ The local `POST /v1/demo/users` implementation alone is not an implementation of
 
 The current ADR-0020 participant-invitation pilot implements a separate pre-registration boundary. An authorized operator creates a time-bounded role invitation without knowing a Wallet address; only a token digest is retained, while the one-time token is delivered in a URL fragment. The invited person later selects a Polygon Amoy Wallet and proves control with a server-verified SIWE signature bound to the invitation identifier, approved role set, consent version and chain identifier before the invitation can be claimed. A generic sign-in signature cannot claim an invitation. After the claim, the operator separately records the on-chain approval and supplies the bounded initial Test POL; the bound Wallet separately activates each approved User or Creator role from its role-specific service page. This claim and these testnet roles are test-participant evidence only: they are not a production Platform Account, legal identity, Creator verification, Rights verification, payee verification or production eligibility.
 
-ADR-0020 now defines a target simplification that is not yet implemented: an application may enter human review before its contact email is verified; approval produces the normal accepted path's only email; and the single-use invitation token plus an invitation-bound SIWE proof jointly confirm email reachability, the selected Wallet and the versioned participation acknowledgement. The authoritative service continues to retain distinct audit states, while the participant view renders only the current primary action and reveals resend or retry controls only when server-side policy says they are applicable. Until migration and tests are complete, the deployed two-email flow MUST continue to be reported as the current implementation.
+ADR-0020's simplified public-experiment flow is implemented: an application enters human review before its contact email is verified; approval produces the normal accepted path's only email; and the single-use invitation token plus an invitation-bound SIWE proof jointly confirm email reachability, the selected Wallet and the versioned participation acknowledgement. The authoritative service retains distinct audit states, while the participant view renders only the current primary action. After Wallet claim, the operator-owned on-chain approval and initial Test POL funding run automatically and are reconciled after transient failure or process restart without a normal administrator execution button.
 
 The ADR-0019 Account Trust pilot adds a bounded `CREATED → JPKI_ASSERTED → PASSKEY_REGISTERED → WALLET_BOUND → ACTIVE` binding transaction. It verifies WebAuthn registration and authentication server-side, stores only public-key credential metadata, verifies an operation-bound Polygon Amoy EIP-712 wallet signature and records state transitions. Its JPKI result is explicitly non-cryptographic Mock data, `ACTIVE` is a pilot binding state rather than the production Platform Account state, and it supplies no recovery, restriction, closure, rate-limit, notification or production retention implementation. It therefore gives local test evidence for parts of `REQ-ACCOUNT-068`, `REQ-ACCOUNT-069`, `REQ-ACCOUNT-078`, `REQ-ACCOUNT-099`, `REQ-ACCOUNT-101` and `REQ-ACCOUNT-105`, but cannot satisfy `REQ-ACCOUNT-068`–`REQ-ACCOUNT-114` acceptance as a whole. It remains a bounded fixture under `MOCK-ASSUMPTION-001` while the production Open Questions remain open.
 
@@ -232,6 +232,7 @@ PENDING → ACTIVE → RESTRICTED → ACTIVE
 - **REQ-ACCOUNT-143:** Invitation resend MUST enforce server-side state, expiry, cooldown, attempt limit, idempotency and abuse controls, MUST invalidate the prior token when a new token is issued, and MUST return a safe next-eligible time without disclosing unrelated account existence.
 - **REQ-ACCOUNT-144:** The required public-experiment acknowledgement SHOULD be presented as one versioned bundle covering the displayed test-only conditions, applicable terms and privacy notice; optional marketing or unrelated processing choices MUST remain separate and MUST NOT be preselected or required for participation.
 - **REQ-ACCOUNT-145:** An emailed participation link MUST use a stable HTTPS entry point. Any runtime indirection used before a fixed application hostname is available MUST preserve the URL fragment, validate the destination against published runtime policy and fail closed without exposing the invitation token to logs or an unapproved origin.
+- **REQ-ACCOUNT-146:** Human approval MUST schedule the operator-owned preparation flow; once the approved participant claims the invitation and selects a Wallet, on-chain approval and bounded initial Test POL funding MUST execute and recover automatically with stable idempotency identifiers. The normal administrator interface MUST expose status and evidence but MUST NOT require a separate invitation-enrollment execution or retry button.
 
 ## Invariants
 
@@ -367,7 +368,7 @@ Audit access MUST be restricted and audited. Retention must balance security, ac
 | REQ-ACCOUNT-101–105 | Privacy / authorization / retention | No biometric collection, silent operator mutation, unlawful erasure, identifier reuse or on-chain secrets |
 | REQ-ACCOUNT-106–112 | Security / UX conformance | Implemented SHOULD behavior is tested or deviation is documented under conventions |
 | REQ-ACCOUNT-113–114 | Optional conformance | Password or guest profiles preserve every MUST, MUST NOT and invariant |
-| REQ-ACCOUNT-123–145 | Participant application / invitation / UX / integration | One-message Wallet-agnostic invitations preserve distinct audit states, bind email reachability and Wallet proof, expose only the current action, gate recovery controls and branch into independent User and Creator procedures |
+| REQ-ACCOUNT-123–146 | Participant application / invitation / UX / integration | One-message Wallet-agnostic invitations preserve distinct audit states, bind email reachability and Wallet proof, automatically reconcile operator-owned approval and initial funding, expose only the current action and branch into independent User and Creator procedures |
 
 Tests MUST include registration races, session fixation, stolen/expired session, CSRF, credential stuffing, WebAuthn origin/RP/challenge/signature failures, authenticator-removal orphaning, recovery takeover, concurrent closure, legal hold and enumeration attempts.
 

@@ -20,8 +20,9 @@ const TEST_SUPPORTER_CREATOR_ID = keccak256(stringToHex('creator:synthetic-demo-
 const TEST_SUPPORTER_CONSENT_VERSION = keccak256(stringToHex('supporter-demo-consent-v1'))
 
 class FakeParticipantEnrollmentChain {
-  constructor() {
+  constructor({ fundingFailures = 0 } = {}) {
     this.calls = []
+    this.fundingFailures = fundingFailures
     this.record = {
       wallet: zeroAddress,
       approvedRoles: 0,
@@ -50,6 +51,10 @@ class FakeParticipantEnrollmentChain {
 
   async fund(value) {
     this.calls.push(['fund', value])
+    if (this.fundingFailures > 0) {
+      this.fundingFailures -= 1
+      throw new Error('temporary Amoy RPC failure')
+    }
     this.record.initialFundingCompleted = true
     this.record.balance = 20_000_000_000_000_000n
     return { transactionHash: `0x${'22'.repeat(32)}`, blockNumber: 102n, amount: this.record.balance }
@@ -546,11 +551,11 @@ test('Participant applies, receives one approval invitation, signs and is enroll
     GATEWAY_APPLICATION_STATUS_PUBLIC_URL: 'https://example.test/demo/participant-application-status',
     GATEWAY_PARTICIPANT_ENROLLMENT_AUTO_PROCESS: 'true'
   })
-  const enrollmentChain = new FakeParticipantEnrollmentChain()
+  const enrollmentChain = new FakeParticipantEnrollmentChain({ fundingFailures: 1 })
   const gateway = createGatewayServer({
     config,
     mediaAdapter: new FileMediaAdapter(config.mediaRoot),
-    participantEnrollmentOptions: { chain: enrollmentChain }
+    participantEnrollmentOptions: { chain: enrollmentChain, autoProcessIntervalMs: 2 }
   })
   const address = await gateway.listen(0)
   context.after(() => gateway.close())
@@ -648,7 +653,7 @@ test('Participant applies, receives one approval invitation, signs and is enroll
   assert.equal(current.body.application.state, 'INVITATION_CLAIMED')
 
   let automaticallyEnrolled
-  for (let attempt = 0; attempt < 20; attempt += 1) {
+  for (let attempt = 0; attempt < 100; attempt += 1) {
     automaticallyEnrolled = await json(await api.request(`/v1/participant-invitations/${invitationToken}`))
     if (automaticallyEnrolled.body.enrollment.state === 'FUNDED') break
     await new Promise((resolve) => setTimeout(resolve, 5))
@@ -657,23 +662,17 @@ test('Participant applies, receives one approval invitation, signs and is enroll
   assert.equal(automaticallyEnrolled.body.enrollment.initialFundingAmountAtomic, '20000000000000000')
   assert.equal(enrollmentChain.calls[0][0], 'approve')
   assert.equal(enrollmentChain.calls[1][0], 'fund')
+  assert.equal(enrollmentChain.calls[2][0], 'fund')
   assert.equal(enrollmentChain.calls[0][1].wallet, account.address)
 
   const invitationList = await json(await api.request('/v1/admin/participant-invitations', { headers: adminHeaders }))
   const claimedInvitation = invitationList.body.invitations.find((item) => item.state === 'CLAIMED')
   assert.ok(claimedInvitation)
-  const enrolled = await json(await api.request(`/v1/admin/participant-invitations/${claimedInvitation.invitationId}/enrollment`, {
+  const removedManualEndpoint = await json(await api.request(`/v1/admin/participant-invitations/${claimedInvitation.invitationId}/enrollment`, {
     method: 'POST', headers: adminHeaders
   }))
-  assert.equal(enrolled.response.status, 200)
-  assert.equal(enrolled.body.state, 'FUNDED')
-  assert.equal(enrolled.body.initialFundingAmountAtomic, '20000000000000000')
-
-  const replayedEnrollment = await json(await api.request(`/v1/admin/participant-invitations/${claimedInvitation.invitationId}/enrollment`, {
-    method: 'POST', headers: adminHeaders
-  }))
-  assert.equal(replayedEnrollment.body.state, 'FUNDED')
-  assert.equal(enrollmentChain.calls.length, 2)
+  assert.equal(removedManualEndpoint.response.status, 404)
+  assert.equal(enrollmentChain.calls.length, 3)
   const finalInvitation = await json(await api.request(`/v1/participant-invitations/${invitationToken}`))
   assert.equal(finalInvitation.body.enrollment.state, 'FUNDED')
 })

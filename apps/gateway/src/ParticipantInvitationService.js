@@ -91,12 +91,14 @@ function resendAvailability(row, now = Date.now()) {
 }
 
 export class ParticipantInvitationService {
-  constructor({ config, store, mailer, enrollmentOperator, autoProcessEnrollment = false }) {
+  constructor({ config, store, mailer, enrollmentOperator, autoProcessEnrollment = false, autoProcessIntervalMs = 30_000 }) {
     this.config = config
     this.store = store
     this.mailer = mailer
     this.enrollmentOperator = enrollmentOperator
     this.autoProcessEnrollment = autoProcessEnrollment
+    this.autoProcessIntervalMs = autoProcessIntervalMs
+    this.autoProcessTimer = undefined
   }
 
   publicView(row) {
@@ -153,6 +155,19 @@ export class ParticipantInvitationService {
 
   list() {
     return this.store.participantInvitations().map((row) => this.adminView(row))
+  }
+
+  startAutoProcessing() {
+    if (!this.autoProcessEnrollment || !this.enrollmentOperator.enabled || this.autoProcessTimer) return
+    this.#reconcileEnrollments()
+    this.autoProcessTimer = setInterval(() => this.#reconcileEnrollments(), this.autoProcessIntervalMs)
+    this.autoProcessTimer.unref?.()
+  }
+
+  stopAutoProcessing() {
+    if (!this.autoProcessTimer) return
+    clearInterval(this.autoProcessTimer)
+    this.autoProcessTimer = undefined
   }
 
   async send(invitationId, body = {}) {
@@ -283,5 +298,14 @@ export class ParticipantInvitationService {
     // The participant response remains fast while the idempotent operator records
     // progress and any failure for participant polling and administrator recovery.
     void this.enrollmentOperator.process(invitationId).catch(() => {})
+  }
+
+  #reconcileEnrollments() {
+    for (const invitation of this.store.participantInvitations()) {
+      if (invitation.state !== 'CLAIMED' || !invitation.claimed_wallet) continue
+      const state = this.enrollmentOperator.statusForInvitation(invitation.invitation_id).state
+      if (state === 'FUNDED') continue
+      this.#startEnrollment(invitation.invitation_id)
+    }
   }
 }
