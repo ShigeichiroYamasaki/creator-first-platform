@@ -15,7 +15,7 @@ import { privateKeyToAccount } from 'viem/accounts'
 const APPROVAL_TTL_MS = 72 * 60 * 60_000
 const AMOY_MIN_PRIORITY_FEE = 25_000_000_000n
 const PARTICIPANT_APPROVAL_GAS_LIMIT = 250_000n
-const PARTICIPANT_FUNDING_GAS_LIMIT = 250_000n
+const PARTICIPANT_FUNDING_GAS_LIMIT = 400_000n
 
 const participantRegistryAbi = parseAbi([
   'function approveClaimedInvitation(bytes32 participantId,address wallet,uint8 approvedRoles,uint64 approvalExpiresAt)',
