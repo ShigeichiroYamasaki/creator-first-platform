@@ -5,7 +5,27 @@ export const AMOY_CHAIN_HEX = '0x13882'
 export const AMOY_EXPLORER_URL = 'https://amoy.polygonscan.com'
 export const AMOY_MIN_PRIORITY_FEE_PER_GAS = 25_000_000_000n
 export const AMOY_FALLBACK_BASE_FEE_PER_GAS = 1_000_000_000n
-export const DEMO_SUPPORTER_CREATOR_ID = keccak256(stringToHex('creator:synthetic-demo-artist'))
+export const DEMO_SUPPORT_TARGETS = Object.freeze([
+  {
+    creatorId: keccak256(stringToHex('creator:synthetic-demo-artist')),
+    name: 'Synthetic Demo Artist',
+    style: '電子音・テスト音源',
+    description: 'このページの試聴音源を制作した想定の架空の音楽クリエータです。'
+  },
+  {
+    creatorId: keccak256(stringToHex('creator:harbor-light-demo')),
+    name: 'Harbor Light Demo',
+    style: 'アコースティック',
+    description: '弾き語り作品を制作する想定の架空の音楽クリエータです。'
+  },
+  {
+    creatorId: keccak256(stringToHex('creator:quiet-circuit-demo')),
+    name: 'Quiet Circuit Demo',
+    style: 'アンビエント',
+    description: '環境音楽を制作する想定の架空の音楽クリエータです。'
+  }
+])
+export const DEMO_SUPPORTER_CREATOR_ID = DEMO_SUPPORT_TARGETS[0].creatorId
 export const DEMO_SUPPORTER_CONSENT_VERSION = keccak256(stringToHex('supporter-demo-consent-v1'))
 export const TESTNET_USER_ROLE = 1
 export const TESTNET_CREATOR_ROLE = 2
@@ -128,7 +148,10 @@ export const supporterRegistrationAdapterAbi = [
   }
 ]
 
-export function createSupporterTypedData({ supporterSbt, holder, nonce, deadline }) {
+export function createSupporterTypedData({ supporterSbt, holder, creatorId, nonce, deadline }) {
+  if (!DEMO_SUPPORT_TARGETS.some((target) => target.creatorId === creatorId)) {
+    throw new Error('Select an approved support target before signing.')
+  }
   return {
     domain: {
       name: 'Creator First Supporter SBT',
@@ -147,7 +170,7 @@ export function createSupporterTypedData({ supporterSbt, holder, nonce, deadline
     },
     primaryType: 'SupportIntent',
     message: {
-      creatorId: DEMO_SUPPORTER_CREATOR_ID,
+      creatorId,
       holder,
       nonce,
       deadline,

@@ -7,6 +7,7 @@ import {
   createTestToneWav,
   DEMO_SUPPORTER_CONSENT_VERSION,
   DEMO_SUPPORTER_CREATOR_ID,
+  DEMO_SUPPORT_TARGETS,
   hasActiveCreatorRegistry,
   hasActiveParticipantRegistry,
   hasActiveSupporterRegistration,
@@ -63,7 +64,10 @@ test('separates participant preparation from post-POL service experiences', asyn
   assert.match(listenerJourney, /resolveCloudDemoTarget/)
   assert.match(listenerJourney, /if \(await redirectStaticSiteToCloud\(\)\) return/)
   assert.match(listenerJourney, /サポータートークン（SBT）/)
-  assert.match(listenerJourney, /応援してトークンを受け取る/)
+  assert.match(listenerJourney, /支援したい音楽クリエータを選ぶ/)
+  assert.match(listenerJourney, /v-for="target in DEMO_SUPPORT_TARGETS"/)
+  assert.match(listenerJourney, /選ぶまでトークンは発行されません/)
+  assert.match(listenerJourney, /selectedSupportTarget\.value/)
   assert.match(listenerJourney, /仮想通貨ワレットを開いてください/)
   assert.match(listenerJourney, /SBT_SUBMITTED/)
   assert.match(listenerJourney, /waitForTransactionReceipt/)
@@ -257,16 +261,24 @@ test('publishes distinct participant roles and consent versions', () => {
 test('builds the exact short-lived Supporter SBT EIP-712 intent', () => {
   const supporterSbt = '0x4444444444444444444444444444444444444444'
   const holder = '0x5555555555555555555555555555555555555555'
-  const value = createSupporterTypedData({ supporterSbt, holder, nonce: 7n, deadline: 900n })
+  const selectedTarget = DEMO_SUPPORT_TARGETS[1]
+  const value = createSupporterTypedData({ supporterSbt, holder, creatorId: selectedTarget.creatorId, nonce: 7n, deadline: 900n })
 
   assert.equal(value.domain.chainId, AMOY_CHAIN_ID)
   assert.equal(value.domain.verifyingContract, supporterSbt)
   assert.equal(value.primaryType, 'SupportIntent')
-  assert.equal(value.message.creatorId, DEMO_SUPPORTER_CREATOR_ID)
+  assert.equal(value.message.creatorId, selectedTarget.creatorId)
   assert.equal(value.message.holder, holder)
   assert.equal(value.message.nonce, 7n)
   assert.equal(value.message.deadline, 900n)
   assert.equal(value.message.consentVersion, DEMO_SUPPORTER_CONSENT_VERSION)
+  assert.throws(
+    () => createSupporterTypedData({ supporterSbt, holder, nonce: 7n, deadline: 900n }),
+    /Select an approved support target/
+  )
+  assert.equal(DEMO_SUPPORT_TARGETS.length, 3)
+  assert.equal(new Set(DEMO_SUPPORT_TARGETS.map((target) => target.creatorId)).size, 3)
+  assert.equal(DEMO_SUPPORT_TARGETS[0].creatorId, DEMO_SUPPORTER_CREATOR_ID)
 })
 
 test('publishes resolvable testnet metadata for both Supporter SBT tiers', async () => {

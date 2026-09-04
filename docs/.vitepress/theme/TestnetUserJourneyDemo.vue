@@ -7,7 +7,7 @@ import { resolveCloudDemoTarget } from './cloud-demo-runtime.js'
 import {
   createSupporterTypedData,
   createTestToneWav,
-  DEMO_SUPPORTER_CREATOR_ID,
+  DEMO_SUPPORT_TARGETS,
   getAmoyTransactionFees,
   hasActiveSupporterRegistration,
   hasActiveParticipantRegistry,
@@ -45,6 +45,7 @@ type Deployment = {
 }
 type Track = { id: string; title: string; artist: string; frequency: number; subscriberOnly: boolean }
 type SupporterMetadata = { name: string; description: string; image: string; attributes: Array<{ trait_type: string; value: string }> }
+type SupportTarget = { creatorId: Hash; name: string; style: string; description: string }
 
 const storageKey = 'creator-first-testnet-test-user-v2'
 const tracks: Track[] = [
@@ -77,8 +78,9 @@ const supporterTokenId = ref(0n)
 const supporterTier = ref(0)
 const supporterTokenUri = ref('')
 const supporterMetadata = ref<SupporterMetadata>()
+const selectedSupportTarget = ref<SupportTarget>()
 const supporterRelayAvailable = ref(false)
-const supporterMessage = ref('好きな音楽クリエーターを応援した記録を、サポータートークン（SBT）として受け取れます。')
+const supporterMessage = ref('まず、応援したい音楽クリエータを選んでください。')
 const supporterStage = ref<'IDLE' | 'AWAITING_WALLET' | 'RELAYING' | 'SUBMITTED' | 'CHECKING' | 'COMPLETE' | 'ERROR'>('IDLE')
 const connectingToCloud = ref(false)
 const selectedTrack = ref(tracks[0])
@@ -98,7 +100,7 @@ const chainActionsReady = computed(() => Boolean(profile.value && walletAddress.
 const supporterRegistrationReady = computed(() => hasActiveSupporterRegistration(deployment.value) && supporterRelayAvailable.value)
 const supporterActionReady = computed(() => Boolean(
   profile.value && walletAddress.value && correctChain.value && userRegistered.value && supporterRegistrationReady.value &&
-  supporterTokenId.value === 0n && !lastSbtTransaction.value && !busyAction.value
+  selectedSupportTarget.value && supporterTokenId.value === 0n && !lastSbtTransaction.value && !busyAction.value
 ))
 const allowanceEnough = computed(() => planPrice.value > 0n && allowance.value >= planPrice.value)
 const balanceLabel = computed(() => `${formatUnits(balance.value, 18)} tJPYC`)
@@ -127,16 +129,32 @@ function clearOnchainState(): void {
   planEnabled.value = false
   subscriptionActive.value = false
   activeUntil.value = 0n
-  supporterTokenId.value = 0n
-  supporterTier.value = 0
-  supporterTokenUri.value = ''
-  supporterMetadata.value = undefined
+  clearSupporterState()
   participantId.value = zeroHash
   approvedParticipantRoles.value = 0
   registeredParticipantRoles.value = 0
   participantApprovalExpiresAt.value = 0n
   participantActive.value = false
   initialFundingCompleted.value = false
+}
+function clearSupporterState(): void {
+  supporterTokenId.value = 0n
+  supporterTier.value = 0
+  supporterTokenUri.value = ''
+  supporterMetadata.value = undefined
+  lastSbtTransaction.value = undefined
+  supporterStage.value = 'IDLE'
+}
+async function selectSupportTarget(target: SupportTarget): Promise<void> {
+  if (busyAction.value || selectedSupportTarget.value?.creatorId === target.creatorId) return
+  selectedSupportTarget.value = target
+  clearSupporterState()
+  supporterMessage.value = `${target.name}を応援する対象として選びました。内容を確認してからトークンを受け取れます。`
+  if (walletAddress.value && correctChain.value && contractsReady.value) {
+    try { await refreshOnchainState(true) } catch {
+      supporterMessage.value = `${target.name}を選びましたが、現在のトークン保有状態を確認できませんでした。`
+    }
+  }
 }
 const handleAccountsChanged = async (value: Address[] | string): Promise<void> => {
   const accounts = Array.isArray(value) ? value : []
@@ -246,20 +264,21 @@ async function refreshOnchainState(force = false): Promise<void> {
   planEnabled.value = planValue[3]
   subscriptionActive.value = nextActive as boolean
   activeUntil.value = nextUntil as bigint
-  if (deployment.value?.contracts.supporterSbt) {
+  if (deployment.value?.contracts.supporterSbt && selectedSupportTarget.value) {
     const supporterSbt = deployment.value.contracts.supporterSbt
+    const creatorId = selectedSupportTarget.value.creatorId
     const [nextTokenId, nextTier] = await Promise.all([
       publicClient.readContract({
         address: supporterSbt,
         abi: supporterSbtAbi,
         functionName: 'activeTokenOf',
-        args: [DEMO_SUPPORTER_CREATOR_ID, account]
+        args: [creatorId, account]
       }),
       publicClient.readContract({
         address: supporterSbt,
         abi: supporterSbtAbi,
         functionName: 'getSupporterTier',
-        args: [DEMO_SUPPORTER_CREATOR_ID, account]
+        args: [creatorId, account]
       })
     ])
     supporterTokenId.value = nextTokenId as bigint
@@ -346,7 +365,8 @@ async function subscribe(): Promise<void> {
   })
 }
 async function registerAsSupporter(): Promise<void> {
-  if (!provider || !walletAddress.value || !deployment.value?.contracts.supporterSbt || !supporterRelayAvailable.value) return
+  if (!provider || !walletAddress.value || !deployment.value?.contracts.supporterSbt || !supporterRelayAvailable.value || !selectedSupportTarget.value) return
+  const supportTarget = selectedSupportTarget.value
   busyAction.value = 'Supporter SBT'
   lastSbtTransaction.value = undefined
   supporterStage.value = 'AWAITING_WALLET'
@@ -361,10 +381,11 @@ async function registerAsSupporter(): Promise<void> {
     const typedData = createSupporterTypedData({
       supporterSbt,
       holder: walletAddress.value,
+      creatorId: supportTarget.creatorId,
       nonce: nonce as bigint,
       deadline
     })
-    supporterMessage.value = '仮想通貨ワレットの確認画面を開き、サポータートークン（SBT）の受取りに署名してください。送金や支払いの署名ではありません。'
+    supporterMessage.value = `仮想通貨ワレットの確認画面を開き、${supportTarget.name}のサポータートークン（SBT）の受取りに署名してください。送金や支払いの署名ではありません。`
     const signature = await walletClient.signTypedData({ account: walletAddress.value, ...typedData })
     supporterStage.value = 'RELAYING'
     supporterMessage.value = '署名を受け付けました。運営が操作手数料を負担して、サポータートークンを発行しています。'
@@ -374,7 +395,7 @@ async function registerAsSupporter(): Promise<void> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         holder: walletAddress.value,
-        creatorId: DEMO_SUPPORTER_CREATOR_ID,
+        creatorId: supportTarget.creatorId,
         nonce: (nonce as bigint).toString(),
         deadline: deadline.toString(),
         consentVersion: typedData.message.consentVersion,
@@ -582,35 +603,59 @@ onBeforeUnmount(() => {
       <p v-if="!canPlaySelected" class="notice">このテスト音は、練習用の月額利用を開始すると再生できます。試聴用のテスト音はいつでも再生できます。</p>
       <p aria-live="polite">{{ playerMessage }}</p>
       <div class="supporter-action">
-        <h4 id="supporter-registration-title">テスト用音楽クリエーターを応援する</h4>
-        <p>応援する気持ちを、他人へ渡せないサポータートークン（SBT）として記録します。支払いまたは継続課金はなく、発行に必要な操作手数料は運営が負担します。</p>
-        <div class="status-grid">
-          <div><span>応援の状態</span><strong>{{ supporterTierLabel }}</strong></div>
-          <div><span>トークン番号</span><strong>{{ supporterTokenId || '未発行' }}</strong></div>
-        </div>
-        <p v-if="!supporterRegistrationReady" class="notice">サポータートークンを発行する運営サービスを準備しているため、現在この操作は利用できません。</p>
-        <p v-if="supporterStage === 'AWAITING_WALLET'" class="wallet-confirmation" role="status"><strong>仮想通貨ワレットを開いてください</strong><span>「署名」を確認すると発行へ進みます。送金や支払いは行いません。</span></p>
-        <p v-else-if="supporterStage === 'RELAYING' || supporterStage === 'SUBMITTED' || supporterStage === 'CHECKING'" class="notice" role="status">{{ supporterMessage }}</p>
-        <p v-else-if="supporterStage === 'ERROR'" class="error" role="alert">{{ supporterMessage }}</p>
-        <div class="actions">
-          <button class="primary" type="button" :disabled="!supporterActionReady" @click="registerAsSupporter">
-            {{ supporterTokenId > 0n ? 'サポータートークン取得済み' : lastSbtTransaction ? 'トークン発行を送信済み' : busyAction === 'Supporter SBT' ? '確認・発行中…' : '応援してトークンを受け取る' }}
+        <h4 id="supporter-registration-title">5. 支援したい音楽クリエータを選ぶ</h4>
+        <p>応援したい相手を一人選びます。ここに表示するのはすべて公開実験用の架空の音楽クリエータです。</p>
+        <div class="support-target-list" role="group" aria-label="支援したい音楽クリエータ">
+          <button
+            v-for="target in DEMO_SUPPORT_TARGETS"
+            :key="target.creatorId"
+            type="button"
+            :class="{ selected: selectedSupportTarget?.creatorId === target.creatorId }"
+            :aria-pressed="selectedSupportTarget?.creatorId === target.creatorId"
+            :disabled="Boolean(busyAction)"
+            @click="selectSupportTarget(target)"
+          >
+            <span class="creator-avatar" aria-hidden="true">♫</span>
+            <strong>{{ target.name }}</strong>
+            <small>{{ target.style }}</small>
+            <span>{{ target.description }}</span>
+            <b>{{ selectedSupportTarget?.creatorId === target.creatorId ? '選択中' : 'この人を選ぶ' }}</b>
           </button>
-          <button class="secondary" type="button" :disabled="!walletAddress || !correctChain || !contractsReady || Boolean(busyAction)" @click="refreshOnchainState(true)">トークンの状態を更新</button>
         </div>
-        <figure v-if="supporterMetadata" class="credential-card">
-          <img :src="supporterMetadata.image" :alt="`${supporterMetadata.name}のトークン画像`" width="360" height="360">
-          <figcaption><strong>{{ supporterMetadata.name }}</strong><span>{{ supporterMetadata.description }}</span></figcaption>
-        </figure>
-        <p v-if="supporterTokenUri"><a :href="supporterTokenUri" target="_blank" rel="noopener noreferrer">トークンの公開情報を確認</a></p>
-        <p v-if="lastSbtTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastSbtTransaction}`" target="_blank" rel="noopener noreferrer">トークンを受け取った記録を確認</a></p>
-        <p v-if="!['AWAITING_WALLET', 'RELAYING', 'SUBMITTED', 'CHECKING', 'ERROR'].includes(supporterStage)" aria-live="polite">{{ supporterMessage }}</p>
+
+        <div v-if="selectedSupportTarget" class="selected-support-target">
+          <h4>{{ selectedSupportTarget.name }}を応援する</h4>
+          <p>選んだ相手への応援を、他人へ渡せないサポータートークン（SBT）として記録します。トークンには選んだ相手の識別情報が記録されます。支払いまたは継続課金はなく、発行に必要な操作手数料は運営が負担します。</p>
+          <div class="status-grid">
+            <div><span>支援する相手</span><strong>{{ selectedSupportTarget.name }}</strong></div>
+            <div><span>応援の状態</span><strong>{{ supporterTierLabel }}</strong></div>
+            <div><span>トークン番号</span><strong>{{ supporterTokenId || '未発行' }}</strong></div>
+          </div>
+          <p v-if="!supporterRegistrationReady" class="notice">サポータートークンを発行する運営サービスを準備しているため、現在この操作は利用できません。</p>
+          <p v-if="supporterStage === 'AWAITING_WALLET'" class="wallet-confirmation" role="status"><strong>仮想通貨ワレットを開いてください</strong><span>選んだ相手を確認して「署名」すると発行へ進みます。送金や支払いは行いません。</span></p>
+          <p v-else-if="supporterStage === 'RELAYING' || supporterStage === 'SUBMITTED' || supporterStage === 'CHECKING'" class="notice" role="status">{{ supporterMessage }}</p>
+          <p v-else-if="supporterStage === 'ERROR'" class="error" role="alert">{{ supporterMessage }}</p>
+          <div class="actions">
+            <button class="primary" type="button" :disabled="!supporterActionReady" @click="registerAsSupporter">
+              {{ supporterTokenId > 0n ? 'サポータートークン取得済み' : lastSbtTransaction ? 'トークン発行を送信済み' : busyAction === 'Supporter SBT' ? '確認・発行中…' : `${selectedSupportTarget.name}を応援してトークンを受け取る` }}
+            </button>
+            <button class="secondary" type="button" :disabled="!walletAddress || !correctChain || !contractsReady || Boolean(busyAction)" @click="refreshOnchainState(true)">トークンの状態を更新</button>
+          </div>
+          <figure v-if="supporterMetadata" class="credential-card">
+            <img :src="supporterMetadata.image" :alt="`${supporterMetadata.name}のトークン画像`" width="360" height="360">
+            <figcaption><strong>{{ supporterMetadata.name }}</strong><span>支援する相手: {{ selectedSupportTarget.name }}</span><span>{{ supporterMetadata.description }}</span></figcaption>
+          </figure>
+          <p v-if="supporterTokenUri"><a :href="supporterTokenUri" target="_blank" rel="noopener noreferrer">トークンの公開情報を確認</a></p>
+          <p v-if="lastSbtTransaction"><a :href="`https://amoy.polygonscan.com/tx/${lastSbtTransaction}`" target="_blank" rel="noopener noreferrer">トークンを受け取った記録を確認</a></p>
+          <p v-if="!['AWAITING_WALLET', 'RELAYING', 'SUBMITTED', 'CHECKING', 'ERROR'].includes(supporterStage)" aria-live="polite">{{ supporterMessage }}</p>
+        </div>
+        <p v-else class="notice">まず、上の一覧から支援したい音楽クリエータを選んでください。選ぶまでトークンは発行されません。</p>
       </div>
     </section>
   </section>
 </template>
 
 <style scoped>
-.testnet-journey{display:grid;gap:1.25rem;margin:1.75rem 0}.journey-heading,.panel{padding:clamp(1rem,3vw,1.6rem);border:1px solid var(--vp-c-divider);border-radius:16px;background:var(--vp-c-bg-soft)}.journey-heading h2,.panel h3{margin-top:.25rem;border:0}.kicker{margin:0;color:var(--vp-c-brand-1);font-size:.82rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.safety,.notice{padding:.8rem 1rem;border-left:4px solid var(--vp-c-warning-1);border-radius:6px;background:var(--vp-c-warning-soft)}.wallet-confirmation{display:grid;gap:.25rem;padding:1rem;border:2px solid var(--vp-c-brand-1);border-radius:10px;background:var(--vp-c-brand-soft);color:var(--vp-c-text-1)}.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem;padding:0;list-style:none}.steps li{padding:.65rem .4rem;border:1px solid var(--vp-c-divider);border-radius:999px;text-align:center;font-size:.85rem;font-weight:700}.steps li.done{border-color:var(--vp-c-brand-1);color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.current-step{border:2px solid var(--vp-c-brand-1)}.completed-step{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin:0;padding:.75rem 1rem;border-radius:12px;background:var(--vp-c-brand-soft);color:var(--vp-c-text-1)}.completed-step>span{display:grid;width:1.6rem;height:1.6rem;place-items:center;border-radius:50%;background:var(--vp-c-brand-1);color:white;font-weight:800}.completed-step small{margin-left:auto;color:var(--vp-c-text-2)}.registration,.profile-summary{display:grid;gap:.8rem}.registration>label,legend{font-weight:700}.registration input[type=text]{min-height:44px;padding:.65rem .8rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}fieldset{display:grid;gap:.65rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:10px}fieldset label{display:grid;grid-template-columns:1.2rem 1fr;gap:.6rem;align-items:start}input[type=checkbox]{width:1rem;height:1rem;margin-top:.25rem}.actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}button{min-height:44px;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;font:inherit;font-weight:700;cursor:pointer}button.primary{color:var(--vp-c-white);background:var(--vp-c-brand-1)}button.secondary{color:var(--vp-c-brand-1);background:transparent}button:disabled{cursor:not-allowed;opacity:.45}.badge{width:fit-content;padding:.25rem .55rem;border-radius:999px;font-size:.8rem;font-weight:700}.badge.success{color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.status-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}.status-grid>div{display:grid;gap:.2rem;padding:.75rem;border:1px solid var(--vp-c-divider);border-radius:10px;background:var(--vp-c-bg)}.status-grid span,.track-list span,.now-playing span{color:var(--vp-c-text-2);font-size:.85rem}.error{color:var(--vp-c-danger-1)}.track-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.track-list button{display:grid;gap:.2rem;text-align:left;color:var(--vp-c-text-1);background:var(--vp-c-bg);border-color:var(--vp-c-divider)}.track-list button.selected{border-color:var(--vp-c-brand-1);box-shadow:0 0 0 2px var(--vp-c-brand-soft)}.track-list small{color:var(--vp-c-brand-1)}.now-playing{display:flex;gap:.8rem;align-items:center;margin:1rem 0 .6rem}.now-playing>div{display:grid}.art{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;color:var(--vp-c-white);background:linear-gradient(135deg,var(--vp-c-brand-1),#7c3aed);font-size:1.4rem}.supporter-action{margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--vp-c-divider)}.supporter-action h4{margin:.25rem 0;border:0}.credential-card{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:1rem;align-items:center;margin:1rem 0;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:14px;background:var(--vp-c-bg)}.credential-card img{width:100%;height:auto;border-radius:12px}.credential-card figcaption{display:grid;gap:.5rem}.credential-card figcaption span{color:var(--vp-c-text-2);font-size:.9rem}audio{width:100%}code{overflow-wrap:anywhere}@media(max-width:720px){.steps{grid-template-columns:repeat(3,1fr)}}@media(max-width:640px){.steps,.status-grid,.track-list,.credential-card{grid-template-columns:1fr}.actions button{width:100%}.completed-step small{width:100%;margin-left:2.1rem}}
+.testnet-journey{display:grid;gap:1.25rem;margin:1.75rem 0}.journey-heading,.panel{padding:clamp(1rem,3vw,1.6rem);border:1px solid var(--vp-c-divider);border-radius:16px;background:var(--vp-c-bg-soft)}.journey-heading h2,.panel h3{margin-top:.25rem;border:0}.kicker{margin:0;color:var(--vp-c-brand-1);font-size:.82rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.safety,.notice{padding:.8rem 1rem;border-left:4px solid var(--vp-c-warning-1);border-radius:6px;background:var(--vp-c-warning-soft)}.wallet-confirmation{display:grid;gap:.25rem;padding:1rem;border:2px solid var(--vp-c-brand-1);border-radius:10px;background:var(--vp-c-brand-soft);color:var(--vp-c-text-1)}.steps{display:grid;grid-template-columns:repeat(6,1fr);gap:.5rem;padding:0;list-style:none}.steps li{padding:.65rem .4rem;border:1px solid var(--vp-c-divider);border-radius:999px;text-align:center;font-size:.85rem;font-weight:700}.steps li.done{border-color:var(--vp-c-brand-1);color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.current-step{border:2px solid var(--vp-c-brand-1)}.completed-step{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin:0;padding:.75rem 1rem;border-radius:12px;background:var(--vp-c-brand-soft);color:var(--vp-c-text-1)}.completed-step>span{display:grid;width:1.6rem;height:1.6rem;place-items:center;border-radius:50%;background:var(--vp-c-brand-1);color:white;font-weight:800}.completed-step small{margin-left:auto;color:var(--vp-c-text-2)}.registration,.profile-summary{display:grid;gap:.8rem}.registration>label,legend{font-weight:700}.registration input[type=text]{min-height:44px;padding:.65rem .8rem;border:1px solid var(--vp-c-divider);border-radius:8px;background:var(--vp-c-bg);color:var(--vp-c-text-1);font:inherit}fieldset{display:grid;gap:.65rem;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:10px}fieldset label{display:grid;grid-template-columns:1.2rem 1fr;gap:.6rem;align-items:start}input[type=checkbox]{width:1rem;height:1rem;margin-top:.25rem}.actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:1rem}button{min-height:44px;padding:.6rem .9rem;border:1px solid var(--vp-c-brand-1);border-radius:9px;font:inherit;font-weight:700;cursor:pointer}button.primary{color:var(--vp-c-white);background:var(--vp-c-brand-1)}button.secondary{color:var(--vp-c-brand-1);background:transparent}button:disabled{cursor:not-allowed;opacity:.45}.badge{width:fit-content;padding:.25rem .55rem;border-radius:999px;font-size:.8rem;font-weight:700}.badge.success{color:var(--vp-c-brand-1);background:var(--vp-c-brand-soft)}.status-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.7rem}.status-grid>div{display:grid;gap:.2rem;padding:.75rem;border:1px solid var(--vp-c-divider);border-radius:10px;background:var(--vp-c-bg)}.status-grid span,.track-list span,.now-playing span{color:var(--vp-c-text-2);font-size:.85rem}.error{color:var(--vp-c-danger-1)}.track-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.track-list button{display:grid;gap:.2rem;text-align:left;color:var(--vp-c-text-1);background:var(--vp-c-bg);border-color:var(--vp-c-divider)}.track-list button.selected{border-color:var(--vp-c-brand-1);box-shadow:0 0 0 2px var(--vp-c-brand-soft)}.track-list small{color:var(--vp-c-brand-1)}.now-playing{display:flex;gap:.8rem;align-items:center;margin:1rem 0 .6rem}.now-playing>div{display:grid}.art{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;color:var(--vp-c-white);background:linear-gradient(135deg,var(--vp-c-brand-1),#7c3aed);font-size:1.4rem}.supporter-action{margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--vp-c-divider)}.supporter-action h4{margin:.25rem 0;border:0}.support-target-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem;margin:1rem 0}.support-target-list button{display:grid;gap:.35rem;align-content:start;text-align:left;color:var(--vp-c-text-1);background:var(--vp-c-bg);border-color:var(--vp-c-divider)}.support-target-list button.selected{border-color:var(--vp-c-brand-1);box-shadow:0 0 0 2px var(--vp-c-brand-soft)}.support-target-list small,.support-target-list span{color:var(--vp-c-text-2)}.support-target-list b{margin-top:.35rem;color:var(--vp-c-brand-1)}.creator-avatar{display:grid;width:2.2rem;height:2.2rem;place-items:center;border-radius:50%;background:var(--vp-c-brand-soft);font-size:1.2rem}.selected-support-target{margin-top:1rem;padding:1rem;border:1px solid var(--vp-c-brand-1);border-radius:12px;background:var(--vp-c-bg)}.credential-card{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:1rem;align-items:center;margin:1rem 0;padding:1rem;border:1px solid var(--vp-c-divider);border-radius:14px;background:var(--vp-c-bg)}.credential-card img{width:100%;height:auto;border-radius:12px}.credential-card figcaption{display:grid;gap:.5rem}.credential-card figcaption span{color:var(--vp-c-text-2);font-size:.9rem}audio{width:100%}code{overflow-wrap:anywhere}@media(max-width:720px){.steps{grid-template-columns:repeat(3,1fr)}.support-target-list{grid-template-columns:1fr}}@media(max-width:640px){.steps,.status-grid,.track-list,.credential-card{grid-template-columns:1fr}.actions button{width:100%}.completed-step small{width:100%;margin-left:2.1rem}}
 .steps{grid-template-columns:repeat(5,1fr)}
 </style>

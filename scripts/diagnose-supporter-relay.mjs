@@ -123,7 +123,13 @@ const [nonce, signingBlock] = await Promise.all([
   publicClient.getBlock()
 ])
 const deadline = signingBlock.timestamp + 600n
-const typedData = createSupporterTypedData({ supporterSbt: SUPPORTER_SBT, holder: participant.address, nonce, deadline })
+const typedData = createSupporterTypedData({
+  supporterSbt: SUPPORTER_SBT,
+  holder: participant.address,
+  creatorId: DEMO_SUPPORTER_CREATOR_ID,
+  nonce,
+  deadline
+})
 const signature = await participant.signTypedData(typedData)
 const startedAt = Date.now()
 const response = await fetch(`${origin}/api/v1/testnet/supporter-registrations`, {
