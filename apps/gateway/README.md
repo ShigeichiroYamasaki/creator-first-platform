@@ -67,7 +67,7 @@ GATEWAY_GMAIL_APP_PASSWORD_FILE=/run/secrets/gmail-app-password \
 npm run gateway:dev
 ```
 
-Polygon AmoyのサポーターSBT発行では、ブラウザは短命EIP-712意思へ署名するだけとし、専用リレイヤーがテストPOLを負担します。リレイヤーは、オンチェーン登録済み音楽リスナー、現在Nonce、署名者、15分以内のDeadline、固定SBTおよび音楽クリエーター許可一覧を検証します。参加者登録運営鍵を流用せず、SBTの`RELAYER_ROLE`だけを持つ別鍵を読み取り専用秘密ファイルから設定します。
+Polygon AmoyのサポーターSBT発行では、ブラウザは短命EIP-712意思へ署名するだけとし、専用リレイヤーがテストPOLを負担します。リレイヤーは、オンチェーン登録済み音楽リスナー、現在Nonce、署名者、15分以内のDeadline、固定SBTおよび支援対象を検証します。固定デモ対象以外は、音楽クリエーター登録台帳の有効な登録番号と正規対象IDを都度照合します。参加者登録運営鍵を流用せず、SBTの`RELAYER_ROLE`だけを持つ別鍵を読み取り専用秘密ファイルから設定します。
 
 ```sh
 GATEWAY_CHAIN_ID=80002 \
@@ -76,6 +76,7 @@ GATEWAY_PARTICIPANT_REGISTRY_ADDRESS='0x...' \
 GATEWAY_PARTICIPANT_OPERATOR_PRIVATE_KEY_FILE=/run/secrets/participant-operator-private-key \
 GATEWAY_PARTICIPANT_ENROLLMENT_AUTO_PROCESS=true \
 GATEWAY_SUPPORTER_SBT_ADDRESS='0x...' \
+GATEWAY_CREATOR_REGISTRY_ADDRESS='0x...' \
 GATEWAY_SUPPORTER_CREATOR_IDS='0x...' \
 GATEWAY_SUPPORTER_RELAYER_PRIVATE_KEY_FILE=/run/secrets/supporter-relayer-private-key \
 GATEWAY_GOVERNOR_ADDRESS='0x...' \

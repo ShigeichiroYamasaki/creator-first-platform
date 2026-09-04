@@ -123,6 +123,7 @@ export function createGatewayServer({
           rpcUrls: config.amoyRpcUrls,
           supporterSbtAddress: config.supporterSbtAddress,
           participantRegistryAddress: config.participantRegistryAddress,
+          creatorRegistryAddress: config.creatorRegistryAddress,
           relayerPrivateKey: config.supporterRelayerPrivateKey
         })
       : undefined
@@ -668,6 +669,10 @@ export function createGatewayServer({
       }
       if (request.method === 'GET' && path === '/v1/catalog/home') {
         return sendJson(response, 200, { tracks: catalog.map(publicTrack) })
+      }
+      if (request.method === 'GET' && path === '/v1/testnet/support-targets') {
+        if (!supporterRelayer) return sendJson(response, 200, { creators: [] })
+        return sendJson(response, 200, { creators: await supporterRelayer.supportTargets() })
       }
       if (request.method === 'GET' && path === '/v1/demo/user') {
         return sendJson(response, 200, demoUserView(account))

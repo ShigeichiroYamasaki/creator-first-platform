@@ -4,7 +4,7 @@
 **Version:** 0.1.0
 **Protocol Domain:** account / credential / entitlement
 **Specification ID:** SPEC-ACCOUNT-004
-**Last Updated:** 2026-08-27
+**Last Updated:** 2026-09-04
 
 ## Related Documents
 
@@ -92,9 +92,12 @@ Common terms follow `protocol/glossary.md` and `protocol/conventions.md`.
 - purpose-bound active Wallet Link and proof context;
 - Candidate Wallet, approved Credential Deployment and receiver consent;
 - Qualification Policy ID, version, Creator or Community scope and evidence reference;
+- for a registered-Creator scope, Chain ID, approved Creator Registry deployment, numeric registry ID and its current active state;
 - confirmed Contract events with block provenance and finality classification;
 - Privilege Policy ID, version, activation window and bounded capability definition;
 - recovery, revocation, burn, incident and appeal decisions from authorized actors.
+
+For the public experiment, a registered-Creator scope MUST be derived with domain separation from the exact Chain ID, approved Creator Registry address and numeric registry Creator ID. The relayer MUST read the approved registry at submission time and reject missing, inactive or mismatched registrations. A client-provided scope or display label alone MUST NOT authorize issuance. Registry presence is only a testnet self-declaration and MUST NOT be represented as identity, rights, payee or contract verification.
 
 ## Outputs
 

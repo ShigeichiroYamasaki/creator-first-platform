@@ -12,7 +12,7 @@ import { FileMediaAdapter } from '../src/media/FileMediaAdapter.js'
 import { NavidromeMediaAdapter } from '../src/media/NavidromeMediaAdapter.js'
 import { parseSingleRange } from '../src/media/range.js'
 import { createGatewayServer } from '../src/server.js'
-import { SupporterSbtRelayer } from '../src/SupporterSbtRelayer.js'
+import { registeredCreatorScopeId, SupporterSbtRelayer } from '../src/SupporterSbtRelayer.js'
 
 const TEST_PRIVATE_KEY = `0x${'0123456789abcdef'.repeat(4)}`
 const TEST_SUPPORTER_SBT = '0x4444444444444444444444444444444444444444'
@@ -83,6 +83,26 @@ class FakeSupporterSbtChain {
       transactionHash: `0x${'33'.repeat(32)}`,
       blockNumber: 103n
     }
+  }
+
+  async registeredCreator(registryCreatorId) {
+    if (registryCreatorId !== 7n) return undefined
+    return {
+      registryCreatorId,
+      account: '0x1111111111111111111111111111111111111111',
+      profileCommitment: zeroHash,
+      registeredAt: 1_700_000_000n,
+      releaseCount: 2,
+      creatorId: registeredCreatorScopeId({
+        chainId: 80002,
+        creatorRegistryAddress: '0x2222222222222222222222222222222222222222',
+        registryCreatorId
+      })
+    }
+  }
+
+  async registeredCreators() {
+    return [await this.registeredCreator(7n)]
   }
 }
 
@@ -376,6 +396,66 @@ test('Supporter relay returns a transaction hash before waiting for Amoy confirm
     transactionHash: `0x${'44'.repeat(32)}`
   })
   assert.equal(chain.calls.length, 1)
+})
+
+test('Supporter relay lists and accepts active registered creators without adding them to the fixture allowlist', async () => {
+  const account = privateKeyToAccount(TEST_PRIVATE_KEY)
+  const chain = new FakeSupporterSbtChain()
+  const creatorId = registeredCreatorScopeId({
+    chainId: 80002,
+    creatorRegistryAddress: '0x2222222222222222222222222222222222222222',
+    registryCreatorId: 7n
+  })
+  const deadline = BigInt(Math.floor(Date.now() / 1000) + 600)
+  const signature = await account.signTypedData({
+    domain: { name: 'Creator First Supporter SBT', version: '1', chainId: 80002, verifyingContract: TEST_SUPPORTER_SBT },
+    types: { SupportIntent: [
+      { name: 'creatorId', type: 'bytes32' },
+      { name: 'holder', type: 'address' },
+      { name: 'nonce', type: 'uint256' },
+      { name: 'deadline', type: 'uint256' },
+      { name: 'consentVersion', type: 'bytes32' }
+    ] },
+    primaryType: 'SupportIntent',
+    message: { creatorId, holder: account.address, nonce: 0n, deadline, consentVersion: TEST_SUPPORTER_CONSENT_VERSION }
+  })
+  const relayer = new SupporterSbtRelayer({ chain, supporterSbtAddress: TEST_SUPPORTER_SBT, allowedCreatorIds: [] })
+
+  const targets = await relayer.supportTargets()
+  assert.equal(targets.length, 1)
+  assert.equal(targets[0].creatorId, creatorId)
+  assert.equal(targets[0].name, '登録音楽クリエータ #7')
+
+  const result = await relayer.relay({
+    holder: account.address,
+    creatorId,
+    registryCreatorId: '7',
+    nonce: '0',
+    deadline: deadline.toString(),
+    consentVersion: TEST_SUPPORTER_CONSENT_VERSION,
+    signature,
+    idempotencyKey: 'registered-creator-support'
+  })
+  assert.equal(result.status, 'SBT_ACTIVE')
+  assert.equal(chain.calls.length, 1)
+})
+
+test('Supporter relay rejects a registered creator id whose canonical scope does not match', async () => {
+  const chain = new FakeSupporterSbtChain()
+  const relayer = new SupporterSbtRelayer({ chain, supporterSbtAddress: TEST_SUPPORTER_SBT, allowedCreatorIds: [] })
+  await assert.rejects(
+    relayer.relay({
+      holder: privateKeyToAccount(TEST_PRIVATE_KEY).address,
+      creatorId: TEST_SUPPORTER_CREATOR_ID,
+      registryCreatorId: '7',
+      nonce: '0',
+      deadline: String(Math.floor(Date.now() / 1000) + 600),
+      consentVersion: TEST_SUPPORTER_CONSENT_VERSION,
+      signature: `0x${'11'.repeat(65)}`,
+      idempotencyKey: 'mismatched-creator-scope'
+    }),
+    (error) => error.code === 'CREATOR_NOT_REGISTERED'
+  )
 })
 
 test('Test User registration is private, idempotent and bound to one demo session', async (context) => {

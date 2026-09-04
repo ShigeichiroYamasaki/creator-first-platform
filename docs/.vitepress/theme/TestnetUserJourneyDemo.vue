@@ -41,11 +41,12 @@ type Deployment = {
     supporterSbt: Address | null
     supporterRegistrationAdapter?: Address | null
     participantRegistry?: Address | null
+    creatorRegistry?: Address | null
   }
 }
 type Track = { id: string; title: string; artist: string; frequency: number; subscriberOnly: boolean }
 type SupporterMetadata = { name: string; description: string; image: string; attributes: Array<{ trait_type: string; value: string }> }
-type SupportTarget = { creatorId: Hash; name: string; style: string; description: string }
+type SupportTarget = { creatorId: Hash; name: string; style: string; description: string; registryCreatorId?: string; source?: 'DEMO_FIXTURE' | 'REGISTERED_CREATOR' }
 
 const storageKey = 'creator-first-testnet-test-user-v2'
 const tracks: Track[] = [
@@ -79,6 +80,7 @@ const supporterTier = ref(0)
 const supporterTokenUri = ref('')
 const supporterMetadata = ref<SupporterMetadata>()
 const selectedSupportTarget = ref<SupportTarget>()
+const supportTargets = ref<SupportTarget[]>(DEMO_SUPPORT_TARGETS.map((target) => ({ ...target, source: 'DEMO_FIXTURE' })))
 const supporterRelayAvailable = ref(false)
 const supporterMessage = ref('まず、応援したい音楽クリエータを選んでください。')
 const supporterStage = ref<'IDLE' | 'AWAITING_WALLET' | 'RELAYING' | 'SUBMITTED' | 'CHECKING' | 'COMPLETE' | 'ERROR'>('IDLE')
@@ -396,6 +398,7 @@ async function registerAsSupporter(): Promise<void> {
       body: JSON.stringify({
         holder: walletAddress.value,
         creatorId: supportTarget.creatorId,
+        ...(supportTarget.registryCreatorId ? { registryCreatorId: supportTarget.registryCreatorId } : {}),
         nonce: (nonce as bigint).toString(),
         deadline: deadline.toString(),
         consentVersion: typedData.message.consentVersion,
@@ -413,6 +416,7 @@ async function registerAsSupporter(): Promise<void> {
         SUPPORT_NONCE_MISMATCH: '別の応援操作が先に処理されています。状態を更新してから再試行してください。',
         SUPPORT_SIGNATURE_INVALID: '仮想通貨ワレットの署名を確認できませんでした。接続中のアカウントを確認してください。',
         SUPPORT_SIGNER_MISMATCH: '登録された仮想通貨ワレットと署名したアカウントが一致しません。',
+        CREATOR_NOT_REGISTERED: '選んだ音楽クリエータの活動登録が現在有効ではありません。支援先一覧を更新してください。',
         SUPPORTER_RELAY_FAILED: 'Polygon Amoyでトークン発行を完了できませんでした。運営が発行サービスを確認します。'
       }
       throw new Error((result.code && relayMessages[result.code]) || result.message || `サポータートークンを発行できません（HTTP ${response.status}）`)
@@ -495,6 +499,22 @@ async function loadSupporterRelayStatus(): Promise<void> {
     supporterRelayAvailable.value = false
   }
 }
+async function loadRegisteredSupportTargets(): Promise<void> {
+  try {
+    const response = await fetch('/api/v1/testnet/support-targets', { cache: 'no-store', credentials: 'include' })
+    if (!response.ok) return
+    const value = await response.json() as { creators?: SupportTarget[] }
+    const registered = (value.creators ?? []).filter((target) => (
+      /^0x[0-9a-fA-F]{64}$/.test(target.creatorId) && /^\d+$/.test(target.registryCreatorId ?? '')
+    ))
+    supportTargets.value = [
+      ...DEMO_SUPPORT_TARGETS.map((target) => ({ ...target, source: 'DEMO_FIXTURE' as const })),
+      ...registered
+    ]
+  } catch {
+    // The fixed fictional targets remain available when the public directory is temporarily unavailable.
+  }
+}
 function restoreProfile(): void {
   try {
     const stored = sessionStorage.getItem(storageKey)
@@ -527,6 +547,7 @@ onMounted(async () => {
   await selectTrack(tracks[0])
   await loadDeployment()
   await loadSupporterRelayStatus()
+  await loadRegisteredSupportTargets()
 })
 onBeforeUnmount(() => {
   for (const url of toneUrls.values()) URL.revokeObjectURL(url)
@@ -604,10 +625,10 @@ onBeforeUnmount(() => {
       <p aria-live="polite">{{ playerMessage }}</p>
       <div class="supporter-action">
         <h4 id="supporter-registration-title">5. 支援したい音楽クリエータを選ぶ</h4>
-        <p>応援したい相手を一人選びます。ここに表示するのはすべて公開実験用の架空の音楽クリエータです。</p>
+        <p>応援したい相手を一人選びます。架空のテスト対象に加え、Polygon Amoyへ活動登録した実験参加者も表示します。</p>
         <div class="support-target-list" role="group" aria-label="支援したい音楽クリエータ">
           <button
-            v-for="target in DEMO_SUPPORT_TARGETS"
+            v-for="target in supportTargets"
             :key="target.creatorId"
             type="button"
             :class="{ selected: selectedSupportTarget?.creatorId === target.creatorId }"
@@ -619,9 +640,11 @@ onBeforeUnmount(() => {
             <strong>{{ target.name }}</strong>
             <small>{{ target.style }}</small>
             <span>{{ target.description }}</span>
+            <span v-if="target.source === 'REGISTERED_CREATOR'" class="registered-source">登録済み・自己申告</span>
             <b>{{ selectedSupportTarget?.creatorId === target.creatorId ? '選択中' : 'この人を選ぶ' }}</b>
           </button>
         </div>
+        <p class="directory-note">「登録済み」は公開実験のオンチェーン自己申告が有効であることだけを示します。本人確認、権利確認または報酬受取資格の確認ではありません。</p>
 
         <div v-if="selectedSupportTarget" class="selected-support-target">
           <h4>{{ selectedSupportTarget.name }}を応援する</h4>

@@ -65,7 +65,9 @@ test('separates participant preparation from post-POL service experiences', asyn
   assert.match(listenerJourney, /if \(await redirectStaticSiteToCloud\(\)\) return/)
   assert.match(listenerJourney, /サポータートークン（SBT）/)
   assert.match(listenerJourney, /支援したい音楽クリエータを選ぶ/)
-  assert.match(listenerJourney, /v-for="target in DEMO_SUPPORT_TARGETS"/)
+  assert.match(listenerJourney, /v-for="target in supportTargets"/)
+  assert.match(listenerJourney, /\/api\/v1\/testnet\/support-targets/)
+  assert.match(listenerJourney, /registryCreatorId/)
   assert.match(listenerJourney, /選ぶまでトークンは発行されません/)
   assert.match(listenerJourney, /selectedSupportTarget\.value/)
   assert.match(listenerJourney, /仮想通貨ワレットを開いてください/)
@@ -274,7 +276,7 @@ test('builds the exact short-lived Supporter SBT EIP-712 intent', () => {
   assert.equal(value.message.consentVersion, DEMO_SUPPORTER_CONSENT_VERSION)
   assert.throws(
     () => createSupporterTypedData({ supporterSbt, holder, nonce: 7n, deadline: 900n }),
-    /Select an approved support target/
+    /Select a valid support target/
   )
   assert.equal(DEMO_SUPPORT_TARGETS.length, 3)
   assert.equal(new Set(DEMO_SUPPORT_TARGETS.map((target) => target.creatorId)).size, 3)

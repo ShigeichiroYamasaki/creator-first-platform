@@ -4,8 +4,8 @@ set -Eeuo pipefail
 readonly KEYCHAIN_SERVICE=creator-first-platform-supporter-relayer
 readonly KEYCHAIN_ACCOUNT=creator-first-amoy-demo
 
-if [[ "$#" -ne 5 ]]; then
-  echo "Usage: $0 INSTANCE_NAME ZONE PARTICIPANT_REGISTRY_ADDRESS SUPPORTER_SBT_ADDRESS CREATOR_ID" >&2
+if [[ "$#" -ne 6 ]]; then
+  echo "Usage: $0 INSTANCE_NAME ZONE PARTICIPANT_REGISTRY_ADDRESS SUPPORTER_SBT_ADDRESS CREATOR_REGISTRY_ADDRESS CREATOR_ID" >&2
   exit 2
 fi
 
@@ -13,9 +13,10 @@ readonly INSTANCE_NAME="$1"
 readonly INSTANCE_ZONE="$2"
 readonly REGISTRY_ADDRESS="$3"
 readonly SUPPORTER_SBT_ADDRESS="$4"
-readonly CREATOR_ID="$5"
+readonly CREATOR_REGISTRY_ADDRESS="$5"
+readonly CREATOR_ID="$6"
 
-if [[ ! "${REGISTRY_ADDRESS}" =~ ^0x[0-9a-fA-F]{40}$ ]] || [[ ! "${SUPPORTER_SBT_ADDRESS}" =~ ^0x[0-9a-fA-F]{40}$ ]]; then
+if [[ ! "${REGISTRY_ADDRESS}" =~ ^0x[0-9a-fA-F]{40}$ ]] || [[ ! "${SUPPORTER_SBT_ADDRESS}" =~ ^0x[0-9a-fA-F]{40}$ ]] || [[ ! "${CREATOR_REGISTRY_ADDRESS}" =~ ^0x[0-9a-fA-F]{40}$ ]]; then
   echo "Registry and Supporter SBT values must be EVM addresses." >&2
   exit 2
 fi
@@ -42,7 +43,7 @@ security find-generic-password -s "${KEYCHAIN_SERVICE}" -a "${KEYCHAIN_ACCOUNT}"
 
 gcloud compute instances add-metadata "${INSTANCE_NAME}" \
   --zone "${INSTANCE_ZONE}" \
-  --metadata "participant-registry-address=${REGISTRY_ADDRESS},supporter-sbt-address=${SUPPORTER_SBT_ADDRESS},supporter-creator-ids=${CREATOR_ID}" \
+  --metadata "participant-registry-address=${REGISTRY_ADDRESS},supporter-sbt-address=${SUPPORTER_SBT_ADDRESS},creator-registry-address=${CREATOR_REGISTRY_ADDRESS},supporter-creator-ids=${CREATOR_ID}" \
   --metadata-from-file "gateway-supporter-relayer-private-key=${secret_file}"
 
 echo "Supporter relay configuration and transient secret were added. Restart, verify healthy relay status, then remove gateway-supporter-relayer-private-key metadata."

@@ -72,6 +72,7 @@ export function loadConfig(environment = process.env) {
     throw new Error('Participant enrollment requires both its registry address and operator private key')
   }
   const supporterSbtAddress = environment.GATEWAY_SUPPORTER_SBT_ADDRESS?.trim()
+  const creatorRegistryAddress = environment.GATEWAY_CREATOR_REGISTRY_ADDRESS?.trim()
   const supporterRelayerPrivateKey = secret(
     environment,
     'GATEWAY_SUPPORTER_RELAYER_PRIVATE_KEY',
@@ -83,6 +84,9 @@ export function loadConfig(environment = process.env) {
     .filter(Boolean)
   if (supporterSbtAddress && !/^0x[0-9a-fA-F]{40}$/.test(supporterSbtAddress)) {
     throw new Error('GATEWAY_SUPPORTER_SBT_ADDRESS must be an EVM address')
+  }
+  if (creatorRegistryAddress && !/^0x[0-9a-fA-F]{40}$/.test(creatorRegistryAddress)) {
+    throw new Error('GATEWAY_CREATOR_REGISTRY_ADDRESS must be an EVM address')
   }
   if (supporterRelayerPrivateKey && !/^0x[0-9a-fA-F]{64}$/.test(supporterRelayerPrivateKey)) {
     throw new Error('GATEWAY_SUPPORTER_RELAYER_PRIVATE_KEY must be a 32-byte hex key')
@@ -182,6 +186,7 @@ export function loadConfig(environment = process.env) {
       'GATEWAY_PARTICIPANT_ENROLLMENT_AUTO_PROCESS'
     ),
     supporterSbtAddress,
+    creatorRegistryAddress,
     supporterRelayerPrivateKey,
     supporterCreatorIds,
     governorAddress,

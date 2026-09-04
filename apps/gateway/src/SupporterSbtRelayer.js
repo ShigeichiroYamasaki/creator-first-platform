@@ -2,9 +2,11 @@ import { createHash } from 'node:crypto'
 import {
   createPublicClient,
   createWalletClient,
+  encodePacked,
   fallback,
   getAddress,
   http,
+  keccak256,
   parseAbi,
   recoverTypedDataAddress
 } from 'viem'
@@ -28,6 +30,18 @@ const supporterSbtAbi = parseAbi([
 const participantRegistryAbi = parseAbi([
   'function isRegistered(address wallet,uint8 role) view returns (bool)'
 ])
+
+const creatorRegistryAbi = parseAbi([
+  'function creatorCount() view returns (uint256)',
+  'function creators(uint256 creatorId) view returns (address account,address payoutAddress,bytes32 profileCommitment,uint64 registeredAt,uint32 releaseCount,bool active)'
+])
+
+export function registeredCreatorScopeId({ chainId, creatorRegistryAddress, registryCreatorId }) {
+  return keccak256(encodePacked(
+    ['string', 'uint256', 'address', 'uint256'],
+    ['creator-first:registered-creator:v1', BigInt(chainId), getAddress(creatorRegistryAddress), BigInt(registryCreatorId)]
+  ))
+}
 
 export class SupporterSbtRelayError extends Error {
   constructor(status, code, message) {
@@ -90,13 +104,51 @@ function safeChainMessage(error) {
 }
 
 export class AmoySupporterSbtChain {
-  constructor({ rpcUrls, supporterSbtAddress, participantRegistryAddress, relayerPrivateKey }) {
+  constructor({ rpcUrls, supporterSbtAddress, participantRegistryAddress, creatorRegistryAddress, relayerPrivateKey }) {
     this.supporterSbtAddress = getAddress(supporterSbtAddress)
     this.participantRegistryAddress = getAddress(participantRegistryAddress)
+    this.creatorRegistryAddress = creatorRegistryAddress ? getAddress(creatorRegistryAddress) : undefined
     this.account = privateKeyToAccount(relayerPrivateKey)
     const transport = () => fallback(rpcUrls.map((rpcUrl) => http(rpcUrl, { timeout: 20_000 })))
     this.publicClient = createPublicClient({ chain: polygonAmoy, transport: transport() })
     this.walletClient = createWalletClient({ account: this.account, chain: polygonAmoy, transport: transport() })
+  }
+
+  async registeredCreator(registryCreatorId) {
+    if (!this.creatorRegistryAddress) return undefined
+    const record = await this.publicClient.readContract({
+      address: this.creatorRegistryAddress,
+      abi: creatorRegistryAbi,
+      functionName: 'creators',
+      args: [registryCreatorId]
+    })
+    if (record[3] === 0n || !record[5]) return undefined
+    return {
+      registryCreatorId,
+      account: record[0],
+      profileCommitment: record[2],
+      registeredAt: record[3],
+      releaseCount: Number(record[4]),
+      creatorId: registeredCreatorScopeId({
+        chainId: polygonAmoy.id,
+        creatorRegistryAddress: this.creatorRegistryAddress,
+        registryCreatorId
+      })
+    }
+  }
+
+  async registeredCreators(limit = 200n) {
+    if (!this.creatorRegistryAddress) return []
+    const count = await this.publicClient.readContract({
+      address: this.creatorRegistryAddress,
+      abi: creatorRegistryAbi,
+      functionName: 'creatorCount'
+    })
+    const capped = count < limit ? count : limit
+    const creators = await Promise.all(
+      Array.from({ length: Number(capped) }, (_, index) => this.registeredCreator(BigInt(index + 1)))
+    )
+    return creators.filter(Boolean)
   }
 
   get relayerAddress() {
@@ -186,6 +238,24 @@ export class SupporterSbtRelayer {
     this.allowedCreatorIds = new Set(allowedCreatorIds.map((value) => value.toLowerCase()))
     this.operations = new Map()
     this.availabilityCache = { checkedAt: 0, value: false }
+    this.creatorDirectoryCache = { checkedAt: 0, value: [] }
+  }
+
+  async supportTargets() {
+    if (!this.chain?.registeredCreators) return []
+    if (Date.now() - this.creatorDirectoryCache.checkedAt < 60_000) return this.creatorDirectoryCache.value
+    const records = await this.chain.registeredCreators()
+    const value = records.map((record) => ({
+      creatorId: record.creatorId,
+      registryCreatorId: record.registryCreatorId.toString(),
+      name: `登録音楽クリエータ #${record.registryCreatorId}`,
+      style: record.releaseCount > 0 ? `テスト作品 ${record.releaseCount}件` : '作品情報は未登録',
+      description: `Polygon Amoyに登録済みの実験用音楽クリエータ（${record.account.slice(0, 8)}…${record.account.slice(-6)}）`,
+      registeredAt: record.registeredAt.toString(),
+      source: 'REGISTERED_CREATOR'
+    }))
+    this.creatorDirectoryCache = { checkedAt: Date.now(), value }
+    return value
   }
 
   get enabled() {
@@ -216,7 +286,18 @@ export class SupporterSbtRelayer {
     }
     const creatorId = bytes32(input.creatorId, 'CREATOR_ID')
     const consentVersion = bytes32(input.consentVersion, 'CONSENT_VERSION')
-    if (!this.allowedCreatorIds.has(creatorId.toLowerCase())) {
+    let registeredCreator
+    if (input.registryCreatorId !== undefined && input.registryCreatorId !== null) {
+      const registryCreatorId = unsignedInteger(input.registryCreatorId, 'REGISTRY_CREATOR_ID')
+      if (registryCreatorId === 0n) {
+        throw new SupporterSbtRelayError(400, 'INVALID_REGISTRY_CREATOR_ID', 'REGISTRY_CREATOR_ID must be greater than zero')
+      }
+      registeredCreator = await this.chain.registeredCreator?.(registryCreatorId)
+      if (!registeredCreator || registeredCreator.creatorId.toLowerCase() !== creatorId.toLowerCase()) {
+        throw new SupporterSbtRelayError(403, 'CREATOR_NOT_REGISTERED', 'The selected creator is not an active registered creator')
+      }
+    }
+    if (!this.allowedCreatorIds.has(creatorId.toLowerCase()) && !registeredCreator) {
       throw new SupporterSbtRelayError(403, 'CREATOR_NOT_SPONSORED', 'This creator is not enabled for sponsored registration')
     }
     const nonce = unsignedInteger(input.nonce, 'NONCE')

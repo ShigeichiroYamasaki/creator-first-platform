@@ -149,9 +149,7 @@ export const supporterRegistrationAdapterAbi = [
 ]
 
 export function createSupporterTypedData({ supporterSbt, holder, creatorId, nonce, deadline }) {
-  if (!DEMO_SUPPORT_TARGETS.some((target) => target.creatorId === creatorId)) {
-    throw new Error('Select an approved support target before signing.')
-  }
+  if (!/^0x[0-9a-fA-F]{64}$/.test(creatorId)) throw new Error('Select a valid support target before signing.')
   return {
     domain: {
       name: 'Creator First Supporter SBT',
