@@ -7,7 +7,7 @@ search: false
 
 **状態:** 提案  
 **日付:** 2026-08-24  
-**最終更新日:** 2026-08-26
+**最終更新日:** 2026-11-20
 
 ## 1. 背景
 
@@ -127,3 +127,9 @@ flowchart LR
 - [ADR-0006 ゼロ知識証明戦略](./ADR-0006-zero-knowledge-proof-strategy.md)
 - [ADR-0016 二院制二次ガバナンス](./ADR-0016-bicameral-quadratic-governance.md)
 - [SPEC-ZK-001 透明型ゼロ知識証明検証](../protocol/specs/transparent-zk-verification.md)
+
+
+## 2026年11月20日補足：匿名支援資格との境界
+
+[ADR-0023](./ADR-0023-jpki-wallet-private-support-credentials)に、JPKI認証ウォレットの役割分担、匿名の支援資格、PRIV-01〜12との対応、失効・復旧・受入条件を記録した。本ADRの既存実装や本番方針を置換するものではなく、追加設計は提案段階である。
+本番透明型方針は維持する。セットアップを要する方式の比較実験は本番採用を意味せず、外部資格の証明を本番計算証明へ無審査に流用しない。モック検証器は実際のゼロ知識性・健全性を提供しない。

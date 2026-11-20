@@ -27,7 +27,7 @@ Creator First Platformは、音楽クリエーターの権利と持続可能な�
 - [第10章：プライバシー要件と検証条件](./10-security#behavior-privacy-requirements)
 - [第11章：本人確認・法定記録・権利・資金規制との境界](./11-legal-sto-tax#jpki-zkp-legal-boundary)
 
-追加内容は設計方針・要件であり、SonoLoopとの正式連携、実JPKI、本番JPYC、実際のZKPの実装・監査完了を示しません。関連ADR・仕様の具体化と実装は別途進めます。
+追加内容は設計方針・要件であり、SonoLoopとの正式連携、実JPKI、本番JPYC、実際のZKPの実装・監査完了を示しません。対応方針・代替案・受入条件は[ADR-0023](/adr/ADR-0023-jpki-wallet-private-support-credentials)に記録しました。プロトコル仕様の具体化と実装は別途進めます。
 
 ## 章構成
 

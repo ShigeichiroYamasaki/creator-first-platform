@@ -474,7 +474,8 @@ export default defineConfig({
               { text: '0019 JPKI・パスキー・ウォレット結合', link: '/adr/ADR-0019-jpki-passkey-wallet-binding-testnet' },
               { text: '0020 ウォレット未確定型の事前登録', link: '/adr/ADR-0020-wallet-agnostic-participant-invitations' },
               { text: '0021 リレイヤーによるガス代負担', link: '/adr/ADR-0021-relayer-gas-sponsorship' },
-              { text: '0022 JASRAC・NexTone権利処理連携', link: '/adr/ADR-0022-collective-rights-integration' }
+              { text: '0022 JASRAC・NexTone権利処理連携', link: '/adr/ADR-0022-collective-rights-integration' },
+              { text: '0023 JPKI認証ウォレットと匿名支援資格', link: '/adr/ADR-0023-jpki-wallet-private-support-credentials' }
             ]
           }
         ],
@@ -565,6 +566,10 @@ export default defineConfig({
                   /<h2[^>]*id="_11-44-責任分担"[^>]*>[\s\S]*?(?=<h2|$)/,
                   ''
                 )
+                .replace(
+                  /(<h3[^>]*id="jpki-zkp-legal-boundary"[^>]*>[\s\S]*?<\/h3>)[\s\S]*?(?=<h2|$)/,
+                  '$1<p>JPKI認証ウォレットとZKPの法的境界：本人確認、個人情報、法定記録、権利・資金規制、専門家確認。公的出典と責任分界は本文を参照。</p>'
+                )
               : withoutCredentialArtwork
 
             // アカウント結合の要点は検索可能に保ち、詳細は本文とADR-0019で
@@ -573,6 +578,9 @@ export default defineConfig({
               return searchableDocument.replace(
                 /(<h3[^>]*id="_10-6-1-[^"]*"[^>]*>[\s\S]*?<\/h3>)[\s\S]*?(?=<hr><h2[^>]*id="_10-7-|$)/,
                 '$1<p>JPKI本人確認、FIDO2／WebAuthnパスキー、MetaMaskウォレットをアカウント・トラストサービスで段階的に結合する。公開デモはモックJPKIとPolygon Amoyを使用し、詳細はADR-0019で定義する。</p>'
+              ).replace(
+                /(<h3[^>]*id="behavior-privacy-requirements"[^>]*>[\s\S]*?<\/h3>)[\s\S]*?(?=<h2|$)/,
+                '$1<p>PRIV-01〜12：本人・支援・再生履歴の分離、匿名資格、nullifier、追跡防止、失効、返金、復旧、公開SBT、記録保存、入力真正性、少人数集計。研究・開発の受入条件とADR-0023を本文に記載する。</p>'
               )
             }
 
@@ -647,9 +655,14 @@ export default defineConfig({
                   ''
                 )
 
-              // ADR-0022はタイトルと背景を検索可能に保ち、決定、データ構造、
+                .replace(
+                  /<h2[^>]*id="_?2026[^" ]*"[^>]*>[\s\S]*$/,
+                  ''
+                )
+
+              // ADR-0022・0023はタイトルと背景を検索可能に保ち、決定、データ構造、
               // API、コントラクト例等の詳細は本文だけに掲載する。
-              if (environment.relativePath === 'adr/ADR-0022-collective-rights-integration.md') {
+              if (['adr/ADR-0022-collective-rights-integration.md', 'adr/ADR-0023-jpki-wallet-private-support-credentials.md'].includes(environment.relativePath)) {
                 return searchableAdr.replace(
                   /<h2[^>]*id="_2-[^"]*"[^>]*>[\s\S]*$/,
                   ''

@@ -6,7 +6,7 @@ description: 一般サポーターと初期サポーターを一つの非金銭�
 
 **状態:** 提案
 **日付:** 2026-08-20
-**最終更新日:** 2026-09-04
+**最終更新日:** 2026-11-20
 
 ## 1. 背景
 
@@ -207,3 +207,9 @@ RPC停止、Latency、率制限およびチェーン Reorganizationが再生 Pat
 - [SPEC-ACCOUNT-004 サポーター資格証明, 初期階層・特権](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/account/early-supporter-credential-spec.md)
 - [SPEC-STREAMING-001 再生認可](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/streaming/playback-authorization-spec.md)
 - [SPEC-STREAMING-002 プレーヤークライアント・ゲートウェイ連携](https://github.com/ShigeichiroYamasaki/creator-first-platform/blob/main/protocol/streaming/player-client-spec.md)
+
+
+## 2026年11月20日補足：匿名支援資格との境界
+
+[ADR-0023](./ADR-0023-jpki-wallet-private-support-credentials)に、JPKI認証ウォレットの役割分担、匿名の支援資格、PRIV-01〜12との対応、失効・復旧・受入条件を記録した。本ADRの既存実装や本番方針を置換するものではなく、追加設計は提案段階である。
+公開SBTによる支援関係の露出と匿名提示を区別する。非公開資格による参加は限定企画から検証し、既存のSBT資格を前提とするコントラクトへ無変更で接続しない。公開バッジを任意にする案は、資格ポリシーと受入仕様の改訂を要する。

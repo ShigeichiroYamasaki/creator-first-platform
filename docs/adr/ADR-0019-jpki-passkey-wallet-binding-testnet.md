@@ -9,7 +9,7 @@ search: false
 
 **日付:** 2026-08-26
 
-**最終更新日:** 2026-08-26
+**最終更新日:** 2026-11-20
 
 > **実装注記（2026-08-26）:** `apps/gateway`にモックJPKIアダプター、SimpleWebAuthnによる登録・認証検証、EIP-712 `WalletBindingIntent`検証、SQLite監査記録および状態機械を実装した。`docs/.vitepress/theme/AccountTrustDemo.vue`は同一オリジンの`/api`からこれらを順番に実行する。GitHub Pagesでは操作を無効にし、ローカルRPまたは将来のCFP専用HTTPSドメインでだけ有効にする。実在JPKI、復旧、本番アカウント、公開APIデプロイおよび独立監査は未実装であり、本ADR全体の受入完了を意味しない。
 
@@ -370,3 +370,9 @@ PPIDはRP別で変更される可能性があり、目的外利用、アカウ�
 - [デジタル庁 デジタル認証サービス実装ガイドライン](https://developers.digital.go.jp/documents/auth-and-sign/implement-guideline/)
 - [デジタル庁 デジタル認証サービスAPIの利用手続](https://support.aas.digital.go.jp/hc/ja/articles/33751504263577)
 - [デジタル庁 デジタル認証サービスAPIの利用料](https://support.aas.digital.go.jp/hc/ja/articles/33751631425945)
+
+
+## 2026年11月20日補足：匿名支援資格との境界
+
+[ADR-0023](./ADR-0023-jpki-wallet-private-support-credentials)に、JPKI認証ウォレットの役割分担、匿名の支援資格、PRIV-01〜12との対応、失効・復旧・受入条件を記録した。本ADRの既存実装や本番方針を置換するものではなく、追加設計は提案段階である。
+本人確認時の主体・鍵対応を匿名提示先へそのまま渡さない。パスキー認証、外部ウォレット秘密鍵の復旧、資格秘密の再発行は別の境界とし、旧資格の失効と既使用状態を扱う。実カード導入の既存条件は維持する。
