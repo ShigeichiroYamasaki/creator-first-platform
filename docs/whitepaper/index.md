@@ -18,6 +18,17 @@ Creator First Platformは、音楽クリエーターの権利と持続可能な�
 
 公開済み文書、草案仕様、未実装範囲、専門家確認事項は[現在の状況](/status)にまとめています。
 
+## JPKI認証ウォレットとプライバシー要件の統合
+
+2026年11月20日、JPKIプロジェクトの本人・鍵・権限・同意の分離と、支援・視聴履歴を必要以上に共有しない追加設計を統合しました。
+
+- [第4章：認証ウォレットと外部支援サービスの役割分担](./04-platform-architecture#jpki-wallet-architecture)
+- [第9章：匿名支援資格、ERC-20／JPYC移行、証明方式](./09-technology#private-support-credentials)
+- [第10章：プライバシー要件と検証条件](./10-security#behavior-privacy-requirements)
+- [第11章：本人確認・法定記録・権利・資金規制との境界](./11-legal-sto-tax#jpki-zkp-legal-boundary)
+
+追加内容は設計方針・要件であり、SonoLoopとの正式連携、実JPKI、本番JPYC、実際のZKPの実装・監査完了を示しません。関連ADR・仕様の具体化と実装は別途進めます。
+
 ## 章構成
 
 1. ビジョン
